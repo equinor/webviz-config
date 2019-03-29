@@ -12,3 +12,5 @@ dash-table>=3.4.0
 flask-caching>=1.4.0
 flask-talisman>=0.6.0
 cryptography>=2.5
+
+webviz_components>=0.0.1
