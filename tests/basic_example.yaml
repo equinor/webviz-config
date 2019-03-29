@@ -1,0 +1,31 @@
+# This file demonstrates the most basic usage of webviz in a FMU setting
+# The configuration files uses YAML (https://en.wikipedia.org/wiki/YAML).
+
+title: Reek Webviz Demonstration
+username: some_username
+password: some_password
+
+
+pages:
+
+ - title: Front page
+   content:
+    - container: BannerImage
+      image: ./example_banner.png
+      title: My banner image
+    - Webviz created from configuration file.
+
+ - title: Another page
+   content:
+    - Some other text, potentially with strange letters like Åre, Smørbukk Sør.
+
+ - title: Table example
+   content:
+    - container: DataTable
+      csv_file: ./example_data.csv
+      filtering: True
+
+ - title: Syntax highlighting example
+   content:
+    - container: SyntaxHighlighter
+      filename: ./basic_example.yaml

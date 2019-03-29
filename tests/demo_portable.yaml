@@ -1,0 +1,16 @@
+# This file demonstrates the most basic usage of webviz in a FMU setting
+# The configuration files uses YAML (https://en.wikipedia.org/wiki/YAML).
+
+title: Reek Webviz Demonstration
+
+username: some_username
+password: some_password
+
+pages:
+
+ - title: Front page
+   content: 
+    - container: ExamplePortable
+      some_number: 42
+    - container: ExampleAssets
+      picture_path: ./example_banner.png
