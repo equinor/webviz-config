@@ -12,13 +12,15 @@ from ._example_portable import ExamplePortable
 from ._banner_image import BannerImage
 from ._data_table import DataTable
 from ._syntax_highlighter import SyntaxHighlighter
+from ._plot_a_table import PlotATable
 
 __all__ = ['ExampleContainer',
            'ExampleAssets',
            'ExamplePortable',
            'BannerImage',
            'DataTable',
-           'SyntaxHighlighter']
+           'SyntaxHighlighter',
+           'PlotATable']
 
 for entry_point in pkg_resources.iter_entry_points('webviz_config_containers'):
     globals()[entry_point.name] = entry_point.load()

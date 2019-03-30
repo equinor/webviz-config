@@ -29,3 +29,10 @@ pages:
    content:
     - container: SyntaxHighlighter
       filename: ./basic_example.yaml
+
+ - title: Plot a table
+   content:
+    - container: PlotATable
+      title: table plotter
+      csv_file: ./example_data.csv
+    
