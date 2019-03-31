@@ -35,4 +35,10 @@ pages:
     - container: PlotATable
       title: table plotter
       csv_file: ./example_data.csv
+      plot_options:
+        x: Well
+        y: Initial reservoir pressure (bar)
+        size: Average permeability (D)
+        facet_col: Segment
+        
     
