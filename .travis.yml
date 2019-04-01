@@ -33,3 +33,4 @@ install:
 script:
   - pip install .
   - pycodestyle webviz_config
+  - pytest tests
