@@ -13,7 +13,19 @@ import plotly_express as px
 
 
 class PlotATable:
+    '''### PlotATable
 
+This container adds a plotter to the webviz instance, using tabular data from
+a provided csv file. If feature is requested, the data could also come from
+a database.
+
+* title` : Title on page
+* `csv_file`: Path to the csv file containing the tabular data. Either absolute
+              path or relative to the configuration file.
+* `plot_options`: A dictionary of plot options to initialize the plot with
+* `lock`: If `True`, Only the plot is shown, all dropdowns for changing 
+          plot options are hidden.
+'''
     def __init__(self, app, title: str, csv_file: Path,
                  plot_options: dict = {}, lock: bool = False):
 
