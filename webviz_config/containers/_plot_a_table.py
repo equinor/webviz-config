@@ -23,7 +23,7 @@ a database.
 * `csv_file`: Path to the csv file containing the tabular data. Either absolute
               path or relative to the configuration file.
 * `plot_options`: A dictionary of plot options to initialize the plot with
-* `lock`: If `True`, Only the plot is shown, all dropdowns for changing 
+* `lock`: If `True`, Only the plot is shown, all dropdowns for changing
           plot options are hidden.
 '''
     def __init__(self, app, title: str, csv_file: Path,
@@ -111,7 +111,7 @@ a database.
                     'value': self.plot_options.get('histnorm', None)
                 },
                 'trendline': {
-                    'options': self.numeric_columns,                                
+                    'options': self.numeric_columns,
                     'value': None
                 },
 
@@ -187,7 +187,7 @@ a database.
             return {'display': 'none'}
         else:
             return {}
-    
+
     @property
     def layout(self):
         return html.Div(children=[
