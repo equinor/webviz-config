@@ -55,7 +55,7 @@ After installation, there is a console script named `webviz` available
 in `$PATH_TO_VENV/bin`. You can test the installation by using the provided test
 configuration file,
 ```bash
-webviz build ./tests/basic_example.yaml
+webviz build ./examples/basic_example.yaml
 ```
 
 Without any additional arguments, this will
@@ -71,7 +71,7 @@ webviz --help
 
 For example will
 ```bash
-webviz build ./tests/basic_example.yaml --portable /scratch/my_field/my_webviz
+webviz build ./examples/basic_example.yaml --portable /scratch/my_field/my_webviz
 ```
 create a portable instance and store it in the provided folder.
 
@@ -80,9 +80,9 @@ When the Dash Python code file is saved, the content seen in the web browser is
 automatically reloaded (no need for server restart). This feature is passed on to
 Webviz configuration utility, meaning that if the user runs 
 ```bash
-webviz build ./tests/basic_example.yaml
+webviz build ./examples/basic_example.yaml
 ```
-and then modifies `./tests/basic_example.yaml` while the Webviz application is
+and then modifies `./examples/basic_example.yaml` while the Webviz application is
 still running, a hot reload will occur.
 
 By default `webviz-config` uses `https` and runs on `localhost`.
