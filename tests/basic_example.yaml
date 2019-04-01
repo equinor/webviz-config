@@ -33,8 +33,15 @@ pages:
  - title: Plot a table
    content:
     - container: PlotATable
-      title: table plotter
+      title: Plotter
       csv_file: ./example_data.csv
+
+ - title: Plot a table (locked)
+   content:
+    - container: PlotATable
+      title: Initial reservoir pressure
+      csv_file: ./example_data.csv
+      lock: true
       plot_options:
         x: Well
         y: Initial reservoir pressure (bar)
