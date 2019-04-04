@@ -7,3 +7,5 @@ venv
 .pytest_cache
 *.pyc
 .DS_Store
+dist
+build
