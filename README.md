@@ -28,11 +28,16 @@ python3 -m virtualenv $PATH_TO_VENV
 source $PATH_TO_VENV/bin/activate
 ```
 
-In order to install the utility, run
+The simplest way of installing `webviz-config` is to run
+```bash
+pip install webviz-config
+```
+
+If you want to download the latest source code and install it manually you 
+can run
 ```bash
 git clone git@github.com:equinor/webviz-config.git
 cd webviz-config
-pip install -r requirements.txt
 pip install .
 ```
 ### Run tests
@@ -41,14 +46,14 @@ To run tests it is necessary to first install [selenium chrome driver](https://g
 Then install dev requirements and run pytest:
 
 ```bash
-pip install -r dev_requirements.txt
+pip install .[tests]
 pytest tests
 ```
 
 Linting can be checked by:
 
 ```bash
-pycodestyle webviz_config/ tests/
+pycodestyle webviz_config tests
 ```
 
 ### Build documentation
@@ -57,7 +62,7 @@ End-user documentation (i.e. YAML configuration file) be created
 after installation by
 
 ```bash
-pip install -r dev_requirements.txt
+pip install .[tests]
 cd ./docs
 python3 build_docs.py
 ```

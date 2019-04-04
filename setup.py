@@ -1,14 +1,23 @@
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
+with open('README.md', 'r') as fh:
     long_description = fh.read()
+
+tests_requires = [
+    'chromedriver-binary>=74.0.3729.6.0',
+    'dash>=0.38.0',
+    'markdown>=3.0.1',
+    'pylint>=2.3.1',
+    'pytest-dash>=2.1.1',
+    'pycodestyle>=2.5.0',
+    'selenium>=3.141.0'
+]
 
 setup(
     name='webviz-config',
-    version='0.0.2',
     description='Configuration file support for webviz',
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type='text/markdown',
     url='https://github.com/equinor/webviz-config',
     author='R&T Equinor',
     packages=find_packages(exclude=['tests']),
@@ -39,15 +48,10 @@ setup(
         'pyyaml>=3.13',
         'webviz_components>=0.0.1'
     ],
-    tests_require=[
-        'chromedriver-binary>=74.0.3729.6.0',
-        'dash>=0.38.0',
-        'markdown>=3.0.1',
-        'pylint>=2.3.1',
-        'pytest-dash>=2.1.1',
-        'pycodestyle>=2.5.0',
-        'selenium>=3.141.0'
-    ],
+    tests_require=tests_requires,
+    extras_require={'tests': tests_requires},
+    setup_requires=['setuptools_scm>=3.2.0'],
+    use_scm_version=True,
     zip_safe=False,
     classifiers=[
         'Programming Language :: Python :: 3',
