@@ -35,7 +35,21 @@ cd webviz-config
 pip install -r requirements.txt
 pip install .
 ```
+### Run tests
 
+To run tests it is necessary to first install [selenium chrome driver](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver).
+Then install dev requirements and run pytest:
+
+```bash
+pip install -r dev_requirements.txt
+pytest tests
+```
+
+Linting can be checked by:
+
+```bash
+pycodestyle webviz_config/ tests/
+```
 
 ### Build documentation
 
@@ -43,7 +57,7 @@ End-user documentation (i.e. YAML configuration file) be created
 after installation by
 
 ```bash
-pip install -r dev-requirements.txt
+pip install -r dev_requirements.txt
 cd ./docs
 python3 build_docs.py
 ```
