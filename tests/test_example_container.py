@@ -21,8 +21,7 @@ def test_example_container(dash_threaded):
     dash_threaded(app)
     btn = css_select(driver, f'#{page.button_id}')
     assert 'Submit' == btn.text
-    text = css_select(driver,f'#{page.div_id}')
+    text = css_select(driver, f'#{page.div_id}')
     assert 'Button has been pressed 0 times.' == text.text
     btn.click()
     assert 'Button has been pressed 1 times.' == text.text
-

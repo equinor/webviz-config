@@ -1,0 +1,7 @@
+chromedriver-binary
+dash>=0.38.0
+selenium
+pylint
+pytest-dash>=2.1.1
+markdown>=3.0.1
+pycodestyle>=2.5.0
