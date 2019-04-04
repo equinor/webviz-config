@@ -1,2 +1,0 @@
-markdown>=3.0.1
-pycodestyle>=2.5.0

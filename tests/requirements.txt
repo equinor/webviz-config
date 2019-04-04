@@ -1,5 +1,0 @@
-chromedriver-binary
-dash>=0.38.0
-selenium
-pylint
-pytest-dash>=2.1.1

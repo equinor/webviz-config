@@ -1,7 +1,7 @@
-chromedriver-binary
+chromedriver-binary>=74.0.3729.6.0
 dash>=0.38.0
-selenium
-pylint
+selenium>=3.141.0
+pylint>=2.3.1
 pytest-dash>=2.1.1
 markdown>=3.0.1
 pycodestyle>=2.5.0
