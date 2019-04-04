@@ -1,10 +1,15 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name='webviz-config',
-    version='0.0.1',
+    version='0.0.2',
     description='Configuration file support for webviz',
-    url='https://github.com/Statoil/webviz-config',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url='https://github.com/equinor/webviz-config',
     author='R&T Equinor',
     packages=find_packages(exclude=['tests']),
     package_data={
@@ -19,5 +24,38 @@ setup(
            'webviz=webviz_config.command_line:main'
          ],
     },
-    zip_safe=False
+    install_requires=[
+        'cryptography>=2.5',
+        'dash>=0.35.2',
+        'dash-auth>=1.3.1',
+        'dash-core-components>=0.42.1',
+        'dash-html-components>=0.13.4',
+        'dash-table>=3.4.0',
+        'flask-caching>=1.4.0',
+        'flask-talisman>=0.6.0',
+        'jinja2>=2.10',
+        'pandas==0.24.1',
+        'pyarrow>=0.11.1',
+        'pyyaml>=3.13',
+        'webviz_components>=0.0.1'
+    ],
+    tests_require=[
+        'chromedriver-binary>=74.0.3729.6.0',
+        'dash>=0.38.0',
+        'markdown>=3.0.1',
+        'pylint>=2.3.1',
+        'pytest-dash>=2.1.1',
+        'pycodestyle>=2.5.0',
+        'selenium>=3.141.0'
+    ],
+    zip_safe=False,
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
+        'Operating System :: OS Independent',
+        'Natural Language :: English',
+        'Topic :: Multimedia :: Graphics',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Visualization'
+    ]
 )
