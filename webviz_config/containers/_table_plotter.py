@@ -27,10 +27,10 @@ a database.
 '''
 
     def __init__(self, app, title: str, csv_file: Path,
-                 plot_options: dict = {}, lock: bool = False):
+                 plot_options: dict = None, lock: bool = False):
 
         self.title = title
-        self.plot_options = plot_options
+        self.plot_options = plot_options if plot_options else {}
         self.graph_id = f'graph-id{uuid4()}'
         self.lock = lock
         self.csv_file = csv_file
@@ -226,8 +226,7 @@ a database.
     def set_callbacks(self, app):
         @app.callback(
             self.plot_output_callbacks,
-            self.plot_input_callbacks
-        )
+            self.plot_input_callbacks)
         def update_output(*args):
             '''Updates the graph and shows/hides plot options'''
             plot_type = args[0]
