@@ -29,3 +29,21 @@ pages:
    content:
     - container: SyntaxHighlighter
       filename: ./basic_example.yaml
+
+ - title: Plot a table
+   content:
+    - container: TablePlotter
+      title: Plotter
+      csv_file: ../../data.csv
+
+ - title: Plot a table (locked)
+   content:
+    - container: TablePlotter
+      title: Initial reservoir pressure
+      csv_file: ./example_data.csv
+      lock: true
+      plot_options:
+        x: Well
+        y: Initial reservoir pressure (bar)
+        size: Average permeability (D)
+        facet_col: Segment
