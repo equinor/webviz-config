@@ -3,7 +3,8 @@ CSP = {
     'prefetch-src': '\'self\'',
     'style-src': ['\'self\'', '\'unsafe-inline\''],  # [1]
     'script-src': ['\'self\'', '\'unsafe-eval\'',  # [2]
-                   '\'sha256-jZlsGVOhUAIcH+4PVs7QuGZkthRMgvT2n0ilH6/zTM0=\''],  # [3]
+                   '\'sha256-jZlsGVOhUAIcH+4PV'\
+                   's7QuGZkthRMgvT2n0ilH6/zTM0=\''],  # [3]
     'img-src': ['\'self\'', 'data:'],
     'navigate-to': '\'self\'',
     'base-uri': '\'self\'',
