@@ -1,16 +1,18 @@
 # Contributing to Webviz configuration utility
 
-
 ## Creating a new composite object
 
 Most of the development work is towards creating standard containers.
 An container usually does three things:
 
-* It has a `layout` property, consisting of multiple [Dash components](https://dash.plot.ly/getting-started).
-* It has/uses functionality for getting/processing the data it displays/visualizes.
-* It sets some [callbacks](https://dash.plot.ly/getting-started-part-2) to add user interactivity triggering
-  actions in the Python backend.
+*   It has a `layout` property, consisting of multiple
+    [Dash components](https://dash.plot.ly/getting-started).
 
+*   It has/uses functionality for getting/processing
+    the data it displays/visualizes.
+
+*   It sets some [callbacks](https://dash.plot.ly/getting-started-part-2)
+    to add user interactivity triggering actions in the Python backend.
 
 ### Minimal container
 
@@ -63,7 +65,6 @@ pages:
     - container: ExampleContainer
 ```
 
-
 ### Callbacks
 
 If you want to include user interactivity which triggers actions in the Python
@@ -104,20 +105,21 @@ callbacks, see [the dash documentation](https://dash.plot.ly/getting-started-par
 
 There are three fundamental additions to the minimal example without callbacks:
 
-* You add the argument `app` to your `__init__` function. This is a special
-  argument name which will *not* be originating from the user configuration file,
-  but rather automatically given to the container by the core functionality
-  of `webviz-config`.
-* You add a class function `set_callbacks` which contains the different
-  callbacks to add. This function is called from the `__init__` function, such
-  that the callbacks are set when the container instance is created.
-* Since the components are reusable (i.e. a user can use the container multiple
-  times within the same application), the container IDs mentioned in the
-  `@app.callback(...)` decorator needs to be unique. One simple way of ensuring
-  this is to create unique IDs in the `__init__` function using
-  [uuid.uuid4()](https://docs.python.org/3/library/uuid.html#uuid.uuid4),
-  as demonstrated in the example above.
+*   You add the argument `app` to your `__init__` function. This is a special
+    argument name which will *not* be originating from the user configuration
+    file, but rather automatically given to the container by the core
+    functionality of `webviz-config`.
 
+*   You add a class function `set_callbacks` which contains the different
+    callbacks to add. This function is called from the `__init__` function,
+    such that the callbacks are set when the container instance is created.
+
+*   Since the components are reusable (i.e. a user can use the container
+    multiple times within the same application), the container IDs mentioned in
+    the `@app.callback(...)` decorator needs to be unique. One simple way of
+    ensuring this is to create unique IDs in the `__init__` function using
+    [uuid.uuid4()](https://docs.python.org/3/library/uuid.html#uuid.uuid4),
+    as demonstrated in the example above.
 
 ### User provided arguments
 
@@ -158,13 +160,15 @@ pages:
 The core functionality of `webviz-config` will provide user friendly
 error messages in the following scenarios:
 
-* A required argument is not provided (in example above, that would be if
-  `title` is not stated in the configuration file).
-* An unknown argument is given (that would be something else than `title` and
-  `number` in this case).
-* Mismatch between type of user provided value, and the (optionally) provided
-  [type hint](https://docs.python.org/3/library/typing.html) in the
-  `__init__` function.
+*   A required argument is not provided (in example above, that would be if
+    `title` is not stated in the configuration file).
+
+*   An unknown argument is given (that would be something else than `title` and
+    `number` in this case).
+
+*   Mismatch between type of user provided value, and the (optionally) provided
+    [type hint](https://docs.python.org/3/library/typing.html) in the
+    `__init__` function.
 
 The `__init__` function above could be replaced with an equivalent argument
 specification without type hints, e.g.
@@ -213,10 +217,9 @@ a new calculation.
 Functionality used by multiple containers should be put in a common module.
 In order to not have many `cache` instances in memory, it is suggested to
 import the common cache instance,
-```
+```python
 from webviz_config.common_cache import cache
 ```
-
 
 ### Deattaching data from its original source
 
@@ -325,7 +328,6 @@ different input also have different string output from `__repr__`.
 
 **Note:** If you nest decorations, e.g. use both `@webvizstore` and
 `@cache.memoize`, follow the same order as in the example above.
-
 
 ### Custom ad-hoc containers
 

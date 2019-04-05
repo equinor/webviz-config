@@ -1,5 +1,3 @@
-import os
-
 import argparse
 from ._build_webviz import build_webviz
 from ._certificate import create_ca
