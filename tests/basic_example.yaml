@@ -34,7 +34,7 @@ pages:
    content:
     - container: TablePlotter
       title: Plotter
-      csv_file: ./data.csv
+      csv_file: ../../data.csv
 
  - title: Plot a table (locked)
    content:
@@ -47,5 +47,3 @@ pages:
         y: Initial reservoir pressure (bar)
         size: Average permeability (D)
         facet_col: Segment
-        
-    
