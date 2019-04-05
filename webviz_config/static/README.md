@@ -5,7 +5,6 @@ You can run it locally by running:
   cd THISFOLDER
   python3 ./webviz_app.py
 
-
 If you want to upload it to e.g. Azure Container Registry, you can do e.g.
 
   cd THISFOLDER

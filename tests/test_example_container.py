@@ -1,5 +1,4 @@
 import dash
-import flask_caching
 from webviz_config.common_cache import cache
 from pytest_dash.wait_for import (
     wait_for_element_by_css_selector as css_select
