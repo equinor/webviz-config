@@ -80,4 +80,3 @@ def test_initialized_table_plotter(dash_threaded):
     #Checking that the selectors are hidden
     selector_row = css_select(driver, f'#{page.selector_row}')
     assert selector_row.get_attribute('style') == 'display: none;'
-    
