@@ -34,7 +34,7 @@ pages:
    content:
     - container: TablePlotter
       title: Plotter
-      csv_file: ../../data.csv
+      csv_file: ./example_data.csv
 
  - title: Plot a table (locked)
    content:
