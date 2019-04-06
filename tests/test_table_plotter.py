@@ -21,29 +21,30 @@ def test_table_plotter(dash_threaded):
     app.layout = page.layout
     dash_threaded(app)
 
-    #Wait for the app to render(there is probably a better way...)
+    # Wait for the app to render(there is probably a better way...)
     time.sleep(5)
-    
-    #Checking that no plot options are defined
+
+    # Checking that no plot options are defined
     assert page.plot_options == {}
 
-    #Checking that the selectors are not hidden
+    # Checking that the selectors are not hidden
     selector_row = css_select(driver, f'#{page.selector_row}')
     assert selector_row.get_attribute('style') == ''
-    
-    #Checking that the correct plot type is initialized
+
+    # Checking that the correct plot type is initialized
     plot_dd = css_select(driver, f'#{page.plot_option_id}-plottype')
     assert plot_dd.text == 'scatter'
 
-    #Checking that only the relevant options are shown
+    # Checking that only the relevant options are shown
     for plot_option in page.plot_args.keys():
-        plot_option_dd = css_select(driver, f'#{page.plot_option_id}-div-{plot_option}')
+        plot_option_dd = css_select(
+            driver, f'#{page.plot_option_id}-div-{plot_option}')
         if plot_option not in page.plots['scatter']:
             assert plot_option_dd.get_attribute('style') == 'display: none;'
         else:
             assert plot_option_dd.get_attribute('style') == 'display: grid;'
 
-    #Checking that options are initialized correctly
+    # Checking that options are initialized correctly
     for option in ['x', 'y']:
         plot_option_dd = css_select(driver, f'#{page.plot_option_id}-{option}')
         assert plot_option_dd.text == 'Well'
@@ -60,23 +61,23 @@ def test_initialized_table_plotter(dash_threaded):
     title = 'Example'
     csv_file = './tests/data/example_data.csv'
     plot_options = dict(
-        x ='Well',
-        y = 'Initial reservoir pressure (bar)',
-        size= 'Average permeability (D)',
-        facet_col = 'Segment')
+        x='Well',
+        y='Initial reservoir pressure (bar)',
+        size='Average permeability (D)',
+        facet_col='Segment')
 
     page = _table_plotter.TablePlotter(
         app, title, csv_file, lock=True, plot_options=plot_options)
     app.layout = page.layout
     dash_threaded(app)
 
-    #Wait for the app to render(there is probably a better way...)
+    # Wait for the app to render(there is probably a better way...)
     time.sleep(5)
-    
-    #Checking that plot options are defined
-    assert page.plot_options == plot_options
-    assert page.lock == True
 
-    #Checking that the selectors are hidden
+    # Checking that plot options are defined
+    assert page.plot_options == plot_options
+    assert page.lock
+
+    # Checking that the selectors are hidden
     selector_row = css_select(driver, f'#{page.selector_row}')
     assert selector_row.get_attribute('style') == 'display: none;'
