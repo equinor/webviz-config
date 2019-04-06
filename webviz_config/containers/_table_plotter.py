@@ -206,7 +206,7 @@ a database.
         )
         for plot_arg in self.plot_args.keys():
             outputs.append(
-                Output(f'{self.plot_option_id}-{plot_arg}', 'style')
+                Output(f'{self.plot_option_id}-div-{plot_arg}', 'style')
             )
         return outputs
 
