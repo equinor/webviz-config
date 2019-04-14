@@ -193,7 +193,7 @@ pages:
 ```
 
 this error message will be given:
-```
+```shell
 The value provided for argument `number` given to container `ExampleContainer` is of type `str`. Expected type `int`
 ```
 
@@ -202,7 +202,6 @@ be of type `pathlib.Path`, the configuration parser will make sure that
 the user provided path (which is a string to begin with in configuration file,
 potentially non-absolute and relative to the configuration file itself) is
 given to the container as an absolute path, and of type `pathlib.Path`.
-
 
 ### Data input
 
@@ -317,7 +316,6 @@ be copied over to the portable `webviz` instance, and the decorated function
 will return a `pathlib.Path` instance pointing to the stored file. For most
 use cases, the decorated function `get_resource` in
 `webviz_config.webviz_store` can be imported and used.
-
 
 **Note:** The argument hashing method used for `@webvizstore` is using
 the same principles as in `@cache.memoize` from the `flask-caching` package.
