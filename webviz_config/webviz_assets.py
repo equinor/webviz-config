@@ -61,7 +61,7 @@ class WebvizAssets:
         '''
 
         @app.server.route(f'/{self._base_folder()}/<path:asset_id>')
-        def send_file(asset_id):
+        def send_file(asset_id):  # pylint: disable=unused-variable
             if asset_id in self._assets:  # Only serve white listed resources
                 path = pathlib.Path(self._assets[asset_id])
                 return flask.send_from_directory(path.parent, path.name)

@@ -25,5 +25,5 @@ class ExampleContainer:
     def set_callbacks(self, app):
         @app.callback(Output(self.div_id, 'children'),
                       [Input(self.button_id, 'n_clicks')])
-        def update_output(n_clicks):
+        def update_output(n_clicks):  # pylint: disable=unused-variable
             return 'Button has been pressed {} times.'.format(n_clicks)

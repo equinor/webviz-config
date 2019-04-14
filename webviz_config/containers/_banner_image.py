@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import dash_html_components as html
 from ..webviz_assets import webviz_assets
