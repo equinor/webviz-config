@@ -167,7 +167,7 @@ a database.
                             options=[{'label': i, 'value': i}
                                      for i in arg['options']],
                             value=arg['value'],
-                            multi=True if arg['multi'] else False)
+                            multi=arg['multi'])
                     ])
             )
         return divs
