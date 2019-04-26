@@ -21,6 +21,7 @@ install:
   - export PATH=$PATH:$PWD
 
 script:
+  - google-chrome-stable --version
   - pip install .
   - pip install .[tests]
   - pycodestyle webviz_config
