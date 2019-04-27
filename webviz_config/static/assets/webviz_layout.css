@@ -1,0 +1,68 @@
+div.styledButton.tab:hover {
+        color: var(--menuLinkHoverColor);
+        background-color:  var(--menuLinkBackgroundHover);
+    }
+div.styledButton.tab {
+    color: var(--menuLinkColor);
+    /* height: 50px; */
+    /* width: 500px; */
+    border: none;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+       transition: background-color, color 200ms;
+       /* width: 100%; */
+       text-align: left;
+       box-sizing: none;
+       font-size: 16px;
+    font-family: var(--menuLinkFont);
+    font-weight: var(--menuLinkFontWeight);
+    font-style: var(--menuLinkFontStyle);
+    color: var(--menuLinkColor);
+    text-decoration: none;
+    padding: 20px 30px;
+
+    border-bottom: 1px solid white;
+}
+#logo {
+margin: 10px 10px;
+}
+#last_page {border: none!important;}
+
+div.selectedButton.tab--selected {
+    background-color: var(--menuLinkBackgroundSelected);
+    color: var(--menuLinkColorSelected);
+}
+
+div.pageWrapper.tab-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 20px;
+
+}
+.layoutWrapper {
+    width: 100%;
+}
+.wrapper {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    @media (max-width: 1200px) {
+        flex-direction: column;
+    }
+}
+.logoWrapper {
+    margin: 12px 20px 20px 18px;
+    @media (max-width: 1200px) {
+        height: 50px;
+        margin: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    };
+    margin: 20px 30px;
+    display: flex;
+    align-items: center;
+}

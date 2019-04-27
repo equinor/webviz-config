@@ -6,6 +6,7 @@ import socket
 import dash
 import dash_auth
 import dash_core_components as dcc
+import dash_html_components as html
 import webviz_components as webviz
 import os.path as path
 from pathlib import Path, PosixPath
@@ -43,12 +44,32 @@ webviz_storage.storage_folder = path.join(path.dirname(path.realpath(__file__)),
 webviz_assets.portable = {{ portable }}
 {{ 'webviz_assets.register_app(app)' if not portable else ''}}
 
-app.layout = webviz.Layout(children=[
+tab_active_style = {
+'background-color': 'var(--menuLinkBackgroundSelected)',
+'color': 'var(--menuLinkColorSelected)',
+}
+
+app.layout = dcc.Tabs(parent_className="layoutWrapper",
+                      content_className='pageWrapper',
+                      vertical=True, children=[
    {% for page in pages %}
-    webviz.Page(
-        id='{{ page.id }}',
-        title='{{ page.title }}',
-        children=[
+
+    dcc.Tab(
+        {%- if loop.first -%}
+            id='logo',
+        {%- else -%}
+            {%- if loop.last -%}
+                id='last_page',
+            {%- else -%}
+                id='{{page.id}}',
+            {%- endif -%}
+            label='{{page.title}}',
+            selected_style = tab_active_style,
+            selected_className='selectedButton',
+        {%- endif -%}
+            className='styledButton',
+
+            children=[
                  {% for content in page.content -%}
                   {%- if content is string -%}
                     dcc.Markdown(r'''{{ content }}''')
@@ -63,7 +84,7 @@ app.layout = webviz.Layout(children=[
 )
 
 if __name__ == '__main__':
-    # This part is ignored when the webviz app is started 
+    # This part is ignored when the webviz app is started
     # using Docker container and uwsgi (e.g. when hosted on Azure).
 
     dash_auth.BasicAuth(app, {'{{ username }}': '{{ password }}'})
