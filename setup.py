@@ -26,6 +26,7 @@ setup(
             'static/*',
             'static/.dockerignore',
             'static/assets/*',
+            'themes/default_assets/*'
         ]},
     entry_points={
         'console_scripts': [
