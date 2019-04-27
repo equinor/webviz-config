@@ -25,7 +25,7 @@ setup(
             'templates/*',
             'static/*',
             'static/.dockerignore',
-            'static/assets/*'
+            'static/assets/*',
         ]},
     entry_points={
         'console_scripts': [
@@ -43,8 +43,6 @@ setup(
         'plotly-express>=0.1.3',
         'pyarrow>=0.11.1',
         'pyyaml>=3.13',
-        'webviz_components>=0.0.1',
-
     ],
     tests_require=tests_requires,
     extras_require={'tests': tests_requires},
