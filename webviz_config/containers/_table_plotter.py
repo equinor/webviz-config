@@ -58,9 +58,9 @@ a database.
             'line_3d': ['x', 'y', 'z', 'color'],
             'box': ['x', 'y', 'color', 'facet_col'],
             'violin': ['x', 'y', 'color', 'facet_col'],
-            'scatter_matrix': ['size', 'color'],
-            'parallel_coordinates': [],
-            'parallel_categories': [],
+            'scatter_matrix': ['dimensions', 'size', 'color'],
+            'parallel_coordinates': ['dimensions'],
+            'parallel_categories': ['dimensions'],
             'density_contour': ['x', 'y', 'color', 'facet_col'],
         }
 
@@ -71,49 +71,65 @@ a database.
             {
                 'x': {
                     'options': self.columns,
-                    'value': self.plot_options.get('x', self.columns[0])
+                    'value': self.plot_options.get('x', self.columns[0]),
+                    'multi': False
                 },
                 'y': {
                     'options': self.columns,
-                    'value': self.plot_options.get('y', self.columns[0])
+                    'value': self.plot_options.get('y', self.columns[0]),
+                    'multi': False
                 },
                 'z': {
                     'options': self.columns,
-                    'value': self.plot_options.get('z', self.columns[0])
+                    'value': self.plot_options.get('z', self.columns[0]),
+                    'multi': False
                 },
                 'size': {
                     'options': self.numeric_columns,
-                    'value': self.plot_options.get('size', None)
+                    'value': self.plot_options.get('size', None),
+                    'multi': False
                 },
                 'color': {
                     'options': self.columns,
-                    'value': self.plot_options.get('color', None)
+                    'value': self.plot_options.get('color', None),
+                    'multi': False
                 },
                 'facet_col': {
                     'options': self.columns,
-                    'value': self.plot_options.get('facet_col', None)
+                    'value': self.plot_options.get('facet_col', None),
+                    'multi': False
                 },
                 'line_group': {
                     'options': self.columns,
-                    'value': self.plot_options.get('line_group', None)
+                    'value': self.plot_options.get('line_group', None),
+                    'multi': False
                 },
                 'barmode': {
                     'options': ['stack', 'group', 'overlay', 'relative'],
-                    'value': self.plot_options.get('barmode', 'stack')
+                    'value': self.plot_options.get('barmode', 'stack'),
+                    'multi': False
                 },
                 'barnorm': {
                     'options': ['fraction', 'percent'],
-                    'value': self.plot_options.get('barnorm', None)
+                    'value': self.plot_options.get('barnorm', None),
+                    'multi': False
                 },
                 'histnorm': {
                     'options': ['percent', 'propability', 'density',
                                 'propability density'],
-                    'value': self.plot_options.get('histnorm', None)
+                    'value': self.plot_options.get('histnorm', None),
+                    'multi': False
                 },
                 'trendline': {
                     'options': self.numeric_columns,
-                    'value': None
+                    'value': None,
+                    'multi': False
                 },
+                'dimensions': {
+                    'options': self.columns,
+                    'value': self.plot_options.get('dimensions', self.columns),
+                    'multi': True
+                }
 
             })
 
@@ -150,7 +166,8 @@ a database.
                             clearable=False,
                             options=[{'label': i, 'value': i}
                                      for i in arg['options']],
-                            value=arg['value'])
+                            value=arg['value'],
+                            multi=arg['multi'])
                     ])
             )
         return divs
@@ -206,7 +223,7 @@ a database.
         )
         for plot_arg in self.plot_args.keys():
             outputs.append(
-                Output(f'{self.plot_option_id}-{plot_arg}', 'style')
+                Output(f'{self.plot_option_id}-div-{plot_arg}', 'style')
             )
         return outputs
 

@@ -5,10 +5,9 @@ with open('README.md', 'r') as fh:
 
 tests_requires = [
     'chromedriver-binary>=74.0.3729.6.0',
-    'dash>=0.38.0',
     'markdown>=3.0.1',
     'pylint>=2.3.1',
-    'pytest-dash>=2.1.1',
+    'pytest-dash',
     'pycodestyle>=2.5.0',
     'selenium>=3.141.0'
 ]
@@ -35,11 +34,8 @@ setup(
     },
     install_requires=[
         'cryptography>=2.5',
-        'dash>=0.35.2',
-        'dash-auth>=1.3.1',
-        'dash-core-components>=0.42.1',
-        'dash-html-components>=0.13.4',
-        'dash-table>=3.4.0',
+        'dash<=0.41',
+        'dash-auth',
         'flask-caching>=1.4.0',
         'flask-talisman>=0.6.0',
         'jinja2>=2.10',
@@ -47,7 +43,8 @@ setup(
         'plotly-express>=0.1.3',
         'pyarrow>=0.11.1',
         'pyyaml>=3.13',
-        'webviz_components>=0.0.1'
+        'webviz_components>=0.0.1',
+
     ],
     tests_require=tests_requires,
     extras_require={'tests': tests_requires},
