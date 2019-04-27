@@ -42,21 +42,10 @@ div.pageWrapper.tab-content {
     display: flex;
     height: 100%;
     width: 100%;
-    @media (max-width: 1200px) {
-        flex-direction: column;
-    }
 }
 
 .logoWrapper {
     margin: 12px 20px 20px 18px;
-    @media (max-width: 1200px) {
-        height: 50px;
-        margin: 15px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-    };
     margin: 20px 30px;
     display: flex;
     align-items: center;
