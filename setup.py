@@ -7,7 +7,7 @@ tests_requires = [
     'chromedriver-binary>=74.0.3729.6.0',
     'markdown>=3.0.1',
     'pylint>=2.3.1',
-    'pytest-dash',
+    'pytest-dash==2.1.2',
     'pycodestyle>=2.5.0',
     'selenium>=3.141.0'
 ]
@@ -34,9 +34,9 @@ setup(
          ],
     },
     install_requires=[
-        'cryptography>=2.5',
-        'dash<=0.41',
-        'dash-auth',
+        'cryptography>=2.4',
+        'dash==0.41',
+        'dash-auth==1.3.2',
         'flask-caching>=1.4.0',
         'flask-talisman>=0.6.0',
         'jinja2>=2.10',
