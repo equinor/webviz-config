@@ -47,7 +47,6 @@ app.layout = dcc.Tabs(parent_className="layoutWrapper",
                       content_className='pageWrapper',
                       vertical=True, children=[
    {% for page in pages %}
-
     dcc.Tab(
         {%- if loop.first -%}
             id='logo',
