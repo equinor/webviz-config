@@ -34,7 +34,7 @@ setup(
          ],
     },
     install_requires=[
-        'cryptography>=2.5',
+        'cryptography>=2.4',
         'dash==0.41',
         'dash-auth==1.3.2',
         'flask-caching>=1.4.0',
