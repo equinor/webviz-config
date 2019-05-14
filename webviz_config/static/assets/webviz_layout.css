@@ -1,3 +1,13 @@
+div.styledLogo.tab {
+    border: none;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    text-align: left;
+    box-sizing: none;
+    padding: 20px 30px;
+}
+
 div.styledButton.tab {
     border: none;
     background: transparent;
@@ -17,13 +27,13 @@ div.styledButton.tab {
 }
 
 div.styledButton.tab:hover {
-        color: var(--menuLinkHoverColor);
-        background-color:  var(--menuLinkBackgroundHover);
+    color: var(--menuLinkHoverColor);
+    background-color: var(--menuLinkBackgroundHover);
 }
 
 div.selectedButton.tab--selected {
-    background-color: var(--menuLinkBackgroundSelected);
     color: var(--menuLinkColorSelected);
+    background-color: var(--menuLinkBackgroundSelected);
 }
 
 div.pageWrapper.tab-content {

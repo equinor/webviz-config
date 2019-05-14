@@ -43,11 +43,6 @@ webviz_storage.storage_folder = path.join(path.dirname(path.realpath(__file__)),
 webviz_assets.portable = {{ portable }}
 {{ 'webviz_assets.register_app(app)' if not portable else ''}}
 
-tab_active_style = {
-  'background-color': 'var(--menuLinkBackgroundSelected)',
-  'color': 'var(--menuLinkColorSelected)'
-}
-
 app.layout = dcc.Tabs(parent_className="layoutWrapper",
                       content_className='pageWrapper',
                       vertical=True, children=[
@@ -56,6 +51,7 @@ app.layout = dcc.Tabs(parent_className="layoutWrapper",
     dcc.Tab(
         {%- if loop.first -%}
             id='logo',
+            className='styledLogo',
         {%- else -%}
             {%- if loop.last -%}
                 id='last_page',
@@ -63,11 +59,9 @@ app.layout = dcc.Tabs(parent_className="layoutWrapper",
                 id='{{page.id}}',
             {%- endif -%}
             label='{{page.title}}',
-            selected_style = tab_active_style,
             selected_className='selectedButton',
-        {%- endif -%}
             className='styledButton',
-
+        {%- endif -%}
             children=[
                  {% for content in page.content -%}
                   {%- if content is string -%}
