@@ -13,6 +13,7 @@ from ._banner_image import BannerImage
 from ._data_table import DataTable
 from ._syntax_highlighter import SyntaxHighlighter
 from ._table_plotter import TablePlotter
+from ._embed_pdf import EmbedPdf
 
 __all__ = ['ExampleContainer',
            'ExampleAssets',
@@ -20,7 +21,8 @@ __all__ = ['ExampleContainer',
            'BannerImage',
            'DataTable',
            'SyntaxHighlighter',
-           'TablePlotter']
+           'TablePlotter',
+           'EmbedPdf']
 
 for entry_point in pkg_resources.iter_entry_points('webviz_config_containers'):
     globals()[entry_point.name] = entry_point.load()

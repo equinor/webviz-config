@@ -25,6 +25,11 @@ pages:
       csv_file: ./example_data.csv
       filtering: True
 
+ - title: PDF example
+   content:
+    - container: EmbedPdf
+      pdf_file: ./example.pdf
+
  - title: Syntax highlighting example
    content:
     - container: SyntaxHighlighter
