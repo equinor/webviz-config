@@ -37,7 +37,6 @@ setup(
         'cryptography>=2.4',
         'dash==0.41',
         'dash-auth==1.3.2',
-        'dash-dangerously-set-inner-html>=0.0.2',
         'flask-caching>=1.4.0',
         'flask-talisman>=0.6.0',
         'jinja2>=2.10',
