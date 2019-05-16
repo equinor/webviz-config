@@ -13,7 +13,8 @@ This container embeds a given PDF file into the page.
 * `height`: Height of the PDF object (in percent of viewport height).
 * `width`: Width of the PDF object (in percent of available space).
 
-_Note_: Webviz does not scan your PDF for malicious code. Make sure it comes from a trusted source.
+_Note_: Webviz does not scan your PDF for malicious code.
+Make sure it comes from a trusted source.
 '''
 
     def __init__(self, pdf_file: Path, height: int = 80, width: int = 100):
