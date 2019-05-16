@@ -10,7 +10,9 @@ CSP = {
     'base-uri': '\'self\'',
     'form-action': '\'self\'',
     'frame-ancestors': '\'none\'',
-    'object-src': '\'none\'',
+    'child-src': '\'none\'',
+    'object-src': '\'self\'',
+    'plugin-types': 'application/pdf'
 }
 
 '''
