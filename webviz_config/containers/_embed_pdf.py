@@ -11,6 +11,7 @@ This container embeds a given PDF file into the page.
 * `pdf_file`: Path to the PDF file to include. Either absolute path or
   relative to the configuration file.
 * `height`: Height of the PDF object (in pixels).
+* `width`: Width of the PDF object (in percent of available space).
 '''
 
     def __init__(self, pdf_file: Path, height: int = 600, width: int = 100):
