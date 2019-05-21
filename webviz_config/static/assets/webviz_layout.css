@@ -63,3 +63,4 @@ div.pageWrapper.tab-content {
 
 /* Needed to override border for the last tab */
 #last_page {border: none!important;} /* csslint allow: known-properties, important */
+#logo {border: none!important;} /* csslint allow: known-properties, important */
