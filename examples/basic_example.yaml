@@ -14,10 +14,12 @@ pages:
       image: ./example_banner.png
       title: My banner image
     - Webviz created from configuration file.
-
- - title: Another page
-   content:
     - Some other text, potentially with strange letters like Åre, Smørbukk Sør.
+
+ - title: Markdown example
+   content:
+    - container: Markdown
+      markdown_file: ./example_markdown.md
 
  - title: Table example
    content:

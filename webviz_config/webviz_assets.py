@@ -50,6 +50,8 @@ class WebvizAssets:
         if filename not in self._assets.values():
             assigned_id = self._generate_id(path.name)
             self._assets[assigned_id] = filename
+        else:
+            assigned_id = {v: k for k, v in self._assets.items()}[filename]
 
         return os.path.normcase(os.path.join(self._base_folder(), assigned_id))
 

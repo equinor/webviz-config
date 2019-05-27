@@ -16,3 +16,19 @@
     background-position: center;
 
 }
+
+._markdown_image {
+
+    display: block;
+    margin: auto;
+    max-width: 90%;
+    max-height: 90vw;
+
+}
+
+._markdown_image_caption {
+
+    display: block;
+    text-align: center;
+
+}
