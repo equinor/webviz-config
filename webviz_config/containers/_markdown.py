@@ -1,4 +1,5 @@
 from pathlib import Path
+import bleach
 import markdown
 from markdown.util import etree
 from markdown.extensions import Extension
@@ -66,21 +67,34 @@ paths to the markdown file itself, or absolute paths.
 
 * `markdown_file`: Path to the markdown file to render and include. Either
   absolute path or relative to the configuration file.
-
-_Note_: Webviz does not scan your Markdown file for malicious code more than
-        what is provided by
-        [Python-Markdown](https://github.com/Python-Markdown/markdown).
-        Make sure it comes from a trusted source.
 '''
 
+    ALLOWED_TAGS = [
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'b', 'i', 'strong', 'em', 'tt',
+        'p', 'br', 'span', 'div', 'blockquote', 'code', 'hr',
+        'ul', 'ol', 'li', 'dd', 'dt', 'img', 'a', 'sub', 'sup',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td'
+    ]
+
+    ALLOWED_ATTRIBUTES = {
+        '*': ['id', 'class', 'style'],
+        'img': ['src', 'alt', 'title'],
+        'a': ['href', 'alt', 'title']
+    }
+
     def __init__(self, markdown_file: Path):
-        self.html = markdown.markdown(
-                        markdown_file.read_text(),
-                        extensions=['tables',
-                                    'sane_lists',
-                                    _WebvizMarkdownExtension(
-                                        base_path=markdown_file.parent
-                                                             )])
+        self.html = bleach.clean(
+                        markdown.markdown(
+                            markdown_file.read_text(),
+                            extensions=['tables',
+                                        'sane_lists',
+                                        _WebvizMarkdownExtension(
+                                            base_path=markdown_file.parent
+                                                                 )]),
+                        Markdown.ALLOWED_TAGS,
+                        Markdown.ALLOWED_ATTRIBUTES
+                                )
 
     @property
     def layout(self):
