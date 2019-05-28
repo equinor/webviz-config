@@ -19,7 +19,7 @@ pages:
  - title: Markdown example
    content:
     - container: Markdown
-      markdown_file: ./example_markdown.md
+      markdown_file: ./example-markdown.md
 
  - title: Table example
    content:
