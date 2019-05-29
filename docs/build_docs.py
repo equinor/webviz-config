@@ -119,7 +119,7 @@ if __name__ == '__main__':
     if BUILD_DIR.exists():
         shutil.rmtree(BUILD_DIR)
 
-    shutil.copytree(SCRIPT_DIR / '_static', BUILD_DIR / '_static')
+    shutil.copytree(SCRIPT_DIR / 'assets', BUILD_DIR / 'assets')
 
     with open(BUILD_DIR / 'index.html', 'w') as fh:
         fh.write(template.render(template_data))
