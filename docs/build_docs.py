@@ -29,7 +29,7 @@ SPECIAL_ARGS = ['self', 'app', 'container_settings']
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
 BUILD_DIR = SCRIPT_DIR / '_build'
 TEMPLATE_FILE = SCRIPT_DIR / 'templates' / 'index.html.jinja2'
-EXAMPLE = SCRIPT_DIR / '..' / 'tests' / 'basic_example.yaml'
+EXAMPLE = SCRIPT_DIR / '..' / 'examples' / 'basic_example.yaml'
 
 
 def escape_all(input_string):
