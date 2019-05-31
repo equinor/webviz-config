@@ -25,7 +25,7 @@ script:
   - pip install .[tests]
   - pycodestyle webviz_config
   - pytest tests
-  - cd docs; python build_docs.py
+  - pushd ./docs; python build_docs.py; popd
 
 deploy:
   - provider: pages
