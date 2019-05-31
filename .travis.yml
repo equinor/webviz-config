@@ -25,8 +25,18 @@ script:
   - pip install .[tests]
   - pycodestyle webviz_config
   - pytest tests
+  - pushd ./docs; python build_docs.py; popd
 
 deploy:
+  - provider: pages
+    skip_cleanup: true
+    local_dir: ./docs/_build
+    github_token:
+      secure: zWVmufs7SMXuV2BMukQnDxvNxTS7GWDLbcGmvEqN4js7oR1h8N4qo0z27kB/OqosLEq37G429BIAIZJAu/Xxja6LLHDQmw18zTlC3wMYxifiU9l0sUn/I7zeqMpLsQERXJIzYhneG4KMvmXxUHSlouOlLKWtQHiraTshvjlAz53Bg6tz6rfASF3kG9CvhEcSVOseG2uJe1N8cBIG2huHZEsJBjVZr/JVoD+tX0y9csEGvO/B1xLJVDMY5DvMmPPCwaEb+O4OUlGpxtfmHRKUvG6fehTZXyyBJVuR58WO2uThOYmSFiaavtvjbIpvJyb8SXM2OmikFGdavipLPtPVZ9qkPorBT9NNKGGRt+h0A/1CVYV4ALp6YmF4r9hWYihMGaJlNgM0lA8322LvwfIjGH6exuZ0/EQxJb5P031icv7ZV4s8zTQON5PJtBU+GxXqVOS2hK8sSuSmvRqpQXWkOrtqKyJ0bu7jAVpw+Xr9C8oWVZ6FTr13t+/ney7PQCCnUZk+F0j3W3bIogTLrG21r49hJYP2TtDGyFf3BUf2ulfMQ+WGwJdc3WjL2XTtgi61dTo9IJKp9pk2+RMjPJQrPNu0mEsJePHHclODIieSw+/nfOsj47Ng1Ku+ZkJq09OngdzzqtMENHtdYgB/qAl+cJxm1e61wzpMLo2iUbQjAiw=
+    keep_history: true
+    on:
+      branch: master
+
   - provider: pypi
     user: webviz
     password:
