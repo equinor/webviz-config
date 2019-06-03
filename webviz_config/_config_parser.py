@@ -24,7 +24,7 @@ def _get_webviz_containers(module):
 
 
 def _call_signature(module, module_name, container_name,
-                   container_settings, kwargs, config_folder):
+                    container_settings, kwargs, config_folder):
     '''Takes as input the name of a container, the module it is located in,
     together with user given arguments (originating from the configuration
     file). Returns the equivalent Python code wrt. initiating an instance of
@@ -258,7 +258,6 @@ class ConfigParser:
 
                         self.assets.update(getattr(standard_containers,
                                                    container_name).ASSETS)
-
 
     @property
     def configuration(self):
