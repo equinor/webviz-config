@@ -20,6 +20,7 @@ def write_script(args, build_directory, template_filename, output_filename):
     configuration['csp'] = theme.csp
     configuration['feature_policy'] = theme.feature_policy
     configuration['external_stylesheets'] = theme.external_stylesheets
+    configuration['plotly_layout'] = theme.plotly_layout
 
     configuration['ssl_context'] = '({!r}, {!r})'\
                                    .format(SERVER_CRT_FILENAME,
