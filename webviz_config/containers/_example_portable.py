@@ -1,9 +1,10 @@
 import pandas as pd
+from . import WebvizContainer
 from ..webviz_store import webvizstore
 from ..common_cache import cache
 
 
-class ExamplePortable:
+class ExamplePortable(WebvizContainer):
 
     def __init__(self, some_number: int):
         self.some_number = some_number

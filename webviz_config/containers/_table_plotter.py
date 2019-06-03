@@ -6,12 +6,13 @@ from uuid import uuid4
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
+import plotly_express as px
+from . import WebvizContainer
 from ..webviz_store import webvizstore
 from ..common_cache import cache
-import plotly_express as px
 
 
-class TablePlotter:
+class TablePlotter(WebvizContainer):
     '''### TablePlotter
 
 This container adds a plotter to the webviz instance, using tabular data from

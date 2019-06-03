@@ -1,9 +1,10 @@
 from uuid import uuid4
 import dash_html_components as html
 from dash.dependencies import Input, Output
+from . import WebvizContainer
 
 
-class ExampleContainer:
+class ExampleContainer(WebvizContainer):
 
     def __init__(self, app, title: str):
         self.title = title

@@ -1,10 +1,11 @@
 from uuid import uuid4
 from pathlib import Path
 import dash_core_components as dcc
+from . import WebvizContainer
 from ..webviz_store import webvizstore
 
 
-class SyntaxHighlighter:
+class SyntaxHighlighter(WebvizContainer):
     '''### Syntax highlighter
 
 This container adds support for syntax highlighting of code. Language is

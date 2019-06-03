@@ -6,6 +6,8 @@ the utility itself.
 
 import pkg_resources
 
+from ._container_class import WebvizContainer
+
 from ._example_container import ExampleContainer
 from ._example_assets import ExampleAssets
 from ._example_portable import ExamplePortable
@@ -16,7 +18,8 @@ from ._table_plotter import TablePlotter
 from ._embed_pdf import EmbedPdf
 from ._markdown import Markdown
 
-__all__ = ['ExampleContainer',
+__all__ = ['WebvizContainer',
+           'ExampleContainer',
            'ExampleAssets',
            'ExamplePortable',
            'BannerImage',
