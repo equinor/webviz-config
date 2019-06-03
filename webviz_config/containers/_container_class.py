@@ -16,6 +16,8 @@ class WebvizContainer(abc.ABC):
     ```
     '''
 
+    ASSETS = []
+
     @abc.abstractmethod
     def layout(self):
         '''This is the only required function of a Webviz Container.
@@ -23,3 +25,5 @@ class WebvizContainer(abc.ABC):
         the main Webviz application.
         '''
         pass
+
+

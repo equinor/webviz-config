@@ -8,7 +8,9 @@ from ._certificate import create_certificate, SERVER_KEY_FILENAME, \
 
 def write_script(args, build_directory, template_filename, output_filename):
 
-    configuration = ConfigParser(args.yaml_file).configuration
+    config_parser = ConfigParser(args.yaml_file)
+    configuration = config_parser.configuration
+
     configuration['port'] = args.port
     configuration['portable'] = True if args.portable else False
     configuration['debug'] = args.debug
@@ -34,3 +36,5 @@ def write_script(args, build_directory, template_filename, output_filename):
 
     with open(os.path.join(build_directory, output_filename), 'w') as fh:
         fh.write(template.render(configuration))
+
+    return config_parser.assets
