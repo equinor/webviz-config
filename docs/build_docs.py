@@ -23,8 +23,7 @@ from collections import defaultdict
 import jinja2
 from markdown import markdown
 import webviz_config.containers
-
-SPECIAL_ARGS = ['self', 'app', 'container_settings']
+from webviz_config._config_parser import SPECIAL_ARGS
 
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
 BUILD_DIR = SCRIPT_DIR / '_build'
