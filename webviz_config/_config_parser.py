@@ -19,8 +19,8 @@ def get_webviz_containers(module):
     def _is_webviz_container(obj):
         return inspect.isclass(obj) and issubclass(obj, WebvizContainer)
 
-    return [member[0] for member in inspect.getmembers(module,
-                                                       _is_webviz_container)]
+    return [member[0] for member in
+            inspect.getmembers(module, _is_webviz_container)]
 
 
 def call_signature(module, module_name, container_name,
