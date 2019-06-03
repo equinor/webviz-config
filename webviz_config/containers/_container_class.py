@@ -16,11 +16,10 @@ class WebvizContainer(abc.ABC):
     ```
     '''
 
-    '''List of container specific assets which should be copied
-    over to the ./assets folder in the generated webviz app.
-    This is typically custom JavaScript and/or CSS files.
-    All paths in the returned ASSETS list should be absolute.
-    '''
+    # List of container specific assets which should be copied
+    # over to the ./assets folder in the generated webviz app.
+    # This is typically custom JavaScript and/or CSS files.
+    # All paths in the returned ASSETS list should be absolute.
     ASSETS = []
 
     @abc.abstractmethod
