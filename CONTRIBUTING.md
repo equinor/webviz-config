@@ -21,7 +21,7 @@ mandatory to provide. A minimal container could look like:
 
 ```python
 import dash_html_components as html
-from webviz_config.containers impor WebvizContainer
+from webviz_config.containers import WebvizContainer
 
 
 class ExampleContainer(WebvizContainer):
@@ -75,7 +75,7 @@ backend, you can add callbacks. A simple example of this is given below.
 from uuid import uuid4
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from webviz_config.containers impor WebvizContainer
+from webviz_config.containers import WebvizContainer
 
 
 class ExampleContainer(WebvizContainer):
@@ -130,7 +130,7 @@ user provided arguments. A minimal example could look like:
 
 ```python
 import dash_html_components as html
-from webviz_config.containers impor WebvizContainer
+from webviz_config.containers import WebvizContainer
 
 
 class ExampleContainer(WebvizContainer):
@@ -270,10 +270,10 @@ A full example could look like e.g.:
 import pandas as pd
 from webviz_config.webviz_store import webvizstore
 from webviz_config.common_cache import cache
-from webviz_config.containers impor WebvizContainer
+from webviz_config.containers import WebvizContainer
 
 
-class ExampleContainer(WebvizContainer):
+class ExamplePortable(WebvizContainer):
 
     def __init__(self, some_number: int):
         self.some_number = some_number
@@ -340,7 +340,7 @@ the configuration file. As an example, assume someone on your project has made
 
 ```python
 import dash_html_components as html
-from webviz_config.containers impor WebvizContainer
+from webviz_config.containers import WebvizContainer
 
 
 class OurCustomContainer(WebvizContainer):

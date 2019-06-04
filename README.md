@@ -29,7 +29,7 @@ can be seen in [the documentation](https://equinor.github.io/webviz-config/).
 
 ### Installation
 
-As `dash` is using Python3-only functionality, you should use a Python3 virtual
+As `dash` is using Python3-only functionality, you should use a Python3 (virtual)
 environment before installation. One way of doing this is
 ```bash
 PATH_TO_VENV='./my_new_venv'
