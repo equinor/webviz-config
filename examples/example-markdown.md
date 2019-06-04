@@ -23,7 +23,7 @@ Hi from a Markdown container containing Norwegian letters (æ ø å), some
 
 #### An image with a caption
 
-![Alt text](./example_banner.png "Some caption")
+![width=40%,height=300px](./example_banner.png "Some caption")
 
 #### Quote
 
