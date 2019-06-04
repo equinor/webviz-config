@@ -1,9 +1,9 @@
 # Contributing to Webviz configuration utility
 
-## Creating a new composite object
+## Creating a new container
 
 Most of the development work is towards creating standard containers.
-An container usually does three things:
+A container usually does three things:
 
 *   It has a `layout` property, consisting of multiple
     [Dash components](https://dash.plot.ly/getting-started).
@@ -21,9 +21,10 @@ mandatory to provide. A minimal container could look like:
 
 ```python
 import dash_html_components as html
+from webviz_config.containers impor WebvizContainer
 
 
-class ExampleContainer:
+class ExampleContainer(WebvizContainer):
 
     def __init__(self):
         pass
@@ -74,9 +75,10 @@ backend, you can add callbacks. A simple example of this is given below.
 from uuid import uuid4
 import dash_html_components as html
 from dash.dependencies import Input, Output
+from webviz_config.containers impor WebvizContainer
 
 
-class ExampleContainer:
+class ExampleContainer(WebvizContainer):
 
     def __init__(self, app):
         self.button_id = f'submit-button-{uuid4()}'
@@ -128,9 +130,10 @@ user provided arguments. A minimal example could look like:
 
 ```python
 import dash_html_components as html
+from webviz_config.containers impor WebvizContainer
 
 
-class ExampleContainer:
+class ExampleContainer(WebvizContainer):
 
     def __init__(self, title: str, number: int=42):
         self.title = title
@@ -265,11 +268,12 @@ A full example could look like e.g.:
 
 ```python
 import pandas as pd
-from ..webviz_store import webvizstore
-from ..common_cache import cache
+from webviz_config.webviz_store import webvizstore
+from webviz_config.common_cache import cache
+from webviz_config.containers impor WebvizContainer
 
 
-class ExamplePortable:
+class ExampleContainer(WebvizContainer):
 
     def __init__(self, some_number: int):
         self.some_number = some_number
@@ -336,9 +340,10 @@ the configuration file. As an example, assume someone on your project has made
 
 ```python
 import dash_html_components as html
+from webviz_config.containers impor WebvizContainer
 
 
-class OurCustomContainer:
+class OurCustomContainer(WebvizContainer):
 
     def __init__(self, title: str):
         self.title = title
