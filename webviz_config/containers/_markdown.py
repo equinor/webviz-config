@@ -86,7 +86,6 @@ paths to the markdown file itself, or absolute paths.
 
 * `markdown_file`: Path to the markdown file to render and include. Either
   absolute path or relative to the configuration file.
-
 '''
 
     ALLOWED_TAGS = [
