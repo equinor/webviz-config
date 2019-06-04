@@ -102,7 +102,7 @@ paths to the markdown file itself, or absolute paths.
         'a': ['href', 'alt', 'title']
     }
 
-    ALLOWED_STYLES = ['display', 'width', 'height']
+    ALLOWED_STYLES = ['width', 'height']
 
     def __init__(self, markdown_file: Path):
         self.html = bleach.clean(
