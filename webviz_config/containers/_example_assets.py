@@ -1,9 +1,10 @@
 import dash_html_components as html
 from pathlib import Path
+from . import WebvizContainer
 from ..webviz_assets import webviz_assets
 
 
-class ExampleAssets:
+class ExampleAssets(WebvizContainer):
 
     def __init__(self, app, picture_path: Path):
         self.asset_url = webviz_assets.add(picture_path)

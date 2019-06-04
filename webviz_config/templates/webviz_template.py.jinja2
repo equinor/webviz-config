@@ -29,6 +29,11 @@ app.css.config.serve_locally = True
 app.scripts.config.serve_locally = True
 app.config.suppress_callback_exceptions = True
 
+app.webviz_settings = {
+    'portable': {{ portable }},
+    'plotly_layout': {{ plotly_layout }}
+                      }
+
 cache.init_app(server)
 
 CSP = {{ csp }}

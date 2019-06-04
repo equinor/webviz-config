@@ -5,6 +5,7 @@ from markdown.util import etree
 from markdown.extensions import Extension
 from markdown.inlinepatterns import ImageInlineProcessor, IMAGE_LINK_RE
 import dash_core_components as html
+from . import WebvizContainer
 from ..webviz_assets import webviz_assets
 
 
@@ -58,7 +59,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
         return container, start, index
 
 
-class Markdown:
+class Markdown(WebvizContainer):
     '''### Include Markdown
 
 This container renders and includes the content from a Markdown file. Images

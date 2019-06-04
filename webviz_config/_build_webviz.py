@@ -58,8 +58,13 @@ def build_webviz(args):
                   'Finished data extraction. All output saved.'
                   '\033[0m')
 
-        write_script(args, build_directory,
-                     'webviz_template.py.jinja2', BUILD_FILENAME)
+        non_default_assets = write_script(args,
+                                          build_directory,
+                                          'webviz_template.py.jinja2',
+                                          BUILD_FILENAME)
+
+        for asset in non_default_assets:
+            shutil.copy(asset, os.path.join(build_directory, 'assets'))
 
         if not args.portable:
             run_webviz(args, build_directory)

@@ -1,9 +1,10 @@
 from pathlib import Path
 import dash_html_components as html
+from . import WebvizContainer
 from ..webviz_assets import webviz_assets
 
 
-class EmbedPdf:
+class EmbedPdf(WebvizContainer):
     '''### Embed PDF file
 
 This container embeds a given PDF file into the page.

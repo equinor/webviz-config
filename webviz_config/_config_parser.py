@@ -5,21 +5,26 @@ import inspect
 import importlib
 import yaml
 from . import containers as standard_containers
+from .containers import WebvizContainer
 
 SPECIAL_ARGS = ['self', 'app', 'container_settings',
                 '_call_signature', '_imports']
 
 
-def get_class_members(module):
-    '''Returns a list of all class names defined
+def _get_webviz_containers(module):
+    '''Returns a list of all Webviz Containers
     in the module given as input.
     '''
+
+    def _is_webviz_container(obj):
+        return inspect.isclass(obj) and issubclass(obj, WebvizContainer)
+
     return [member[0] for member in
-            inspect.getmembers(module, inspect.isclass)]
+            inspect.getmembers(module, _is_webviz_container)]
 
 
-def call_signature(module, module_name, container_name,
-                   container_settings, kwargs, config_folder):
+def _call_signature(module, module_name, container_name,
+                    container_settings, kwargs, config_folder):
     '''Takes as input the name of a container, the module it is located in,
     together with user given arguments (originating from the configuration
     file). Returns the equivalent Python code wrt. initiating an instance of
@@ -93,7 +98,7 @@ class ParserError(Exception):
 
 class ConfigParser:
 
-    STANDARD_CONTAINERS = get_class_members(standard_containers)
+    STANDARD_CONTAINERS = _get_webviz_containers(standard_containers)
 
     def __init__(self, yaml_file):
         try:
@@ -111,6 +116,7 @@ class ConfigParser:
 
         self._config_folder = pathlib.Path(yaml_file).parent
         self._page_ids = []
+        self._assets = set()
         self.clean_configuration()
 
     def _generate_page_id(self, title):
@@ -215,14 +221,18 @@ class ConfigParser:
                          .add(('webviz_config.containers',
                                'standard_containers'))
 
-                        container['_call_signature'] = call_signature(
-                                                        standard_containers,
-                                                        'standard_containers',
-                                                        container_name,
-                                                        container_settings,
-                                                        kwargs,
-                                                        self._config_folder
-                                                                     )
+                        container['_call_signature'] = _call_signature(
+                                                         standard_containers,
+                                                         'standard_containers',
+                                                         container_name,
+                                                         container_settings,
+                                                         kwargs,
+                                                         self._config_folder
+                                                                      )
+
+                        self.assets.update(getattr(standard_containers,
+                                                   container_name).ASSETS)
+
                 else:
                     parts = container_name.split('.')
 
@@ -230,14 +240,14 @@ class ConfigParser:
                     module_name = ".".join(parts[:-1])
                     module = importlib.import_module(module_name)
 
-                    if container_name not in get_class_members(module):
+                    if container_name not in _get_webviz_containers(module):
                         raise ParserError('\033[91m'
                                           f'Module `{module}` does not have a '
                                           f'container named `{container_name}`'
                                           '\033[0m')
                     else:
                         self.configuration['_imports'].add(module_name)
-                        container['_call_signature'] = call_signature(
+                        container['_call_signature'] = _call_signature(
                                                             module,
                                                             module_name,
                                                             container_name,
@@ -246,6 +256,13 @@ class ConfigParser:
                                                             self._config_folder
                                                                      )
 
+                        self.assets.update(getattr(standard_containers,
+                                                   container_name).ASSETS)
+
     @property
     def configuration(self):
         return self._configuration
+
+    @property
+    def assets(self):
+        return self._assets
