@@ -45,10 +45,21 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
 
         url = webviz_assets.add(image_path)
 
+        image_style = ''
+        for style_prop in image.get('alt').split(','):
+            prop, value = style_prop.split('=')
+            if prop == 'width':
+                image_style += f'width: {value};'
+            elif prop == 'height':
+                image_style += f'height: {value};'
+
+        if image_style:
+            image.set('style', image_style)
+
         image.set('src', url)
         image.set('class', '_markdown_image')
 
-        container = etree.Element('span', attrib={'style': 'display: block'})
+        container = etree.Element('span')
         container.append(image)
 
         etree.SubElement(container,
@@ -61,6 +72,13 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
 
 class Markdown(WebvizContainer):
     '''### Include Markdown
+
+_Note:_ The markdown syntax for images has been extended to support
+(optionally) providing width and/or height for individual images.
+To specify the dimensions write e.g.
+```markdown
+![width=40%,height=300px](./example_banner.png "Some caption")
+```
 
 This container renders and includes the content from a Markdown file. Images
 are supported, and should in the markdown file be given as either relative
@@ -80,9 +98,11 @@ paths to the markdown file itself, or absolute paths.
 
     ALLOWED_ATTRIBUTES = {
         '*': ['id', 'class', 'style'],
-        'img': ['src', 'alt', 'title'],
+        'img': ['src', 'alt', 'title', 'style'],
         'a': ['href', 'alt', 'title']
     }
+
+    ALLOWED_STYLES = ['width', 'height']
 
     def __init__(self, markdown_file: Path):
         self.html = bleach.clean(
@@ -93,8 +113,9 @@ paths to the markdown file itself, or absolute paths.
                                         _WebvizMarkdownExtension(
                                             base_path=markdown_file.parent
                                                                  )]),
-                        Markdown.ALLOWED_TAGS,
-                        Markdown.ALLOWED_ATTRIBUTES
+                        tags=Markdown.ALLOWED_TAGS,
+                        attributes=Markdown.ALLOWED_ATTRIBUTES,
+                        styles=Markdown.ALLOWED_STYLES
                                 )
 
     @property
