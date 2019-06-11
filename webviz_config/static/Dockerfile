@@ -1,4 +1,3 @@
-ARG WEBVIZ_BASE_IMAGE
-FROM $WEBVIZ_BASE_IMAGE
+FROM webviz/base_image
 
-COPY . .
+COPY . dash_app
