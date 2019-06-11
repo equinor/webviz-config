@@ -1,4 +1,6 @@
 import os
+import stat
+import glob
 import time
 import socket
 import shutil
@@ -68,6 +70,9 @@ def build_webviz(args):
 
         if not args.portable:
             run_webviz(args, build_directory)
+
+        [os.chmod(fn, 0o660)
+         for fn in glob.glob(os.path.join(build_directory, 'assets', '*'))]
 
     finally:
         if not args.portable:
