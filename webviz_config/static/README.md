@@ -8,8 +8,6 @@ You can run it locally by running:
 If you want to upload it to e.g. Azure Container Registry, you can do e.g.
 
   cd THISFOLDER
-  az acr build --registry $ACR_NAME --image $IMAGE_NAME . \
-               --build-arg "WEBVIZ_BASE_IMAGE=$WEBVIZ_BASE_IMAGE"
+  az acr build --registry $ACR_NAME --image $IMAGE_NAME . 
 
-assuming you have set the environment variables $ACR_NAME, $IMAGE_NAME and
-$WEBVIZ_BASE_IMAGE.
+assuming you have set the environment variables $ACR_NAME, $IMAGE_NAME
