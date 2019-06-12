@@ -1,4 +1,3 @@
-ARG WEBVIZ_BASE_IMAGE
-FROM $WEBVIZ_BASE_IMAGE
+FROM webviz/base_image:latest
 
-COPY . .
+COPY --chown=1000:1000 . dash_app
