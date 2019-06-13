@@ -27,7 +27,6 @@ from webviz_config._config_parser import SPECIAL_ARGS
 
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
 BUILD_DIR = SCRIPT_DIR / '_build'
-TEMPLATE_FILE = SCRIPT_DIR / 'templates' / 'index.html.jinja2'
 EXAMPLE = SCRIPT_DIR / '..' / 'examples' / 'basic_example.yaml'
 
 
@@ -112,8 +111,12 @@ if __name__ == '__main__':
     template_data = {'packages': get_container_documentation(),
                      'basic_example': get_basic_example()}
 
-    with open(TEMPLATE_FILE) as fh:
-        template = jinja2.Template(fh.read())
+    template_environment = jinja2.Environment(
+                 loader=jinja2.FileSystemLoader(str(SCRIPT_DIR / 'templates')),
+                 undefined=jinja2.StrictUndefined
+                )
+
+    template = template_environment.get_template('index.html.jinja2')
 
     if BUILD_DIR.exists():
         shutil.rmtree(BUILD_DIR)

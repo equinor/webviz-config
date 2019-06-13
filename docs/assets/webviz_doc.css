@@ -1,5 +1,13 @@
+:root {
+  --label-info-box-color: rgb(53, 53, 135);
+  --header-info-box-color: rgb(213,234,244);
+  --content-info-box-color: rgb(213,234,244,0.2);
+}
+
 body {
- background-image: linear-gradient(150deg, rgba(255,255,255), rgba(240,240,240));
+ font-family: 'Open Sans', sans-serif;
+ background-image: linear-gradient(150deg, rgba(255,255,255), rgba(225,225,225));
+ background-attachment: fixed;
 }
 
 pre {
@@ -17,6 +25,33 @@ div.container {
  margin: 0 auto;
  padding: 15px;
 }
+
+
+div.infobox{
+ color: #007079;
+ background-color: #E6FAEC;
+ padding: 15px;
+ font-weight: bold;
+ margin-bottom: 10px;
+ margin-top:    10px;
+}
+
+p.source{
+ font-size: 80%;
+ font-style: italic;
+ color: grey;
+ margin-bottom: 20px;
+}
+
+ol{
+ color: #243746;
+ background-color: #D5EAF4;
+ margin: 15px;
+ padding: 15px;
+ padding-left: 35px;
+}
+
+/* higlight.js syntax color settings */
 
 .hljs {
   display: block;
@@ -47,4 +82,58 @@ div.container {
 .hljs-attribute {
   color: #d5EAF4;
   font-weight: normal;
+}
+
+/* Collapsible Webviz documentation information boxes */
+
+.infobox-header {
+  display: block;
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--header-info-box-color);
+
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 1rem;
+
+  color: var(--label-info-box-color);
+  font-weight: bold;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.infobox-header:hover {
+  color: black;
+}
+
+.infobox-header::before {
+  font-family: "Font Awesome 5 Free";
+  content:"\f061";
+  display: inline-block;
+  margin-right: 15px;
+  transition: transform .4s ease-out;
+}
+
+.infobox-checkbox {
+  display: none;
+}
+
+.infobox-checkbox:checked + .infobox-header::before {
+  transform: rotate(90deg);
+}
+
+.content-wrapper-infobox {
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height .4s ease-in-out;
+}
+
+.infobox-checkbox:checked + .infobox-header + .content-wrapper-infobox {
+  max-height: none;
+}
+
+.content-wrapper-infobox .content-infobox {
+  background-color: var(--content-info-box-color);
+  padding: 1rem 1rem 2rem 2rem;
+  padding-left: 2rem;
 }

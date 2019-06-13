@@ -1,0 +1,26 @@
+<div class='infobox'>This step you only need to do once &dash; one registry can contain multiple different webviz applications simultaneously <i class="far fa-smile-beam"></i></div>
+
+An Azure container registry (ACR) is a private Docker registry in Azure where you can store and manage
+Docker containers.
+
+<ol>
+ <li>Go to <a href='https://portal.azure.com/' target='_blank'>Azure Portal</a> and sign in.</li>
+ <li>Select <span style='font-style: italic; font-weight: bold'>Create a resource > Containers > Container Registry</span>.
+ <li>Choose a name for your new container registry. We will later refer to this as <code>ACRNAME</code>.</li>
+ <li>Select the <span style='font-style: italic; font-weight: bold'>location</span> nearest your office and/or the one compliant with your data management.
+ <li>Choose the <span style='font-style: italic; font-weight: bold'>Basic</span> SKU plan for cost optimization.</li>
+ <li>Click <span style='font-style: italic; font-weight: bold'>Create</span> and you are done.</li>
+</ol>
+
+<p>If not already installed, you should install the <a href="https://pypi.org/project/azure-cli/" target="_blank">Microsoft Azure Client tool</a>.
+This will make it easy to communicate with your Azure subscription.</p>
+
+<p>In order to give the Azure command line client access, run
+<pre><code class='bash'>az login --use-device-code</pre></code>
+and open the link you are presented in a browser. Type the one time token, and you are now logged in.</p>
+
+<p>You should also set the subscription you want to use, e.g.</p>
+
+<pre><code class='bash'>az account set --subscription 'MySubscription'</pre></code>
+
+<p class='source'>Source: <a href="https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal" target="_blank">Azure container registry - get started</a></p>

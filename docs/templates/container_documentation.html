@@ -1,0 +1,18 @@
+{%- for package in packages.values() %}
+
+{{- package['doc'] -}}
+
+<div style='margin-left: 40px;'>
+
+{%- for container in package['containers'] %}
+
+{{ container['doc'] }}
+<pre><code class='yaml'>  - container: {{ container['name'] }}
+    {%- for arg in container['args'] %}
+    {{ arg }}: {{ container['values'][arg] }}
+    {%- endfor %}
+</code></pre>
+<hr>
+{% endfor %}
+</div>
+{%- endfor %}

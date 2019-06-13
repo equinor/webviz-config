@@ -1,0 +1,7 @@
+<p>The following step is where you update an existing webviz instance, or deploy it for the first time.</p>
+
+<p>As normal, create first a portable version of your Webviz instance.</p>
+<pre><code class='bash'>webviz build my_configuration.yaml --portable /my/output/folder</pre></code>
+Then building a new webviz instance on Azure, and updating you Azure container registry with the new instance is as simply as
+<pre><code class='bash'>az acr build --registry ACRNAME --image webviz_PROJECTNAME:latest /my/output/folder</pre></code>
+Again, replace <code>ACRNAME</code> and <code>PROJECTNAME</code> with your chosen names.
