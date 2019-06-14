@@ -7,6 +7,7 @@ from markdown.inlinepatterns import ImageInlineProcessor, IMAGE_LINK_RE
 import dash_core_components as html
 from . import WebvizContainer
 from ..webviz_assets import webviz_assets
+from ..webviz_store import webvizstore
 
 
 class _WebvizMarkdownExtension(Extension):
@@ -105,9 +106,12 @@ paths to the markdown file itself, or absolute paths.
     ALLOWED_STYLES = ['width', 'height']
 
     def __init__(self, markdown_file: Path):
+
+        self.markdown_file = markdown_file
+
         self.html = bleach.clean(
                         markdown.markdown(
-                            markdown_file.read_text(),
+                            get_path(self.markdown_file).read_text(),
                             extensions=['tables',
                                         'sane_lists',
                                         _WebvizMarkdownExtension(
@@ -118,6 +122,14 @@ paths to the markdown file itself, or absolute paths.
                         styles=Markdown.ALLOWED_STYLES
                                 )
 
+    def add_webvizstore(self):
+        return [(get_path, [{'path': self.markdown_file}])]
+
     @property
     def layout(self):
         return html.Markdown(self.html, dangerously_allow_html=True)
+
+
+@webvizstore
+def get_path(path) -> Path:
+    return path
