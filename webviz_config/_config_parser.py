@@ -256,7 +256,7 @@ class ConfigParser:
                                                             self._config_folder
                                                                      )
 
-                        self.assets.update(getattr(standard_containers,
+                        self.assets.update(getattr(module,
                                                    container_name).ASSETS)
 
     @property
