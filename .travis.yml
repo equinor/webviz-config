@@ -6,6 +6,8 @@ addons:
 
 python:
   - "3.6"
+virtualenv:
+  system_site_packages: false
 
 matrix:
   fast_finish: true
@@ -14,7 +16,6 @@ before_install:
   - sudo apt-get -qq update
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - pip install --upgrade pip numpy attrs
 
 install:
   - wget https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_linux64.zip
