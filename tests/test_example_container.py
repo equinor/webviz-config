@@ -1,3 +1,4 @@
+import time
 import dash
 from webviz_config.common_cache import cache
 from webviz_config.containers import _example_container
@@ -18,4 +19,5 @@ def test_example_container(dash_duo):
     text = dash_duo.find_element(f'#{page.div_id}')
     assert 'Button has been pressed 0 times.' == text.text
     btn.click()
+    time.sleep(1)
     assert 'Button has been pressed 1 times.' == text.text
