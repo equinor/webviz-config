@@ -32,6 +32,7 @@ setup(
          ],
     },
     install_requires=[
+        'attrs>=17.4.0',
         'dash>=1.0.0',
         'bleach>=3.1.0',
         'cryptography>=2.4',
