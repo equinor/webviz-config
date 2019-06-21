@@ -34,7 +34,7 @@ setup(
     install_requires=[
         'bleach>=3.1.0',
         'cryptography>=2.4',
-        'dash=1.0.0',
+        'dash>=1.0.0',
         'dash-auth>=1.3.2',
         'flask-caching>=1.4.0',
         'flask-talisman>=0.6.0',
