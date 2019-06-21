@@ -6,7 +6,6 @@ with open('README.md', 'r') as fh:
 tests_requires = [
     'chromedriver-binary>=74.0.3729.6.0',
     'pylint>=2.3.1',
-    'pytest-dash==2.1.2',
     'pycodestyle>=2.5.0',
     'selenium>=3.141.0'
 ]
@@ -35,8 +34,8 @@ setup(
     install_requires=[
         'bleach>=3.1.0',
         'cryptography>=2.4',
-        'dash==0.41',
-        'dash-auth==1.3.2',
+        'dash=1.0.0',
+        'dash-auth>=1.3.2',
         'flask-caching>=1.4.0',
         'flask-talisman>=0.6.0',
         'jinja2>=2.10',
