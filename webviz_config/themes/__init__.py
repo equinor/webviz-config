@@ -6,7 +6,6 @@ from ._default_theme import default_theme
 installed_themes = {default_theme.theme_name: default_theme}
 
 __all__ = ['WebvizConfigTheme',
-           'default_theme',
            'installed_themes']
 
 for entry_point in pkg_resources.iter_entry_points('webviz_config_themes'):
