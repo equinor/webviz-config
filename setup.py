@@ -7,7 +7,8 @@ tests_requires = [
     'chromedriver-binary>=74.0.3729.6.0',
     'pylint>=2.3.1',
     'pycodestyle>=2.5.0',
-    'selenium>=3.141.0'
+    'selenium>=3.141.0',
+    'mock'
 ]
 
 setup(
