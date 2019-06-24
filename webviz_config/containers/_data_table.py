@@ -20,15 +20,18 @@ a database.
              on data in the individual columns.
 * `filtering`: If `True`, the table can be filtered based on values in the
                individual columns.
+* `pagination`: If `True`, only a subset of the table is displayed at once.
+                Different subsets can be viewed from 'previous/next' buttons
 '''
 
     def __init__(self, csv_file: Path, sorting: bool = True,
-                 filtering: bool = False):
+                 filtering: bool = True, pagination: bool = True):
 
         self.csv_file = csv_file
         self.df = get_data(self.csv_file)
-        self.sorting = sorting
-        self.filtering = filtering
+        self.sort_action = 'native' if sorting else 'none'
+        self.filter_action = 'native' if filtering else 'none'
+        self.page_action = 'native' if pagination else 'none'
         self.data_table_id = 'data-table-{}'.format(uuid4())
 
     def add_webvizstore(self):
@@ -37,12 +40,13 @@ a database.
     @property
     def layout(self):
         return dash_table.DataTable(
-                 id=self.data_table_id,
-                 columns=[{'name': i, 'id': i} for i in self.df.columns],
-                 data=self.df.to_dict('records'),
-                 sorting=self.sorting,
-                 filtering=self.filtering
-                        )
+            id=self.data_table_id,
+            columns=[{'name': i, 'id': i} for i in self.df.columns],
+            data=self.df.to_dict('records'),
+            sort_action=self.sort_action,
+            filter_action=self.filter_action,
+            page_action=self.page_action
+        )
 
 
 @cache.memoize(timeout=cache.TIMEOUT)
