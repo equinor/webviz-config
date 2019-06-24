@@ -20,6 +20,6 @@ def test_example_container(dash_duo):
     text = dash_duo.find_element(f'#{page.div_id}')
     assert 'Button has been pressed 0 times.' == text.text
     btn.click()
-    dash_duo.wait_for_text_to_equal(f'#{page.div_id}',
+    dash_duo.wait_for_contains_text(f'#{page.div_id}',
                                     'Button has been pressed 1 times', timeout=2)
     assert 'Button has been pressed 1 times.' == text.text
