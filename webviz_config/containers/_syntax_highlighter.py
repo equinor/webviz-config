@@ -1,5 +1,4 @@
 from uuid import uuid4
-import bleach
 from pathlib import Path
 import dash_core_components as dcc
 from . import WebvizContainer
