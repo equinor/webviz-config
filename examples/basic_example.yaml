@@ -25,7 +25,6 @@ pages:
    content:
     - container: DataTable
       csv_file: ./example_data.csv
-      filtering: True
 
  - title: PDF example
    content:
