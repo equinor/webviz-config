@@ -1,35 +1,3 @@
-CSP = {
-    'default-src': '\'self\'',
-    'prefetch-src': '\'self\'',
-    'style-src': ['\'self\'', '\'unsafe-inline\''],  # [1]
-    'script-src': ['\'self\'', '\'unsafe-eval\'',  # [2]
-                   '\'sha256-jZlsGVOhUAIcH+4PV'\
-                   's7QuGZkthRMgvT2n0ilH6/zTM0=\''],  # [3]
-    'img-src': ['\'self\'', 'data:'],
-    'navigate-to': '\'self\'',
-    'base-uri': '\'self\'',
-    'form-action': '\'self\'',
-    'frame-ancestors': '\'none\'',
-    'child-src': '\'none\'',
-    'object-src': '\'self\'',
-    'plugin-types': 'application/pdf'
-}
-
-'''
-These are the current exceptions to the most strict CSP setup:
-[1] unsafe-inline for style still needed by plotly
-    (https://github.com/plotly/plotly.js/issues/2355)
-[2] unsafe-eval still needed by plotly
-    (https://github.com/plotly/plotly.js/issues/897)
-[3] https://github.com/plotly/dash/issues/630
-'''
-
-FEATURE_POLICY = {'camera': '\'none\'',
-                  'geolocation': '\'none\'',
-                  'microphone': '\'none\'',
-                  'payment': '\'none\''}
-
-
 class WebvizConfigTheme:
     '''Webviz config themes are all instances of this class. The only mandatory
     property is the theme name set at initialization.
@@ -38,8 +6,38 @@ class WebvizConfigTheme:
     def __init__(self, theme_name):
         self.theme_name = theme_name
 
-        self._csp = CSP
-        self._feature_policy = FEATURE_POLICY
+        self._csp = {
+                     'default-src': "'none'",
+                     'connect-src': "'self'",
+                     'prefetch-src': "'self'",
+                     'style-src': ["'self'", "'unsafe-inline'"],   # [1]
+                     'script-src': ["'self'", "'unsafe-eval'",     # [2]
+                                    "'sha256-jZlsGVOhUAIcH+4PV'\
+                                    's7QuGZkthRMgvT2n0ilH6/zTM0='"],  # [3]
+                     'img-src': ["'self'", 'data:'],
+                     'navigate-to': "'self'",
+                     'base-uri': "'self'",
+                     'form-action': "'self'",
+                     'frame-ancestors': "'none'",
+                     'child-src': "'none'",
+                     'object-src': "'self'",
+                     'plugin-types': 'application/pdf'
+                    }
+
+        '''
+        These are the current exceptions to the most strict CSP setup:
+            [1] unsafe-inline for style still needed by plotly
+                (https://github.com/plotly/plotly.js/issues/2355)
+            [2] unsafe-eval still needed by plotly
+                (https://github.com/plotly/plotly.js/issues/897)
+            [3] https://github.com/plotly/dash/issues/630
+        '''
+
+        self._feature_policy = {'camera': "'none'",
+                                'geolocation': "'none'",
+                                'microphone': "'none'",
+                                'payment': "'none'"}
+
         self._external_stylesheets = []
         self._assets = []
         self._plotly_layout = {}
