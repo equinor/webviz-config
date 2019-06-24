@@ -1,5 +1,4 @@
 import mock
-from pathlib import Path
 import pandas as pd
 import dash
 from webviz_config.common_cache import cache
