@@ -43,7 +43,7 @@ setup(
         'pandas~=0.24.1',
         'plotly-express~=0.1.3',
         'pyarrow~=0.11.1',
-        'pyyaml~=3.13'
+        'pyyaml~=5.1'
     ],
     tests_require=tests_requires,
     extras_require={'tests': tests_requires},
