@@ -14,9 +14,8 @@ before_install:
   - sudo apt-get -qq update
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - pip install -U pip setuptools virtualenvwrapper
-  - source $(which virtualenvwrapper.sh)
-  - wipeenv
+  - pip freeze | grep -vw "pip" | xargs pip uninstall -y
+  - pip install --upgrade pip
 
 install:
   - wget https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_linux64.zip
