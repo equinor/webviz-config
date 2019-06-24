@@ -40,7 +40,7 @@ setup(
         'flask-talisman~=0.6.0',
         'jinja2~=2.10',
         'markdown~=3.0.1',
-        'pandas==0.24.1',
+        'pandas~=0.24.1',
         'plotly-express~=0.1.3',
         'pyarrow~=0.11.1',
         'pyyaml~=3.13'
