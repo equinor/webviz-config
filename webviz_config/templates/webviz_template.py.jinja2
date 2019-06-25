@@ -83,4 +83,4 @@ if __name__ == '__main__':
     # using Docker container and uwsgi (e.g. when hosted on Azure).
 
     dash_auth.BasicAuth(app, {'{{ username }}': '{{ password }}'})
-    app.run_server(host={{ "'localhost'" if localhostonly else 'socket.getfqdn()'}}, port={{port}}, ssl_context={{ssl_context}}, {{'debug=True' if debug else 'dev_tools_hot_reload=True'}})
+    app.run_server(host={{ "'localhost'" if localhostonly else 'socket.getfqdn()'}}, port={{port}}, ssl_context={{ssl_context}}, debug=False, use_reloader=True, dev_tools_hot_reload=True, dev_tools_hot_reload_interval=1.0)
