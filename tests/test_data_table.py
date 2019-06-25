@@ -12,8 +12,6 @@ get_data = 'webviz_config.containers'\
 def test_data_table(dash_duo):
 
     app = dash.Dash(__name__)
-    app.css.config.serve_locally = True
-    app.scripts.config.serve_locally = True
     app.config.suppress_callback_exceptions = True
     cache.init_app(app.server)
     code_file = './tests/data/example_data.csv'
