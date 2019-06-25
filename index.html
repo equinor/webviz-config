@@ -71,13 +71,11 @@ pages:
  - title: Plot a table
    content:
     - container: TablePlotter
-      title: Plotter
       csv_file: ./example_data.csv
 
  - title: Plot a table (locked)
    content:
     - container: TablePlotter
-      title: Initial reservoir pressure
       csv_file: ./example_data.csv
       lock: true
       plot_options:
@@ -208,7 +206,6 @@ automatically detected.</p>
 a provided csv file. If feature is requested, the data could also come from
 a database.</p>
 <ul>
-<li>title` : Title on page</li>
 <li><code>csv_file</code>: Path to the csv file containing the tabular data. Either absolute
               path or relative to the configuration file.</li>
 <li><code>plot_options</code>: A dictionary of plot options to initialize the plot with</li>
@@ -216,7 +213,6 @@ a database.</p>
           plot options are hidden.</li>
 </ul>
 <pre><code class='yaml'>  - container: TablePlotter
-    title: some value
     csv_file: some value
     plot_options: None  # Optional (default value shown here).
     lock: False  # Optional (default value shown here).
