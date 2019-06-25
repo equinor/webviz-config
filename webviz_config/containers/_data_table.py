@@ -43,9 +43,9 @@ a database.
             id=self.data_table_id,
             columns=[{'name': i, 'id': i} for i in self.df.columns],
             data=self.df.to_dict('records'),
-            sort_action='native' if sorting else 'none',
-            filter_action='native' if filtering else 'none',
-            page_action='native' if pagination else 'none'
+            sort_action='native' if self.sorting else 'none',
+            filter_action='native' if self.filtering else 'none',
+            page_action='native' if self.pagination else 'none'
         )
 
 
