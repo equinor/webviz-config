@@ -20,17 +20,14 @@ automatically detected.
 
         self.filename = filename
         self.config = {'theme': 'dark'} if dark_theme else {'theme': 'light'}
-        self.syntax_highlighter_id = 'syntax-highlighter-{}'.format(uuid4())
-
-        with get_path(self.filename).open() as fh:
-            self.code = f'```{fh.read()}```'
 
     def add_webvizstore(self):
         return [(get_path, [{'path': self.filename}])]
 
     @property
     def layout(self):
-        return dcc.Markdown(self.code, highlight_config=self.config)
+        return dcc.Markdown(f'```{get_path(self.filename).read_text()}```',
+                            highlight_config=self.config)
 
 
 @webvizstore
