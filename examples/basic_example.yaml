@@ -39,13 +39,11 @@ pages:
  - title: Plot a table
    content:
     - container: TablePlotter
-      title: Plotter
       csv_file: ./example_data.csv
 
  - title: Plot a table (locked)
    content:
     - container: TablePlotter
-      title: Initial reservoir pressure
       csv_file: ./example_data.csv
       lock: true
       plot_options:
