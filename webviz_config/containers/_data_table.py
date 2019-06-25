@@ -29,9 +29,9 @@ a database.
 
         self.csv_file = csv_file
         self.df = get_data(self.csv_file)
-        self.sort_action = 'native' if sorting else 'none'
-        self.filter_action = 'native' if filtering else 'none'
-        self.page_action = 'native' if pagination else 'none'
+        self.sorting = sorting
+        self.filtering = filtering
+        self.pagination = pagination
         self.data_table_id = 'data-table-{}'.format(uuid4())
 
     def add_webvizstore(self):
@@ -43,9 +43,9 @@ a database.
             id=self.data_table_id,
             columns=[{'name': i, 'id': i} for i in self.df.columns],
             data=self.df.to_dict('records'),
-            sort_action=self.sort_action,
-            filter_action=self.filter_action,
-            page_action=self.page_action
+            sort_action='native' if sorting else 'none',
+            filter_action='native' if filtering else 'none',
+            page_action='native' if pagination else 'none'
         )
 
 
