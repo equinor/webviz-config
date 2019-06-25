@@ -57,7 +57,6 @@ pages:
    content:
     - container: DataTable
       csv_file: ./example_data.csv
-      filtering: True
 
  - title: PDF example
    content:
@@ -139,11 +138,14 @@ a database.</p>
              on data in the individual columns.</li>
 <li><code>filtering</code>: If <code>True</code>, the table can be filtered based on values in the
                individual columns.</li>
+<li><code>pagination</code>: If <code>True</code>, only a subset of the table is displayed at once.
+                Different subsets can be viewed from 'previous/next' buttons</li>
 </ul>
 <pre><code class='yaml'>  - container: DataTable
     csv_file: some value
     sorting: True  # Optional (default value shown here).
-    filtering: False  # Optional (default value shown here).
+    filtering: True  # Optional (default value shown here).
+    pagination: True  # Optional (default value shown here).
 </code></pre>
 <hr>
 
