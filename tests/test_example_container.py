@@ -6,8 +6,6 @@ from webviz_config.containers import _example_container
 def test_example_container(dash_duo):
 
     app = dash.Dash(__name__)
-    app.css.config.serve_locally = True
-    app.scripts.config.serve_locally = True
     app.config.suppress_callback_exceptions = True
     cache.init_app(app.server)
     title = 'Example'

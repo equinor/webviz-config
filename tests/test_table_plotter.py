@@ -7,8 +7,6 @@ from webviz_config.containers import _table_plotter
 def test_table_plotter(dash_duo):
 
     app = dash.Dash(__name__)
-    app.css.config.serve_locally = True
-    app.scripts.config.serve_locally = True
     app.config.suppress_callback_exceptions = True
     cache.init_app(app.server)
 
