@@ -19,7 +19,6 @@ This container adds a plotter to the webviz instance, using tabular data from
 a provided csv file. If feature is requested, the data could also come from
 a database.
 
-* title` : Title on page
 * `csv_file`: Path to the csv file containing the tabular data. Either absolute
               path or relative to the configuration file.
 * `plot_options`: A dictionary of plot options to initialize the plot with
@@ -27,10 +26,9 @@ a database.
           plot options are hidden.
 '''
 
-    def __init__(self, app, title: str, csv_file: Path,
-                 plot_options: dict = None, lock: bool = False):
+    def __init__(self, app, csv_file: Path, plot_options: dict = None,
+                 lock: bool = False):
 
-        self.title = title
         self.plot_options = plot_options if plot_options else {}
         self.graph_id = f'graph-id{uuid4()}'
         self.lock = lock
@@ -204,7 +202,6 @@ a database.
     @property
     def layout(self):
         return html.Div(children=[
-            html.H1(self.title),
             html.Div(style=self.style_page_layout, children=[
                 html.Div(
                     id=self.selector_row,

@@ -12,9 +12,8 @@ def test_table_plotter(dash_duo):
     app.config.suppress_callback_exceptions = True
     cache.init_app(app.server)
 
-    title = 'Example'
     csv_file = './tests/data/example_data.csv'
-    page = _table_plotter.TablePlotter(app, title, csv_file)
+    page = _table_plotter.TablePlotter(app, csv_file)
     app.layout = page.layout
     dash_duo.start_server(app)
 
@@ -55,7 +54,6 @@ def test_initialized_table_plotter(dash_duo):
     app.config.suppress_callback_exceptions = True
     cache.init_app(app.server)
 
-    title = 'Example'
     csv_file = './tests/data/example_data.csv'
     plot_options = dict(
         x='Well',
@@ -64,7 +62,7 @@ def test_initialized_table_plotter(dash_duo):
         facet_col='Segment')
 
     page = _table_plotter.TablePlotter(
-        app, title, csv_file, lock=True, plot_options=plot_options)
+        app, csv_file, lock=True, plot_options=plot_options)
     app.layout = page.layout
     dash_duo.start_server(app)
 
