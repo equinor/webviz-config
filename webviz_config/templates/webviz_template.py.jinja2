@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
+import logging.config
 import socket
+import os.path as path
+from pathlib import Path, PosixPath
+
 import dash
 import dash_auth
 import dash_core_components as dcc
 import dash_html_components as html
-import os.path as path
-from pathlib import Path, PosixPath
 from flask_talisman import Talisman
 from webviz_config.common_cache import cache
 from webviz_config.webviz_store import webviz_storage
@@ -20,6 +23,28 @@ import {{ module }}
 import {{ module[0] }} as {{ module[1] }}
 {%- endif %}
 {% endfor %}
+
+
+logger = logging.getLogger('werkzeug')
+logger.setLevel(logging.WARNING)
+
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {'default': {
+        'format': ' webviz log [%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+        'datefmt': '%Y-%m-%d %H:%M:%S'
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
 
 app = dash.Dash(__name__, external_stylesheets={{ external_stylesheets }})
 server = app.server
