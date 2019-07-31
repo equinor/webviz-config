@@ -57,8 +57,12 @@ Then install dev requirements and run pytest:
 
 ```bash
 pip install .[tests]
+pip install dash[testing]
 pytest tests
 ```
+
+The second of these commands appears to be necessary as long as
+[this `pip` issue is open](https://github.com/pypa/pip/issues/4957).
 
 Linting can be checked by:
 
