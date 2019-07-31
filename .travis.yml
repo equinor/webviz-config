@@ -25,6 +25,7 @@ install:
 script:
   - pip install .
   - pip install .[tests]
+  - pip install dash[testing]
   - pycodestyle webviz_config
   - pytest tests
   - pushd ./docs; python build_docs.py; popd
