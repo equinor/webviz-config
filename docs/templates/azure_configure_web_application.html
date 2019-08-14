@@ -12,6 +12,7 @@ An Azure web app is an easy way of getting an application hosted on Azure. As de
  <li>For <span style='font-style: italic; font-weight: bold'>App Service Plan</span> choose one of the existing ones, or create a new one.
  <li>Click on <span style='font-style: italic; font-weight: bold'>Configure container</span>, and choose <span style='font-style: italic; font-weight: bold'>Docker compose (preview)</span> in the panel that appears.
  <li>Choose <span style='font-style: italic; font-weight: bold'>Azure container registry</span> when it comes to <span style='font-style: italic; font-weight: bold'>Image source</span>.
+ <li>As Registry choose the Azure container registry you made earlier (here named <code>ACRNAME</code>).
 </ol>
 
 With the configuration panel, copy and paste the following configuration:
@@ -19,13 +20,11 @@ With the configuration panel, copy and paste the following configuration:
 <pre><code class='yaml'>version: '3'
 services:
   web:
-    image: ACRNAME.azurecr.io/webviz_PROJECTNAME:latest
+    image: webviz_PROJECTNAME:latest
     cap_drop:
      - all
     ports:
      - 80:5000</code></pre>
-
-<p>where you replace <code>ACRNAME</code> with the name you chose for your Azure container registry.</p>
 
 <p>You should also replace <code>PROJECTNAME</code> with a name relevant for the webviz instace you will deploy, e.g. the name of your field. This name will be used later when deploying the actual webviz instance.</p>
 
