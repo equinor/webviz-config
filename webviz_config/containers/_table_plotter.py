@@ -45,6 +45,10 @@ a database.
         return [(get_data, [{'csv_file': self.csv_file}])]
 
     @property
+    def csv_string(self):
+        return get_data(self.csv_file).to_csv()
+
+    @property
     def plots(self):
         '''A list of available plots and their options'''
         return {
