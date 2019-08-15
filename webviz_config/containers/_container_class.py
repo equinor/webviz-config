@@ -63,10 +63,7 @@ class WebvizContainer(abc.ABC):
                               [Input(id_container_placeholder,
                                      'csv_requested')])
                 def display_output(csv_requested):
-                    if not csv_requested:
-                        return ''
-                    else:
-                        return self.csv_string
+                    return self.csv_string if csv_requested else ''
 
             return wcc.WebvizContainerPlaceholder(id=id_container_placeholder,
                                                   buttons=buttons,
