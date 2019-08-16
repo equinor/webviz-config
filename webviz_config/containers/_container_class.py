@@ -24,7 +24,7 @@ class WebvizContainer(abc.ABC):
     # toolbar. If the list is empty, the subclass container layout will be
     # used directly, without any visual encapsulation layout from this
     # abstract base class. The containers subclassing this abstract base class
-    # can override this variable setting by defining a class constant with 
+    # can override this variable setting by defining a class constant with
     # the same name.
     #
     # Some buttons will only appear if in addition necessary data is available.
@@ -75,7 +75,7 @@ class WebvizContainer(abc.ABC):
                 @app.callback(Output(id_container_placeholder, 'csv_string'),
                               [Input(id_container_placeholder,
                                      'csv_requested')])
-                def display_output(csv_requested):
+                def return_csv_string(csv_requested):
                     return self.csv_string if csv_requested else ''
             else:
                 buttons.remove('csv_file')

@@ -66,7 +66,8 @@ def _call_signature(module, module_name, container_name, container_settings,
                                   f'container `{container_name}` is '
                                   f'not a dictionary. '
                                   '\033[0m')
-            elif any(key not in ['name', 'phone', 'email'] for key in kwargs['contact_person']):
+            elif any(key not in ['name', 'phone', 'email']
+                     for key in kwargs['contact_person']):
                 raise ParserError('\033[91m'
                                   f'Unrecognized contact information key '
                                   f'given to container `{container_name}`.'
@@ -105,7 +106,8 @@ def _call_signature(module, module_name, container_name, container_settings,
     if 'container_settings' in argspec.args:
         kwargs['container_settings'] = container_settings
 
-    return f'{module_name}.{container_name}({special_args}**{kwargs}).container_layout(app=app, contact_person={contact_person})'
+    return (f'{module_name}.{container_name}({special_args}**{kwargs})'
+            f'.container_layout(app=app, contact_person={contact_person})')
 
 
 class ParserError(Exception):
