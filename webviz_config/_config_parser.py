@@ -23,8 +23,8 @@ def _get_webviz_containers(module):
             inspect.getmembers(module, _is_webviz_container)]
 
 
-def _call_signature(module, module_name, container_name,
-                    container_settings, kwargs, config_folder):
+def _call_signature(module, module_name, container_name, container_settings,
+                    kwargs, config_folder, contact_person=None):
     '''Takes as input the name of a container, the module it is located in,
     together with user given arguments (originating from the configuration
     file). Returns the equivalent Python code wrt. initiating an instance of
@@ -53,13 +53,29 @@ def _call_signature(module, module_name, container_name,
                               'file.'
                               '\033[0m')
 
-    for arg in kwargs:
+    for arg in list(kwargs):
         if arg in SPECIAL_ARGS:
             raise ParserError('\033[91m'
                               f'Container argument `{arg}` not allowed.'
                               '\033[0m')
 
-        if arg not in argspec.args:
+        if arg == 'contact_person':
+            if not isinstance(kwargs['contact_person'], dict):
+                raise ParserError('\033[91m'
+                                  f'The contact information provided for '
+                                  f'container `{container_name}` is '
+                                  f'not a dictionary. '
+                                  '\033[0m')
+            elif any(key not in ['name', 'phone', 'email'] for key in kwargs['contact_person']):
+                raise ParserError('\033[91m'
+                                  f'Unrecognized contact information key '
+                                  f'given to container `{container_name}`.'
+                                  f'Should be "name", "phone" and/or "email".'
+                                  '\033[0m')
+            else:
+                contact_person = kwargs.pop('contact_person')
+
+        elif arg not in argspec.args:
             raise ParserError('\033[91m'
                               'Unrecognized argument. The container '
                               f'`{container_name}` does not take an '
@@ -89,7 +105,7 @@ def _call_signature(module, module_name, container_name,
     if 'container_settings' in argspec.args:
         kwargs['container_settings'] = container_settings
 
-    return f'{module_name}.{container_name}({special_args}**{kwargs})'
+    return f'{module_name}.{container_name}({special_args}**{kwargs}).container_layout(app=app, contact_person={contact_person})'
 
 
 class ParserError(Exception):
