@@ -56,12 +56,12 @@ class WebvizContainer(abc.ABC):
         CSV download button will only appear if the container class a property
         `csv_string` which should return the appropriate csv data as a string.
 
-        If SHOW_TOOLBAR is false, this functions returns the same dash layout
-        as the container class provides directly.
+        If TOOLBAR_BUTTONS is empty, this functions returns the same
+        dash layout as the container class provides directly.
         '''
 
         id_container_placeholder = f'container-{uuid4()}'
-        buttons = self.__class__.TOOLBAR_BUTTONS
+        buttons = self.__class__.TOOLBAR_BUTTONS.copy()
 
         if contact_person is None:
             contact_person = {}
