@@ -66,6 +66,15 @@ pages:
     - container: ExampleContainer
 ```
 
+### Override container toolbar
+
+In the generated webviz application, your container will as default be given
+a button toolbar. The default buttons to appear is stored in the class constant
+`WebvizContainer.TOOLBAR_BUTTONS`. If you want to override which buttons should
+appear, redefine this class constant in your subclass. To remove all buttons,
+simply define it as an empty list. See [this section](#data-download-callback)
+for more information regarding the `data_download` button.
+
 ### Callbacks
 
 If you want to include user interactivity which triggers actions in the Python
@@ -122,6 +131,34 @@ There are three fundamental additions to the minimal example without callbacks:
     ensuring this is to create unique IDs in the `__init__` function using
     [uuid.uuid4()](https://docs.python.org/3/library/uuid.html#uuid.uuid4),
     as demonstrated in the example above.
+
+#### Set the data download callback
+
+There is a [data download button](#override-container-toolbar) provided by
+the `WebvizContainer` class. However, it will only appear if the corresponding
+callback is set. A typical data download callback will look like
+
+```
+        @app.callback(self.container_data_output,
+                      [self.container_data_requested])
+        def user_download_data(data_requested):
+            return WebvizContainer.container_data_compress(
+                [{'filename': 'some_file.txt',
+                  'content': 'Some download data'}]
+            ) if data_requested else ''
+```
+By letting the container defining the callback, the container author is able
+to utlize the whole callback machinery, including e.g. state of the individual
+components in the container. This way the data downloaded can e.g. depend on
+the visual state or user selection.
+
+The attributes `self.container_data_output` and `self.container_data_requested`
+are Dash `Output` and `Input` instances respectively, and are provided by
+the base class `WebvizContainer` (i.e. include them as shown here).
+
+The function `WebvizContainer.container_data_compress` is a utility function
+which takes a list of dictionaries, giving filenames and corresponding data,
+and compresses them to a zip archive which is then downloaded by the user.
 
 ### User provided arguments
 

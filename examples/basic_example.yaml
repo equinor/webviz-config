@@ -33,8 +33,6 @@ pages:
 
  - title: Syntax highlighting example
    content:
-    - container: ExampleDataDownload
-      title: Some title
     - container: SyntaxHighlighter
       filename: ./basic_example.yaml
 

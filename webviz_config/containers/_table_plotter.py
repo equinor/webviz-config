@@ -45,10 +45,6 @@ a database.
         return [(get_data, [{'csv_file': self.csv_file}])]
 
     @property
-    def csv_string(self):
-        return get_data(self.csv_file).to_csv()
-
-    @property
     def plots(self):
         '''A list of available plots and their options'''
         return {
@@ -243,6 +239,14 @@ a database.
         return inputs
 
     def set_callbacks(self, app):
+        @app.callback(self.container_data_output,
+                      [self.container_data_requested])
+        def user_download_data(data_requested):
+            return WebvizContainer.container_data_compress(
+                [{'filename': 'table_plotter.csv',
+                  'content': get_data(self.csv_file).to_csv()}]
+            ) if data_requested else ''
+
         @app.callback(
             self.plot_output_callbacks,
             self.plot_input_callbacks)

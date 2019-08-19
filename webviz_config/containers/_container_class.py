@@ -31,10 +31,11 @@ class WebvizContainer(abc.ABC):
     # the same name.
     #
     # Some buttons will only appear if in addition necessary data is available.
-    # E.g. download of csv file will only appear if the container provides
-    # a property csv_string, and contact person will only appear if the
-    # user configuration file has this information.
-    TOOLBAR_BUTTONS = ['csv_file', 'contact_person', 'screenshot', 'expand']
+    # E.g. download of zip archive will only appear if the container also
+    # has defined the corresponding callback, and contact person will only
+    # appear if the user configuration file has this information.
+    TOOLBAR_BUTTONS = ['screenshot', 'expand',
+                       'download_zip', 'contact_person']
 
     # List of container specific assets which should be copied
     # over to the ./assets folder in the generated webviz app.
@@ -99,13 +100,15 @@ class WebvizContainer(abc.ABC):
             for key in contact_person:
                 contact_person[key] = bleach.clean(contact_person[key])
 
-        if 'csv_file' in buttons and not hasattr(self, '_add_download_button'):
-            buttons.remove('csv_file')
+        if 'download_zip' in buttons and not hasattr(self, '_add_download_button'):
+            buttons.remove('download_zip')
 
         if buttons:
-            return wcc.WebvizContainerPlaceholder(id=self._container_wrapper_id,
-                                                  buttons=buttons,
-                                                  contact_person=contact_person,
-                                                  children=[self.layout])
+            return wcc.WebvizContainerPlaceholder(
+                id=self._container_wrapper_id,
+                buttons=buttons,
+                contact_person=contact_person,
+                children=[self.layout]
+            )
         else:
             return self.layout
