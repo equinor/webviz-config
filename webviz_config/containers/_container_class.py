@@ -100,7 +100,8 @@ class WebvizContainer(abc.ABC):
             for key in contact_person:
                 contact_person[key] = bleach.clean(contact_person[key])
 
-        if 'download_zip' in buttons and not hasattr(self, '_add_download_button'):
+        if 'download_zip' in buttons and \
+                not hasattr(self, '_add_download_button'):
             buttons.remove('download_zip')
 
         if buttons:
