@@ -1,6 +1,4 @@
-from uuid import uuid4
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
 from . import WebvizContainer
 
 
@@ -8,7 +6,6 @@ class ExampleDataDownload(WebvizContainer):
 
     def __init__(self, app, title: str):
         self.title = title
-
         self.set_callbacks(app)
 
     @property
