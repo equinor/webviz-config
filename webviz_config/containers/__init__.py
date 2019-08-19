@@ -9,6 +9,7 @@ import pkg_resources
 from ._container_class import WebvizContainer
 
 from ._example_container import ExampleContainer
+from ._example_data_download import ExampleDataDownload
 from ._example_assets import ExampleAssets
 from ._example_portable import ExamplePortable
 from ._banner_image import BannerImage

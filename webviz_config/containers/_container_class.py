@@ -1,4 +1,7 @@
+import io
 import abc
+import base64
+import zipfile
 from uuid import uuid4
 import bleach
 from dash.dependencies import Input, Output
@@ -47,6 +50,33 @@ class WebvizContainer(abc.ABC):
         '''
         pass
 
+    @property
+    def _container_wrapper_id(self):
+        if not hasattr(self, '_container_wrapper_uuid'):
+            self._container_wrapper_uuid = uuid4()
+        return f'container-wrapper-{self._container_wrapper_uuid}'
+
+    @property
+    def container_data_output(self):
+        self._add_download_button = True
+        return Output(self._container_wrapper_id, 'zip_base64')
+
+    @property
+    def container_data_requested(self):
+        return Input(self._container_wrapper_id, 'data_requested')
+
+    @staticmethod
+    def container_data_compress(content):
+        byte_io = io.BytesIO()
+
+        with zipfile.ZipFile(byte_io, 'w') as zipped_data:
+            for data in content:
+                zipped_data.writestr(data['filename'], data['content'])
+
+        byte_io.seek(0)
+
+        return base64.b64encode(byte_io.read()).decode('ascii')
+
     def container_layout(self, app, contact_person=None):
         '''This function returns (if the class constant SHOW_TOOLBAR is True,
         the container layout wrapped into a common webviz config container
@@ -60,7 +90,6 @@ class WebvizContainer(abc.ABC):
         dash layout as the container class provides directly.
         '''
 
-        id_container_placeholder = f'container-{uuid4()}'
         buttons = self.__class__.TOOLBAR_BUTTONS.copy()
 
         if contact_person is None:
@@ -70,18 +99,11 @@ class WebvizContainer(abc.ABC):
             for key in contact_person:
                 contact_person[key] = bleach.clean(contact_person[key])
 
-        if 'csv_file' in buttons:
-            if hasattr(self, 'csv_string'):
-                @app.callback(Output(id_container_placeholder, 'csv_string'),
-                              [Input(id_container_placeholder,
-                                     'csv_requested')])
-                def return_csv_string(csv_requested):
-                    return self.csv_string if csv_requested else ''
-            else:
-                buttons.remove('csv_file')
+        if 'csv_file' in buttons and not hasattr(self, '_add_download_button'):
+            buttons.remove('csv_file')
 
         if buttons:
-            return wcc.WebvizContainerPlaceholder(id=id_container_placeholder,
+            return wcc.WebvizContainerPlaceholder(id=self._container_wrapper_id,
                                                   buttons=buttons,
                                                   contact_person=contact_person,
                                                   children=[self.layout])
