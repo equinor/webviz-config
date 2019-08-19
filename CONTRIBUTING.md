@@ -141,7 +141,7 @@ callback is set. A typical data download callback will look like
 ```
         @app.callback(self.container_data_output,
                       [self.container_data_requested])
-        def user_download_data(data_requested):
+        def cb_user_download_data(data_requested):
             return WebvizContainer.container_data_compress(
                 [{'filename': 'some_file.txt',
                   'content': 'Some download data'}]
