@@ -132,7 +132,7 @@ There are three fundamental additions to the minimal example without callbacks:
     [uuid.uuid4()](https://docs.python.org/3/library/uuid.html#uuid.uuid4),
     as demonstrated in the example above.
 
-#### Set the data download callback
+#### Data download callback
 
 There is a [data download button](#override-container-toolbar) provided by
 the `WebvizContainer` class. However, it will only appear if the corresponding
