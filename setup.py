@@ -43,7 +43,8 @@ setup(
         'markdown~=3.0.1',
         'pandas~=0.24.1',
         'pyarrow~=0.11.1',
-        'pyyaml~=5.1'
+        'pyyaml~=5.1',
+        'webviz-core-components~=0.0.2'
     ],
     tests_require=tests_requires,
     extras_require={'tests': tests_requires},

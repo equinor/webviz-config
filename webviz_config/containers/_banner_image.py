@@ -18,6 +18,8 @@ title. Useful on e.g. the front page for introducing a field or project.
 * `shadow`: Set to `False` if you do not want text shadow for the title.
 '''
 
+    TOOLBAR_BUTTONS = []
+
     def __init__(self, image: Path, title: str = '', color: str = 'white',
                  shadow: bool = True):
 

@@ -239,6 +239,14 @@ a database.
         return inputs
 
     def set_callbacks(self, app):
+        @app.callback(self.container_data_output,
+                      [self.container_data_requested])
+        def _user_download_data(data_requested):
+            return WebvizContainer.container_data_compress(
+                [{'filename': 'table_plotter.csv',
+                  'content': get_data(self.csv_file).to_csv()}]
+            ) if data_requested else ''
+
         @app.callback(
             self.plot_output_callbacks,
             self.plot_input_callbacks)

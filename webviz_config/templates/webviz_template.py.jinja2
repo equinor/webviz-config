@@ -93,7 +93,7 @@ app.layout = dcc.Tabs(parent_className="layoutWrapper",
                   {%- if content is string -%}
                     dcc.Markdown(r'''{{ content }}''')
                   {%- else -%}
-                    {{ content._call_signature }}.layout
+                    {{ content._call_signature }}
                   {%- endif -%}
                   {{- '' if loop.last else ','}}
                  {% endfor -%}
