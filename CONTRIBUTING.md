@@ -147,8 +147,8 @@ callback is set. A typical data download callback will look like
                   'content': 'Some download data'}]
             ) if data_requested else ''
 ```
-By letting the container defining the callback, the container author is able
-to utlize the whole callback machinery, including e.g. state of the individual
+By letting the container define the callback, the container author is able
+to utilize the whole callback machinery, including e.g. state of the individual
 components in the container. This way the data downloaded can e.g. depend on
 the visual state or user selection.
 
