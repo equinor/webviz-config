@@ -253,7 +253,7 @@ a database.
         @app.callback(
             self.plot_output_callbacks,
             self.plot_input_callbacks)
-        def update_output(*args):
+        def _update_output(*args):
             '''Updates the graph and shows/hides plot options'''
             plot_type = args[0]
             plotfunc = getattr(px._chart_types, plot_type)
