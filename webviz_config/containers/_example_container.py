@@ -26,5 +26,5 @@ class ExampleContainer(WebvizContainer):
     def set_callbacks(self, app):
         @app.callback(Output(self.div_id, 'children'),
                       [Input(self.button_id, 'n_clicks')])
-        def update_output(n_clicks):
+        def _update_output(n_clicks):
             return 'Button has been pressed {} times.'.format(n_clicks)
