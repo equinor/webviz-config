@@ -139,13 +139,13 @@ the `WebvizContainer` class. However, it will only appear if the corresponding
 callback is set. A typical data download callback will look like
 
 ```
-        @app.callback(self.container_data_output,
-                      [self.container_data_requested])
-        def _user_download_data(data_requested):
-            return WebvizContainer.container_data_compress(
-                [{'filename': 'some_file.txt',
-                  'content': 'Some download data'}]
-            ) if data_requested else ''
+@app.callback(self.container_data_output,
+              [self.container_data_requested])
+def _user_download_data(data_requested):
+    return WebvizContainer.container_data_compress(
+        [{'filename': 'some_file.txt',
+          'content': 'Some download data'}]
+    ) if data_requested else ''
 ```
 By letting the container define the callback, the container author is able
 to utilize the whole callback machinery, including e.g. state of the individual
