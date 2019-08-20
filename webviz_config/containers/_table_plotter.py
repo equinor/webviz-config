@@ -207,7 +207,9 @@ a database.
                     id=self.selector_row,
                     style=self.style_selectors,
                     children=self.plot_option_layout()),
-                dcc.Graph(id=self.graph_id)
+                html.Div(style={'height':'100%'}, children=
+                    dcc.Graph(id=self.graph_id, config={'responsive': 'true'})
+                    )
             ])
         ])
 
@@ -262,11 +264,7 @@ a database.
                     div_style.append(self.style_options_div)
                 else:
                     div_style.append(self.style_options_div_hidden)
-            plotobj = plotfunc(self.data, **plotargs)
-            figure = {x:plotobj[x] for x in ['data', 'layout']}
-            figure['layout']['autosize'] = True
-            figure['config'] = {'responsive': True}
-            return (figure, *div_style)
+            return (plotfunc(self.data, **plotargs), *div_style)
 
 
 @cache.memoize(timeout=cache.TIMEOUT)
