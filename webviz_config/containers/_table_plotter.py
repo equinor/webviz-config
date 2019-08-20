@@ -262,7 +262,11 @@ a database.
                     div_style.append(self.style_options_div)
                 else:
                     div_style.append(self.style_options_div_hidden)
-            return (plotfunc(self.data, **plotargs), *div_style)
+            plotobj = plotfunc(self.data, **plotargs)
+            figure = {x:plotobj[x] for x in ['data', 'layout']}
+            figure['layout']['autosize'] = True
+            figure['config'] = {'responsive': True}
+            return (figure, *div_style)
 
 
 @cache.memoize(timeout=cache.TIMEOUT)
