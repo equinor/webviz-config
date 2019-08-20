@@ -207,9 +207,10 @@ a database.
                     id=self.selector_row,
                     style=self.style_selectors,
                     children=self.plot_option_layout()),
-                html.Div(style={'height':'100%'}, children=
-                    dcc.Graph(id=self.graph_id, config={'responsive': 'true'})
-                    )
+                html.Div(style={'height': '100%'},
+                         children=dcc.Graph(id=self.graph_id, config={
+                             'responsive': 'true'})
+                         )
             ])
         ])
 
