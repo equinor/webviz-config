@@ -138,7 +138,7 @@ There is a [data download button](#override-container-toolbar) provided by
 the `WebvizContainer` class. However, it will only appear if the corresponding
 callback is set. A typical data download callback will look like
 
-```
+```python
 @app.callback(self.container_data_output,
               [self.container_data_requested])
 def _user_download_data(data_requested):
