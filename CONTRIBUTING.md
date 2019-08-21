@@ -107,7 +107,7 @@ class ExampleContainer(WebvizContainer):
     def set_callbacks(self, app):
         @app.callback(Output(self.div_id, 'children'),
                       [Input(self.button_id, 'n_clicks')])
-        def update_output(n_clicks):
+        def _update_output(n_clicks):
             return f'Button has been pressed {n_clicks} times.'
 ```
 
@@ -138,14 +138,14 @@ There is a [data download button](#override-container-toolbar) provided by
 the `WebvizContainer` class. However, it will only appear if the corresponding
 callback is set. A typical data download callback will look like
 
-```
-        @app.callback(self.container_data_output,
-                      [self.container_data_requested])
-        def cb_user_download_data(data_requested):
-            return WebvizContainer.container_data_compress(
-                [{'filename': 'some_file.txt',
-                  'content': 'Some download data'}]
-            ) if data_requested else ''
+```python
+@app.callback(self.container_data_output,
+              [self.container_data_requested])
+def _user_download_data(data_requested):
+    return WebvizContainer.container_data_compress(
+        [{'filename': 'some_file.txt',
+          'content': 'Some download data'}]
+    ) if data_requested else ''
 ```
 By letting the container define the callback, the container author is able
 to utilize the whole callback machinery, including e.g. state of the individual
