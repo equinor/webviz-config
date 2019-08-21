@@ -32,7 +32,7 @@ containers = []
 {% for page in pages %}
 {% for content in page.content %}
 {% if content is not string %}
-containers.append({{ content._call_signature }})
+containers.append({{ content._call_signature[0] }})
 {% endif %}
 {% endfor %}
 {% endfor %}

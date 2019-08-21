@@ -106,8 +106,8 @@ def _call_signature(module, module_name, container_name, container_settings,
     if 'container_settings' in argspec.args:
         kwargs['container_settings'] = container_settings
 
-    return (f'{module_name}.{container_name}({special_args}**{kwargs})'
-            f'.container_layout(app=app, contact_person={contact_person})')
+    return (f'{module_name}.{container_name}({special_args}**{kwargs})',
+            f'container_layout(app=app, contact_person={contact_person})')
 
 
 class ParserError(Exception):
