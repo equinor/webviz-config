@@ -29,7 +29,7 @@ script:
   - pip install dash[testing]
   - pycodestyle webviz_config
   - webviz certificate
-  - pytest tests
+  - pytest tests/test_portable.py
   - pushd ./docs; python build_docs.py; popd
 
 deploy:
