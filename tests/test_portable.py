@@ -19,9 +19,9 @@ def test_portable(dash_duo):
 
     #Import and test portable app
     import webviz_app
-    app = dash.Dash(__name__, external_stylesheets=[])
-    app = webviz_app.app
-    dash_duo.start_server(app)
+    dash_app = dash.Dash(__name__, external_stylesheets=[])
+    dash_app = webviz_app.app
+    dash_duo.start_server(dash_app)
     for page in ['markdown_example', 'table_example', 'pdf_example',
                  'syntax_highlighting_example', 'plot_a_table', 'last_page']:
         dash_duo.wait_for_element(f'#{page}').click()
