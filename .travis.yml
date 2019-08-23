@@ -28,7 +28,8 @@ script:
   - pip install .[tests]
   - pip install dash[testing]
   - pycodestyle webviz_config
-  - pytest tests
+  - webviz certificate
+  - pytest tests --forked
   - pushd ./docs; python build_docs.py; popd
 
 deploy:

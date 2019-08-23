@@ -58,7 +58,7 @@ Then install dev requirements and run pytest:
 ```bash
 pip install .[tests]
 pip install dash[testing]
-pytest tests
+pytest tests --forked
 ```
 
 The second of these commands appears to be necessary as long as

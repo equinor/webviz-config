@@ -8,7 +8,8 @@ tests_requires = [
     'pylint>=2.3.1',
     'pycodestyle>=2.5.0',
     'selenium>=3.141.0',
-    'mock'
+    'mock',
+    'pytest-xdist'
 ]
 
 setup(
