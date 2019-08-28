@@ -43,18 +43,18 @@ a database.
         self.set_callbacks(app)
 
     def set_filters(self, filter_cols):
+        self.filter_cols = []
+        self.filter_ids = {}
+        self.use_filter = False
         if filter_cols:
-            if not all(col in self.data.columns for col in filter_cols):
-                raise KeyError(
-                    f'Tableplotter: filter_cols: {filter_cols} not valid')
-            self.filter_cols = filter_cols
-            self.use_filter = True
-            self.filter_ids = {col: f'{col}-{str(uuid4())}'
-                               for col in filter_cols}
-        else:
-            self.filter_cols = []
-            self.filter_ids = {}
-            self.use_filter = False
+            for col in filter_cols:
+                if col in self.data.columns:
+                    if self.data[col].nunique() != 1:
+                        self.filter_cols.append(col)
+            if self.filter_cols:
+                self.use_filter = True
+                self.filter_ids = {col: f'{col}-{str(uuid4())}'
+                                   for col in self.filter_cols}
 
     def add_webvizstore(self):
         return [(get_data, [{'csv_file': self.csv_file}])]
@@ -166,7 +166,7 @@ a database.
                                 id=self.filter_ids[col],
                                 min=min_val,
                                 max=max_val,
-                                step=(max_val - min_val) / 10,
+                                step=(max_val-min_val)/10,
                                 marks={min_val: f'{min_val:.2f}',
                                        mean_val: f'{mean_val:.2f}',
                                        max_val: f'{max_val:.2f}'},
@@ -358,7 +358,6 @@ def get_data(csv_file) -> pd.DataFrame:
 
 @cache.memoize(timeout=cache.TIMEOUT)
 def filter_dataframe(dframe, columns, column_values):
-    print(columns, column_values)
     df = dframe.copy()
     if not isinstance(columns, list):
         columns = [columns]

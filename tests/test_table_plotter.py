@@ -76,10 +76,11 @@ def test_table_plotter_filter(dash_duo):
     for plot_option in page.plot_args.keys():
         plot_option_dd = dash_duo.find_element(
             f'#{page.plot_option_id}-div-{plot_option}')
-        if plot_option not in page.plots['scatter']:
-            assert plot_option_dd.get_attribute('style') == 'display: none;'
-        else:
+        if plot_option in page.plots['scatter']:
             assert plot_option_dd.get_attribute('style') == 'display: grid;'
+        else:
+            assert plot_option_dd.get_attribute('style') == 'display: none;'
+
 
     # Checking that options are initialized correctly
     for option in ['x', 'y']:
