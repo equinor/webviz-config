@@ -5,9 +5,9 @@ with open('README.md', 'r') as fh:
 
 tests_requires = [
     'chromedriver-binary>=74.0.3729.6.0',
-    'pylint>=2.3.1',
-    'pycodestyle>=2.5.0',
-    'selenium>=3.141.0',
+    'pylint~=2.3',
+    'pycodestyle~=2.5',
+    'selenium~=3.141',
     'mock',
     'pytest-xdist'
 ]
@@ -45,11 +45,11 @@ setup(
         'pandas~=0.24',
         'pyarrow~=0.11',
         'pyyaml~=5.1',
-        'webviz-core-components~=0.0.3'
+        'webviz-core-components>=0.0.3'
     ],
     tests_require=tests_requires,
     extras_require={'tests': tests_requires},
-    setup_requires=['setuptools_scm>=3.2.0'],
+    setup_requires=['setuptools_scm~=3.2'],
     use_scm_version=True,
     zip_safe=False,
     classifiers=[
