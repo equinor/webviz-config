@@ -11,9 +11,9 @@ class WebvizConfigTheme:
                      'connect-src': "'self'",
                      'prefetch-src': "'self'",
                      'style-src': ["'self'", "'unsafe-inline'"],   # [1]
-                     'script-src': ["'self'", "'unsafe-eval'",     # [2]
+                     'script-src': ["'self'",
                                     ("'sha256-jZlsGVOhUAIcH+4PV"
-                                     "s7QuGZkthRMgvT2n0ilH6/zTM0='")],  # [3]
+                                     "s7QuGZkthRMgvT2n0ilH6/zTM0='")],  # [2]
                      'img-src': ["'self'", 'data:'],
                      'navigate-to': "'self'",
                      'base-uri': "'self'",
@@ -28,9 +28,7 @@ class WebvizConfigTheme:
         These are the current exceptions to the most strict CSP setup:
             [1] unsafe-inline for style still needed by plotly
                 (https://github.com/plotly/plotly.js/issues/2355)
-            [2] unsafe-eval still needed by plotly
-                (https://github.com/plotly/plotly.js/issues/897)
-            [3] https://github.com/plotly/dash/issues/630
+            [2] https://github.com/plotly/dash/issues/630
         '''
 
         self._feature_policy = {'camera': "'none'",

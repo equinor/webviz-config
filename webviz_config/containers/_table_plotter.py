@@ -6,6 +6,7 @@ from uuid import uuid4
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
+import webviz_core_components as wcc
 import plotly.express as px
 from . import WebvizContainer
 from ..webviz_store import webvizstore
@@ -271,8 +272,7 @@ a database.
                     style=self.style_selectors,
                     children=self.plot_option_layout()),
                 html.Div(style={'height': '100%'},
-                         children=dcc.Graph(id=self.graph_id, config={
-                             'responsive': 'true'})
+                         children=wcc.Graph(id=self.graph_id)
                          ),
                 html.Div(children=self.filter_layout())
             ])
