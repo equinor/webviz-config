@@ -40,6 +40,10 @@ pages:
    content:
     - container: TablePlotter
       csv_file: ./example_data.csv
+      filter_cols:
+          - Well
+          - Segment
+          - Average permeability (D)
       contact_person:
         name: Ola Nordmann
         phone: +47 12345678
