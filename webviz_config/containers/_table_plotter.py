@@ -250,20 +250,13 @@ a database.
         '''Simple grid layout for the page'''
         if self.lock:
             return {}
-        if self.use_filter:
-            return {
-                'display': 'grid',
-                'align-content': 'space-around',
-                'justify-content': 'space-between',
-                'grid-template-columns': '1fr 5fr 1fr'
-            }
-        else:
-            return {
-                'display': 'grid',
-                'align-content': 'space-around',
-                'justify-content': 'space-between',
-                'grid-template-columns': '1fr 5fr'
-            }
+        return {
+            'display': 'grid',
+            'align-content': 'space-around',
+            'justify-content': 'space-between',
+            'grid-template-columns':
+                '1fr 5fr 1fr' if self.use_filter else '1fr 5fr'
+        }
 
     @property
     def style_selectors(self):
