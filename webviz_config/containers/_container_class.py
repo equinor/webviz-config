@@ -98,7 +98,7 @@ class WebvizContainer(abc.ABC):
         else:
             # Sanitize the configuration user input
             for key in contact_person:
-                contact_person[key] = bleach.clean(contact_person[key])
+                contact_person[key] = bleach.clean(str(contact_person[key]))
 
         if 'download_zip' in buttons and \
                 not hasattr(self, '_add_download_button'):
