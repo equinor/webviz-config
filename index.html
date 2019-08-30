@@ -72,6 +72,10 @@ pages:
    content:
     - container: TablePlotter
       csv_file: ./example_data.csv
+      filter_cols:
+          - Well
+          - Segment
+          - Average permeability (D)
       contact_person:
         name: Ola Nordmann
         phone: +47 12345678
@@ -219,6 +223,7 @@ a database.</p>
 <pre><code class='yaml'>  - container: TablePlotter
     csv_file: some value
     plot_options: None  # Optional (default value shown here).
+    filter_cols: None  # Optional (default value shown here).
     lock: False  # Optional (default value shown here).
 </code></pre>
 <hr>
