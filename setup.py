@@ -5,9 +5,9 @@ with open('README.md', 'r') as fh:
 
 tests_requires = [
     'chromedriver-binary>=74.0.3729.6.0',
-    'pylint>=2.3.1',
-    'pycodestyle>=2.5.0',
-    'selenium>=3.141.0',
+    'pylint~=2.3',
+    'pycodestyle~=2.5',
+    'selenium~=3.141',
     'mock',
     'pytest-xdist'
 ]
@@ -34,22 +34,22 @@ setup(
          ],
     },
     install_requires=[
-        'dash~=1.0.0',
-        'bleach~=3.1.0',
+        'dash~=1.1',
+        'bleach~=3.1',
         'cryptography~=2.4',
-        'dash-auth~=1.3.2',
-        'flask-caching~=1.4.0',
-        'flask-talisman~=0.6.0',
+        'dash-auth~=1.3',
+        'flask-caching~=1.4',
+        'flask-talisman~=0.6',
         'jinja2~=2.10',
-        'markdown~=3.0.1',
-        'pandas~=0.24.1',
-        'pyarrow~=0.11.1',
+        'markdown~=3.0',
+        'pandas~=0.24',
+        'pyarrow~=0.11',
         'pyyaml~=5.1',
-        'webviz-core-components~=0.0.3'
+        'webviz-core-components>=0.0.3'
     ],
     tests_require=tests_requires,
     extras_require={'tests': tests_requires},
-    setup_requires=['setuptools_scm>=3.2.0'],
+    setup_requires=['setuptools_scm~=3.2'],
     use_scm_version=True,
     zip_safe=False,
     classifiers=[
