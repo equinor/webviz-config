@@ -59,3 +59,7 @@ pages:
         y: Initial reservoir pressure (bar)
         size: Average permeability (D)
         facet_col: Segment
+      contact_person:
+        name: Kari Nordmann
+        phone: 12345678
+        email: someother@email.com
