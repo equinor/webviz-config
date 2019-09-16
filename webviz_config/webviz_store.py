@@ -6,6 +6,7 @@ import hashlib
 import inspect
 import pathlib
 import pandas as pd
+from tqdm import trange
 from collections import defaultdict
 
 
@@ -141,14 +142,20 @@ class WebvizStorage:
                           f'{WebvizStorage.string(func, kwargs)}.')
 
     def build_store(self):
+
+        total_calls = sum(len(calls) for calls in self.storage_function_argvalues.values())
+        progress_bar = trange(
+            total_calls,
+            bar_format=' \033[92m{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} \033[0m'
+        )
+
         for func in self.storage_functions:
             for argtuples in self.storage_function_argvalues[func]:
                 kwargs = dict(argtuples)
 
-                print('\033[94m'
-                      f'Running {WebvizStorage.string(func, kwargs)}'
-                      '\033[0m',
-                      end='', flush=True)
+                progress_bar.write('\033[94m'
+                           f'Running {WebvizStorage.string(func, kwargs)}'
+                           '\033[0m')
 
                 output = func(**kwargs)
                 path = self._unique_path(func, argtuples)
@@ -160,7 +167,9 @@ class WebvizStorage:
                 else:
                     raise ValueError(f'Unknown return type {type(output)}')
 
-                print(u' \033[92m\033[1m[\u2713] Saved\033[0m')
+                progress_bar.update()
+
+        progress_bar.close()
 
 
 def webvizstore(func):
