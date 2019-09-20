@@ -3,19 +3,24 @@ import flask
 
 class LocalhostLogin:
     
-    def __init__(self, app):
+    def __init__(self, app, ott=None, cookie_token=None):
         self._app = app
 
         # This is the cookie token set in the users browser after
         # successfully providing the one time token
-        self._cookie_token = secrets.token_urlsafe()
+        self._cookie_token = LocalhostLogin.generate_token() \
+            if cookie_token is None else cookie_token
 
         # The one time token user has to provide when visiting the
         # localhost app the first time.
-        self._ott = secrets.token_urlsafe()
-        self._ott_used = False
+        self._ott = LocalhostLogin.generate_token() if ott is None else ott
+        self._ott_validated = False
 
         self.set_request_decorators()
+
+    @staticmethod
+    def generate_token():
+        return secrets.token_urlsafe()
 
     @property
     def one_time_token(self):
@@ -25,15 +30,20 @@ class LocalhostLogin:
 
         @self._app.before_request
         def check_for_ott_or_cookie():
-            if not self._ott_used and self._ott == flask.request.args.get('ott'):
-                self._ott_used = True
+            if not self._ott_validated and self._ott == flask.request.args.get('ott'):
+                self._ott_validated = True
                 flask.g.set_cookie_token = True
-            elif self._cookie_token != flask.request.cookies.get('cookie_token'):
+                return flask.redirect(flask.request.base_url)
+            elif self._cookie_token == flask.request.cookies.get('cookie_token'):
+                self._ott_validated = True
+            else:
                 flask.abort(401)
 
         @self._app.after_request
         def set_cookie_token_in_response(response):
             if 'set_cookie_token' in flask.g and flask.g.set_cookie_token:
-                response.set_cookie('cookie_token', value=self._cookie_token)
-
+                response.set_cookie(
+                    key='cookie_token',
+                    value=self._cookie_token
+                )
             return response

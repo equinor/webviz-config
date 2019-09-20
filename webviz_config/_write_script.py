@@ -6,14 +6,17 @@ from ._certificate import create_certificate, SERVER_KEY_FILENAME, \
                           SERVER_CRT_FILENAME
 
 
-def write_script(args, build_directory, template_filename, output_filename):
+def write_script(args, build_directory, template_filename, output_filename,
+    ott=None, cookie_token=None):
 
     config_parser = ConfigParser(args.yaml_file)
     configuration = config_parser.configuration
 
     configuration['port'] = args.port
     configuration['portable'] = True if args.portable else False
-    configuration['localhostonly'] = not args.not_only_localhost
+
+    configuration['ott'] = ott
+    configuration['cookie_token'] = cookie_token
 
     theme = installed_themes[args.theme]
     configuration['csp'] = theme.csp
