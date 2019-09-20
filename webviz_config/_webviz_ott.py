@@ -20,7 +20,7 @@ class LocalhostLogin:
 
     @staticmethod
     def generate_token():
-        return secrets.token_urlsafe()
+        return secrets.token_urlsafe(nbytes=64)
 
     @property
     def one_time_token(self):
