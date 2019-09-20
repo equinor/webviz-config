@@ -23,6 +23,7 @@ class _WebvizMarkdownExtension(Extension):
             priority = 50
         )
 
+
 class _MarkdownImageProcessor(ImageInlineProcessor):
     def __init__(self, image_link_re, md, base_path):
         self.base_path = base_path
