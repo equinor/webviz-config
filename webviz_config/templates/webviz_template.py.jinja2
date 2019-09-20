@@ -4,7 +4,7 @@
 
 import logging
 import logging.config
-import socket
+import webbrowser
 import os.path as path
 from pathlib import Path, PosixPath
 
@@ -113,10 +113,12 @@ if __name__ == '__main__':
             ).one_time_token
 
     print(' \n\033[92m'
-          ' You can go to\n'
-          f' https://localhost:{{port}}?ott={token}\n'
-          ' in order to browse the built app. This link is only valid once.\n'
-          ' To shut down the application, press CTRL+C at any time.'
+          ' Webviz ready. Opening the application in your default browser.\n'
+          ' Press CTRL+C in this terminal window to shut down the application.'
           ' \033[0m\n')
+
+    {% if open_browser -%}
+    webbrowser.open_new_tab(f'https://localhost:{{port}}?ott={token}\n')
+    {%- endif %}
 
     app.run_server(host='localhost', port={{port}}, ssl_context={{ssl_context}}, debug=False, use_reloader=True, dev_tools_hot_reload=True, dev_tools_hot_reload_interval=1.0)

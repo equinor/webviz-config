@@ -66,7 +66,8 @@ def build_webviz(args):
                                           'webviz_template.py.jinja2',
                                           BUILD_FILENAME,
                                           ott,
-                                          cookie_token)
+                                          cookie_token,
+                                          open_browser=True)
 
         for asset in non_default_assets:
             shutil.copy(asset, os.path.join(build_directory, 'assets'))
