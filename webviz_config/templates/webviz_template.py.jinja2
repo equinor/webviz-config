@@ -9,10 +9,10 @@ import os.path as path
 from pathlib import Path, PosixPath
 
 import dash
-import dash_auth
 import dash_core_components as dcc
 import dash_html_components as html
 from flask_talisman import Talisman
+import webviz_config
 from webviz_config.common_cache import cache
 from webviz_config.webviz_store import webviz_storage
 from webviz_config.webviz_assets import webviz_assets
@@ -106,5 +106,7 @@ if __name__ == '__main__':
     # This part is ignored when the webviz app is started
     # using Docker container and uwsgi (e.g. when hosted on Azure).
 
-    dash_auth.BasicAuth(app, {'{{ username }}': '{{ password }}'})
+    token = webviz_config.LocalhostLogin(app.server).one_time_token
+    print(f'https://localhost:8050?ott={token}')
+
     app.run_server(host={{ "'localhost'" if localhostonly else 'socket.getfqdn()'}}, port={{port}}, ssl_context={{ssl_context}}, debug=False, use_reloader=True, dev_tools_hot_reload=True, dev_tools_hot_reload_interval=1.0)
