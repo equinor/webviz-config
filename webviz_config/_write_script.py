@@ -7,7 +7,7 @@ from ._certificate import create_certificate, SERVER_KEY_FILENAME, \
 
 
 def write_script(args, build_directory, template_filename, output_filename,
-    ott=None, cookie_token=None, open_browser=False):
+                 ott=None, cookie_token=None, open_browser=False):
 
     config_parser = ConfigParser(args.yaml_file)
     configuration = config_parser.configuration

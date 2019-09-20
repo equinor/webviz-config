@@ -1,8 +1,9 @@
 import secrets
 import flask
 
+
 class LocalhostLogin:
-    
+
     def __init__(self, app, ott=None, cookie_token=None):
         self._app = app
 
@@ -30,11 +31,13 @@ class LocalhostLogin:
 
         @self._app.before_request
         def check_for_ott_or_cookie():
-            if not self._ott_validated and self._ott == flask.request.args.get('ott'):
+            if not self._ott_validated \
+                    and self._ott == flask.request.args.get('ott'):
                 self._ott_validated = True
                 flask.g.set_cookie_token = True
                 return flask.redirect(flask.request.base_url)
-            elif self._cookie_token == flask.request.cookies.get('cookie_token'):
+            elif self._cookie_token \
+                    == flask.request.cookies.get('cookie_token'):
                 self._ott_validated = True
             else:
                 flask.abort(401)

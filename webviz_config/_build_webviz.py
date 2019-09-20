@@ -59,7 +59,8 @@ def build_webviz(args):
                   '\033[0m')
 
         ott = None if args.portable else LocalhostLogin.generate_token()
-        cookie_token = None if args.portable else LocalhostLogin.generate_token()
+        cookie_token = None if args.portable \
+            else LocalhostLogin.generate_token()
 
         non_default_assets = write_script(args,
                                           build_directory,
