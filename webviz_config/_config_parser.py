@@ -166,13 +166,6 @@ class ConfigParser:
         else:
             container_settings = self.configuration['container_settings']
 
-        for mandatory_key in ['password', 'username']:
-            if mandatory_key not in self.configuration:
-                raise ParserError(('\033[91m'
-                                   'The configuration file does not '
-                                   f'have {mandatory_key} set.'
-                                   '\033[0m'))
-
         if 'title' not in self.configuration:
             self.configuration['title'] = 'Webviz - Powered by Dash'
 
