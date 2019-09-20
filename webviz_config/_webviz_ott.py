@@ -30,7 +30,7 @@ class LocalhostLogin:
     def set_request_decorators(self):
 
         @self._app.before_request
-        def check_for_ott_or_cookie():
+        def _check_for_ott_or_cookie():
             if not self._ott_validated \
                     and self._ott == flask.request.args.get('ott'):
                 self._ott_validated = True
@@ -43,7 +43,7 @@ class LocalhostLogin:
                 flask.abort(401)
 
         @self._app.after_request
-        def set_cookie_token_in_response(response):
+        def _set_cookie_token_in_response(response):
             if 'set_cookie_token' in flask.g and flask.g.set_cookie_token:
                 response.set_cookie(
                     key='cookie_token',
