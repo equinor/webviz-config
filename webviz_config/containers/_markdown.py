@@ -17,9 +17,11 @@ class _WebvizMarkdownExtension(Extension):
         super(_WebvizMarkdownExtension, self).__init__()
 
     def extendMarkdown(self, md):
-        md.inlinePatterns['image_link'] = \
-            _MarkdownImageProcessor(IMAGE_LINK_RE, md, self.base_path)
-
+        md.inlinePatterns.register(
+            item = _MarkdownImageProcessor(IMAGE_LINK_RE, md, self.base_path),
+            name = 'image_link',
+            priority = 50
+        )
 
 class _MarkdownImageProcessor(ImageInlineProcessor):
     def __init__(self, image_link_re, md, base_path):
