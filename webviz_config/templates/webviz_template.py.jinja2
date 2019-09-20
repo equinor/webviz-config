@@ -107,6 +107,12 @@ if __name__ == '__main__':
     # using Docker container and uwsgi (e.g. when hosted on Azure).
 
     token = webviz_config.LocalhostLogin(app.server).one_time_token
-    print(f'https://localhost:8050?ott={token}')
 
-    app.run_server(host={{ "'localhost'" if localhostonly else 'socket.getfqdn()'}}, port={{port}}, ssl_context={{ssl_context}}, debug=False, use_reloader=True, dev_tools_hot_reload=True, dev_tools_hot_reload_interval=1.0)
+    print(' \n\033[92m'
+          ' You can go to\n'
+          f' https://localhost:{{port}}?ott={token}\n'
+          ' in order to browse the built app. This link is only valid once.\n'
+          ' To shut down the application, press CTRL+C at any time.'
+          ' \033[0m\n')
+
+    app.run_server(host='localhost', port={{port}}, ssl_context={{ssl_context}}, debug=False, use_reloader=True, dev_tools_hot_reload=True, dev_tools_hot_reload_interval=1.0)

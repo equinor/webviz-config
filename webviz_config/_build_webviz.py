@@ -1,6 +1,5 @@
 import os
 import time
-import socket
 import shutil
 import tempfile
 import subprocess
@@ -77,14 +76,8 @@ def build_webviz(args):
 
 def run_webviz(args, build_directory):
 
-    hostname = socket.getfqdn() if args.not_only_localhost else 'localhost'
-
     print(' \n\033[92m'
-          ' Initializing your webviz application. Go to \n'
-          f' https://{hostname}:{args.port} \n'
-          ' in order to browse it. The files are hosted from '
-          f' {build_directory}\n\n'
-          ' To shut down the application, press CTRL+C at any time.'
+          ' Starting up your webviz application. Please wait...'
           ' \033[0m\n')
 
     app_process = subprocess.Popen(['python3', BUILD_FILENAME],
