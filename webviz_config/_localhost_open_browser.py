@@ -43,14 +43,14 @@ class LocalhostOpenBrowser:
         os.environ['NO_PROXY'] = 'localhost'
 
         try:
-            with urllib.request.urlopen(f'http://localhost:{self._port}') \
-                    as resp:
-                response.read()
+            urllib.request.urlopen(
+                urllib.request.Request(f'http://localhost:{self._port}')
+            )
             app_ready = True
-        except urllib.error.URLError as err:
+        except urllib.error.URLError:
             # The flask instance has not started
             app_ready = False
-        except ConnectionResetError as err:
+        except ConnectionResetError:
             # The flask instance has started but (correctly) abort
             # request due to "401 Unauthorized"
             app_ready = True
