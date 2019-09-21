@@ -2,7 +2,26 @@ import secrets
 import flask
 
 
-class LocalhostLogin:
+class LocalhostToken:
+    '''Uses a method similar to jupyter notebook (however, here we do it over
+    https in addition). This method is only used during interactive usage on
+    localhost, and the workflow is as follows:
+
+    - During the flask app building, a one-time-token (ott) and a cookie_token
+      is generated.
+    - When the app is ready, the user needs to "login" using this
+      one-time-token in the url (https://localhost:{port}?ott={token})
+    - If ott is valid - a cookie with a separate token is set, and the
+      one-time-token is discarded. The cookie is then used for subsequent
+      requests.
+
+    If the user fails both providing a valid one-time-token and a valid cookie
+    token, all localhost requests gets a 401.
+
+    If the app is in non-portable mode, the one-time-token and
+    cookie token  are reused on app reload (in order to ensure live reload
+    works without requiring new login).
+    '''
 
     def __init__(self, app, ott=None, cookie_token=None):
         self._app = app

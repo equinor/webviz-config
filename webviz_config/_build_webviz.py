@@ -4,7 +4,7 @@ import shutil
 import tempfile
 import subprocess
 from yaml import YAMLError
-from ._webviz_ott import LocalhostLogin
+from ._localhost_token import LocalhostToken
 from ._config_parser import ParserError
 from ._write_script import write_script
 from .themes import installed_themes
@@ -58,17 +58,16 @@ def build_webviz(args):
                   'Finished data extraction. All output saved.'
                   '\033[0m')
 
-        ott = None if args.portable else LocalhostLogin.generate_token()
+        ott = None if args.portable else LocalhostToken.generate_token()
         cookie_token = None if args.portable \
-            else LocalhostLogin.generate_token()
+            else LocalhostToken.generate_token()
 
         non_default_assets = write_script(args,
                                           build_directory,
                                           'webviz_template.py.jinja2',
                                           BUILD_FILENAME,
                                           ott,
-                                          cookie_token,
-                                          open_browser=True)
+                                          cookie_token)
 
         for asset in non_default_assets:
             shutil.copy(asset, os.path.join(build_directory, 'assets'))

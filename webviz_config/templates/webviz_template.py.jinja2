@@ -107,19 +107,20 @@ if __name__ == '__main__':
     # This part is ignored when the webviz app is started
     # using Docker container and uwsgi (e.g. when hosted on Azure).
 
-    token = webviz_config.LocalhostLogin(
+    token = webviz_config.LocalhostToken(
                 app.server,
                 ott={{'"' + ott + '"' if ott else None}},
                 cookie_token={{'"' + cookie_token + '"' if cookie_token else None}}
             ).one_time_token
 
-    {% if open_browser -%}
-    print(' \n\033[92m'
-          ' Webviz soon ready. The application will be opned in your default browser.\n'
-          ' Press CTRL+C in this terminal window to shut down the application.'
-          ' \033[0m\n')
+    webviz_config.LocalhostOpenBrowser({{port}}, token)
 
-    threading.Timer(5, lambda: webbrowser.open_new_tab(f'https://localhost:{{port}}?ott={token}')).start()
-    {%- endif %}
-
-    app.run_server(host='localhost', port={{port}}, ssl_context={{ssl_context}}, debug=False, use_reloader=True, dev_tools_hot_reload=True, dev_tools_hot_reload_interval=1.0)
+    app.run_server(
+        host='localhost',
+        port={{port}},
+        ssl_context={{ssl_context}},
+        debug=False,
+        use_reloader=True,
+        dev_tools_hot_reload=True,
+        dev_tools_hot_reload_interval=1.0
+    )
