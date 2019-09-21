@@ -9,11 +9,11 @@ pages:
    content:
     - container: BannerImage
       image: ./example_banner.png
-      title: My banner image 
+      title: My banner image
     - Webviz created from configuration file.
     - Some other text, potentially with strange letters like Åre, Smørbukk Sør.
 
- - title: Markdown exampled
+ - title: Markdown example
    content:
     - container: Markdown
       markdown_file: ./example-markdown.md
