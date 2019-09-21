@@ -43,9 +43,7 @@ class LocalhostOpenBrowser:
         os.environ['NO_PROXY'] = 'localhost'
 
         try:
-            urllib.request.urlopen(
-                urllib.request.Request(f'http://localhost:{self._port}')
-            )
+            urllib.request.urlopen(f'http://localhost:{self._port}')  # nosec
             app_ready = True
         except urllib.error.URLError:
             # The flask instance has not started
