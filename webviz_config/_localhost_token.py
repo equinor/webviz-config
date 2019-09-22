@@ -28,12 +28,12 @@ class LocalhostToken:
 
         # This is the cookie token set in the users browser after
         # successfully providing the one time token
-        self._cookie_token = LocalhostLogin.generate_token() \
+        self._cookie_token = LocalhostToken.generate_token() \
             if cookie_token is None else cookie_token
 
         # The one time token user has to provide when visiting the
         # localhost app the first time.
-        self._ott = LocalhostLogin.generate_token() if ott is None else ott
+        self._ott = LocalhostToken.generate_token() if ott is None else ott
         self._ott_validated = False
 
         self.set_request_decorators()

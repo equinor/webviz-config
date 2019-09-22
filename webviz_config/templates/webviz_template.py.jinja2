@@ -120,7 +120,9 @@ if __name__ == '__main__':
         port={{port}},
         ssl_context={{ssl_context}},
         debug=False,
-        use_reloader=True,
+        use_reloader={{not portable}},
+        {% if not portable -%}
         dev_tools_hot_reload=True,
         dev_tools_hot_reload_interval=1.0
+        {% endif %}
     )
