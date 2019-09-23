@@ -4,7 +4,6 @@ import shutil
 import tempfile
 import subprocess
 from yaml import YAMLError
-from ._localhost_token import LocalhostToken
 from ._config_parser import ParserError
 from ._write_script import write_script
 from .themes import installed_themes
