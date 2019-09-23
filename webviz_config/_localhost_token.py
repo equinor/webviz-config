@@ -5,6 +5,7 @@ import flask
 
 from ._is_reload_process import is_reload_process
 
+
 class LocalhostToken:
     '''Uses a method similar to jupyter notebook (however, here we do it over
     https in addition). This method is only used during interactive usage on

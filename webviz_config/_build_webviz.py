@@ -92,10 +92,8 @@ def run_webviz(args, build_directory):
         try:
             if lastmtime != os.path.getmtime(args.yaml_file):
                 lastmtime = os.path.getmtime(args.yaml_file)
-                write_script(args,
-                             build_directory,
-                             'webviz_template.py.jinja2',
-                             BUILD_FILENAME)
+                write_script(args, build_directory,
+                             'webviz_template.py.jinja2', BUILD_FILENAME)
                 print('\033[1m\033[94m'
                       'Rebuilt webviz dash app from configuration file'
                       '\033[0m')
