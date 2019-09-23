@@ -5,7 +5,7 @@ from ..webviz_assets import webviz_assets
 
 
 class EmbedPdf(WebvizContainer):
-    '''### Embed PDF file
+    """### Embed PDF file
 
 This container embeds a given PDF file into the page.
 
@@ -16,7 +16,7 @@ This container embeds a given PDF file into the page.
 
 _Note_: Webviz does not scan your PDF for malicious code.
 Make sure it comes from a trusted source.
-'''
+"""
 
     def __init__(self, pdf_file: Path, height: int = 80, width: int = 100):
         self.pdf_url = webviz_assets.add(pdf_file)
@@ -26,11 +26,6 @@ Make sure it comes from a trusted source.
     @property
     def layout(self):
 
-        style = {
-                 'height': f'{self.height}vh',
-                 'width': f'{self.width}%'
-                }
+        style = {"height": f"{self.height}vh", "width": f"{self.width}%"}
 
-        return html.Embed(src=self.pdf_url,
-                          style=style,
-                          type='application/pdf')
+        return html.Embed(src=self.pdf_url, style=style, type="application/pdf")

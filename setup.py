@@ -6,10 +6,10 @@ with open('README.md', 'r') as fh:
 tests_requires = [
     'chromedriver-binary>=74.0.3729.6.0',
     'pylint~=2.3',
-    'pycodestyle~=2.5',
     'selenium~=3.141',
     'mock',
-    'pytest-xdist'
+    'pytest-xdist',
+    'black'
 ]
 
 setup(
