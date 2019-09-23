@@ -24,8 +24,6 @@ def main():
                               metavar='OUTPUTFOLDER',
                               help='A portable webviz instance will created '
                                    'and saved to the given folder.')
-    parser_build.add_argument('--not-only-localhost', action='store_true',
-                              help='Front-end accesible on internal network')
     parser_build.add_argument('--theme', type=str, default='default',
                               help='Which installed theme to use.')
 

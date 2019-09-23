@@ -37,8 +37,6 @@ setup(
         'dash~=1.1',
         'bleach~=3.1',
         'cryptography~=2.4',
-        'dash-auth~=1.3',
-        'requests',  # While waiting for dep. fix in dash-auth >= 1.4 on pypi
         'flask-caching~=1.4',
         'flask-talisman~=0.6',
         'jinja2~=2.10',

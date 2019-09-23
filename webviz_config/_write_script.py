@@ -13,7 +13,6 @@ def write_script(args, build_directory, template_filename, output_filename):
 
     configuration['port'] = args.port
     configuration['portable'] = True if args.portable else False
-    configuration['localhostonly'] = not args.not_only_localhost
 
     theme = installed_themes[args.theme]
     configuration['csp'] = theme.csp
