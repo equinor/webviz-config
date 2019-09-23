@@ -107,11 +107,7 @@ if __name__ == '__main__':
     # This part is ignored when the webviz app is started
     # using Docker container and uwsgi (e.g. when hosted on Azure).
 
-    token = webviz_config.LocalhostToken(
-                app.server,
-                ott={{'"' + ott + '"' if ott else None}},
-                cookie_token={{'"' + cookie_token + '"' if cookie_token else None}}
-            ).one_time_token
+    token = webviz_config.LocalhostToken(app.server).one_time_token
 
     webviz_config.LocalhostOpenBrowser({{port}}, token)
 

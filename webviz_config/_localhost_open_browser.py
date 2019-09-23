@@ -4,6 +4,8 @@ import urllib
 import threading
 import webbrowser
 
+from ._is_reload_process import is_reload_process
+
 
 class LocalhostOpenBrowser:
 
@@ -11,11 +13,10 @@ class LocalhostOpenBrowser:
         self._port = port
         self._token = token
 
-        # See Werkzeug documentation. During a flask reload process,
-        # the WERKZEUG_RUN_MAIN environment variable is set. During
-        # the initial load however it is not set, which is the appropriate time
-        # to open the app in the browser.
-        if os.environ.get('WERKZEUG_RUN_MAIN') is None:
+        self._login_link = f'https://localhost:{self._port}?ott={self._token}'
+
+        if not is_reload_process():
+            # Only open new browser tab if not a reload process
             threading.Thread(target=self._timer).start()
 
     def _timer(self):
@@ -32,8 +33,11 @@ class LocalhostOpenBrowser:
 
             time.sleep(1)
 
-        print('WARNING: Webviz application still not ready after {TIMEOUT}s.'
-              'Will not open browser automatically.')
+        print(
+            f'WARNING: Webviz application still not ready after {TIMEOUT}s.\n'
+            'Will not open browser automatically. Your private login link:\n'
+            f'{self._login_link}'
+        )
 
     def _app_ready(self):
         '''Check if the flask instance is ready.
@@ -66,6 +70,4 @@ class LocalhostOpenBrowser:
               ' Press CTRL+C in this terminal window to stop the application.'
               ' \033[0m\n')
 
-        webbrowser.open_new_tab(
-            f'https://localhost:{self._port}?ott={self._token}'
-        )
+        webbrowser.open_new_tab(self._login_link)

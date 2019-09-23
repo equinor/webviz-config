@@ -58,22 +58,16 @@ def build_webviz(args):
                   'Finished data extraction. All output saved.'
                   '\033[0m')
 
-        ott = None if args.portable else LocalhostToken.generate_token()
-        cookie_token = None if args.portable \
-            else LocalhostToken.generate_token()
-
         non_default_assets = write_script(args,
                                           build_directory,
                                           'webviz_template.py.jinja2',
-                                          BUILD_FILENAME,
-                                          ott,
-                                          cookie_token)
+                                          BUILD_FILENAME)
 
         for asset in non_default_assets:
             shutil.copy(asset, os.path.join(build_directory, 'assets'))
 
         if not args.portable:
-            run_webviz(args, build_directory, ott, cookie_token)
+            run_webviz(args, build_directory)
 
     finally:
         if not args.portable:
@@ -81,7 +75,7 @@ def build_webviz(args):
             shutil.rmtree(build_directory)
 
 
-def run_webviz(args, build_directory, ott, cookie_token):
+def run_webviz(args, build_directory):
 
     print(' \n\033[92m'
           ' Starting up your webviz application. Please wait...'
@@ -101,9 +95,7 @@ def run_webviz(args, build_directory, ott, cookie_token):
                 write_script(args,
                              build_directory,
                              'webviz_template.py.jinja2',
-                             BUILD_FILENAME,
-                             ott,
-                             cookie_token)
+                             BUILD_FILENAME)
                 print('\033[1m\033[94m'
                       'Rebuilt webviz dash app from configuration file'
                       '\033[0m')
