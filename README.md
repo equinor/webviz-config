@@ -67,7 +67,7 @@ The second of these commands appears to be necessary as long as
 Linting can be checked by:
 
 ```bash
-black --check webviz_config tests examples
+black --check webviz_config tests
 ```
 
 ### Build documentation
