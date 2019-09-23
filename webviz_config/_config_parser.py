@@ -140,7 +140,7 @@ class ConfigParser:
             self._configuration = yaml.safe_load(open(yaml_file, "r"))
         except yaml.YAMLError as e:
             extra_info = (
-                "There is something wrong in the configuration " f"file {yaml_file}. "
+                f"There is something wrong in the configuration file {yaml_file}. "
             )
 
             if hasattr(e, "problem_mark"):

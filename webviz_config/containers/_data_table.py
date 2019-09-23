@@ -37,7 +37,7 @@ a database.
         self.sorting = sorting
         self.filtering = filtering
         self.pagination = pagination
-        self.data_table_id = "data-table-{}".format(uuid4())
+        self.data_table_id = f"data-table-{uuid4()}"
 
     def add_webvizstore(self):
         return [(get_data, [{"csv_file": self.csv_file}])]

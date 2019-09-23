@@ -5,7 +5,7 @@ from webviz_config.common_cache import cache
 from webviz_config.containers import _data_table
 
 # mocked functions
-get_data = "webviz_config.containers" "._data_table.get_data"
+get_data = "webviz_config.containers._data_table.get_data"
 
 
 def test_data_table(dash_duo):

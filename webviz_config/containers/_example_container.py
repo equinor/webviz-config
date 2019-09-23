@@ -8,8 +8,8 @@ class ExampleContainer(WebvizContainer):
     def __init__(self, app, title: str):
         self.title = title
 
-        self.button_id = "submit-button-{}".format(uuid4())
-        self.div_id = "output-state-{}".format(uuid4())
+        self.button_id = f"submit-button-{uuid4()}"
+        self.div_id = f"output-state-{uuid4()}"
 
         self.set_callbacks(app)
 

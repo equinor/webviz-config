@@ -5,7 +5,7 @@ from webviz_config.common_cache import cache
 from webviz_config.containers import _syntax_highlighter
 
 # mocked functions
-get_path = "webviz_config.containers" "._syntax_highlighter.get_path"
+get_path = "webviz_config.containers._syntax_highlighter.get_path"
 
 
 def test_syntax_highlighter(dash_duo):

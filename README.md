@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/equinor/webviz-config.svg?branch=master)](https://travis-ci.org/equinor/webviz-config)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1d7a659ea4784aa396ac1cb101c8e678)](https://www.codacy.com/manual/webviz/webviz-config?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=equinor/webviz-config&amp;utm_campaign=Badge_Grade)
 [![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/)
+![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
 
 ## Webviz configuration utility
 

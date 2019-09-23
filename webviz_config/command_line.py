@@ -6,7 +6,7 @@ from ._certificate import create_ca
 def main():
 
     parser = argparse.ArgumentParser(
-        prog=("Creates a Webviz Dash app " "from a configuration setup")
+        prog=("Creates a Webviz Dash app from a configuration setup")
     )
 
     subparsers = parser.add_subparsers(
@@ -56,7 +56,7 @@ def main():
     parser_cert.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite webviz root https " "certificate if it already exist",
+        help="Overwrite webviz root https certificate if it already exist",
     )
 
     parser_cert.set_defaults(func=create_ca)
