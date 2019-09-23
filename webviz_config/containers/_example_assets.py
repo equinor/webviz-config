@@ -5,7 +5,6 @@ from ..webviz_assets import webviz_assets
 
 
 class ExampleAssets(WebvizContainer):
-
     def __init__(self, app, picture_path: Path):
         self.asset_url = webviz_assets.add(picture_path)
 

@@ -9,7 +9,7 @@ import webviz_core_components as wcc
 
 
 class WebvizContainer(abc.ABC):
-    '''All webviz containers need to subclass this abstract base class,
+    """All webviz containers need to subclass this abstract base class,
     e.g.
 
     ```python
@@ -21,7 +21,7 @@ class WebvizContainer(abc.ABC):
         def layout(self):
             ...
     ```
-    '''
+    """
 
     # This is the default set of buttons to show in the rendered container
     # toolbar. If the list is empty, the subclass container layout will be
@@ -34,8 +34,7 @@ class WebvizContainer(abc.ABC):
     # E.g. download of zip archive will only appear if the container also
     # has defined the corresponding callback, and contact person will only
     # appear if the user configuration file has this information.
-    TOOLBAR_BUTTONS = ['screenshot', 'expand',
-                       'download_zip', 'contact_person']
+    TOOLBAR_BUTTONS = ["screenshot", "expand", "download_zip", "contact_person"]
 
     # List of container specific assets which should be copied
     # over to the ./assets folder in the generated webviz app.
@@ -45,41 +44,41 @@ class WebvizContainer(abc.ABC):
 
     @abc.abstractmethod
     def layout(self):
-        '''This is the only required function of a Webviz Container.
+        """This is the only required function of a Webviz Container.
         It returns a Dash layout which by webviz-config is added to
         the main Webviz application.
-        '''
+        """
         pass
 
     @property
     def _container_wrapper_id(self):
-        if not hasattr(self, '_container_wrapper_uuid'):
+        if not hasattr(self, "_container_wrapper_uuid"):
             self._container_wrapper_uuid = uuid4()
-        return f'container-wrapper-{self._container_wrapper_uuid}'
+        return f"container-wrapper-{self._container_wrapper_uuid}"
 
     @property
     def container_data_output(self):
         self._add_download_button = True
-        return Output(self._container_wrapper_id, 'zip_base64')
+        return Output(self._container_wrapper_id, "zip_base64")
 
     @property
     def container_data_requested(self):
-        return Input(self._container_wrapper_id, 'data_requested')
+        return Input(self._container_wrapper_id, "data_requested")
 
     @staticmethod
     def container_data_compress(content):
         byte_io = io.BytesIO()
 
-        with zipfile.ZipFile(byte_io, 'w') as zipped_data:
+        with zipfile.ZipFile(byte_io, "w") as zipped_data:
             for data in content:
-                zipped_data.writestr(data['filename'], data['content'])
+                zipped_data.writestr(data["filename"], data["content"])
 
         byte_io.seek(0)
 
-        return base64.b64encode(byte_io.read()).decode('ascii')
+        return base64.b64encode(byte_io.read()).decode("ascii")
 
     def container_layout(self, app, contact_person=None):
-        '''This function returns (if the class constant SHOW_TOOLBAR is True,
+        """This function returns (if the class constant SHOW_TOOLBAR is True,
         the container layout wrapped into a common webviz config container
         component, which provides some useful buttons like download of data,
         show data contact person and download container content to png.
@@ -89,7 +88,7 @@ class WebvizContainer(abc.ABC):
 
         If TOOLBAR_BUTTONS is empty, this functions returns the same
         dash layout as the container class provides directly.
-        '''
+        """
 
         buttons = self.__class__.TOOLBAR_BUTTONS.copy()
 
@@ -100,16 +99,15 @@ class WebvizContainer(abc.ABC):
             for key in contact_person:
                 contact_person[key] = bleach.clean(str(contact_person[key]))
 
-        if 'download_zip' in buttons and \
-                not hasattr(self, '_add_download_button'):
-            buttons.remove('download_zip')
+        if "download_zip" in buttons and not hasattr(self, "_add_download_button"):
+            buttons.remove("download_zip")
 
         if buttons:
             return wcc.WebvizContainerPlaceholder(
                 id=self._container_wrapper_id,
                 buttons=buttons,
                 contact_person=contact_person,
-                children=[self.layout]
+                children=[self.layout],
             )
         else:
             return self.layout
