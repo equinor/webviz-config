@@ -2,7 +2,7 @@ import os
 import time
 import shutil
 import tempfile
-import subprocess
+import subprocess  # nosec
 from yaml import YAMLError
 from ._config_parser import ParserError
 from ._write_script import write_script
@@ -47,7 +47,9 @@ def build_webviz(args):
                 args, build_directory, "copy_data_template.py.jinja2", "copy_data.py"
             )
 
-            if subprocess.call(["python3", "copy_data.py"], cwd=build_directory):
+            if subprocess.call(  # nosec
+                ["python3", "copy_data.py"], cwd=build_directory
+            ):
                 raise RuntimeError(
                     "Something went wrong. This is probably "
                     "not related to webviz-config, but more "
@@ -88,7 +90,9 @@ def run_webviz(args, build_directory):
         " \033[0m\n"
     )
 
-    app_process = subprocess.Popen(["python3", BUILD_FILENAME], cwd=build_directory)
+    app_process = subprocess.Popen(  # nosec
+        ["python3", BUILD_FILENAME], cwd=build_directory
+    )
 
     lastmtime = os.path.getmtime(args.yaml_file)
 

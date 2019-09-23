@@ -25,9 +25,10 @@ def write_script(args, build_directory, template_filename, output_filename):
 
     create_certificate(build_directory)
 
-    template_environment = jinja2.Environment(
+    template_environment = jinja2.Environment(  # nosec
         loader=jinja2.PackageLoader("webviz_config", "templates"),
         undefined=jinja2.StrictUndefined,
+        autoescape=False,
     )
 
     template = template_environment.get_template(template_filename)

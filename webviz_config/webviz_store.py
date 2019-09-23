@@ -67,7 +67,7 @@ class WebvizStorage:
             self.storage_function_argvalues[undec_func].update(argtuples)
 
     def _unique_path(self, func, argtuples):
-        """Encodes the argumenttuples as bytes, and then does a md5 on that.
+        """Encodes the argumenttuples as bytes, and then does a sha256 on that.
         Mutable arguments are accepted in the argument tuples, however it is
         the container author that needs to be repsonsible for making sure that
         instances representing different input has different values for
@@ -75,7 +75,7 @@ class WebvizStorage:
         """
 
         args_as_bytes = str(argtuples).encode()
-        hashed_args = str(hashlib.md5(args_as_bytes).hexdigest())
+        hashed_args = str(hashlib.sha256(args_as_bytes).hexdigest())
 
         filename = f"{func.__module__}-{func.__name__}-{hashed_args}"
 
