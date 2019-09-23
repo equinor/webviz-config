@@ -27,7 +27,7 @@ script:
   - pip install .
   - pip install .[tests]
   - pip install dash[testing]
-  - pycodestyle webviz_config
+  - black --check webviz_config tests examples setup.py
   - webviz certificate
   - pytest tests --forked
   - pushd ./docs; python build_docs.py; popd
