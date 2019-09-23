@@ -35,13 +35,13 @@ class LocalhostToken:
             # when visiting the localhost app the first time.
             self._ott = \
                 os.environ['WEBVIZ_OTT'] = \
-                    LocalhostToken.generate_token()
+                LocalhostToken.generate_token()
 
             # This is the cookie token set in the users browser after
             # successfully providing the one time token
             self._cookie_token = \
                 os.environ['WEBVIZ_COOKIE_TOKEN'] = \
-                    LocalhostToken.generate_token()
+                LocalhostToken.generate_token()
 
         else:
             self._ott = os.environ['WEBVIZ_OTT']
