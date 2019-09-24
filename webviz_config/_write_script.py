@@ -1,4 +1,6 @@
 import os
+import getpass
+import datetime
 import jinja2
 from .themes import installed_themes
 from ._config_parser import ConfigParser
@@ -18,6 +20,9 @@ def write_script(args, build_directory, template_filename, output_filename):
     configuration["feature_policy"] = theme.feature_policy
     configuration["external_stylesheets"] = theme.external_stylesheets
     configuration["plotly_layout"] = theme.plotly_layout
+
+    configuration["author"] = getpass.getuser()
+    configuration["current_date"] = datetime.date.today().strftime("%Y-%m-%d")
 
     configuration["ssl_context"] = "({!r}, {!r})".format(
         SERVER_CRT_FILENAME, SERVER_KEY_FILENAME
