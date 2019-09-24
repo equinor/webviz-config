@@ -3,7 +3,9 @@ import time
 import shutil
 import tempfile
 import subprocess  # nosec
+
 from yaml import YAMLError
+
 from ._config_parser import ParserError
 from ._write_script import write_script
 from .themes import installed_themes
