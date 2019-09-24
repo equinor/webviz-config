@@ -1,10 +1,12 @@
 from pathlib import Path
+
 import bleach
 import markdown
 from markdown.util import etree
 from markdown.extensions import Extension
 from markdown.inlinepatterns import ImageInlineProcessor, IMAGE_LINK_RE
 import dash_core_components as html
+
 from . import WebvizContainer
 from ..webviz_assets import webviz_assets
 from ..webviz_store import webvizstore

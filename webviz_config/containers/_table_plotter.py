@@ -1,13 +1,15 @@
+from uuid import uuid4
+from pathlib import Path
+from collections import OrderedDict
+
 import numpy as np
 import pandas as pd
-from collections import OrderedDict
-from pathlib import Path
-from uuid import uuid4
+import plotly.express as px
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import webviz_core_components as wcc
-import plotly.express as px
+
 from . import WebvizContainer
 from ..webviz_store import webvizstore
 from ..common_cache import cache

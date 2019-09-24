@@ -1,5 +1,7 @@
-import dash_html_components as html
 from pathlib import Path
+
+import dash_html_components as html
+
 from . import WebvizContainer
 from ..webviz_assets import webviz_assets
 

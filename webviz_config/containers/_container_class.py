@@ -3,6 +3,7 @@ import abc
 import base64
 import zipfile
 from uuid import uuid4
+
 import bleach
 from dash.dependencies import Input, Output
 import webviz_core_components as wcc
