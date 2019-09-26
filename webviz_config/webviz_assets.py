@@ -73,7 +73,7 @@ class WebvizAssets:
         """Copy over all added assets to the given folder (asset_folder).
         """
 
-        for assigned_id, filename in self._assets.items():
+        for counter, (assigned_id, filename) in enumerate(self._assets.items()):
             new_filename = os.path.join(asset_folder, assigned_id)
 
             print(
@@ -84,7 +84,9 @@ class WebvizAssets:
 
             shutil.copyfile(filename, os.path.join(asset_folder, assigned_id))
 
-            print(" \033[92m\033[1m[\u2713] Copied\033[0m")
+            print(
+                f" \033[92m\033[1m[\u2713] Copied ({counter + 1}/{len(self._assets)})\033[0m"
+            )
 
     def _generate_id(self, filename):
         """From the filename, create a safe resource id not already present
