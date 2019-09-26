@@ -145,6 +145,12 @@ class WebvizStorage:
             )
 
     def build_store(self):
+
+        total_calls = sum(
+            len(calls) for calls in self.storage_function_argvalues.values()
+        )
+        counter = 0
+
         for func in self.storage_functions:
             for argtuples in self.storage_function_argvalues[func]:
                 kwargs = dict(argtuples)
@@ -167,7 +173,10 @@ class WebvizStorage:
                 else:
                     raise ValueError(f"Unknown return type {type(output)}")
 
-                print(" \033[92m\033[1m[\u2713] Saved\033[0m")
+                counter += 1
+                print(
+                    f" \033[92m\033[1m[\u2713] Saved ({counter}/{total_calls})\033[0m"
+                )
 
 
 def webvizstore(func):

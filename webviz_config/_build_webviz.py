@@ -40,8 +40,8 @@ def build_webviz(args):
         if args.portable:
             print(
                 "\033[1m\033[94m"
-                "Extracting, processing and saving requested data to build "
-                "folder such that the webviz instance is portable."
+                "Saving requested data to build folder "
+                "such that the webviz instance is portable."
                 "\033[0m"
             )
 
