@@ -5,6 +5,8 @@ import pathlib
 
 import flask
 
+from .utils import terminal_colors
+
 
 class WebvizAssets:
     """Dash applications by default host static resources from a folder called
@@ -77,7 +79,7 @@ class WebvizAssets:
             new_filename = os.path.join(asset_folder, assigned_id)
 
             print(
-                "\033[94m" f"Copying over {filename} to {new_filename}" "\033[0m",
+                f"{terminal_colors.PURPLE} Copying over {filename} {terminal_colors.END}",
                 end="",
                 flush=True,
             )
@@ -85,7 +87,7 @@ class WebvizAssets:
             shutil.copyfile(filename, os.path.join(asset_folder, assigned_id))
 
             print(
-                f" \033[92m\033[1m[\u2713] Copied ({counter + 1}/{len(self._assets)})\033[0m"
+                f"{terminal_colors.PURPLE}{terminal_colors.BOLD} [\u2713] Copied ({counter + 1}/{len(self._assets)}){terminal_colors.END}"
             )
 
     def _generate_id(self, filename):

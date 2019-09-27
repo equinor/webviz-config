@@ -5,6 +5,7 @@ import threading
 import webbrowser
 
 from ._is_reload_process import is_reload_process
+from .utils import terminal_colors
 
 
 class LocalhostOpenBrowser:
@@ -65,10 +66,10 @@ class LocalhostOpenBrowser:
         """
 
         print(
-            " \n\033[92m"
+            f"{terminal_colors.GREEN}{terminal_colors.BOLD}"
             " Opening the application in your default browser.\n"
             " Press CTRL+C in this terminal window to stop the application."
-            " \033[0m\n"
+            f"{terminal_colors.END}"
         )
 
         webbrowser.open_new_tab(self._login_link)

@@ -120,7 +120,7 @@ def create_ca(args):
     ).upper()
 
     print(
-        f"""\n\033[1m\033[94m
+        f"""\n{terminal_colors.BLUE}{terminal_colors.BOLD}
  Created CA key and certificate files (both saved in {directory}).
  Keep the key file ({CA_KEY_FILENAME}) private. The certificate file
  ({CA_CRT_FILENAME}) is not sensitive, and you can import it in
@@ -141,7 +141,8 @@ def create_ca(args):
 
  When done, you do not have to rerun "webviz certificate" or do this procedure
  before the certificate expiry date has passed. The certificate is only valid
- for localhost and {DNS_NAME}."""
+ for localhost and {DNS_NAME}.
+ {terminal_colors.END}"""
     )
 
 
