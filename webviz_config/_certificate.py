@@ -11,6 +11,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 
+from .utils import terminal_colors
+
 
 NAME = x509.Name(
     [
