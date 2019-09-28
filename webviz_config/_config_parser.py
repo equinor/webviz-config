@@ -8,6 +8,7 @@ import yaml
 
 from . import containers as standard_containers
 from .containers import WebvizContainer
+from .utils import terminal_colors
 
 SPECIAL_ARGS = ["self", "app", "container_settings", "_call_signature", "_imports"]
 

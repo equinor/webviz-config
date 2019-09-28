@@ -143,8 +143,7 @@ def create_ca(args):
 
  When done, you do not have to rerun "webviz certificate" or do this procedure
  before the certificate expiry date has passed. The certificate is only valid
- for localhost and {DNS_NAME}.
- {terminal_colors.END}"""
+ for localhost and {DNS_NAME}.{terminal_colors.END}"""
     )
 
 
