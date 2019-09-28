@@ -153,9 +153,9 @@ class ConfigParser:
                     f"line {e.problem_mark.line + 1}."
                 )
 
-            raise type(e)(f"{e}. \033[91m{extra_info}\033[0m").with_traceback(
-                sys.exc_info()[2]
-            )
+            raise type(e)(
+                f"{e}. {terminal_colors.RED}{terminal_colors.BOLD}{extra_info}{terminal_colors.END}"
+            ).with_traceback(sys.exc_info()[2])
 
         self._config_folder = pathlib.Path(yaml_file).parent
         self._page_ids = []
