@@ -43,6 +43,7 @@ class WebvizContainer(abc.ABC):
     # All paths in the returned ASSETS list should be absolute.
     ASSETS = []
 
+    @property
     @abc.abstractmethod
     def layout(self):
         """This is the only required function of a Webviz Container.
