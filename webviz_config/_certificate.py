@@ -2,8 +2,10 @@ import os
 import re
 import sys
 import socket
-import datetime
+import pathlib
 import getpass
+import datetime
+import subprocess
 
 from cryptography import x509
 from cryptography.x509.oid import NameOID
@@ -38,7 +40,7 @@ def user_data_dir():
     """
 
     if sys.platform == "win32":
-        return os.path.normpath(os.path.expanduser("~/Application Data/" "webviz_cert"))
+        return os.path.normpath(os.path.expanduser("~/Application Data/webviz"))
     elif sys.platform == "darwin":
         return os.path.expanduser("~/Library/Application Support/webviz")
     else:
@@ -121,8 +123,42 @@ def create_ca(args):
         re.findall(".{8,8}", cert.fingerprint(hashes.SHA1()).hex())  # nosec
     ).upper()
 
-    print(
-        f"""\n{terminal_colors.BLUE}{terminal_colors.BOLD}
+    installed = False
+    if args.auto_install:
+        try:
+            subprocess.run(
+                [
+                    "certutil",
+                    "-d",
+                    f"sql:{pathlib.Path.home() / '.pki' / 'nssdb'}",
+                    "-A",
+                    "-t",
+                    "CT,C,c",
+                    "-n",
+                    "webviz",
+                    "-i",
+                    ca_crt_path,
+                ],
+                check=True,
+            )
+            installed = True
+            print(
+                f"{terminal_colors.GREEN}"
+                "Successfully installed webviz certificate. "
+                "Ready to browse applications on localhost."
+                f"{terminal_colors.END}"
+            )
+        except (PermissionError, subprocess.CalledProcessError):
+            print(
+                f"{terminal_colors.RED}"
+                "Automatic installation of webviz certificate failed. "
+                "Falling back to manual installation."
+                f"{terminal_colors.END}"
+            )
+
+    if not installed:
+        print(
+            f"""{terminal_colors.BLUE}{terminal_colors.BOLD}
  Created CA key and certificate files (both saved in {directory}).
  Keep the key file ({CA_KEY_FILENAME}) private. The certificate file
  ({CA_CRT_FILENAME}) is not sensitive, and you can import it in
@@ -144,7 +180,7 @@ def create_ca(args):
  When done, you do not have to rerun "webviz certificate" or do this procedure
  before the certificate expiry date has passed. The certificate is only valid
  for localhost and {DNS_NAME}.{terminal_colors.END}"""
-    )
+        )
 
 
 def create_certificate(directory):

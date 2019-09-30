@@ -60,6 +60,13 @@ def main():
         help="Overwrite webviz root https certificate if it already exist",
     )
 
+    parser_cert.add_argument(
+        "--auto-install",
+        action="store_true",
+        help="Automatically install the webviz certificate in "
+        " your personal public key infrastructure",
+    )
+
     parser_cert.set_defaults(func=create_ca)
 
     # Do the argument parsing:
