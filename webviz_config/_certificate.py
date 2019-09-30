@@ -5,7 +5,7 @@ import socket
 import pathlib
 import getpass
 import datetime
-import subprocess
+import subprocess  # nosec
 
 from cryptography import x509
 from cryptography.x509.oid import NameOID
@@ -121,7 +121,7 @@ def create_ca(args):
     installed = False
     if args.auto_install:
         try:
-            subprocess.run(
+            subprocess.run(  # nosec
                 [
                     "certutil",
                     "-d",
