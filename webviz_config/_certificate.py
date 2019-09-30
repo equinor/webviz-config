@@ -32,8 +32,6 @@ CA_CRT_FILENAME = "ca.crt"
 SERVER_KEY_FILENAME = "server.key"
 SERVER_CRT_FILENAME = "server.crt"
 
-DNS_NAME = re.sub("[0-9]+", "*", socket.getfqdn())
-
 
 def user_data_dir():
     """Returns platform specific path to store user application data
@@ -68,7 +66,7 @@ def create_key(key_path):
 def certificate_template(subject, issuer, public_key, ca=False):
 
     if ca:
-        not_valid_after = datetime.datetime.utcnow() + datetime.timedelta(days=365)
+        not_valid_after = datetime.datetime.utcnow() + datetime.timedelta(days=365 * 10)
 
     else:  # shorter valid length for on-the-fly certificates
         not_valid_after = datetime.datetime.utcnow() + datetime.timedelta(days=7)
@@ -82,10 +80,7 @@ def certificate_template(subject, issuer, public_key, ca=False):
         .not_valid_before(datetime.datetime.utcnow())
         .not_valid_after(not_valid_after)
         .add_extension(
-            x509.SubjectAlternativeName(
-                [x509.DNSName("localhost"), x509.DNSName(DNS_NAME)]
-            ),
-            critical=True,
+            x509.SubjectAlternativeName([x509.DNSName("localhost")]), critical=True
         )
         .add_extension(x509.BasicConstraints(ca=ca, path_length=None), critical=True)
     )
