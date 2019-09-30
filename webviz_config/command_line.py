@@ -51,13 +51,22 @@ def main():
     # Add "certificate" parser:
 
     parser_cert = subparsers.add_parser(
-        "certificate", help="Create a root " "certificate " "for https"
+        "certificate",
+        help="Create a https certificate authority for webviz "
+        "(validity limited to localhost only)",
     )
 
     parser_cert.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite webviz root https certificate if it already exist",
+        help="Overwrite webviz root https certificate if it already exists",
+    )
+
+    parser_cert.add_argument(
+        "--auto-install",
+        action="store_true",
+        help="Automatically install the webviz certificate in "
+        "your personal public key infrastructure",
     )
 
     parser_cert.set_defaults(func=create_ca)
