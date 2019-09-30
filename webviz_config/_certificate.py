@@ -138,7 +138,7 @@ def create_ca(args):
             )
             installed = True
             print(
-                f"{terminal_colors.GREEN}"
+                f"{terminal_colors.GREEN}{terminal_colors.BOLD}"
                 "Successfully installed webviz certificate. "
                 "Ready to browse applications on localhost."
                 f"{terminal_colors.END}"
