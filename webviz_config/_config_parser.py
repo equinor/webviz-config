@@ -8,6 +8,7 @@ import yaml
 
 from . import containers as standard_containers
 from .containers import WebvizContainer
+from .utils import terminal_colors
 
 SPECIAL_ARGS = ["self", "app", "container_settings", "_call_signature", "_imports"]
 
@@ -54,49 +55,51 @@ def _call_signature(
     for arg in required_args:
         if arg not in SPECIAL_ARGS and arg not in kwargs:
             raise ParserError(
-                "\033[91m"
+                f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 f"The container `{container_name}` requires "
                 f"the argument `{arg}` in your configuration "
                 "file."
-                "\033[0m"
+                f"{terminal_colors.END}"
             )
 
     for arg in list(kwargs):
         if arg in SPECIAL_ARGS:
             raise ParserError(
-                "\033[91m" f"Container argument `{arg}` not allowed." "\033[0m"
+                f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                f"Container argument `{arg}` not allowed."
+                f"{terminal_colors.END}"
             )
 
         if arg == "contact_person":
             if not isinstance(kwargs["contact_person"], dict):
                 raise ParserError(
-                    "\033[91m"
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     f"The contact information provided for "
                     f"container `{container_name}` is "
                     f"not a dictionary. "
-                    "\033[0m"
+                    f"{terminal_colors.END}"
                 )
             elif any(
                 key not in ["name", "phone", "email"]
                 for key in kwargs["contact_person"]
             ):
                 raise ParserError(
-                    "\033[91m"
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     f"Unrecognized contact information key "
                     f"given to container `{container_name}`."
                     f'Should be "name", "phone" and/or "email".'
-                    "\033[0m"
+                    f"{terminal_colors.END}"
                 )
             else:
                 contact_person = kwargs.pop("contact_person")
 
         elif arg not in argspec.args:
             raise ParserError(
-                "\033[91m"
+                f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 "Unrecognized argument. The container "
                 f"`{container_name}` does not take an "
                 f"argument `{arg}`."
-                "\033[0m"
+                f"{terminal_colors.END}"
             )
 
         if arg in argspec.annotations:
@@ -107,13 +110,13 @@ def _call_signature(
 
             if not isinstance(kwargs[arg], expected_type):
                 raise ParserError(
-                    "\033[91m"
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     f"The value provided for argument `{arg}` "
                     f"given to container `{container_name}` is "
                     f"of type `{type(kwargs[arg]).__name__}`. "
                     f"Expected type "
                     f"`{argspec.annotations[arg].__name__}`."
-                    "\033[0m"
+                    f"{terminal_colors.END}"
                 )
 
     special_args = ""
@@ -151,9 +154,9 @@ class ConfigParser:
                     f"line {e.problem_mark.line + 1}."
                 )
 
-            raise type(e)(f"{e}. \033[91m{extra_info}\033[0m").with_traceback(
-                sys.exc_info()[2]
-            )
+            raise type(e)(
+                f"{e}. {terminal_colors.RED}{terminal_colors.BOLD}{extra_info}{terminal_colors.END}"
+            ).with_traceback(sys.exc_info()[2])
 
         self._config_folder = pathlib.Path(yaml_file).parent
         self._page_ids = []
@@ -193,37 +196,37 @@ class ConfigParser:
 
         if "pages" not in self.configuration:
             raise ParserError(
-                "\033[91m"
+                f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 "The configuration file does not have "
                 "information regarding which pages to create."
-                "\033[0m"
+                f"{terminal_colors.END}"
             )
         elif not isinstance(self.configuration["pages"], list):
             raise ParserError(
-                "\033[91m"
+                f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 "The configuration input belonging to the "
                 "`pages` keyword should be a list."
-                "\033[0m"
+                f"{terminal_colors.END}"
             )
 
         for page_number, page in enumerate(self.configuration["pages"]):
 
             if "title" not in page:
                 raise ParserError(
-                    "\033[91m"
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     f"Page number {page_number + 1} does "
                     "not have the title specified."
-                    "\033[0m"
+                    f"{terminal_colors.END}"
                 )
 
             if "id" not in page:
                 page["id"] = self._generate_page_id(page["title"])
             elif page["id"] in self._page_ids:
                 raise ParserError(
-                    "\033[91m"
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     "You have more than one page "
                     "with the same `id`."
-                    "\033[0m"
+                    f"{terminal_colors.END}"
                 )
 
             self._page_ids.append(page["id"])
@@ -232,10 +235,10 @@ class ConfigParser:
                 page["content"] = []
             elif not isinstance(page["content"], list):
                 raise ParserError(
-                    "\033[91m"
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     "The content of page number "
                     f"{page_number + 1} should be a list."
-                    "\033[0m"
+                    f"{terminal_colors.END}"
                 )
 
             containers = [e for e in page["content"] if isinstance(e, dict)]
@@ -243,10 +246,10 @@ class ConfigParser:
             for container in containers:
                 if "container" not in container:
                     raise ParserError(
-                        "\033[91m"
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
                         "Argument `container`, stating name of "
                         "the container to include, is required."
-                        "\033[0m"
+                        f"{terminal_colors.END}"
                     )
 
                 kwargs = {**container}
@@ -255,12 +258,12 @@ class ConfigParser:
                 if "." not in container_name:
                     if container_name not in ConfigParser.STANDARD_CONTAINERS:
                         raise ParserError(
-                            "\033[91m"
+                            f"{terminal_colors.RED}{terminal_colors.BOLD}"
                             "You have included an container with "
                             f"name `{container_name}` in your "
                             "configuration file. This is not a "
                             "standard container."
-                            "\033[0m"
+                            f"{terminal_colors.END}"
                         )
                     else:
                         self.configuration["_imports"].add(
@@ -289,10 +292,10 @@ class ConfigParser:
 
                     if container_name not in _get_webviz_containers(module):
                         raise ParserError(
-                            "\033[91m"
+                            f"{terminal_colors.RED}{terminal_colors.BOLD}"
                             f"Module `{module}` does not have a "
                             f"container named `{container_name}`"
-                            "\033[0m"
+                            f"{terminal_colors.END}"
                         )
                     else:
                         self.configuration["_imports"].add(module_name)

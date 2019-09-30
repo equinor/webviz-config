@@ -5,8 +5,11 @@ import functools
 import hashlib
 import inspect
 import pathlib
-import pandas as pd
 from collections import defaultdict
+
+import pandas as pd
+
+from .utils import terminal_colors
 
 
 class WebvizStorage:
@@ -156,9 +159,9 @@ class WebvizStorage:
                 kwargs = dict(argtuples)
 
                 print(
-                    "\033[94m"
-                    f"Running {WebvizStorage.string(func, kwargs)}"
-                    "\033[0m",
+                    f"{terminal_colors.PURPLE}"
+                    f" Running {WebvizStorage.string(func, kwargs)}"
+                    f"{terminal_colors.END}",
                     end="",
                     flush=True,
                 )
@@ -175,7 +178,7 @@ class WebvizStorage:
 
                 counter += 1
                 print(
-                    f" \033[92m\033[1m[\u2713] Saved ({counter}/{total_calls})\033[0m"
+                    f"{terminal_colors.PURPLE}{terminal_colors.BOLD}[\u2713] Saved ({counter}/{total_calls}){terminal_colors.END}"
                 )
 
 

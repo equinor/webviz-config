@@ -9,7 +9,7 @@ from yaml import YAMLError
 from ._config_parser import ParserError
 from ._write_script import write_script
 from .themes import installed_themes
-
+from .utils import terminal_colors
 
 BUILD_FILENAME = "webviz_app.py"
 STATIC_FOLDER = os.path.join(os.path.dirname(__file__), "static")
@@ -39,10 +39,10 @@ def build_webviz(args):
     try:
         if args.portable:
             print(
-                "\033[1m\033[94m"
+                f"{terminal_colors.BLUE}{terminal_colors.BOLD}"
                 "Saving requested data to build folder "
                 "such that the webviz instance is portable."
-                "\033[0m"
+                f"{terminal_colors.END}"
             )
 
             write_script(
@@ -63,9 +63,9 @@ def build_webviz(args):
             os.remove(os.path.join(build_directory, "copy_data.py"))
 
             print(
-                "\033[1m\033[94m"
+                f"{terminal_colors.GREEN}{terminal_colors.BOLD}"
                 "Finished data extraction. All output saved."
-                "\033[0m"
+                f"{terminal_colors.END}"
             )
 
         non_default_assets = write_script(
@@ -87,9 +87,9 @@ def build_webviz(args):
 def run_webviz(args, build_directory):
 
     print(
-        " \n\033[92m"
+        f"{terminal_colors.YELLOW}"
         " Starting up your webviz application. Please wait..."
-        " \033[0m\n"
+        f"{terminal_colors.END}"
     )
 
     app_process = subprocess.Popen(  # nosec
@@ -108,24 +108,24 @@ def run_webviz(args, build_directory):
                     args, build_directory, "webviz_template.py.jinja2", BUILD_FILENAME
                 )
                 print(
-                    "\033[1m\033[94m"
+                    f"{terminal_colors.BLUE}{terminal_colors.BOLD}"
                     "Rebuilt webviz dash app from configuration file"
-                    "\033[0m"
+                    f"{terminal_colors.END}"
                 )
 
         except (ParserError, YAMLError) as e:
             print(
-                f"{e} \033[91m Fix the error and save the "
-                "configuration file in order to trigger a new "
-                "rebuild. \033[0m"
+                f"{e} {terminal_colors.RED}{terminal_colors.BOLD}"
+                "Fix the error and save the configuration file in "
+                " order to trigger a new rebuild."
+                f"{terminal_colors.END}"
             )
 
         except Exception as e:
             app_process.kill()
             print(
-                "\033[91m"
-                "Unexpected error. Killing the webviz dash "
-                "application process."
-                "\033[0m"
+                f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                "Unexpected error. Killing the webviz dash application process."
+                f"{terminal_colors.END}"
             )
             raise e
