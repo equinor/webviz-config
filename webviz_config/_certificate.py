@@ -195,7 +195,7 @@ def create_certificate(directory):
     if not os.path.isfile(ca_key_path) or not os.path.isfile(ca_crt_path):
         raise RuntimeError(
             "Could not find CA key and certificate. Please "
-            'run the command "webviz certificate" and '
+            'run the command "webviz certificate --auto-install" and '
             "try again"
         )
 
