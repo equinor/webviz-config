@@ -59,7 +59,7 @@ def main():
     parser_cert.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite webviz root https certificate  if it already exists",
+        help="Overwrite webviz root https certificate if it already exists",
     )
 
     parser_cert.add_argument(
