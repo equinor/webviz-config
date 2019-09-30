@@ -66,7 +66,7 @@ def main():
         "--auto-install",
         action="store_true",
         help="Automatically install the webviz certificate in "
-        " your personal public key infrastructure",
+        "your personal public key infrastructure",
     )
 
     parser_cert.set_defaults(func=create_ca)
