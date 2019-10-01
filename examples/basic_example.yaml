@@ -10,7 +10,7 @@ pages:
     - container: BannerImage
       image: ./example_banner.png
       title: My banner image
-   - Webviz created from configuration file.
+    - Webviz created from configuration file.
     - Some other text, potentially with strange letters like Åre, Smørbukk Sør.
 
  - title: Markdown example
@@ -55,7 +55,7 @@ pages:
         x: Well
         y: Initial reservoir pressure (bar)
         size: Average permeability (D)
-        facet_col: Segmentss
+        facet_col: Segment
       contact_person:
         name: Kari Nordmann
         phone: 12345678
