@@ -39,6 +39,19 @@ class LocalhostOpenBrowser:
             f"{self._login_link}"
         )
 
+    
+    @staticmethod
+    def _get_browser_controller():
+        for browser in ['chrome', 'chromium-browser']:
+            try:
+                return webbrowser.get(using=browser)
+            except webbrowser.Error:
+                pass
+
+        # Return default browser if none of the
+        # preferred browsers are installed:
+        return webbrowser.get()
+                
     def _app_ready(self):
         """Check if the flask instance is ready.
         """
@@ -72,4 +85,4 @@ class LocalhostOpenBrowser:
             f"{terminal_colors.END}"
         )
 
-        webbrowser.open_new_tab(self._login_link)
+        LocalhostOpenBrowser._get_browser_controller().open_new_tab(self._login_link)
