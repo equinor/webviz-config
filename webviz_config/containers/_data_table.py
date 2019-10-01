@@ -4,12 +4,12 @@ from pathlib import Path
 import pandas as pd
 import dash_table
 
-from . import WebvizContainer
+from .. import WebvizContainerABC
 from ..webviz_store import webvizstore
-from ..common_cache import cache
+from ..common_cache import CACHE
 
 
-class DataTable(WebvizContainer):
+class DataTable(WebvizContainerABC):
     """### Data table
 
 This container adds a table to the webviz instance, using tabular data from
@@ -56,7 +56,7 @@ a database.
         )
 
 
-@cache.memoize(timeout=cache.TIMEOUT)
+@CACHE.memoize(timeout=CACHE.TIMEOUT)
 @webvizstore
 def get_data(csv_file) -> pd.DataFrame:
     return pd.read_csv(csv_file)

@@ -1,11 +1,11 @@
 import pandas as pd
 
-from . import WebvizContainer
+from .. import WebvizContainerABC
 from ..webviz_store import webvizstore
-from ..common_cache import cache
+from ..common_cache import CACHE
 
 
-class ExamplePortable(WebvizContainer):
+class ExamplePortable(WebvizContainerABC):
     def __init__(self, some_number: int):
         self.some_number = some_number
 
@@ -17,7 +17,7 @@ class ExamplePortable(WebvizContainer):
         return str(input_data_function(self.some_number))
 
 
-@cache.memoize(timeout=cache.TIMEOUT)
+@CACHE.memoize(timeout=CACHE.TIMEOUT)
 @webvizstore
 def input_data_function(some_number) -> pd.DataFrame:
     print("This time I'm actually doing the calculation...")

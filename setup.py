@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONG_DESCRIPTION = fh.read()
 
-tests_requires = [
+TESTS_REQUIRES = [
     "chromedriver-binary>=74.0.3729.6.0",
     "pylint~=2.3",
     "selenium~=3.141",
@@ -15,7 +15,7 @@ tests_requires = [
 setup(
     name="webviz-config",
     description="Configuration file support for webviz",
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/equinor/webviz-config",
     author="R&T Equinor",
@@ -43,8 +43,8 @@ setup(
         "pyyaml~=5.1",
         "webviz-core-components>=0.0.8",
     ],
-    tests_require=tests_requires,
-    extras_require={"tests": tests_requires},
+    tests_require=TESTS_REQUIRES,
+    extras_require={"tests": TESTS_REQUIRES},
     setup_requires=["setuptools_scm~=3.2"],
     use_scm_version=True,
     zip_safe=False,

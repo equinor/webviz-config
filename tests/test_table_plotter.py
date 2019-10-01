@@ -1,6 +1,7 @@
 import time
 import dash
-from webviz_config.common_cache import cache
+
+from webviz_config.common_cache import CACHE
 from webviz_config.containers import _table_plotter
 
 
@@ -8,7 +9,7 @@ def test_table_plotter(dash_duo):
 
     app = dash.Dash(__name__)
     app.config.suppress_callback_exceptions = True
-    cache.init_app(app.server)
+    CACHE.init_app(app.server)
 
     csv_file = "./tests/data/example_data.csv"
     page = _table_plotter.TablePlotter(app, csv_file)
@@ -21,7 +22,7 @@ def test_table_plotter(dash_duo):
     # Checking that no plot options are defined
     assert page.plot_options == {}
     # Check that filter is not active
-    assert page.use_filter == False
+    assert not page.use_filter
 
     # Checking that the selectors are not hidden
     selector_row = dash_duo.find_element(f"#{page.selector_row}")
@@ -51,7 +52,7 @@ def test_table_plotter_filter(dash_duo):
 
     app = dash.Dash(__name__)
     app.config.suppress_callback_exceptions = True
-    cache.init_app(app.server)
+    CACHE.init_app(app.server)
 
     csv_file = "./tests/data/example_data.csv"
     page = _table_plotter.TablePlotter(app, csv_file, filter_cols=["Well"])
@@ -64,7 +65,7 @@ def test_table_plotter_filter(dash_duo):
     # Checking that no plot options are defined
     assert page.plot_options == {}
     # Check that filter is active
-    assert page.use_filter == True
+    assert page.use_filter
     assert page.filter_cols == ["Well"]
     # Checking that the selectors are not hidden
     selector_row = dash_duo.find_element(f"#{page.selector_row}")
@@ -96,7 +97,7 @@ def test_initialized_table_plotter(dash_duo):
     app.css.config.serve_locally = True
     app.scripts.config.serve_locally = True
     app.config.suppress_callback_exceptions = True
-    cache.init_app(app.server)
+    CACHE.init_app(app.server)
 
     csv_file = "./tests/data/example_data.csv"
     plot_options = dict(

@@ -2,11 +2,11 @@ from pathlib import Path
 
 import dash_html_components as html
 
-from . import WebvizContainer
-from ..webviz_assets import webviz_assets
+from .. import WebvizContainerABC
+from ..webviz_assets import WEBVIZ_ASSETS
 
 
-class BannerImage(WebvizContainer):
+class BannerImage(WebvizContainerABC):
     """### Banner image
 
 This container adds a full width _banner image_, with an optional overlayed
@@ -30,7 +30,7 @@ title. Useful on e.g. the front page for introducing a field or project.
         self.color = color
         self.shadow = shadow
 
-        self.image_url = webviz_assets.add(image)
+        self.image_url = WEBVIZ_ASSETS.add(image)
 
     @property
     def layout(self):

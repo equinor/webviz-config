@@ -1,9 +1,9 @@
 import os
 import glob
 
-from webviz_config.themes import WebvizConfigTheme
+from webviz_config import WebvizConfigTheme
 
-default_theme = WebvizConfigTheme(theme_name="default")
+default_theme = WebvizConfigTheme(theme_name="default")  # pylint: disable=invalid-name
 
 default_theme.assets = glob.glob(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "default_assets", "*")

@@ -113,19 +113,19 @@ def run_webviz(args, build_directory):
                     f"{terminal_colors.END}"
                 )
 
-        except (ParserError, YAMLError) as e:
+        except (ParserError, YAMLError) as excep:
             print(
-                f"{e} {terminal_colors.RED}{terminal_colors.BOLD}"
+                f"{excep} {terminal_colors.RED}{terminal_colors.BOLD}"
                 "Fix the error and save the configuration file in "
                 " order to trigger a new rebuild."
                 f"{terminal_colors.END}"
             )
 
-        except Exception as e:
+        except Exception as excep:
             app_process.kill()
             print(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 "Unexpected error. Killing the webviz dash application process."
                 f"{terminal_colors.END}"
             )
-            raise e
+            raise excep

@@ -11,9 +11,4 @@ def is_reload_process():
     sets an environment variable WERKZEUG_RUN_MAIN.
     """
 
-    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        reload_process = True
-    else:
-        reload_process = False
-
-    return reload_process
+    return os.environ.get("WERKZEUG_RUN_MAIN") == "true"

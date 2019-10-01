@@ -137,8 +137,9 @@ class WebvizStorage:
         try:
             if return_type == pd.DataFrame:
                 return pd.read_parquet(f"{path}.parquet")
-            elif return_type == pathlib.Path:
+            if return_type == pathlib.Path:
                 return pathlib.Path(glob.glob(f"{path}*")[0])
+            raise ValueError(f"Unknown return type {return_type}")
 
         except OSError:
             raise OSError(
@@ -178,25 +179,26 @@ class WebvizStorage:
 
                 counter += 1
                 print(
-                    f"{terminal_colors.PURPLE}{terminal_colors.BOLD}[\u2713] Saved ({counter}/{total_calls}){terminal_colors.END}"
+                    f"{terminal_colors.PURPLE}{terminal_colors.BOLD}"
+                    f"[\u2713] Saved ({counter}/{total_calls})"
+                    f"{terminal_colors.END}"
                 )
 
 
 def webvizstore(func):
 
-    webviz_storage.register_function(func)
+    WEBVIZ_STORAGE.register_function(func)
 
     @functools.wraps(func)
     def wrapper_decorator(*args, **kwargs):
-        if webviz_storage.use_storage:
-            return webviz_storage.get_stored_data(func, *args, **kwargs)
-        else:
-            return func(*args, **kwargs)
+        if WEBVIZ_STORAGE.use_storage:
+            return WEBVIZ_STORAGE.get_stored_data(func, *args, **kwargs)
+        return func(*args, **kwargs)
 
     return wrapper_decorator
 
 
-webviz_storage = WebvizStorage()
+WEBVIZ_STORAGE = WebvizStorage()
 
 
 @webvizstore

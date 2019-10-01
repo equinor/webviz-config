@@ -1,5 +1,5 @@
 import flask_caching
 
 
-cache = flask_caching.Cache(config={"CACHE_TYPE": "simple"})
-cache.TIMEOUT = 3600
+CACHE = flask_caching.Cache(config={"CACHE_TYPE": "simple"})
+CACHE.TIMEOUT = 3600

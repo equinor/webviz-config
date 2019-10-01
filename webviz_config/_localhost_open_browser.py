@@ -9,6 +9,8 @@ from .utils import terminal_colors
 
 
 class LocalhostOpenBrowser:
+    # pylint: disable=too-few-public-methods
+
     def __init__(self, port, token):
         self._port = port
         self._token = token
@@ -24,9 +26,9 @@ class LocalhostOpenBrowser:
         in the default browser.
         """
 
-        TIMEOUT = 120  # maximum number of seconds to wait before timeout
+        timeout = 120  # maximum number of seconds to wait before timeout
 
-        for _ in range(TIMEOUT):
+        for _ in range(timeout):
             if self._app_ready():
                 self._open_new_tab()
                 return
@@ -34,7 +36,7 @@ class LocalhostOpenBrowser:
             time.sleep(1)
 
         print(
-            f"WARNING: Webviz application still not ready after {TIMEOUT}s.\n"
+            f"WARNING: Webviz application still not ready after {timeout}s.\n"
             "Will not open browser automatically. Your private login link:\n"
             f"{self._login_link}"
         )
