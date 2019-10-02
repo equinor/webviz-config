@@ -38,7 +38,7 @@ def write_script(args, build_directory, template_filename, output_filename):
 
     template = template_environment.get_template(template_filename)
 
-    with open(os.path.join(build_directory, output_filename), "w") as fileheader:
-        fileheader.write(template.render(configuration))
+    with open(os.path.join(build_directory, output_filename), "w") as filehandle:
+        filehandle.write(template.render(configuration))
 
     return config_parser.assets

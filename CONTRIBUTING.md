@@ -21,13 +21,11 @@ mandatory to provide. A minimal container could look like:
 
 ```python
 import dash_html_components as html
-from webviz_config.containers import WebvizContainer
+
+from webviz_config import WebvizContainerABC
 
 
-class ExampleContainer(WebvizContainer):
-
-    def __init__(self):
-        pass
+class ExampleContainer(WebvizContainerABC):
 
     @property
     def layout(self):
@@ -39,7 +37,7 @@ class ExampleContainer(WebvizContainer):
 
 If the file containing `ExampleContainer` is saved to [./webviz_config/containers](./webviz_config/containers),
 and then added to the corresponding [\_\_init\_\_ file](./webviz_config/containers/__init__.py)
-you are done. Alternatively you can create you containers in a separate project and `setup.py`.
+you are done. Alternatively you can create your containers in a separate Python project and `setup.py`.
 You can then configure the installation by using something like:
 ```python
 setup(
@@ -70,7 +68,7 @@ pages:
 
 In the generated webviz application, your container will as default be given
 a button toolbar. The default buttons to appear is stored in the class constant
-`WebvizContainer.TOOLBAR_BUTTONS`. If you want to override which buttons should
+`WebvizContainerABC.TOOLBAR_BUTTONS`. If you want to override which buttons should
 appear, redefine this class constant in your subclass. To remove all buttons,
 simply define it as an empty list. See [this section](#data-download-callback)
 for more information regarding the `data_download` button.
@@ -82,12 +80,13 @@ backend, you can add callbacks. A simple example of this is given below.
 
 ```python
 from uuid import uuid4
+
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from webviz_config.containers import WebvizContainer
+from webviz_config import WebvizContainerABC
 
 
-class ExampleContainer(WebvizContainer):
+class ExampleContainer(WebvizContainerABC):
 
     def __init__(self, app):
         self.button_id = f'submit-button-{uuid4()}'
@@ -135,14 +134,14 @@ There are three fundamental additions to the minimal example without callbacks:
 #### Data download callback
 
 There is a [data download button](#override-container-toolbar) provided by
-the `WebvizContainer` class. However, it will only appear if the corresponding
+the `WebvizContainerABC` class. However, it will only appear if the corresponding
 callback is set. A typical data download callback will look like
 
 ```python
 @app.callback(self.container_data_output,
               [self.container_data_requested])
 def _user_download_data(data_requested):
-    return WebvizContainer.container_data_compress(
+    return WebvizContainerABC.container_data_compress(
         [{'filename': 'some_file.txt',
           'content': 'Some download data'}]
     ) if data_requested else ''
@@ -156,7 +155,7 @@ The attributes `self.container_data_output` and `self.container_data_requested`
 are Dash `Output` and `Input` instances respectively, and are provided by
 the base class `WebvizContainer` (i.e. include them as shown here).
 
-The function `WebvizContainer.container_data_compress` is a utility function
+The function `WebvizContainerABC.container_data_compress` is a utility function
 which takes a list of dictionaries, giving filenames and corresponding data,
 and compresses them to a zip archive which is then downloaded by the user.
 
@@ -167,10 +166,10 @@ user provided arguments. A minimal example could look like:
 
 ```python
 import dash_html_components as html
-from webviz_config.containers import WebvizContainer
+from webviz_config import WebvizContainerABC
 
 
-class ExampleContainer(WebvizContainer):
+class ExampleContainer(WebvizContainerABC):
 
     def __init__(self, title: str, number: int=42):
         self.title = title
@@ -246,19 +245,18 @@ given to the container as an absolute path, and of type `pathlib.Path`.
 
 ### Data input
 
-The containers get data input through ordinary Python functions, usually
-defined outside of the container class. Since these functions can be costly to
-call, we utilize the [flask-caching](https://pythonhosted.org/Flask-Caching/)
-package. By decorating the costly functions with `@cache.memoize(timeout=cache.TIMEOUT)`
+The containers get data input through ordinary Python functions.
+Since these functions can be costly to call, we utilize the
+[flask-caching](https://pythonhosted.org/Flask-Caching/) package.
+By decorating the costly functions with `@CACHE.memoize(timeout=CACHE.TIMEOUT)`
 the result is cached, such that if the same function is called more than once,
 within the timeout, the cached result will be used instead of starting
 a new calculation.
 
-Functionality used by multiple containers should be put in a common module.
-In order to not have many `cache` instances in memory, it is suggested to
-import the common cache instance,
+Functionality used by multiple containers should be put in a common module. The
+applications common cache instance can be imported using
 ```python
-from webviz_config.common_cache import cache
+from webviz_config.common_cache import CACHE
 ```
 
 ### Deattaching data from its original source
@@ -283,7 +281,7 @@ the file system, and then returns a `pd.DataFrame`. If we want
 `webviz-config` to facilitate the transition to a portable webviz instance,
 the container author needs only do three things:
 
-1) Import the decorator: `from ..webviz_store import webvizstore`
+1) Import the decorator: `from webviz_config.webviz_store import webvizstore`
 2) Decorate the function as this:
    ```python
    @webvizstore
@@ -306,11 +304,11 @@ A full example could look like e.g.:
 ```python
 import pandas as pd
 from webviz_config.webviz_store import webvizstore
-from webviz_config.common_cache import cache
-from webviz_config.containers import WebvizContainer
+from webviz_config.common_cache import CACHE
+from webviz_config import WebvizContainerABC
 
 
-class ExamplePortable(WebvizContainer):
+class ExamplePortable(WebvizContainerABC):
 
     def __init__(self, some_number: int):
         self.some_number = some_number
@@ -323,7 +321,7 @@ class ExamplePortable(WebvizContainer):
         return str(input_data_function(self.some_number))
 
 
-@cache.memoize(timeout=cache.TIMEOUT)
+@CACHE.memoize(timeout=CACHE.TIMEOUT)
 @webvizstore
 def input_data_function(some_number) -> pd.DataFrame:
     print("This time I'm actually doing the calculation...")
@@ -360,27 +358,30 @@ use cases, the decorated function `get_resource` in
 `webviz_config.webviz_store` can be imported and used.
 
 
-**Note:** The argument hashing method used for `@webvizstore` is using
-the same principles as in `@cache.memoize` from the `flask-caching` package.
+> :bookmark_tabs: The argument hashing method used for `@webvizstore` is using
+the same principles as in the `flask-caching` package.
 The input arguments to a function decorated with `@webvizstore` could be
 mutable objects like e.g. instances of a class, but make sure that the object
 has a `__repr__` function associated with it such that instances representing
 different input also have different string output from `__repr__`.
 
-**Note:** If you nest decorations, e.g. use both `@webvizstore` and
-`@cache.memoize`, follow the same order as in the example above.
+> :rocket: If you nest decorations, e.g. use both `@webvizstore` and
+`@CACHE.memoize`, following the same order as in the example above usually gives 
+best performance.
 
 ### Custom ad-hoc containers
 
 It is possible to create custom containers which still can be included through
-the configuration file. As an example, assume someone on your project has made
+the configuration file, which could be useful for quick prototyping.
+
+As an example, assume someone on your project has made the Python file
 
 ```python
 import dash_html_components as html
-from webviz_config.containers import WebvizContainer
+from webviz_config import WebvizContainerABC
 
 
-class OurCustomContainer(WebvizContainer):
+class OurCustomContainer(WebvizContainerABC):
 
     def __init__(self, title: str):
         self.title = title

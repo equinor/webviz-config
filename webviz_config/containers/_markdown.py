@@ -33,7 +33,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
         super(_MarkdownImageProcessor, self).__init__(image_link_re, md)
 
     def handleMatch(self, m, data):
-        image, start, index = super().handleMatch(m, data=data)
+        image, start, index = super().handleMatch(m, data)
 
         if image is None or not image.get("title"):
             return image, start, index
