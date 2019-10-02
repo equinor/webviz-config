@@ -10,6 +10,7 @@ TESTS_REQUIRES = [
     "mock",
     "pytest-xdist",
     "black",
+    "bandit",
 ]
 
 setup(
