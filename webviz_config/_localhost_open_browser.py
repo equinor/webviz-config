@@ -79,7 +79,7 @@ class LocalhostOpenBrowser:
 
         print(
             f"{terminal_colors.GREEN}{terminal_colors.BOLD}"
-            " Opening the application in your default browser.\n"
+            " Opening the localhost application automatically in your browser.\n"
             " Press CTRL+C in this terminal window to stop the application."
             f"{terminal_colors.END}"
         )
