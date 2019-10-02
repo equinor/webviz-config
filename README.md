@@ -124,9 +124,9 @@ and then modifies `./examples/basic_example.yaml` while the Webviz application i
 still running, a hot reload will occur.
 
 By default `webviz-config` uses `https` and runs on `localhost`.
-In order to create your personal `https` certificate, run
+In order to create your personal `https` certificate (only valid for `localhost`), run
 ```bash
-webviz certificate
+webviz certificate --auto-install
 ```
 Certificate installation guidelines will be given when running the command.
 
