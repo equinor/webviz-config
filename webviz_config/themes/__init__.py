@@ -7,7 +7,7 @@ installed_themes = {  # pylint: disable=invalid-name
     default_theme.theme_name: default_theme
 }
 
-__all__ = ["WebvizConfigTheme", "installed_themes"]
+__all__ = ["installed_themes"]
 
 for entry_point in pkg_resources.iter_entry_points("webviz_config_themes"):
     theme = entry_point.load()
