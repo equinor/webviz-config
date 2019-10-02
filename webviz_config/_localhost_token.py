@@ -57,13 +57,15 @@ class LocalhostToken:
         return self._ott
 
     def set_request_decorators(self):
+        # pylint: disable=inconsistent-return-statements
         @self._app.before_request
         def _check_for_ott_or_cookie():
             if not self._ott_validated and self._ott == flask.request.args.get("ott"):
                 self._ott_validated = True
                 flask.g.set_cookie_token = True
                 return flask.redirect(flask.request.base_url)
-            elif self._cookie_token == flask.request.cookies.get("cookie_token"):
+
+            if self._cookie_token == flask.request.cookies.get("cookie_token"):
                 self._ott_validated = True
             else:
                 flask.abort(401)

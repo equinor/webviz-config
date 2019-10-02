@@ -28,6 +28,9 @@ script:
   - pip install .[tests]
   - pip install dash[testing]
   - black --check webviz_config tests setup.py
+  - pylint webviz_config tests setup.py
+  - bandit -r -c ./bandit.yml webviz_config tests setup.py
+
   - webviz certificate
   - pytest tests --forked
   - pushd ./docs; python build_docs.py; popd

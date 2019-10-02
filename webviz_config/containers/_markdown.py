@@ -7,8 +7,8 @@ from markdown.extensions import Extension
 from markdown.inlinepatterns import ImageInlineProcessor, IMAGE_LINK_RE
 import dash_core_components as html
 
-from . import WebvizContainer
-from ..webviz_assets import webviz_assets
+from .. import WebvizContainerABC
+from ..webviz_assets import WEBVIZ_ASSETS
 from ..webviz_store import webvizstore
 
 
@@ -32,8 +32,8 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
 
         super(_MarkdownImageProcessor, self).__init__(image_link_re, md)
 
-    def handleMatch(self, match, data):
-        image, start, index = super().handleMatch(match, data)
+    def handleMatch(self, m, data):
+        image, start, index = super().handleMatch(m, data)
 
         if image is None or not image.get("title"):
             return image, start, index
@@ -51,7 +51,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
         if not image_path.is_absolute():
             image_path = (self.base_path / image_path).resolve()
 
-        url = webviz_assets.add(image_path)
+        url = WEBVIZ_ASSETS.add(image_path)
 
         image_style = ""
         for style_prop in image.get("alt").split(","):
@@ -77,7 +77,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
         return container, start, index
 
 
-class Markdown(WebvizContainer):
+class Markdown(WebvizContainerABC):
     """### Include Markdown
 
 _Note:_ The markdown syntax for images has been extended to support

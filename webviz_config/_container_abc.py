@@ -9,12 +9,12 @@ from dash.dependencies import Input, Output
 import webviz_core_components as wcc
 
 
-class WebvizContainer(abc.ABC):
+class WebvizContainerABC(abc.ABC):
     """All webviz containers need to subclass this abstract base class,
     e.g.
 
     ```python
-    class MyContainer(WebvizContainer):
+    class MyContainer(WebvizContainerABC):
 
         def __init__(self):
             ...
@@ -50,16 +50,19 @@ class WebvizContainer(abc.ABC):
         It returns a Dash layout which by webviz-config is added to
         the main Webviz application.
         """
-        pass
 
     @property
     def _container_wrapper_id(self):
+        # pylint: disable=attribute-defined-outside-init
+        # We do not have a __init__ method in this abstract base class
         if not hasattr(self, "_container_wrapper_uuid"):
             self._container_wrapper_uuid = uuid4()
         return f"container-wrapper-{self._container_wrapper_uuid}"
 
     @property
     def container_data_output(self):
+        # pylint: disable=attribute-defined-outside-init
+        # We do not have a __init__ method in this abstract base class
         self._add_download_button = True
         return Output(self._container_wrapper_id, "zip_base64")
 
@@ -79,7 +82,7 @@ class WebvizContainer(abc.ABC):
 
         return base64.b64encode(byte_io.read()).decode("ascii")
 
-    def container_layout(self, app, contact_person=None):
+    def container_layout(self, contact_person=None):
         """This function returns (if the class constant SHOW_TOOLBAR is True,
         the container layout wrapped into a common webviz config container
         component, which provides some useful buttons like download of data,
@@ -111,5 +114,4 @@ class WebvizContainer(abc.ABC):
                 contact_person=contact_person,
                 children=[self.layout],
             )
-        else:
-            return self.layout
+        return self.layout

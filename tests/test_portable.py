@@ -1,24 +1,26 @@
 import sys
-import subprocess
+import subprocess  # nosec
 
 
 def test_portable(dash_duo, tmp_path):
     # Build a portable webviz from config file
     appdir = tmp_path / "app"
-    subprocess.call(
+    subprocess.call(  # nosec
         ["webviz", "build", "basic_example.yaml", "--portable", appdir], cwd="examples"
     )
+
     # Remove Talisman
-    fn = appdir / "webviz_app.py"
-    with open(fn, "r") as f:
-        lines = f.readlines()
-    with open(fn, "w") as f:
+    filename = appdir / "webviz_app.py"
+    with open(filename, "r") as filehandle:
+        lines = filehandle.readlines()
+    with open(filename, "w") as filehandle:
         for line in lines:
             if not line.strip("\n").startswith("Talisman"):
-                f.write(line)
+                filehandle.write(line)
+
     # Import generated app
     sys.path.append(str(appdir))
-    from webviz_app import app
+    from webviz_app import app  # pylint: disable=import-error
 
     # Start and test app
     dash_duo.start_server(app)

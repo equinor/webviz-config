@@ -13,7 +13,7 @@ class WebvizConfigTheme:
             "style-src": ["'self'", "'unsafe-inline'"],  # [1]
             "script-src": [
                 "'self'",
-                ("'sha256-jZlsGVOhUAIcH+4PV" "s7QuGZkthRMgvT2n0ilH6/zTM0='"),
+                "'sha256-jZlsGVOhUAIcH+4PVs7QuGZkthRMgvT2n0ilH6/zTM0='",
             ],  # [2]
             "img-src": ["'self'", "data:"],
             "navigate-to": "'self'",

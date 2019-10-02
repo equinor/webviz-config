@@ -7,7 +7,7 @@ import importlib
 import yaml
 
 from . import containers as standard_containers
-from .containers import WebvizContainer
+from . import WebvizContainerABC
 from .utils import terminal_colors
 
 SPECIAL_ARGS = ["self", "app", "container_settings", "_call_signature", "_imports"]
@@ -19,7 +19,7 @@ def _get_webviz_containers(module):
     """
 
     def _is_webviz_container(obj):
-        return inspect.isclass(obj) and issubclass(obj, WebvizContainer)
+        return inspect.isclass(obj) and issubclass(obj, WebvizContainerABC)
 
     return [member[0] for member in inspect.getmembers(module, _is_webviz_container)]
 
@@ -33,6 +33,7 @@ def _call_signature(
     config_folder,
     contact_person=None,
 ):
+    # pylint: disable=too-many-branches
     """Takes as input the name of a container, the module it is located in,
     together with user given arguments (originating from the configuration
     file). Returns the equivalent Python code wrt. initiating an instance of
@@ -79,7 +80,8 @@ def _call_signature(
                     f"not a dictionary. "
                     f"{terminal_colors.END}"
                 )
-            elif any(
+
+            if any(
                 key not in ["name", "phone", "email"]
                 for key in kwargs["contact_person"]
             ):
@@ -90,8 +92,8 @@ def _call_signature(
                     f'Should be "name", "phone" and/or "email".'
                     f"{terminal_colors.END}"
                 )
-            else:
-                contact_person = kwargs.pop("contact_person")
+
+            contact_person = kwargs.pop("contact_person")
 
         elif arg not in argspec.args:
             raise ParserError(
@@ -128,7 +130,7 @@ def _call_signature(
 
     return (
         f"{module_name}.{container_name}({special_args}**{kwargs})",
-        f"container_layout(app=app, contact_person={contact_person})",
+        f"container_layout(contact_person={contact_person})",
     )
 
 
@@ -143,19 +145,20 @@ class ConfigParser:
     def __init__(self, yaml_file):
         try:
             self._configuration = yaml.safe_load(open(yaml_file, "r"))
-        except yaml.YAMLError as e:
+        except yaml.MarkedYAMLError as excep:
             extra_info = (
                 f"There is something wrong in the configuration file {yaml_file}. "
             )
 
-            if hasattr(e, "problem_mark"):
+            if hasattr(excep, "problem_mark"):
                 extra_info += (
                     "The typo is probably somewhere around "
-                    f"line {e.problem_mark.line + 1}."
+                    f"line {excep.problem_mark.line + 1}."
                 )
 
-            raise type(e)(
-                f"{e}. {terminal_colors.RED}{terminal_colors.BOLD}{extra_info}{terminal_colors.END}"
+            raise type(excep)(
+                f"{excep}. {terminal_colors.RED}{terminal_colors.BOLD}"
+                f"{extra_info}{terminal_colors.END}"
             ).with_traceback(sys.exc_info()[2])
 
         self._config_folder = pathlib.Path(yaml_file).parent
@@ -180,6 +183,7 @@ class ConfigParser:
         return page_id
 
     def clean_configuration(self):
+        # pylint: disable=too-many-branches
         """Various cleaning and checks of the raw configuration read
         from the user provided yaml configuration file.
         """
@@ -201,7 +205,8 @@ class ConfigParser:
                 "information regarding which pages to create."
                 f"{terminal_colors.END}"
             )
-        elif not isinstance(self.configuration["pages"], list):
+
+        if not isinstance(self.configuration["pages"], list):
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 "The configuration input belonging to the "
@@ -265,23 +270,23 @@ class ConfigParser:
                             "standard container."
                             f"{terminal_colors.END}"
                         )
-                    else:
-                        self.configuration["_imports"].add(
-                            ("webviz_config.containers", "standard_containers")
-                        )
 
-                        container["_call_signature"] = _call_signature(
-                            standard_containers,
-                            "standard_containers",
-                            container_name,
-                            container_settings,
-                            kwargs,
-                            self._config_folder,
-                        )
+                    self.configuration["_imports"].add(
+                        ("webviz_config.containers", "standard_containers")
+                    )
 
-                        self.assets.update(
-                            getattr(standard_containers, container_name).ASSETS
-                        )
+                    container["_call_signature"] = _call_signature(
+                        standard_containers,
+                        "standard_containers",
+                        container_name,
+                        container_settings,
+                        kwargs,
+                        self._config_folder,
+                    )
+
+                    self.assets.update(
+                        getattr(standard_containers, container_name).ASSETS
+                    )
 
                 else:
                     parts = container_name.split(".")
@@ -297,18 +302,18 @@ class ConfigParser:
                             f"container named `{container_name}`"
                             f"{terminal_colors.END}"
                         )
-                    else:
-                        self.configuration["_imports"].add(module_name)
-                        container["_call_signature"] = _call_signature(
-                            module,
-                            module_name,
-                            container_name,
-                            container_settings,
-                            kwargs,
-                            self._config_folder,
-                        )
 
-                        self.assets.update(getattr(module, container_name).ASSETS)
+                    self.configuration["_imports"].add(module_name)
+                    container["_call_signature"] = _call_signature(
+                        module,
+                        module_name,
+                        container_name,
+                        container_settings,
+                        kwargs,
+                        self._config_folder,
+                    )
+
+                    self.assets.update(getattr(module, container_name).ASSETS)
 
     @property
     def configuration(self):

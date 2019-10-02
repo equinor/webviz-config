@@ -13,7 +13,7 @@ def write_script(args, build_directory, template_filename, output_filename):
     configuration = config_parser.configuration
 
     configuration["port"] = args.port
-    configuration["portable"] = True if args.portable else False
+    configuration["portable"] = args.portable is not None
 
     theme = installed_themes[args.theme]
     configuration["csp"] = theme.csp
@@ -38,7 +38,7 @@ def write_script(args, build_directory, template_filename, output_filename):
 
     template = template_environment.get_template(template_filename)
 
-    with open(os.path.join(build_directory, output_filename), "w") as fh:
-        fh.write(template.render(configuration))
+    with open(os.path.join(build_directory, output_filename), "w") as filehandle:
+        filehandle.write(template.render(configuration))
 
     return config_parser.assets

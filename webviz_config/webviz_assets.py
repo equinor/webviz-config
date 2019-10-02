@@ -70,14 +70,13 @@ class WebvizAssets:
             if asset_id in self._assets:  # Only serve white listed resources
                 path = pathlib.Path(self._assets[asset_id])
                 return flask.send_from_directory(path.parent, path.name)
+            return None
 
     def make_portable(self, asset_folder):
         """Copy over all added assets to the given folder (asset_folder).
         """
 
         for counter, (assigned_id, filename) in enumerate(self._assets.items()):
-            new_filename = os.path.join(asset_folder, assigned_id)
-
             print(
                 f"{terminal_colors.PURPLE} Copying over {filename} {terminal_colors.END}",
                 end="",
@@ -87,7 +86,9 @@ class WebvizAssets:
             shutil.copyfile(filename, os.path.join(asset_folder, assigned_id))
 
             print(
-                f"{terminal_colors.PURPLE}{terminal_colors.BOLD} [\u2713] Copied ({counter + 1}/{len(self._assets)}){terminal_colors.END}"
+                f"{terminal_colors.PURPLE}{terminal_colors.BOLD} "
+                f"[\u2713] Copied ({counter + 1}/{len(self._assets)})"
+                f"{terminal_colors.END}"
             )
 
     def _generate_id(self, filename):
@@ -105,4 +106,4 @@ class WebvizAssets:
         return asset_id
 
 
-webviz_assets = WebvizAssets()
+WEBVIZ_ASSETS = WebvizAssets()

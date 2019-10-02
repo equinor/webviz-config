@@ -3,9 +3,9 @@
 
 import dash
 import os.path as path
-from webviz_config.webviz_store import webviz_storage
-from webviz_config.webviz_assets import webviz_assets
-from webviz_config.common_cache import cache
+from webviz_config.webviz_store import WEBVIZ_STORAGE
+from webviz_config.webviz_assets import WEBVIZ_ASSETS
+from webviz_config.common_cache import CACHE
 from pathlib import Path, PosixPath
 {% for module in _imports %}
 {%- if module is string -%}
@@ -18,9 +18,9 @@ import {{ module[0] }} as {{ module[1] }}
 app = dash.Dash()
 app.config.suppress_callback_exceptions = True
 
-cache.init_app(app.server)
+CACHE.init_app(app.server)
 
-webviz_storage.storage_folder = path.join(path.dirname(path.realpath(__file__)),
+WEBVIZ_STORAGE.storage_folder = path.join(path.dirname(path.realpath(__file__)),
                                           'webviz_storage')
 
 # The lines below can be simplified when assignment
@@ -39,9 +39,9 @@ containers.append({{ content._call_signature[0] }})
 
 for container in containers:
     if hasattr(container, 'add_webvizstore'):
-        webviz_storage.register_function_arguments(container.add_webvizstore())
+        WEBVIZ_STORAGE.register_function_arguments(container.add_webvizstore())
 
-webviz_storage.build_store()
+WEBVIZ_STORAGE.build_store()
 
-webviz_assets.make_portable(path.join(path.dirname(path.realpath(__file__)),
+WEBVIZ_ASSETS.make_portable(path.join(path.dirname(path.realpath(__file__)),
                                       'assets'))

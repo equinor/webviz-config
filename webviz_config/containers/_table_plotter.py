@@ -10,12 +10,12 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import webviz_core_components as wcc
 
-from . import WebvizContainer
+from .. import WebvizContainerABC
 from ..webviz_store import webvizstore
-from ..common_cache import cache
+from ..common_cache import CACHE
 
 
-class TablePlotter(WebvizContainer):
+class TablePlotter(WebvizContainerABC):
     """### TablePlotter
 
 This container adds a plotter to the webviz instance, using tabular data from
@@ -241,7 +241,7 @@ a database.
                     dcc.Dropdown(
                         id=f"{self.plot_option_id}-plottype",
                         clearable=False,
-                        options=[{"label": i, "value": i} for i in self.plots.keys()],
+                        options=[{"label": i, "value": i} for i in self.plots],
                         value=self.plot_options.get("type", "scatter"),
                     ),
                 ],
@@ -344,7 +344,7 @@ a database.
         @app.callback(self.container_data_output, [self.container_data_requested])
         def _user_download_data(data_requested):
             return (
-                WebvizContainer.container_data_compress(
+                WebvizContainerABC.container_data_compress(
                     [
                         {
                             "filename": "table_plotter.csv",
@@ -360,6 +360,7 @@ a database.
         def _update_output(*args):
             """Updates the graph and shows/hides plot options"""
             plot_type = args[0]
+            # pylint: disable=protected-access
             plotfunc = getattr(px._chart_types, plot_type)
             plotargs = {}
             div_style = []
@@ -381,13 +382,13 @@ a database.
             return (plotfunc(data, **plotargs), *div_style)
 
 
-@cache.memoize(timeout=cache.TIMEOUT)
+@CACHE.memoize(timeout=CACHE.TIMEOUT)
 @webvizstore
 def get_data(csv_file) -> pd.DataFrame:
     return pd.read_csv(csv_file, index_col=None)
 
 
-@cache.memoize(timeout=cache.TIMEOUT)
+@CACHE.memoize(timeout=CACHE.TIMEOUT)
 def filter_dataframe(dframe, columns, column_values):
     df = dframe.copy()
     if not isinstance(columns, list):

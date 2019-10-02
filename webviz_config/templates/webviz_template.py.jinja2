@@ -15,9 +15,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 from flask_talisman import Talisman
 import webviz_config
-from webviz_config.common_cache import cache
-from webviz_config.webviz_store import webviz_storage
-from webviz_config.webviz_assets import webviz_assets
+from webviz_config.common_cache import CACHE
+from webviz_config.webviz_store import WEBVIZ_STORAGE
+from webviz_config.webviz_assets import WEBVIZ_ASSETS
 {% for module in _imports %}
 {%- if module is string -%}
 import {{ module }}
@@ -58,19 +58,19 @@ app.webviz_settings = {
     'plotly_layout': {{ plotly_layout }}
                       }
 
-cache.init_app(server)
+CACHE.init_app(server)
 
 CSP = {{ csp }}
 FEATURE_POLICY = {{ feature_policy }}
 
 Talisman(server, content_security_policy=CSP, feature_policy=FEATURE_POLICY)
 
-webviz_storage.use_storage = {{ portable }}
-webviz_storage.storage_folder = path.join(path.dirname(path.realpath(__file__)),
+WEBVIZ_STORAGE.use_storage = {{ portable }}
+WEBVIZ_STORAGE.storage_folder = path.join(path.dirname(path.realpath(__file__)),
                                           'webviz_storage')
 
-webviz_assets.portable = {{ portable }}
-{{ 'webviz_assets.register_app(app)' if not portable else ''}}
+WEBVIZ_ASSETS.portable = {{ portable }}
+{{ 'WEBVIZ_ASSETS.register_app(app)' if not portable else ''}}
 
 app.layout = dcc.Tabs(parent_className="layoutWrapper",
                       content_className='pageWrapper',
