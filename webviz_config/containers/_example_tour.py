@@ -13,8 +13,8 @@ class ExampleTour(WebvizContainerABC):
     @property
     def tour_steps(self):
         return [
-            {"selector": f"#{self.blue_text_id}", "content": "This is the first step"},
-            {"selector": f"#{self.red_text_id}", "content": "This is the second step"},
+            {"id": self.blue_text_id, "content": "This is the first step"},
+            {"id": self.red_text_id, "content": "This is the second step"},
         ]
 
     @property

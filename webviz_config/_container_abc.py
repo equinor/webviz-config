@@ -77,6 +77,12 @@ class WebvizContainerABC(abc.ABC):
         return Input(self._container_wrapper_id, "data_requested")
 
     @staticmethod
+    def _reformat_tour_steps(steps):
+        return [
+            {"selector": f"#{step['id']}", "content": step["content"]} for step in steps
+        ]
+
+    @staticmethod
     def container_data_compress(content):
         byte_io = io.BytesIO()
 
@@ -119,7 +125,9 @@ class WebvizContainerABC(abc.ABC):
                 buttons=buttons,
                 contact_person=contact_person,
                 children=[self.layout],
-                tour_steps=self.tour_steps  # pylint: disable=no-member
+                tour_steps=WebvizContainerABC._reformat_tour_steps(
+                    self.tour_steps
+                )  # pylint: disable=no-member
                 if "guided_tour" in buttons and hasattr(self, "tour_steps")
                 else [],
             )
