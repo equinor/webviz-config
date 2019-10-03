@@ -35,7 +35,13 @@ class WebvizContainerABC(abc.ABC):
     # E.g. download of zip archive will only appear if the container also
     # has defined the corresponding callback, and contact person will only
     # appear if the user configuration file has this information.
-    TOOLBAR_BUTTONS = ["screenshot", "expand", "download_zip", "contact_person"]
+    TOOLBAR_BUTTONS = [
+        "screenshot",
+        "expand",
+        "download_zip",
+        "contact_person",
+        "guided_tour",
+    ]
 
     # List of container specific assets which should be copied
     # over to the ./assets folder in the generated webviz app.
@@ -69,6 +75,12 @@ class WebvizContainerABC(abc.ABC):
     @property
     def container_data_requested(self):
         return Input(self._container_wrapper_id, "data_requested")
+
+    @staticmethod
+    def _reformat_tour_steps(steps):
+        return [
+            {"selector": "#" + step["id"], "content": step["content"]} for step in steps
+        ]
 
     @staticmethod
     def container_data_compress(content):
@@ -113,5 +125,10 @@ class WebvizContainerABC(abc.ABC):
                 buttons=buttons,
                 contact_person=contact_person,
                 children=[self.layout],
+                tour_steps=WebvizContainerABC._reformat_tour_steps(
+                    self.tour_steps  # pylint: disable=no-member
+                )
+                if "guided_tour" in buttons and hasattr(self, "tour_steps")
+                else [],
             )
         return self.layout

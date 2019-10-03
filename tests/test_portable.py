@@ -29,6 +29,7 @@ def test_portable(dash_duo, tmp_path):
         "table_example",
         "pdf_example",
         "syntax_highlighting_example",
+        "tour_example",
         "plot_a_table",
         "last_page",
     ]:

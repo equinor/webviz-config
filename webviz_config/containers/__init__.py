@@ -10,6 +10,7 @@ from ._example_container import ExampleContainer
 from ._example_data_download import ExampleDataDownload
 from ._example_assets import ExampleAssets
 from ._example_portable import ExamplePortable
+from ._example_tour import ExampleTour
 from ._banner_image import BannerImage
 from ._data_table import DataTable
 from ._syntax_highlighter import SyntaxHighlighter
@@ -21,6 +22,7 @@ __all__ = [
     "ExampleContainer",
     "ExampleAssets",
     "ExamplePortable",
+    "ExampleTour",
     "BannerImage",
     "DataTable",
     "SyntaxHighlighter",
