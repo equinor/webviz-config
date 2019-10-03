@@ -79,7 +79,7 @@ class WebvizContainerABC(abc.ABC):
     @staticmethod
     def _reformat_tour_steps(steps):
         return [
-            {"selector": f"#{step['id']}", "content": step["content"]} for step in steps
+            {"selector": "#" + step["id"], "content": step["content"]} for step in steps
         ]
 
     @staticmethod
@@ -126,8 +126,8 @@ class WebvizContainerABC(abc.ABC):
                 contact_person=contact_person,
                 children=[self.layout],
                 tour_steps=WebvizContainerABC._reformat_tour_steps(
-                    self.tour_steps
-                )  # pylint: disable=no-member
+                    self.tour_steps  # pylint: disable=no-member
+                )
                 if "guided_tour" in buttons and hasattr(self, "tour_steps")
                 else [],
             )
