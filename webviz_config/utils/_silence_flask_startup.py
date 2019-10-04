@@ -2,7 +2,9 @@ import flask
 
 
 def silence_flask_startup():
+    # pylint: disable=line-too-long
     """Calling this function monkey patches the function flask.cli.show_server_banner
+    (https://github.com/pallets/flask/blob/a3f07829ca03bf312b12b3732e917498299fa82d/src/flask/cli.py#L657-L683)
     which by default outputs something like:
 
      * Serving Flask app "webviz_app" (lazy loading)

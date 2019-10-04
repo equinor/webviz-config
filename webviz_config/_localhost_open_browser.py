@@ -35,7 +35,7 @@ class LocalhostOpenBrowser:
 
         print(
             f"WARNING: Webviz application still not ready after {timeout}s.\n"
-            "Will not open browser automatically. Your private login link:\n"
+            "Will not open browser automatically. Your private one-time login link:\n"
             f"{self._url(with_token=True)}"
         )
 
