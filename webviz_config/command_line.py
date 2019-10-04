@@ -36,16 +36,6 @@ def main():
         "--theme", type=str, default="default", help="Which installed theme to use."
     )
 
-    def check_port(port):
-        port = int(port)
-        if port <= 1024:
-            argparse.ArgumentTypeError("Port must be greater than 1024")
-        return port
-
-    parser_build.add_argument(
-        "--port", type=check_port, default=8050, help="Port to use for the server."
-    )
-
     parser_build.set_defaults(func=build_webviz)
 
     # Add "certificate" parser:

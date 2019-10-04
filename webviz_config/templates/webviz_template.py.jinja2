@@ -110,11 +110,13 @@ if __name__ == '__main__':
 
     token = webviz_config.LocalhostToken(app.server).one_time_token
 
-    webviz_config.LocalhostOpenBrowser({{port}}, token)
+    port = webviz_config.utils.get_available_port()
+    webviz_config.LocalhostOpenBrowser(port, token)
 
+    webviz_config.utils.silence_flask_startup()
     app.run_server(
         host='localhost',
-        port={{port}},
+        port=port,
         ssl_context={{ssl_context}},
         debug=False,
         use_reloader={{not portable}},
