@@ -1,5 +1,6 @@
 import flask
 
+
 def silence_flask_startup():
     """Calling this function monkey patches the function flask.cli.show_server_banner
     which by default outputs something like:
@@ -18,7 +19,7 @@ def silence_flask_startup():
     (all other information/output from the flask instance is untouched).
     """
 
-    def silent_function(*args, **kwargs):
+    def silent_function(*_args, **_kwargs):
         pass
 
     flask.cli.show_server_banner = silent_function

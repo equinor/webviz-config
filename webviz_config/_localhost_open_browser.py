@@ -36,11 +36,14 @@ class LocalhostOpenBrowser:
         print(
             f"WARNING: Webviz application still not ready after {timeout}s.\n"
             "Will not open browser automatically. Your private login link:\n"
-            f"{self._login_link}"
+            f"{self._url(with_token=True)}"
         )
 
     def _url(self, with_token=False, https=True):
-        return f"{'https' if https else 'http'}://localhost:{self._port}{'?ott=' + self._token if with_token else ''}"
+        return (
+            f"{'https' if https else 'http'}://localhost:{self._port}"
+            + f"{'?ott=' + self._token if with_token else ''}"
+        )
 
     @staticmethod
     def _get_browser_controller():
@@ -87,4 +90,6 @@ class LocalhostOpenBrowser:
             f"{terminal_colors.END}"
         )
 
-        LocalhostOpenBrowser._get_browser_controller().open_new_tab(self._url(with_token=True))
+        LocalhostOpenBrowser._get_browser_controller().open_new_tab(
+            self._url(with_token=True)
+        )
