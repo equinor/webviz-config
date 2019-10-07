@@ -25,10 +25,14 @@ class LocalhostToken:
     If the app is in non-portable mode, the one-time-token and
     cookie token  are reused on app reload (in order to ensure live reload
     works without requiring new login).
+
+    The port is used as a postfix on the cookie name in order to make sure that
+    two different localhost applications running simultaneously do not interfere.
     """
 
-    def __init__(self, app):
+    def __init__(self, app, port):
         self._app = app
+        self._port = port
 
         if not is_reload_process():
             # One time token (per run) user has to provide
@@ -65,7 +69,7 @@ class LocalhostToken:
                 flask.g.set_cookie_token = True
                 return flask.redirect(flask.request.base_url)
 
-            if self._cookie_token == flask.request.cookies.get("cookie_token"):
+            if self._cookie_token == flask.request.cookies.get(f"cookie_token_{self._port}"):
                 self._ott_validated = True
             else:
                 flask.abort(401)
@@ -73,5 +77,5 @@ class LocalhostToken:
         @self._app.after_request
         def _set_cookie_token_in_response(response):
             if "set_cookie_token" in flask.g and flask.g.set_cookie_token:
-                response.set_cookie(key="cookie_token", value=self._cookie_token)
+                response.set_cookie(key=f"cookie_token_{self._port}", value=self._cookie_token)
             return response

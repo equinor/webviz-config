@@ -109,7 +109,7 @@ def run_webviz(args, build_directory):
                 )
                 print(
                     f"{terminal_colors.BLUE}{terminal_colors.BOLD}"
-                    "Rebuilt webviz dash app from configuration file"
+                    " Rebuilt webviz dash app from configuration file"
                     f"{terminal_colors.END}"
                 )
 

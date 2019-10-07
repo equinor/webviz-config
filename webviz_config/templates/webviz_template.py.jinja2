@@ -108,9 +108,9 @@ if __name__ == '__main__':
     # This part is ignored when the webviz app is started
     # using Docker container and uwsgi (e.g. when hosted on Azure).
 
-    token = webviz_config.LocalhostToken(app.server).one_time_token
-
     port = webviz_config.utils.get_available_port()
+
+    token = webviz_config.LocalhostToken(app.server, port).one_time_token
     webviz_config.LocalhostOpenBrowser(port, token)
 
     webviz_config.utils.silence_flask_startup()
