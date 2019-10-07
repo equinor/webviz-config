@@ -69,7 +69,9 @@ class LocalhostToken:
                 flask.g.set_cookie_token = True
                 return flask.redirect(flask.request.base_url)
 
-            if self._cookie_token == flask.request.cookies.get(f"cookie_token_{self._port}"):
+            if self._cookie_token == flask.request.cookies.get(
+                f"cookie_token_{self._port}"
+            ):
                 self._ott_validated = True
             else:
                 flask.abort(401)
@@ -77,5 +79,7 @@ class LocalhostToken:
         @self._app.after_request
         def _set_cookie_token_in_response(response):
             if "set_cookie_token" in flask.g and flask.g.set_cookie_token:
-                response.set_cookie(key=f"cookie_token_{self._port}", value=self._cookie_token)
+                response.set_cookie(
+                    key=f"cookie_token_{self._port}", value=self._cookie_token
+                )
             return response

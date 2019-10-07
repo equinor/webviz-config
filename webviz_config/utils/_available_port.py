@@ -16,5 +16,5 @@ def get_available_port():
 
         os.environ["WEBVIZ_PORT"] = str(port)
         return port
-    else:
-        return int(os.environ.get("WEBVIZ_PORT"))
+
+    return int(os.environ.get("WEBVIZ_PORT"))
