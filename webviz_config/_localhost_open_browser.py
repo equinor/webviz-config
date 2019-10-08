@@ -15,8 +15,6 @@ class LocalhostOpenBrowser:
         self._port = port
         self._token = token
 
-        self._login_link = f"https://localhost:{self._port}?ott={self._token}"
-
         if not is_reload_process():
             # Only open new browser tab if not a reload process
             threading.Thread(target=self._timer).start()
@@ -37,8 +35,14 @@ class LocalhostOpenBrowser:
 
         print(
             f"WARNING: Webviz application still not ready after {timeout}s.\n"
-            "Will not open browser automatically. Your private login link:\n"
-            f"{self._login_link}"
+            "Will not open browser automatically. Your private one-time login link:\n"
+            f"{self._url(with_token=True)}"
+        )
+
+    def _url(self, with_token=False, https=True):
+        return (
+            f"{'https' if https else 'http'}://localhost:{self._port}"
+            + f"{'?ott=' + self._token if with_token else ''}"
         )
 
     @staticmethod
@@ -61,7 +65,7 @@ class LocalhostOpenBrowser:
         os.environ["NO_PROXY"] = "localhost"
 
         try:
-            urllib.request.urlopen(f"http://localhost:{self._port}")  # nosec
+            urllib.request.urlopen(self._url(https=False))  # nosec
             app_ready = True
         except urllib.error.URLError:
             # The flask instance has not started
@@ -81,9 +85,11 @@ class LocalhostOpenBrowser:
 
         print(
             f"{terminal_colors.GREEN}{terminal_colors.BOLD}"
-            " Opening the localhost application automatically in your browser.\n"
-            " Press CTRL+C in this terminal window to stop the application."
+            f" Opening the application ({self._url()}) in your browser.\n"
+            " Press CTRL + C in this terminal window to stop the application."
             f"{terminal_colors.END}"
         )
 
-        LocalhostOpenBrowser._get_browser_controller().open_new_tab(self._login_link)
+        LocalhostOpenBrowser._get_browser_controller().open_new_tab(
+            self._url(with_token=True)
+        )

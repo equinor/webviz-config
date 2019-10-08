@@ -12,7 +12,6 @@ def write_script(args, build_directory, template_filename, output_filename):
     config_parser = ConfigParser(args.yaml_file)
     configuration = config_parser.configuration
 
-    configuration["port"] = args.port
     configuration["portable"] = args.portable is not None
 
     theme = installed_themes[args.theme]
