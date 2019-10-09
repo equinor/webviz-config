@@ -33,7 +33,7 @@ class WebvizConfigTheme:
                 "'sha256-MoQFjm6Ko0VvKSJqNGTl4e5H3guejX+CG/LxytSdnYg='",
                 "'sha256-Hhrf0PLsXNnfugTF8pcjTS09SrwRiMN+/e4/Lc8mTIw='",
                 "'sha256-Bgj5ZRruQPZA0MeFtY6SdF1i4JCe/xePw0jvKF7Nwm0='",
-            ],  # [1]
+            ],
             "script-src": [
                 "'self'",
                 "'sha256-jZlsGVOhUAIcH+4PVs7QuGZkthRMgvT2n0ilH6/zTM0='",
