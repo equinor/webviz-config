@@ -20,7 +20,7 @@ def test_portable(dash_duo, tmp_path):
 
     # Import generated app
     sys.path.append(str(appdir))
-    from webviz_app import app  # pylint: disable=import-error
+    from webviz_app import app  # pylint: disable=import-error, import-outside-toplevel
 
     # Start and test app
     dash_duo.start_server(app)
