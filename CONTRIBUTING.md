@@ -1,5 +1,17 @@
 # Contributing to Webviz configuration utility
 
+- [Creating a new container](#creating-a_new-container)
+  - [Minimal container](#minimal-container)
+  - [Override container toolbar](#override-container-toolbar)
+  - [Callbacks](#callbacks)
+    - [Data download callback](#data-download-callback)
+  - [User provided arguments](#user-provided-arguments)
+  - [Data input](#data-input)
+    - [Deattaching data from its original source](#deattaching-data-from-its-original-source)
+  - [Custom ad-hoc containers](#custom-ad-hoc-containers)
+  - [Run tests](#run-tests)
+  - [Build documentation](#build-documentation)
+
 ## Creating a new container
 
 Most of the development work is towards creating standard containers.
@@ -259,7 +271,7 @@ applications common cache instance can be imported using
 from webviz_config.common_cache import CACHE
 ```
 
-### Deattaching data from its original source
+#### Deattaching data from its original source
 
 There are use cases where the generated webviz instance ideally is portable
 and self-contained. At the same time, there are use cases where the data input
@@ -415,3 +427,39 @@ applies if the custom container is saved in a package with submodule(s),
 ```yaml
     - container: ourpackage.ourmodule.OurCustomContainer
 ```
+
+## Run tests
+
+To run tests it is necessary to first install the [selenium chrome driver](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver).
+Then install the Python development requirements:
+```bash
+pip install .[tests]
+pip install dash[testing]
+```
+The second of these commands appears to be necessary as long as
+[this `pip` issue is open](https://github.com/pypa/pip/issues/4957).
+
+You can then run the tests using
+```bash
+pytest tests --forked
+```
+
+Linting can be checked by:
+```bash
+black --check webviz_config tests
+```
+
+## Build documentation
+
+End-user documentation (i.e. YAML configuration file) be created
+after installation by
+
+```bash
+pip install .[tests]  # if not already done
+cd ./docs
+python ./build_docs.py
+```
+
+Officially updated built end-user documentation (i.e. information to the
+person setting up the configuration file) is
+[hosted here on github](https://equinor.github.io/webviz-config/).
