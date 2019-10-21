@@ -9,8 +9,8 @@
   - [Data input](#data-input)
     - [Deattaching data from its original source](#deattaching-data-from-its-original-source)
   - [Custom ad-hoc containers](#custom-ad-hoc-containers)
-  - [Run tests](#run-tests)
-  - [Build documentation](#build-documentation)
+- [Run tests](#run-tests)
+- [Build documentation](#build-documentation)
 
 ## Creating a new container
 
