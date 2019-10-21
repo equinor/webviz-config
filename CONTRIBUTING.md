@@ -1,6 +1,6 @@
 # Contributing to Webviz configuration utility
 
-- [Creating a new container](#creating-a_new-container)
+- [Creating a new container](#creating-a-new-container)
   - [Minimal container](#minimal-container)
   - [Override container toolbar](#override-container-toolbar)
   - [Callbacks](#callbacks)
