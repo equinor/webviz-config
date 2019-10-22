@@ -37,7 +37,7 @@ Example configuration file and information about the standard containers can be 
 2) *Webviz* reads the configuration file and automatically writes the corresponding :snake: Python code.
 3) The created application can be viewed locally, or deployed using :whale: Docker to a cloud provider. Both out of the box.
 
-![technical_drawing](https://user-images.githubusercontent.com/31612826/67190982-3007db80-f3f1-11e9-97d2-90180663ad4b.png)
+![technical_drawing](https://user-images.githubusercontent.com/31612826/67282250-9f54fc80-f4d1-11e9-9f77-b352ec2710ed.png)
 
 ---
 
