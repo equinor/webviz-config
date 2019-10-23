@@ -103,6 +103,9 @@ Certificate installation guidelines will be given when running the command.
 If you are interested in creating new containers which can be configured through
 the configuration file, take a look at the [contribution guide](./CONTRIBUTING.md).
 
+To quickly get started, we recommend using the corresponding
+[cookiecutter template](https://github.com/equinor/webviz-container-boilerplate).
+
 ### License
 
 `webviz-config` is, with a few exceptions listed below, [LGPLv3](./LICENSE).
