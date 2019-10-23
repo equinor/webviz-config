@@ -19,7 +19,7 @@ before_install:
   - pip install --upgrade pip
 
 install:
-  - wget https://chromedriver.storage.googleapis.com/76.0.3809.12/chromedriver_linux64.zip
+  - wget https://chromedriver.storage.googleapis.com/78.0.3904.11/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - export PATH=$PATH:$PWD
 
