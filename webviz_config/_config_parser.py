@@ -144,26 +144,7 @@ class ConfigParser:
 
     def __init__(self, yaml_file):
 
-        with open(yaml_file, "r") as fh:
-            # Create a list with unique entries of line numbers containing tabs
-            lines_with_tabs = list(
-                dict.fromkeys(
-                    [
-                        str(i + 1)
-                        for i, line in enumerate(fh.readlines())
-                        if "\t" in line
-                    ]
-                )
-            )
-
-        if lines_with_tabs:
-            raise ParserError(
-                f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                "The configuration file contains tabs. You should use ordinary spaces "
-                "instead. The following lines contain tabs:\n"
-                f"{', '.join(lines_with_tabs)}"
-                f"{terminal_colors.END}"
-            )
+        ConfigParser.check_for_tabs_in_file(yaml_file)
 
         try:
             self._configuration = yaml.safe_load(open(yaml_file, "r"))
@@ -187,6 +168,30 @@ class ConfigParser:
         self._page_ids = []
         self._assets = set()
         self.clean_configuration()
+
+    @staticmethod
+    def check_for_tabs_in_file(path):
+
+        with open(path, "r") as fh:
+            # Create a list with unique entries of line numbers containing tabs
+            lines_with_tabs = list(
+                dict.fromkeys(
+                    [
+                        str(i + 1)
+                        for i, line in enumerate(fh.readlines())
+                        if "\t" in line
+                    ]
+                )
+            )
+
+        if lines_with_tabs:
+            raise ParserError(
+                f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                "The configuration file contains tabs. You should use ordinary spaces "
+                "instead. The following lines contain tabs:\n"
+                f"{', '.join(lines_with_tabs)}"
+                f"{terminal_colors.END}"
+            )
 
     def _generate_page_id(self, title):
         """From the user given title, this function provides a unique
