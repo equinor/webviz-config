@@ -172,13 +172,13 @@ class ConfigParser:
     @staticmethod
     def check_for_tabs_in_file(path):
 
-        with open(path, "r") as fh:
+        with open(path, "r") as filehandle:
             # Create a list with unique entries of line numbers containing tabs
             lines_with_tabs = list(
                 dict.fromkeys(
                     [
                         str(i + 1)
-                        for i, line in enumerate(fh.readlines())
+                        for i, line in enumerate(filehandle.readlines())
                         if "\t" in line
                     ]
                 )
