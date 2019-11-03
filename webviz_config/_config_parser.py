@@ -143,6 +143,28 @@ class ConfigParser:
     STANDARD_CONTAINERS = _get_webviz_containers(standard_containers)
 
     def __init__(self, yaml_file):
+
+        with open(yaml_file, "r") as fh:
+            # Create a list with unique entries of line numbers containing tabs
+            lines_with_tabs = list(
+                dict.fromkeys(
+                    [
+                        str(i + 1)
+                        for i, line in enumerate(fh.readlines())
+                        if "\t" in line
+                    ]
+                )
+            )
+
+        if lines_with_tabs:
+            raise ParserError(
+                f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                "The configuration file contains tabs. You should use ordinary spaces "
+                "instead. The following lines contain tabs:\n"
+                f"{', '.join(lines_with_tabs)}"
+                f"{terminal_colors.END}"
+            )
+
         try:
             self._configuration = yaml.safe_load(open(yaml_file, "r"))
         except yaml.MarkedYAMLError as excep:
