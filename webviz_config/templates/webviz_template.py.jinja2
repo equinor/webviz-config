@@ -18,6 +18,7 @@ import webviz_config
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
+
 {% for module in _imports %}
 {%- if module is string -%}
 import {{ module }}
@@ -107,6 +108,9 @@ app.layout = dcc.Tabs(parent_className="layoutWrapper",
 if __name__ == '__main__':
     # This part is ignored when the webviz app is started
     # using Docker container and uwsgi (e.g. when hosted on Azure).
+    #
+    # It is used only when directly running this script with Python,
+    # which will then initialize a localhost server.
 
     port = webviz_config.utils.get_available_port()
 
@@ -114,10 +118,11 @@ if __name__ == '__main__':
     webviz_config.LocalhostOpenBrowser(port, token)
 
     webviz_config.utils.silence_flask_startup()
+
     app.run_server(
         host='localhost',
         port=port,
-        ssl_context={{ssl_context}},
+        ssl_context=webviz_config.LocalhostCertificate().ssl_context,
         debug=False,
         use_reloader={{not portable}},
         {% if not portable -%}

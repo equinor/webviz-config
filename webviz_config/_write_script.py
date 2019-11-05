@@ -4,7 +4,6 @@ import datetime
 import jinja2
 from .themes import installed_themes
 from ._config_parser import ConfigParser
-from ._certificate import create_certificate, SERVER_KEY_FILENAME, SERVER_CRT_FILENAME
 
 
 def write_script(args, build_directory, template_filename, output_filename):
@@ -22,12 +21,6 @@ def write_script(args, build_directory, template_filename, output_filename):
 
     configuration["author"] = getpass.getuser()
     configuration["current_date"] = datetime.date.today().strftime("%Y-%m-%d")
-
-    configuration["ssl_context"] = "({!r}, {!r})".format(
-        SERVER_CRT_FILENAME, SERVER_KEY_FILENAME
-    )
-
-    create_certificate(build_directory)
 
     template_environment = jinja2.Environment(  # nosec
         loader=jinja2.PackageLoader("webviz_config", "templates"),
