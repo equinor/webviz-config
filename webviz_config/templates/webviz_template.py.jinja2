@@ -18,7 +18,6 @@ import webviz_config
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
-
 {% for module in _imports %}
 {%- if module is string -%}
 import {{ module }}
