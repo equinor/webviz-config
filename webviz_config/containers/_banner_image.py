@@ -17,18 +17,25 @@ title. Useful on e.g. the front page for introducing a field or project.
 * `title`: Title which will be overlayed over the banner image.
 * `color`: Color to be used for the font.
 * `shadow`: Set to `False` if you do not want text shadow for the title.
+* `height`: Height of the banner image (in pixels).
 """
 
     TOOLBAR_BUTTONS = []
 
     def __init__(
-        self, image: Path, title: str = "", color: str = "white", shadow: bool = True
+        self,
+        image: Path,
+        title: str = "",
+        color: str = "white",
+        shadow: bool = True,
+        height: int = 300,
     ):
 
         self.image = image
         self.title = title
         self.color = color
         self.shadow = shadow
+        self.height = height
 
         self.image_url = WEBVIZ_ASSETS.add(image)
 
@@ -37,7 +44,8 @@ title. Useful on e.g. the front page for introducing a field or project.
 
         style = {
             "color": self.color,
-            "background-image": "url({})".format(self.image_url),
+            "background-image": f"url({self.image_url})",
+            "height": f"{self.height}px",
         }
 
         if self.shadow:

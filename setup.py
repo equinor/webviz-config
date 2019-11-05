@@ -4,7 +4,6 @@ with open("README.md", "r") as fh:
     LONG_DESCRIPTION = fh.read()
 
 TESTS_REQUIRES = [
-    "chromedriver-binary>=74.0.3729.6.0",
     "pylint~=2.3",
     "selenium~=3.141",
     "mock",
@@ -53,6 +52,9 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
         "Natural Language :: English",
+        "Environment :: Web Environment",
+        "Framework :: Dash",
+        "Framework :: Flask",
         "Topic :: Multimedia :: Graphics",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Visualization",
