@@ -8,7 +8,7 @@ from ._certificate import create_certificate, SERVER_KEY_FILENAME, SERVER_CRT_FI
 
 
 class LocalhostCertificate:
-    """Faciliates creating localhost only certificates, on the fly,
+    """Facilitates creating certificates only valid for localhost, on the fly,
     when starting a local process. The certificates are stored in a temporary folder
     only readable by the user running the process, and are deleted on exit.
     """
