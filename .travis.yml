@@ -44,6 +44,7 @@ deploy:
     keep_history: true
     on:
       branch: master
+      repo: equinor/webviz-config
 
   - provider: pypi
     user: webviz
@@ -51,3 +52,4 @@ deploy:
       secure: nPhoazwJZ2bOq8T2C9bMdzVS7mACdUkgwdmhEnsFrWT7Oh46h5ypuuaIl/Ir23n5OUYoZS+mg230hclD12McTafnH8MQnGpyooViuZy1oRWzbjjcdI5jq4poEmZokC0pS4ZM+lNeQ01eI4z3BMxwsYvvgZWVyBU+vVtwUSNrRrMnR9Vd3Wg7K17646/OvGsSoYJsN7G64Pm/rLmvphAebWYN/rwfZFz/bOPAhXJkgBmxZDZm2c4H04vCnftPhRSeL3nP7RsZQID/S1KoUuedN/E1inDg/PSAWXTWaRgbL5p6lHvbFC13Z26viRw7tD7BKo3irYxIsUup/v6rD1bwAZvaRGih1rQ5DCShOD/Yz70MpLmnDgiq2GMYWraROq/Uw+HieN+7mg2oPD7ChPeAWLBLmFw7sjZp8qwHq/3qSPARLZqRhAMOltiDtqv7llxv2w8jOcPI0hX7q1KdkWSrv7Nsf0g1wYN8G27+OM4OnDDh8q4R0EherpWQ4vSDN81d4jy8+YQcq8ALOS1k6A7XH5iP50sCArKyJzySs8IeMTT5m7/ddF/x8hnvTQxmdJMYaPAM0TSumdGFmGO0fash1I4NB8R5++ZY8185ELhSuiqz/4vZnA0Gi29yDVSIjOtjKCbPiaQRe0shue2+5zXpeH83MtS0SFD3EVgQ/yt4R58=
     on:
       tags: true
+      repo: equinor/webviz-config
