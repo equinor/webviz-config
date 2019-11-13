@@ -18,6 +18,7 @@ import webviz_config
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
+
 {% for module in _imports %}
 {%- if module is string -%}
 import {{ module }}
@@ -27,36 +28,39 @@ import {{ module[0] }} as {{ module[1] }}
 {% endfor %}
 
 
-logging.getLogger('werkzeug').setLevel(logging.WARNING)
+logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
-logging.config.dictConfig({
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {'default': {
-        'format': ' webviz log [%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-        'datefmt': '%Y-%m-%d %H:%M:%S'
-    }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://flask.logging.wsgi_errors_stream',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': 'INFO',
-        'handlers': ['wsgi']
+logging.config.dictConfig(
+    {
+        "version": 1,
+        "disable_existing_loggers": True,
+        "formatters": {
+            "default": {
+                "format": " webviz log [%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            }
+        },
+        "handlers": {
+            "wsgi": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://flask.logging.wsgi_errors_stream",
+                "formatter": "default",
+            }
+        },
+        "root": {"level": "INFO", "handlers": ["wsgi"]},
     }
-})
+)
 
 app = dash.Dash(__name__, external_stylesheets={{ external_stylesheets }})
 server = app.server
 
-app.title = '{{ title }}'
+app.title = "{{ title }}"
 app.config.suppress_callback_exceptions = True
 
 app.webviz_settings = {
-    'portable': {{ portable }},
-    'plotly_layout': {{ plotly_layout }}
-                      }
+    "portable": {{ portable }},
+    "plotly_layout": {{ plotly_layout }},
+}
 
 CACHE.init_app(server)
 
@@ -65,14 +69,15 @@ FEATURE_POLICY = {{ feature_policy }}
 
 Talisman(server, content_security_policy=CSP, feature_policy=FEATURE_POLICY)
 
-WEBVIZ_STORAGE.use_storage = {{ portable }}
-WEBVIZ_STORAGE.storage_folder = path.join(path.dirname(path.realpath(__file__)),
-                                          'webviz_storage')
+WEBVIZ_STORAGE.use_storage = {{portable}}
+WEBVIZ_STORAGE.storage_folder = path.join(
+    path.dirname(path.realpath(__file__)), "webviz_storage"
+)
 
 WEBVIZ_ASSETS.portable = {{ portable }}
-{{ 'WEBVIZ_ASSETS.register_app(app)' if not portable else ''}}
+{{ "WEBVIZ_ASSETS.register_app(app)" if not portable else ""}}
 
-if {{ not portable }} and not webviz_config.is_reload_process():
+if {{not portable}} and not webviz_config.is_reload_process():
     # When Dash/Flask is started on localhost with hot module reload activated,
     # we do not want the main process to call expensive component functions in
     # the layout tree, as the layout tree used on initialization will anyway be called
@@ -81,39 +86,39 @@ if {{ not portable }} and not webviz_config.is_reload_process():
 else:
     app.layout = dcc.Tabs(
         parent_className="layoutWrapper",
-        content_className='pageWrapper',
+        content_className="pageWrapper",
         vertical=True,
         children=[
-            {% for page in pages %}
+          {% for page in pages %}
             dcc.Tab(
-                {%- if loop.first -%}
-                id='logo',
-                className='styledLogo',
-                {%- else -%}
+              {%- if loop.first -%}
+                id="logo",
+                className="styledLogo",
+              {%- else -%}
                 {%- if loop.last -%}
-                    id='last_page',
+                id="last_page",
                 {%- else -%}
-                    id='{{page.id}}',
+                id="{{page.id}}",
                 {%- endif -%}
-                label='{{page.title}}',
-                selected_className='selectedButton',
-                className='styledButton',
-                {%- endif -%}
+                label="{{page.title}}",
+                selected_className="selectedButton",
+                className="styledButton",
+              {%- endif -%}
                 children=[
-                    {% for content in page.content -%}
-                    {%- if content is string -%}
-                    dcc.Markdown(r'''{{ content }}''')
-                    {%- else -%}
+                  {% for content in page.content -%}
+                  {%- if content is string -%}
+                    dcc.Markdown(r"""{{ content }}""")
+                  {%- else -%}
                     {{ content._call_signature[0] }}.{{ content._call_signature[1] }}
-                    {%- endif -%}
-                    {{- '' if loop.last else ','}}
-                    {% endfor -%}
-                ]
-            ){{- '' if loop.last else ',' -}}
-        {% endfor %}]
+                  {%- endif -%}
+                  {{- "" if loop.last else ","}}
+                  {% endfor -%}
+                ],
+            )  {{- "" if loop.last else "," -}}
+        {% endfor %}],
     )
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # This part is ignored when the webviz app is started
     # using Docker container and uwsgi (e.g. when hosted on Azure).
     #
@@ -128,13 +133,13 @@ if __name__ == '__main__':
     webviz_config.utils.silence_flask_startup()
 
     app.run_server(
-        host='localhost',
+        host="localhost",
         port=port,
         ssl_context=webviz_config.LocalhostCertificate().ssl_context,
         debug=False,
         use_reloader={{not portable}},
-        {% if not portable -%}
+      {% if not portable -%}
         dev_tools_hot_reload=True,
         dev_tools_hot_reload_interval=1.0
-        {% endif %}
+      {% endif %}
     )

@@ -7,6 +7,7 @@ from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
 from pathlib import Path, PosixPath
+
 {% for module in _imports %}
 {%- if module is string -%}
 import {{ module }}
@@ -20,8 +21,9 @@ app.config.suppress_callback_exceptions = True
 
 CACHE.init_app(app.server)
 
-WEBVIZ_STORAGE.storage_folder = path.join(path.dirname(path.realpath(__file__)),
-                                          'webviz_storage')
+WEBVIZ_STORAGE.storage_folder = path.join(
+    path.dirname(path.realpath(__file__)), "webviz_storage"
+)
 
 # The lines below can be simplified when assignment
 # expressions become available in Python 3.8
@@ -38,10 +40,9 @@ containers.append({{ content._call_signature[0] }})
 {% endfor %}
 
 for container in containers:
-    if hasattr(container, 'add_webvizstore'):
+    if hasattr(container, "add_webvizstore"):
         WEBVIZ_STORAGE.register_function_arguments(container.add_webvizstore())
 
 WEBVIZ_STORAGE.build_store()
 
-WEBVIZ_ASSETS.make_portable(path.join(path.dirname(path.realpath(__file__)),
-                                      'assets'))
+WEBVIZ_ASSETS.make_portable(path.join(path.dirname(path.realpath(__file__)), "assets"))
