@@ -77,7 +77,7 @@ WEBVIZ_STORAGE.storage_folder = path.join(
 WEBVIZ_ASSETS.portable = {{ portable }}
 {{ "WEBVIZ_ASSETS.register_app(app)" if not portable else ""}}
 
-if {{not portable}} and not webviz_config.is_reload_process():
+if {{ not portable }} and not webviz_config.is_reload_process():
     # When Dash/Flask is started on localhost with hot module reload activated,
     # we do not want the main process to call expensive component functions in
     # the layout tree, as the layout tree used on initialization will anyway be called
