@@ -19,6 +19,10 @@ import {{ module[0] }} as {{ module[1] }}
 app = dash.Dash()
 app.config.suppress_callback_exceptions = True
 
+app.webviz_settings = {
+    "plotly_layout": {{ plotly_layout }},
+}
+
 CACHE.init_app(app.server)
 
 WEBVIZ_STORAGE.storage_folder = path.join(
