@@ -109,8 +109,8 @@ else:
                 children=[
                   {%- if loop.first -%}
                     html.Div(
-                        id='dash-issue-#1010',
-                        style={'display':'none'}, 
+                        id="dash-issue-#1010",
+                        style={"display":"none"}, 
                         children=dash_table.DataTable()),
                   {%- endif -%}
                   {% for content in page.content -%}
