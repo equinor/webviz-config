@@ -9,6 +9,8 @@ services:
 
 python:
   - "3.6"
+  - "3.7"
+  - "3.8"
 
 matrix:
   fast_finish: true
@@ -43,6 +45,7 @@ deploy:
       secure: zWVmufs7SMXuV2BMukQnDxvNxTS7GWDLbcGmvEqN4js7oR1h8N4qo0z27kB/OqosLEq37G429BIAIZJAu/Xxja6LLHDQmw18zTlC3wMYxifiU9l0sUn/I7zeqMpLsQERXJIzYhneG4KMvmXxUHSlouOlLKWtQHiraTshvjlAz53Bg6tz6rfASF3kG9CvhEcSVOseG2uJe1N8cBIG2huHZEsJBjVZr/JVoD+tX0y9csEGvO/B1xLJVDMY5DvMmPPCwaEb+O4OUlGpxtfmHRKUvG6fehTZXyyBJVuR58WO2uThOYmSFiaavtvjbIpvJyb8SXM2OmikFGdavipLPtPVZ9qkPorBT9NNKGGRt+h0A/1CVYV4ALp6YmF4r9hWYihMGaJlNgM0lA8322LvwfIjGH6exuZ0/EQxJb5P031icv7ZV4s8zTQON5PJtBU+GxXqVOS2hK8sSuSmvRqpQXWkOrtqKyJ0bu7jAVpw+Xr9C8oWVZ6FTr13t+/ney7PQCCnUZk+F0j3W3bIogTLrG21r49hJYP2TtDGyFf3BUf2ulfMQ+WGwJdc3WjL2XTtgi61dTo9IJKp9pk2+RMjPJQrPNu0mEsJePHHclODIieSw+/nfOsj47Ng1Ku+ZkJq09OngdzzqtMENHtdYgB/qAl+cJxm1e61wzpMLo2iUbQjAiw=
     keep_history: true
     on:
+      python: "3.6"
       branch: master
       repo: equinor/webviz-config
 
@@ -51,5 +54,6 @@ deploy:
     password:
       secure: nPhoazwJZ2bOq8T2C9bMdzVS7mACdUkgwdmhEnsFrWT7Oh46h5ypuuaIl/Ir23n5OUYoZS+mg230hclD12McTafnH8MQnGpyooViuZy1oRWzbjjcdI5jq4poEmZokC0pS4ZM+lNeQ01eI4z3BMxwsYvvgZWVyBU+vVtwUSNrRrMnR9Vd3Wg7K17646/OvGsSoYJsN7G64Pm/rLmvphAebWYN/rwfZFz/bOPAhXJkgBmxZDZm2c4H04vCnftPhRSeL3nP7RsZQID/S1KoUuedN/E1inDg/PSAWXTWaRgbL5p6lHvbFC13Z26viRw7tD7BKo3irYxIsUup/v6rD1bwAZvaRGih1rQ5DCShOD/Yz70MpLmnDgiq2GMYWraROq/Uw+HieN+7mg2oPD7ChPeAWLBLmFw7sjZp8qwHq/3qSPARLZqRhAMOltiDtqv7llxv2w8jOcPI0hX7q1KdkWSrv7Nsf0g1wYN8G27+OM4OnDDh8q4R0EherpWQ4vSDN81d4jy8+YQcq8ALOS1k6A7XH5iP50sCArKyJzySs8IeMTT5m7/ddF/x8hnvTQxmdJMYaPAM0TSumdGFmGO0fash1I4NB8R5++ZY8185ELhSuiqz/4vZnA0Gi29yDVSIjOtjKCbPiaQRe0shue2+5zXpeH83MtS0SFD3EVgQ/yt4R58=
     on:
+      python: "3.6"
       tags: true
       repo: equinor/webviz-config
