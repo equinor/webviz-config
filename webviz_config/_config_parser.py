@@ -110,7 +110,7 @@ def _call_signature(
 
             if expected_type == pathlib.Path:
                 kwargs[arg] = (config_folder / pathlib.Path(kwargs[arg])).resolve()
-            if expected_type == typing.List[pathlib.Path]:
+            elif expected_type == typing.List[pathlib.Path]:
                 kwargs[arg] = [
                     (config_folder / pathlib.Path(patharg)).resolve()
                     for patharg in kwargs[arg]
