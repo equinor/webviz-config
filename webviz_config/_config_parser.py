@@ -3,6 +3,7 @@ import sys
 import pathlib
 import inspect
 import importlib
+import typing
 
 import yaml
 
@@ -109,17 +110,25 @@ def _call_signature(
 
             if expected_type == pathlib.Path:
                 kwargs[arg] = (config_folder / pathlib.Path(kwargs[arg])).resolve()
-
-            if not isinstance(kwargs[arg], expected_type):
-                raise ParserError(
-                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    f"The value provided for argument `{arg}` "
-                    f"given to container `{container_name}` is "
-                    f"of type `{type(kwargs[arg]).__name__}`. "
-                    f"Expected type "
-                    f"`{argspec.annotations[arg].__name__}`."
-                    f"{terminal_colors.END}"
-                )
+            elif expected_type == typing.List[pathlib.Path]:
+                kwargs[arg] = [
+                    (config_folder / pathlib.Path(patharg)).resolve()
+                    for patharg in kwargs[arg]
+                ]
+            try:
+                if not isinstance(kwargs[arg], expected_type):
+                    raise ParserError(
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                        f"The value provided for argument `{arg}` "
+                        f"given to container `{container_name}` is "
+                        f"of type `{type(kwargs[arg]).__name__}`. "
+                        f"Expected type "
+                        f"`{argspec.annotations[arg].__name__}`."
+                        f"{terminal_colors.END}"
+                    )
+            # Typechecking typing classes does not work in python 3.7
+            except TypeError:
+                pass
 
     special_args = ""
     if "app" in argspec.args:
