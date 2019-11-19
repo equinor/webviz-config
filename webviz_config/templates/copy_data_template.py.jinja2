@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import datetime
+import os.path as path
+from pathlib import Path, PosixPath
 
 import dash
-import os.path as path
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
-from pathlib import Path, PosixPath
-import datetime
+
+
 
 {% for module in _imports %}
 {%- if module is string -%}
