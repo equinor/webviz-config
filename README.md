@@ -10,7 +10,7 @@
 <a href="https://github.com/equinor/webviz-config/blob/master/LICENSE"><img src="https://img.shields.io/github/license/equinor/webviz-config.svg?color=dark-green"></a>
 <a href="https://travis-ci.org/equinor/webviz-config"><img src="https://travis-ci.org/equinor/webviz-config.svg?branch=master"></a>
 <a href="https://www.codacy.com/manual/webviz/webviz-config?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=equinor/webviz-config&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/1d7a659ea4784aa396ac1cb101c8e678"></a>
-<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.6+-blue.svg"></a>
+<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.6%20|%203.7-blue.svg"></a>
 <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 <br/>
