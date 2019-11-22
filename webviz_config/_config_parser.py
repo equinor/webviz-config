@@ -135,6 +135,12 @@ def _call_signature(
         special_args += "app=app, "
 
     if "container_settings" in argspec.args:
+        # Resolve scratch_ensemble paths as absolute
+        if "scratch_ensembles" in container_settings:
+            container_settings["scratch_ensembles"] = {
+                ensemble: str((config_folder / pathlib.Path(enspath)).resolve())
+                for ensemble, enspath in container_settings["scratch_ensembles"].items()
+            }
         kwargs["container_settings"] = container_settings
 
     return (
