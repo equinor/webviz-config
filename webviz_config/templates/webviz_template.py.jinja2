@@ -14,7 +14,6 @@ from pathlib import Path, PosixPath
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
 from flask_talisman import Talisman
 import webviz_config
 from webviz_config.common_cache import CACHE
@@ -107,12 +106,6 @@ else:
                 className="styledButton",
               {%- endif -%}
                 children=[
-                  {%- if loop.first -%}
-                    html.Div(
-                        id="dash-issue-#1010",
-                        style={"display":"none"}, 
-                        children=dash_table.DataTable()),
-                  {%- endif -%}
                   {% for content in page.content -%}
                   {%- if content is string -%}
                     dcc.Markdown(r"""{{ content }}""")

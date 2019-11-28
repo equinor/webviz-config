@@ -31,7 +31,7 @@ setup(
     },
     entry_points={"console_scripts": ["webviz=webviz_config.command_line:main"]},
     install_requires=[
-        "dash~=1.1",
+        "dash~=1.7",
         "bleach~=3.1",
         "cryptography~=2.4",
         "flask-caching~=1.4",
@@ -41,7 +41,7 @@ setup(
         "pandas~=0.24",
         "pyarrow~=0.11",
         "pyyaml~=5.1",
-        "webviz-core-components>=0.0.10",
+        "webviz-core-components>=0.0.12",
     ],
     tests_require=TESTS_REQUIRES,
     extras_require={"tests": TESTS_REQUIRES},
