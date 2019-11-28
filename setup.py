@@ -31,7 +31,7 @@ setup(
     },
     entry_points={"console_scripts": ["webviz=webviz_config.command_line:main"]},
     install_requires=[
-        "dash>=1.7",
+        "dash~=1.7",
         "bleach~=3.1",
         "cryptography~=2.4",
         "flask-caching~=1.4",
