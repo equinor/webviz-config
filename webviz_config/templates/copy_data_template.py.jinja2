@@ -5,10 +5,11 @@ import os.path as path
 from pathlib import Path, PosixPath
 
 import dash
+
+import webviz_config
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
-
 
 
 {% for module in _imports %}
@@ -23,6 +24,7 @@ app = dash.Dash()
 app.config.suppress_callback_exceptions = True
 
 app.webviz_settings = {
+    "shared_settings": webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings({{ shared_settings }}, {{ config_folder }}),
     "plotly_layout": {{ plotly_layout }},
 }
 
