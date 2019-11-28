@@ -1,7 +1,10 @@
 import os
 import getpass
 import datetime
+import pathlib
+
 import jinja2
+
 from .themes import installed_themes
 from ._config_parser import ConfigParser
 
@@ -11,7 +14,9 @@ def write_script(args, build_directory, template_filename, output_filename):
     config_parser = ConfigParser(args.yaml_file)
     configuration = config_parser.configuration
 
+    configuration["shared_settings"] = config_parser.shared_settings
     configuration["portable"] = args.portable is not None
+    configuration["config_folder"] = repr(pathlib.Path(args.yaml_file).resolve().parent)
 
     theme = installed_themes[args.theme]
     configuration["csp"] = theme.csp

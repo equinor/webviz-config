@@ -6,6 +6,7 @@ from ._localhost_certificate import LocalhostCertificate
 from ._is_reload_process import is_reload_process
 from ._container_abc import WebvizContainerABC
 from ._theme_class import WebvizConfigTheme
+from ._shared_settings_subscriptions import SHARED_SETTINGS_SUBSCRIPTIONS
 
 try:
     __version__ = get_distribution(__name__).version
