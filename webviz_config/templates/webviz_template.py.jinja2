@@ -107,12 +107,6 @@ else:
                 className="styledButton",
               {%- endif -%}
                 children=[
-                  {%- if loop.first -%}
-                    html.Div(
-                        id="dash-issue-#1010",
-                        style={"display":"none"}, 
-                        children=dash_table.DataTable()),
-                  {%- endif -%}
                   {% for content in page.content -%}
                   {%- if content is string -%}
                     dcc.Markdown(r"""{{ content }}""")
