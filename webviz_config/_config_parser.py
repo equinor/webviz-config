@@ -4,6 +4,7 @@ import pathlib
 import inspect
 import importlib
 import typing
+import warnings
 
 import yaml
 
@@ -29,7 +30,7 @@ def _call_signature(
     module,
     module_name,
     container_name,
-    container_settings,
+    shared_settings,
     kwargs,
     config_folder,
     contact_person=None,
@@ -135,7 +136,16 @@ def _call_signature(
         special_args += "app=app, "
 
     if "container_settings" in argspec.args:
-        kwargs["container_settings"] = container_settings
+        kwargs["container_settings"] = shared_settings
+        warnings.warn(
+            (
+                "The 'container_settings' argument is deprecated. See "
+                "https://github.com/equinor/webviz-config/pull/162 for how to "
+                "update your code. This warning will eventually turn into an error "
+                "in a future release of webviz-config."
+            ),
+            DeprecationWarning,
+        )
 
     return (
         f"{module_name}.{container_name}({special_args}**{kwargs})",
@@ -226,10 +236,19 @@ class ConfigParser:
 
         self.configuration["_imports"] = set()
 
-        if "container_settings" not in self.configuration:
-            container_settings = {}
+        if "shared_settings" in self.configuration:
+            self._shared_settings = self.configuration["shared_settings"]
+        elif "container_settings" in self.configuration:
+            self._shared_settings = self.configuration["container_settings"]
+            warnings.warn(
+                (
+                    "You should rename from 'container_settings' "
+                    "to 'shared_settings' in your configuration file."
+                ),
+                DeprecationWarning,
+            )
         else:
-            container_settings = self.configuration["container_settings"]
+            self._shared_settings = {}
 
         if "title" not in self.configuration:
             self.configuration["title"] = "Webviz - Powered by Dash"
@@ -315,7 +334,7 @@ class ConfigParser:
                         standard_containers,
                         "standard_containers",
                         container_name,
-                        container_settings,
+                        self._shared_settings,
                         kwargs,
                         self._config_folder,
                     )
@@ -344,7 +363,7 @@ class ConfigParser:
                         module,
                         module_name,
                         container_name,
-                        container_settings,
+                        self._shared_settings,
                         kwargs,
                         self._config_folder,
                     )
@@ -354,6 +373,10 @@ class ConfigParser:
     @property
     def configuration(self):
         return self._configuration
+
+    @property
+    def shared_settings(self):
+        return self._shared_settings
 
     @property
     def assets(self):

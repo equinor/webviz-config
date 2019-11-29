@@ -381,6 +381,50 @@ different input also have different string output from `__repr__`.
 `@CACHE.memoize`, following the same order as in the example above usually gives 
 best performance.
 
+### Common settings
+
+If you create multiple containers that have some settings in common, you can
+_"subscribe"_ to keys in the dictionary `shared_settings`, defined by the user
+in the configuration file. E.g. assume that the user enters something like this at
+top level in the configuration file:
+```yaml
+shared_settings:
+  some_key:
+    some_settings1: ...
+    some_settings2: ...
+```
+
+You can then early in the application loading process get to run a function checking,
+and potentially transforming, the settings. The latter is useful e.g. if you want to
+convert some string, representing a path relative to the configuration file, to an
+absolute path.
+
+The way you subscribe to a shared setting is that you in your Python package add
+something like
+```python
+import webviz_config
+
+@webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.subscribe("some_key")
+def subscribe(some_key, config_folder):
+    # The input argument some_key given to this function is equal to
+    # shared_settings["some_key"] provided by the user from the configuration file.
+
+    # Do some checks on the settings?
+
+    # Do some transformation on the settings?
+
+    return some_key # The returned value here is put back into shared_settings["some_key"]
+```
+
+The (optionally transformed) `shared_settings` are accessible to containers through
+the `app` instance (see [callbacks](#callbacks)). E.g., in this case the wanted settings
+are found as `app.webviz_settings["shared_settings"]["some_key"]`.
+
+Stating the second input argument `config_folder` in the function signature is not
+necessary, however if you do you will get a
+[`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)
+instance representing the absolute path to the configuration file that was used.
+
 ### Custom ad-hoc containers
 
 It is possible to create custom containers which still can be included through
