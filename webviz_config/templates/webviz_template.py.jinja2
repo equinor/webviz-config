@@ -59,7 +59,9 @@ app.title = "{{ title }}"
 app.config.suppress_callback_exceptions = True
 
 app.webviz_settings = {
-    "shared_settings": webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings({{ shared_settings }}, {{ config_folder }}),
+    "shared_settings": webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
+        {{ shared_settings }}, {{ config_folder }}
+    ),
     "portable": {{ portable }},
     "plotly_layout": {{ plotly_layout }},
 }

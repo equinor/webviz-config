@@ -6,9 +6,9 @@ import pathlib
 class SharedSettingsSubscriptions:
     """The user can configure common settings, shared between different cointainers,
     under a key called `shared_settings` in the configuration file. Since it originates
-    from a native yaml file, the content is dictionaries/strings/ints.
+    from a native yaml file, the content is dictionaries/strings/ints/floats/dates.
 
-    Third-party container packages  might want to check early if the `shared_settings`
+    Third-party container packages might want to check early if the `shared_settings`
     they use are reasonable, and/or do some transformations on them.
     """
 
@@ -26,8 +26,9 @@ class SharedSettingsSubscriptions:
         return register
 
     def transformed_settings(self, shared_settings, config_folder):
-        """Called from the app template, which returns the `shared_settings` after
-        all third-party package subscriptions has done their (optional) transfomrations.
+        """Called from the app template, which returns the `shared_settings`
+        after all third-party package subscriptions have done their
+        (optional) transfomrations.
         """
         shared_settings = copy.deepcopy(shared_settings)
 
