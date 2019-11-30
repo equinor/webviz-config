@@ -34,7 +34,16 @@ class SharedSettingsSubscriptions:
 
         for subscription in self._subscriptions:
             key, function = subscription["key"], subscription["function"]
-            shared_settings[key] = function(*[pathlib.Path(config_folder) if arg == "config_folder" else portable if arg == "portable" else shared_settings.get(arg) for arg in inspect.getfullargspec(function).args])
+            shared_settings[key] = function(
+                *[
+                    pathlib.Path(config_folder)
+                    if arg == "config_folder"
+                    else portable
+                    if arg == "portable"
+                    else shared_settings.get(arg)
+                    for arg in inspect.getfullargspec(function).args
+                ]
+            )
 
         return shared_settings
 
