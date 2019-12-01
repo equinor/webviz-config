@@ -25,7 +25,7 @@ class SharedSettingsSubscriptions:
 
         return register
 
-    def transformed_settings(self, shared_settings, config_folder):
+    def transformed_settings(self, shared_settings, config_folder, portable):
         """Called from the app template, which returns the `shared_settings`
         after all third-party package subscriptions have done their
         (optional) transfomrations.
@@ -34,11 +34,15 @@ class SharedSettingsSubscriptions:
 
         for subscription in self._subscriptions:
             key, function = subscription["key"], subscription["function"]
-            requires_config_folder = len(inspect.getfullargspec(function).args) > 1
-            shared_settings[key] = (
-                function(shared_settings.get(key), pathlib.Path(config_folder))
-                if requires_config_folder
-                else function(shared_settings.get(key))
+            shared_settings[key] = function(
+                *[
+                    pathlib.Path(config_folder)
+                    if arg == "config_folder"
+                    else portable
+                    if arg == "portable"
+                    else shared_settings.get(arg)
+                    for arg in inspect.getfullargspec(function).args
+                ]
             )
 
         return shared_settings

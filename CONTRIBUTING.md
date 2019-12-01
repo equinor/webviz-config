@@ -405,7 +405,7 @@ something like
 import webviz_config
 
 @webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.subscribe("some_key")
-def subscribe(some_key, config_folder):
+def subscribe(some_key, config_folder, portable):
     # The input argument some_key given to this function is equal to
     # shared_settings["some_key"] provided by the user from the configuration file.
 
@@ -420,10 +420,11 @@ The (optionally transformed) `shared_settings` are accessible to containers thro
 the `app` instance (see [callbacks](#callbacks)). E.g., in this case the wanted settings
 are found as `app.webviz_settings["shared_settings"]["some_key"]`.
 
-Stating the second input argument `config_folder` in the function signature is not
-necessary, however if you do you will get a
+Stating the input arguments named `config_folder` and/or `portable` in the function
+signature is not necessary, however if you do you will get a
 [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)
-instance representing the absolute path to the configuration file that was used.
+instance representing the absolute path to the configuration file that was used, and/or
+a boolean value stating if the Webviz application running is a portable one.
 
 ### Custom ad-hoc containers
 
