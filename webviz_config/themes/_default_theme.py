@@ -23,3 +23,4 @@ default_theme.plotly_layout = {
         "#ffa600",
     ],
 }
+default_theme.plotly_theme = {}

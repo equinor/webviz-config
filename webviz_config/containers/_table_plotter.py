@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import plotly.express as px
 import dash_html_components as html
 import dash_core_components as dcc
@@ -50,6 +51,7 @@ a database.
         )
         self.selector_row = f"selector-row{uuid4()}"
         self.plot_option_id = f"plot-option{uuid4()}"
+        self.plotly_theme = app.webviz_settings["plotly_theme"]
         self.set_callbacks(app)
 
     def set_filters(self, filter_cols):
@@ -379,7 +381,7 @@ a database.
                 else:
                     div_style.append(self.style_options_div_hidden)
 
-            return (plotfunc(data, **plotargs), *div_style)
+            return (plotfunc(data, template=self.plotly_theme, **plotargs), *div_style)
 
 
 @CACHE.memoize(timeout=CACHE.TIMEOUT)
