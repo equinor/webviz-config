@@ -16,7 +16,7 @@ class WebvizStorage:
     def __init__(self):
         self._use_storage = False
         self.storage_functions = set()
-        self.storage_function_argvalues = defaultdict(set)
+        self.storage_function_argvalues = defaultdict(dict)
 
     def register_function(self, func):
         """This function is automatically called by the function
@@ -61,13 +61,11 @@ class WebvizStorage:
         """
 
         for func, arglist in functionarguments:
-            argtuples = [
-                WebvizStorage._dict_to_tuples(WebvizStorage.complete_kwargs(func, args))
-                for args in arglist
-            ]
-
             undec_func = WebvizStorage._undecorate(func)
-            self.storage_function_argvalues[undec_func].update(argtuples)
+            for args in arglist:
+                argtuples = WebvizStorage._dict_to_tuples(WebvizStorage.complete_kwargs(func, args))
+                if repr(argtuples) not in self.storage_function_argvalues[undec_func]:
+                    self.storage_function_argvalues[undec_func][repr(argtuples)] = argtuples
 
     def _unique_path(self, func, argtuples):
         """Encodes the argumenttuples as bytes, and then does a sha256 on that.
@@ -77,8 +75,7 @@ class WebvizStorage:
         `__repr__`
         """
 
-        args_as_bytes = str(argtuples).encode()
-        hashed_args = str(hashlib.sha256(args_as_bytes).hexdigest())
+        hashed_args = hashlib.sha256(repr(argtuples).encode()).hexdigest()
 
         filename = f"{func.__module__}-{func.__name__}-{hashed_args}"
 
@@ -153,10 +150,10 @@ class WebvizStorage:
         total_calls = sum(
             len(calls) for calls in self.storage_function_argvalues.values()
         )
-        counter = 0
 
+        counter = 0
         for func in self.storage_functions:
-            for argtuples in self.storage_function_argvalues[func]:
+            for argtuples in self.storage_function_argvalues[func].values():
                 kwargs = dict(argtuples)
 
                 print(
