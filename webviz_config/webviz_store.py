@@ -63,9 +63,13 @@ class WebvizStorage:
         for func, arglist in functionarguments:
             undec_func = WebvizStorage._undecorate(func)
             for args in arglist:
-                argtuples = WebvizStorage._dict_to_tuples(WebvizStorage.complete_kwargs(func, args))
+                argtuples = WebvizStorage._dict_to_tuples(
+                    WebvizStorage.complete_kwargs(func, args)
+                )
                 if repr(argtuples) not in self.storage_function_argvalues[undec_func]:
-                    self.storage_function_argvalues[undec_func][repr(argtuples)] = argtuples
+                    self.storage_function_argvalues[undec_func][
+                        repr(argtuples)
+                    ] = argtuples
 
     def _unique_path(self, func, argtuples):
         """Encodes the argumenttuples as bytes, and then does a sha256 on that.
