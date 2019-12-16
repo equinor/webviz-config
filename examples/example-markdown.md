@@ -35,7 +35,7 @@ Hi from a Markdown container containing Norwegian letters (æ ø å), some
 
 <details>
   <summary>This is the title of some detailed information</summary>
-  Here is some more extended information, which can be extended/collapsed on demand.
+  Here is some more information, which can be extended/collapsed on demand.
 </details>
 
 #### An example table
