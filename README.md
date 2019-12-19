@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="150" src="./docs/assets/webviz-logo.svg">
+  <img height="150" src="https://github.com/equinor/webviz-config/raw/master/docs/assets/webviz-logo.svg?sanitize=true">
 </p>
 
 <h2 align="center">Democratizing Python web applications</h2>
@@ -23,6 +23,8 @@ Writing a [Dash web application](https://github.com/plotly/dash) gives a lot of 
 
 *Webviz* is a LGPL-licensed configuration layer on top of Dash, which encourages making reusable components and dashboards, which can then be added/removed when creating an application using a short [`yaml`](https://en.wikipedia.org/wiki/YAML) configuration file.
 
+This Python package, `webviz-config`, is the core plugin framework. For a real example repository using this plugin system, see e.g. [`webviz-subsurface`](https://github.com/equinor/webviz-subsurface).
+ 
 **These are the main user groups targeted by *Webviz*:**
 - **You do not know Python**, and only want to add different predefined dashboards or visualizations/components in a certain order and/or on different pages in the application. Optionally with some text and mathematical equations (that you provide) inbetween the  dashboards, explaining what the user is looking at.
 - **You know [Python](https://www.python.org/)**, and want to create generic or specialized dashboards you or other users can reuse by simply asking for it in the Webviz configuration file. This can be done without knowing JavaScript (see also [Dash](https://plot.ly/dash/) for more information).
