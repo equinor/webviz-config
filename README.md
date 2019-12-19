@@ -15,10 +15,6 @@
 </p>
 <br/>
 
-> Webviz is currently in alpha - expect breaking changes.
-
-<br/>
-
 Writing a [Dash web application](https://github.com/plotly/dash) gives a lot of flexibility, however, it also requires :snake: Python knowledge from the person setting it up.
 
 *Webviz* is a LGPL-licensed configuration layer on top of Dash, which encourages making reusable components and dashboards, which can then be added/removed when creating an application using a short [`yaml`](https://en.wikipedia.org/wiki/YAML) configuration file.
