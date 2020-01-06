@@ -16,9 +16,9 @@ class WebvizAssets:
     applications from the configuration file, this class facilitates handling
     of static assets.
 
-    Individual containers can add assets to a common instance of WebvizAssets
+    Individual plugins can add assets to a common instance of WebvizAssets
     by calling the .add(filename) function. This adds the resource, and
-    at the same time returns the resource URI which the container can use.
+    at the same time returns the resource URI which the plugin can use.
 
     If the webviz instance is in non-portable mode, the Flask/Dash application
     is routed to the actual location of the files, making hot reload and

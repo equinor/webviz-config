@@ -2,7 +2,7 @@ import time
 import dash
 
 from webviz_config.common_cache import CACHE
-from webviz_config.containers import _table_plotter
+from webviz_config.plugins import _table_plotter
 
 
 def test_table_plotter(dash_duo):

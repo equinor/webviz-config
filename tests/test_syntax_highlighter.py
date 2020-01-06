@@ -4,7 +4,7 @@ import mock
 import dash
 
 from webviz_config.common_cache import CACHE
-from webviz_config.containers import _syntax_highlighter
+from webviz_config.plugins import _syntax_highlighter
 
 
 def test_syntax_highlighter(dash_duo):
@@ -13,9 +13,7 @@ def test_syntax_highlighter(dash_duo):
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
     code_file = Path("./tests/data/basic_example.yaml")
-    with mock.patch(
-        "webviz_config.containers._syntax_highlighter.get_path"
-    ) as mock_path:
+    with mock.patch("webviz_config.plugins._syntax_highlighter.get_path") as mock_path:
         mock_path.return_value = code_file
         page = _syntax_highlighter.SyntaxHighlighter(app, code_file)
         app.layout = page.layout

@@ -8,38 +8,39 @@ import warnings
 
 import yaml
 
-from . import containers as standard_containers
-from . import WebvizContainerABC
+from . import plugins as standard_plugins
+from . import WebvizPluginABC
 from .utils import terminal_colors
 
+warnings.simplefilter("default", DeprecationWarning)
 SPECIAL_ARGS = ["self", "app", "container_settings", "_call_signature", "_imports"]
 
 
-def _get_webviz_containers(module):
-    """Returns a list of all Webviz Containers
+def _get_webviz_plugins(module):
+    """Returns a list of all Webviz plugins
     in the module given as input.
     """
 
-    def _is_webviz_container(obj):
-        return inspect.isclass(obj) and issubclass(obj, WebvizContainerABC)
+    def _is_webviz_plugin(obj):
+        return inspect.isclass(obj) and issubclass(obj, WebvizPluginABC)
 
-    return [member[0] for member in inspect.getmembers(module, _is_webviz_container)]
+    return [member[0] for member in inspect.getmembers(module, _is_webviz_plugin)]
 
 
 def _call_signature(
     module,
     module_name,
-    container_name,
+    plugin_name,
     shared_settings,
     kwargs,
     config_folder,
     contact_person=None,
 ):
-    # pylint: disable=too-many-branches
-    """Takes as input the name of a container, the module it is located in,
+    # pylint: disable=too-many-branches,too-many-statements
+    """Takes as input the name of a plugin, the module it is located in,
     together with user given arguments (originating from the configuration
     file). Returns the equivalent Python code wrt. initiating an instance of
-    that container (with the given arguments).
+    that plugin (with the given arguments).
 
     Raises ParserError in the following scenarios:
       * User is missing a required (i.e. no default value) __init__ argument
@@ -48,7 +49,7 @@ def _call_signature(
       * If there is type mismatch between user given argument value, and type
         hint in __init__ signature (given that type hint exist)
     """
-    argspec = inspect.getfullargspec(getattr(module, container_name).__init__)
+    argspec = inspect.getfullargspec(getattr(module, plugin_name).__init__)
 
     if argspec.defaults is not None:
         required_args = argspec.args[: -len(argspec.defaults)]
@@ -59,9 +60,8 @@ def _call_signature(
         if arg not in SPECIAL_ARGS and arg not in kwargs:
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                f"The container `{container_name}` requires "
-                f"the argument `{arg}` in your configuration "
-                "file."
+                f"`{plugin_name}` requires the argument "
+                f"`{arg}` in your configuration file."
                 f"{terminal_colors.END}"
             )
 
@@ -69,7 +69,7 @@ def _call_signature(
         if arg in SPECIAL_ARGS:
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                f"Container argument `{arg}` not allowed."
+                f"Argument `{arg}` not allowed."
                 f"{terminal_colors.END}"
             )
 
@@ -78,8 +78,7 @@ def _call_signature(
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     f"The contact information provided for "
-                    f"container `{container_name}` is "
-                    f"not a dictionary. "
+                    f"`{plugin_name}` is not a dictionary. "
                     f"{terminal_colors.END}"
                 )
 
@@ -89,9 +88,8 @@ def _call_signature(
             ):
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    f"Unrecognized contact information key "
-                    f"given to container `{container_name}`."
-                    f'Should be "name", "phone" and/or "email".'
+                    f"Unrecognized contact information key given to `{plugin_name}`. "
+                    f"Should be 'name', 'phone' and/or 'email'."
                     f"{terminal_colors.END}"
                 )
 
@@ -100,9 +98,8 @@ def _call_signature(
         elif arg not in argspec.args:
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                "Unrecognized argument. The container "
-                f"`{container_name}` does not take an "
-                f"argument `{arg}`."
+                f"Unrecognized argument. `{plugin_name}` "
+                f"does not take an argument `{arg}`."
                 f"{terminal_colors.END}"
             )
 
@@ -121,7 +118,7 @@ def _call_signature(
                     raise ParserError(
                         f"{terminal_colors.RED}{terminal_colors.BOLD}"
                         f"The value provided for argument `{arg}` "
-                        f"given to container `{container_name}` is "
+                        f"given to `{plugin_name}` is "
                         f"of type `{type(kwargs[arg]).__name__}`. "
                         f"Expected type "
                         f"`{argspec.annotations[arg].__name__}`."
@@ -148,8 +145,8 @@ def _call_signature(
         )
 
     return (
-        f"{module_name}.{container_name}({special_args}**{kwargs})",
-        f"container_layout(contact_person={contact_person})",
+        f"{module_name}.{plugin_name}({special_args}**{kwargs})",
+        f"plugin_layout(contact_person={contact_person})",
     )
 
 
@@ -159,7 +156,7 @@ class ParserError(Exception):
 
 class ConfigParser:
 
-    STANDARD_CONTAINERS = _get_webviz_containers(standard_containers)
+    STANDARD_PLUGINS = _get_webviz_plugins(standard_plugins)
 
     def __init__(self, yaml_file):
 
@@ -229,7 +226,7 @@ class ConfigParser:
         return page_id
 
     def clean_configuration(self):
-        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-branches,too-many-statements
         """Various cleaning and checks of the raw configuration read
         from the user provided yaml configuration file.
         """
@@ -301,74 +298,78 @@ class ConfigParser:
                     f"{terminal_colors.END}"
                 )
 
-            containers = [e for e in page["content"] if isinstance(e, dict)]
+            plugins = [e for e in page["content"] if isinstance(e, dict)]
 
-            for container in containers:
-                if "container" not in container:
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "Argument `container`, stating name of "
-                        "the container to include, is required."
-                        f"{terminal_colors.END}"
+            for plugin in plugins:
+                if "container" in plugin:
+                    kwargs = {} if plugin is None else {**plugin}
+                    plugin_name = kwargs.pop("container")
+                    warnings.warn(
+                        (
+                            "The configuration format has changed slightly, removing "
+                            "the need of explicitly typing 'container'. See "
+                            "https://github.com/equinor/webviz-config/pull/174 "
+                            "for how to get rid of this deprecation warning."
+                        ),
+                        DeprecationWarning,
                     )
+                else:
+                    plugin_name = next(iter(plugin))
+                    plugin_variables = next(iter(plugin.values()))
+                    kwargs = {} if plugin_variables is None else {**plugin_variables}
 
-                kwargs = {**container}
-                container_name = kwargs.pop("container")
-
-                if "." not in container_name:
-                    if container_name not in ConfigParser.STANDARD_CONTAINERS:
+                if "." not in plugin_name:
+                    if plugin_name not in ConfigParser.STANDARD_PLUGINS:
                         raise ParserError(
                             f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                            "You have included an container with "
-                            f"name `{container_name}` in your "
+                            "You have included a plugin with "
+                            f"name `{plugin_name}` in your "
                             "configuration file. This is not a "
-                            "standard container."
+                            "standard plugin."
                             f"{terminal_colors.END}"
                         )
 
                     self.configuration["_imports"].add(
-                        ("webviz_config.containers", "standard_containers")
+                        ("webviz_config.plugins", "standard_plugins")
                     )
 
-                    container["_call_signature"] = _call_signature(
-                        standard_containers,
-                        "standard_containers",
-                        container_name,
+                    plugin["_call_signature"] = _call_signature(
+                        standard_plugins,
+                        "standard_plugins",
+                        plugin_name,
                         self._shared_settings,
                         kwargs,
                         self._config_folder,
                     )
 
-                    self.assets.update(
-                        getattr(standard_containers, container_name).ASSETS
-                    )
+                    self.assets.update(getattr(standard_plugins, plugin_name).ASSETS)
 
                 else:
-                    parts = container_name.split(".")
+                    parts = plugin_name.split(".")
 
-                    container_name = parts[-1]
+                    plugin_name = parts[-1]
                     module_name = ".".join(parts[:-1])
                     module = importlib.import_module(module_name)
 
-                    if container_name not in _get_webviz_containers(module):
+                    if plugin_name not in _get_webviz_plugins(module):
                         raise ParserError(
                             f"{terminal_colors.RED}{terminal_colors.BOLD}"
                             f"Module `{module}` does not have a "
-                            f"container named `{container_name}`"
+                            f"plugin named `{plugin_name}`"
                             f"{terminal_colors.END}"
                         )
 
                     self.configuration["_imports"].add(module_name)
-                    container["_call_signature"] = _call_signature(
+                    plugin["_call_signature"] = _call_signature(
                         module,
                         module_name,
-                        container_name,
+                        plugin_name,
                         self._shared_settings,
                         kwargs,
                         self._config_folder,
                     )
 
-                    self.assets.update(getattr(module, container_name).ASSETS)
+                    self.assets.update(getattr(module, plugin_name).ASSETS)
 
     @property
     def configuration(self):

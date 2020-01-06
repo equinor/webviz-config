@@ -2,14 +2,14 @@ from pathlib import Path
 
 import dash_html_components as html
 
-from .. import WebvizContainerABC
+from .. import WebvizPluginABC
 from ..webviz_assets import WEBVIZ_ASSETS
 
 
-class EmbedPdf(WebvizContainerABC):
+class EmbedPdf(WebvizPluginABC):
     """### Embed PDF file
 
-This container embeds a given PDF file into the page.
+Embeds a given PDF file into the page.
 
 * `pdf_file`: Path to the PDF file to include. Either absolute path or
   relative to the configuration file.
@@ -21,6 +21,9 @@ Make sure it comes from a trusted source.
 """
 
     def __init__(self, pdf_file: Path, height: int = 80, width: int = 100):
+
+        super().__init__()
+
         self.pdf_url = WEBVIZ_ASSETS.add(pdf_file)
         self.height = height
         self.width = width

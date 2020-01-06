@@ -2,15 +2,15 @@ from pathlib import Path
 
 import dash_html_components as html
 
-from .. import WebvizContainerABC
+from .. import WebvizPluginABC
 from ..webviz_assets import WEBVIZ_ASSETS
 
 
-class BannerImage(WebvizContainerABC):
+class BannerImage(WebvizPluginABC):
     """### Banner image
 
-This container adds a full width _banner image_, with an optional overlayed
-title. Useful on e.g. the front page for introducing a field or project.
+Adds a full width _banner image_, with an optional overlayed title.
+Useful on e.g. the front page for introducing a field or project.
 
 * `image`: Path to the picture you want to add. Either absolute path or
   relative to the configuration file.
@@ -30,6 +30,8 @@ title. Useful on e.g. the front page for introducing a field or project.
         shadow: bool = True,
         height: int = 300,
     ):
+
+        super().__init__()
 
         self.image = image
         self.title = title

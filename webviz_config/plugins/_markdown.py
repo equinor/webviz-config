@@ -7,7 +7,7 @@ from markdown.extensions import Extension
 from markdown.inlinepatterns import ImageInlineProcessor, IMAGE_LINK_RE
 import dash_core_components as html
 
-from .. import WebvizContainerABC
+from .. import WebvizPluginABC
 from ..webviz_assets import WEBVIZ_ASSETS
 from ..webviz_store import webvizstore
 
@@ -77,7 +77,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
         return container, start, index
 
 
-class Markdown(WebvizContainerABC):
+class Markdown(WebvizPluginABC):
     """### Include Markdown
 
 _Note:_ The markdown syntax for images has been extended to support
@@ -87,9 +87,9 @@ To specify the dimensions write e.g.
 ![width=40%,height=300px](./example_banner.png "Some caption")
 ```
 
-This container renders and includes the content from a Markdown file. Images
-are supported, and should in the markdown file be given as either relative
-paths to the markdown file itself, or absolute paths.
+Renders and includes the content from a Markdown file. Images are supported,
+and should in the markdown file be given as either relative paths to
+the markdown file itself, or absolute paths.
 
 * `markdown_file`: Path to the markdown file to render and include. Either
   absolute path or relative to the configuration file.
@@ -154,6 +154,8 @@ paths to the markdown file itself, or absolute paths.
     ALLOWED_STYLES = ["width", "height"]
 
     def __init__(self, markdown_file: Path):
+
+        super().__init__()
 
         self.markdown_file = markdown_file
 

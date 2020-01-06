@@ -8,7 +8,7 @@ class SharedSettingsSubscriptions:
     under a key called `shared_settings` in the configuration file. Since it originates
     from a native yaml file, the content is dictionaries/strings/ints/floats/dates.
 
-    Third-party container packages might want to check early if the `shared_settings`
+    Third-party plugin packages might want to check early if the `shared_settings`
     they use are reasonable, and/or do some transformations on them.
     """
 
@@ -16,7 +16,7 @@ class SharedSettingsSubscriptions:
         self._subscriptions = []
 
     def subscribe(self, key):
-        """This is the decorator, which third-party container packages will use.
+        """This is the decorator, which third-party plugin packages will use.
         """
 
         def register(function):

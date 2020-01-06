@@ -4,17 +4,16 @@ from pathlib import Path
 import pandas as pd
 import dash_table
 
-from .. import WebvizContainerABC
+from .. import WebvizPluginABC
 from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
 
-class DataTable(WebvizContainerABC):
+class DataTable(WebvizPluginABC):
     """### Data table
 
-This container adds a table to the webviz instance, using tabular data from
-a provided csv file. If feature is requested, the data could also come from
-a database.
+Adds a table to the webviz instance, using tabular data from a provided csv file.
+If feature is requested, the data could also come from a database.
 
 * `csv_file`: Path to the csv file containing the tabular data. Either absolute
               path or relative to the configuration file.
@@ -33,6 +32,8 @@ a database.
         filtering: bool = True,
         pagination: bool = True,
     ):
+
+        super().__init__()
 
         self.csv_file = csv_file
         self.df = get_data(self.csv_file)

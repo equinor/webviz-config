@@ -3,11 +3,13 @@ from uuid import uuid4
 import dash_html_components as html
 from dash.dependencies import Input, Output
 
-from .. import WebvizContainerABC
+from .. import WebvizPluginABC
 
 
-class ExampleContainer(WebvizContainerABC):
+class ExamplePlugin(WebvizPluginABC):
     def __init__(self, app, title: str):
+        super().__init__()
+
         self.title = title
 
         self.button_id = f"submit-button-{uuid4()}"
@@ -30,4 +32,4 @@ class ExampleContainer(WebvizContainerABC):
             Output(self.div_id, "children"), [Input(self.button_id, "n_clicks")]
         )
         def _update_output(n_clicks):
-            return "Button has been pressed {} times.".format(n_clicks)
+            return f"Button has been pressed {n_clicks} times."
