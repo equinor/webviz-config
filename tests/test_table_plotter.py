@@ -10,7 +10,7 @@ def test_table_plotter(dash_duo):
     app = dash.Dash(__name__)
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
-
+    app.webviz_settings = {"plotly_settings": {}}
     csv_file = "./tests/data/example_data.csv"
     page = _table_plotter.TablePlotter(app, csv_file)
     app.layout = page.layout
