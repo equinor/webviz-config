@@ -4,7 +4,6 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 import plotly.express as px
 import dash_html_components as html
 import dash_core_components as dcc
@@ -16,6 +15,7 @@ from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
 
+# pylint: disable=too-many-instance-attributes
 class TablePlotter(WebvizContainerABC):
     """### TablePlotter
 
