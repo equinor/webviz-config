@@ -3,6 +3,7 @@ import dash
 
 from webviz_config.common_cache import CACHE
 from webviz_config.containers import _table_plotter
+from webviz_config.themes import default_theme
 
 
 def test_table_plotter(dash_duo):
@@ -10,7 +11,7 @@ def test_table_plotter(dash_duo):
     app = dash.Dash(__name__)
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
-    app.webviz_settings = {"plotly_settings": {}}
+    app.webviz_settings = {"plotly_settings": default_theme.plotly_theme}
     csv_file = "./tests/data/example_data.csv"
     page = _table_plotter.TablePlotter(app, csv_file)
     app.layout = page.layout
@@ -53,7 +54,7 @@ def test_table_plotter_filter(dash_duo):
     app = dash.Dash(__name__)
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
-
+    app.webviz_settings = {"plotly_settings": default_theme.plotly_theme}
     csv_file = "./tests/data/example_data.csv"
     page = _table_plotter.TablePlotter(app, csv_file, filter_cols=["Well"])
     app.layout = page.layout
@@ -98,7 +99,7 @@ def test_initialized_table_plotter(dash_duo):
     app.scripts.config.serve_locally = True
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
-
+    app.webviz_settings = {"plotly_settings": default_theme.plotly_theme}
     csv_file = "./tests/data/example_data.csv"
     plot_options = dict(
         x="Well",
