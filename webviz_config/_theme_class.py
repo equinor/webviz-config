@@ -1,4 +1,4 @@
-from copy import deepcopy
+import copy
 
 
 class WebvizConfigTheme:
@@ -73,7 +73,7 @@ class WebvizConfigTheme:
 
     @property
     def plotly_theme(self):
-        return deepcopy(self._plotly_theme)
+        return copy.deepcopy(self._plotly_theme)
 
     @plotly_theme.setter
     def plotly_theme(self, plotly_theme):
