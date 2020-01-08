@@ -10,18 +10,18 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import webviz_core_components as wcc
 
-from .. import WebvizContainerABC
+from .. import WebvizPluginABC
 from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
 
+
 # pylint: disable=too-many-instance-attributes
-class TablePlotter(WebvizContainerABC):
+class TablePlotter(WebvizPluginABC):
     """### TablePlotter
 
-This container adds a plotter to the webviz instance, using tabular data from
-a provided csv file. If feature is requested, the data could also come from
-a database.
+Adds a plotter to the webviz instance, using tabular data from a provided csv file.
+If feature is requested, the data could also come from a database.
 
 * `csv_file`: Path to the csv file containing the tabular data. Either absolute
               path or relative to the configuration file.
@@ -38,6 +38,8 @@ a database.
         filter_cols: list = None,
         lock: bool = False,
     ):
+
+        super().__init__()
 
         self.plot_options = plot_options if plot_options else {}
         self.graph_id = f"graph-id{uuid4()}"
@@ -343,10 +345,10 @@ a database.
         return inputs
 
     def set_callbacks(self, app):
-        @app.callback(self.container_data_output, [self.container_data_requested])
+        @app.callback(self.plugin_data_output, [self.plugin_data_requested])
         def _user_download_data(data_requested):
             return (
-                WebvizContainerABC.container_data_compress(
+                WebvizPluginABC.plugin_data_compress(
                     [
                         {
                             "filename": "table_plotter.csv",

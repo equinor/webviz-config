@@ -4,7 +4,7 @@
 
 ### This is a subsubtitle
 
-Hi from a Markdown container containing Norwegian letters (æ ø å), some
+Hi from a Markdown text file containing Norwegian letters (æ ø å), some
 **bold** letters, _italic_ letters. _You can also **combine** them._
 
 #### An unordered list

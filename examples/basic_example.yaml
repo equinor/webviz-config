@@ -7,60 +7,60 @@ pages:
 
  - title: Front page
    content:
-    - container: BannerImage
-      image: ./example_banner.png
-      title: My banner image
+    - BannerImage:
+        image: ./example_banner.png
+        title: My banner image
     - Webviz created from configuration file.
     - Some other text, potentially with strange letters like Åre, Smørbukk Sør.
 
  - title: Markdown example
    content:
-    - container: Markdown
-      markdown_file: ./example-markdown.md
+    - Markdown:
+        markdown_file: ./example-markdown.md
 
  - title: Table example
    content:
-    - container: DataTable
-      csv_file: ./example_data.csv
+    - DataTable:
+        csv_file: ./example_data.csv
 
  - title: PDF example
    content:
-    - container: EmbedPdf
-      pdf_file: ./example.pdf
+    - EmbedPdf:
+        pdf_file: ./example.pdf
 
  - title: Syntax highlighting example
    content:
-    - container: SyntaxHighlighter
-      filename: ./basic_example.yaml
+    - SyntaxHighlighter:
+        filename: ./basic_example.yaml
 
  - title: Tour example
    content:
-    - container: ExampleTour
+    - ExampleTour:
 
  - title: Plot a table
    content:
-    - container: TablePlotter
-      csv_file: ./example_data.csv
-      filter_cols:
+    - TablePlotter:
+        csv_file: ./example_data.csv
+        filter_cols:
           - Well
           - Segment
           - Average permeability (D)
-      contact_person:
-        name: Ola Nordmann
-        phone: +47 12345678
-        email: some@email.com
+        contact_person:
+          name: Ola Nordmann
+          phone: +47 12345678
+          email: some@email.com
 
  - title: Plot a table (locked)
    content:
-    - container: TablePlotter
-      csv_file: ./example_data.csv
-      lock: true
-      plot_options:
-        x: Well
-        y: Initial reservoir pressure (bar)
-        size: Average permeability (D)
-        facet_col: Segment
-      contact_person:
-        name: Kari Nordmann
-        phone: 12345678
-        email: someother@email.com
+    - TablePlotter:
+        csv_file: ./example_data.csv
+        lock: true
+        plot_options:
+          x: Well
+          y: Initial reservoir pressure (bar)
+          size: Average permeability (D)
+          facet_col: Segment
+        contact_person:
+          name: Kari Nordmann
+          phone: 12345678
+          email: someother@email.com

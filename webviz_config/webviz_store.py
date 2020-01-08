@@ -52,7 +52,7 @@ class WebvizStorage:
 
     def register_function_arguments(self, functionarguments):
         """The input here is from class functions `add_webvizstore(self)`
-        in the different containers requested from the configuration file.
+        in the different plugins requested from the configuration file.
 
         The input is as follows:
             [(func1, argumentcombinations), (func2, argumentcombinations), ...]
@@ -74,7 +74,7 @@ class WebvizStorage:
     def _unique_path(self, func, argtuples):
         """Encodes the argumenttuples as bytes, and then does a sha256 on that.
         Mutable arguments are accepted in the argument tuples, however it is
-        the container author that needs to be repsonsible for making sure that
+        the plugin author that needs to be responsible for making sure that
         instances representing different input has different values for
         `__repr__`
         """

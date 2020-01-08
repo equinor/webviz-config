@@ -1,4 +1,4 @@
-"""Builds automatic documentation of the installed webviz config containers.
+"""Builds automatic documentation of the installed webviz config plugins.
 The documentation is designed to be used by the YAML configuration file end
 user. Sphinx has not been used due to
 
@@ -9,10 +9,10 @@ user. Sphinx has not been used due to
     is not needed.
 
 Overall workflow is:
-    * Gets all installed containers.
+    * Finds all installed plugins.
     * Automatically reads docstring and __init__ function signature (both
       argument names and which arguments have default values).
-    * Output the extracted container information in html using jinja2.
+    * Output the extracted plugin information in html using jinja2.
 """
 
 import shutil
@@ -22,7 +22,7 @@ from importlib import import_module
 from collections import defaultdict
 import jinja2
 from markdown import markdown
-import webviz_config.containers
+import webviz_config.plugins
 from webviz_config._config_parser import SPECIAL_ARGS
 
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
@@ -48,58 +48,58 @@ def convert_docstring(doc):
     return "" if doc is None else markdown(doc, extensions=["fenced_code"])
 
 
-def get_container_documentation():
-    """Get all installed containers, and document them by grabbing docstring
+def get_plugin_documentation():
+    """Get all installed plugins, and document them by grabbing docstring
     and input arguments / function signature.
     """
 
-    containers = inspect.getmembers(webviz_config.containers, inspect.isclass)
+    plugins = inspect.getmembers(webviz_config.plugins, inspect.isclass)
 
-    container_doc = []
+    plugin_doc = []
 
-    for container in containers:
-        reference = container[1]
+    for plugin in plugins:
+        reference = plugin[1]
 
-        container_info = {}
+        plugin_info = {}
 
-        container_info["name"] = container[0]
-        container_info["doc"] = convert_docstring(reference.__doc__)
+        plugin_info["name"] = plugin[0]
+        plugin_info["doc"] = convert_docstring(reference.__doc__)
 
         argspec = inspect.getfullargspec(reference.__init__)
-        container_info["args"] = [
+        plugin_info["args"] = [
             arg for arg in argspec.args if arg not in SPECIAL_ARGS
         ]
 
-        container_info["values"] = defaultdict(lambda: "some value")
+        plugin_info["values"] = defaultdict(lambda: "some value")
 
         if argspec.defaults is not None:
             for arg, default in dict(
                 zip(reversed(argspec.args), reversed(argspec.defaults))
             ).items():
-                container_info["values"][
+                plugin_info["values"][
                     arg
                 ] = f"{default}  # Optional (default value shown here)."
 
         module = inspect.getmodule(reference)
-        container_info["module"] = module.__name__
+        plugin_info["module"] = module.__name__
 
         package = inspect.getmodule(module).__package__
-        container_info["package"] = package
-        container_info["package_doc"] = convert_docstring(
+        plugin_info["package"] = package
+        plugin_info["package_doc"] = convert_docstring(
             import_module(package).__doc__
         )
 
-        if not container_info["name"].startswith("Example"):
-            container_doc.append(container_info)
+        if not plugin_info["name"].startswith("Example"):
+            plugin_doc.append(plugin_info)
 
-    # Sort the containers by package:
+    # Sort the plugins by package:
 
-    package_ordered = defaultdict(lambda: {"containers": []})
+    package_ordered = defaultdict(lambda: {"plugins": []})
 
-    for container in sorted(container_doc, key=lambda x: (x["module"], x["name"])):
-        package = container["package"]
-        package_ordered[package]["containers"].append(container)
-        package_ordered[package]["doc"] = container["package_doc"]
+    for plugin in sorted(plugin_doc, key=lambda x: (x["module"], x["name"])):
+        package = plugin["package"]
+        package_ordered[package]["plugins"].append(plugin)
+        package_ordered[package]["doc"] = plugin["package_doc"]
 
     return package_ordered
 
@@ -112,7 +112,7 @@ def get_basic_example():
 if __name__ == "__main__":
 
     template_data = {
-        "packages": get_container_documentation(),
+        "packages": get_plugin_documentation(),
         "basic_example": get_basic_example(),
     }
 

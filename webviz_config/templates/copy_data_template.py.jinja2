@@ -41,19 +41,19 @@ WEBVIZ_STORAGE.storage_folder = path.join(
 # expressions become available in Python 3.8
 # (https://www.python.org/dev/peps/pep-0572)
 
-containers = []
+plugins = []
 
 {% for page in pages %}
 {% for content in page.content %}
 {% if content is not string %}
-containers.append({{ content._call_signature[0] }})
+plugins.append({{ content._call_signature[0] }})
 {% endif %}
 {% endfor %}
 {% endfor %}
 
-for container in containers:
-    if hasattr(container, "add_webvizstore"):
-        WEBVIZ_STORAGE.register_function_arguments(container.add_webvizstore())
+for plugin in plugins:
+    if hasattr(plugin, "add_webvizstore"):
+        WEBVIZ_STORAGE.register_function_arguments(plugin.add_webvizstore())
 
 WEBVIZ_STORAGE.build_store()
 

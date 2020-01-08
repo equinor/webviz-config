@@ -2,11 +2,13 @@ from uuid import uuid4
 
 import dash_html_components as html
 
-from .. import WebvizContainerABC
+from .. import WebvizPluginABC
 
 
-class ExampleTour(WebvizContainerABC):
+class ExampleTour(WebvizPluginABC):
     def __init__(self):
+        super().__init__()
+
         self.blue_text_id = f"element-{uuid4()}"
         self.red_text_id = f"element-{uuid4()}"
 

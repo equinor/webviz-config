@@ -41,7 +41,10 @@ setup(
         "pandas~=0.24",
         "pyarrow~=0.11",
         "pyyaml~=5.1",
-        "webviz-core-components>=0.0.12",
+        # webviz-core-components is part of the webviz-config project,
+        # just located in a separate repository for convenience,
+        # and is therefore pinned exactly here:
+        "webviz-core-components==0.0.15",
     ],
     tests_require=TESTS_REQUIRES,
     extras_require={"tests": TESTS_REQUIRES},

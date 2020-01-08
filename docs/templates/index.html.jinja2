@@ -13,39 +13,39 @@
 
 <body>
 
-<div class='container'>
+<div class="container">
 
 <h1>Webviz configuration guide</h1>
 
 <h2>Fundamental configuration</h2>
 
-A configuration consists of some mandatory properties (title, username,
-password) and one or more pages. Each page has a title, and potentially some
+A configuration consists of some mandatory properties (e.g. app title)
+and one or more pages. Each page has a title, and potentially some
 content. The content can be one or more items.
 
-Containers represent predefined content, which takes one or more arguments.
-A list and description of all available different containers is listed below.
+Plugins represent predefined content, which takes one or more arguments.
+A list and description of all available different plugins is listed below.
 
-Content which is not containers are interpreted as text paragraphs.
+Content which is not plugins are interpreted as text paragraphs.
 
 A basic example configuration is shown below.
 
-<pre><code class='yaml'>{{ basic_example }}</code></pre>
+<pre><code class="yaml">{{ basic_example }}</code></pre>
 
-<h2>Container documentation</h2>
+<h2>Plugin documentation</h2>
 
 {%- for package in packages.values() %}
 
-{{- package['doc'] -}}
+{{- package["doc"] -}}
 
-<div style='margin-left: 40px;'>
+<div style="margin-left: 40px;">
 
-{%- for container in package['containers'] %}
+{%- for plugin in package["plugins"] %}
 
-{{ container['doc'] }}
-<pre><code class='yaml'>  - container: {{ container['name'] }}
-    {%- for arg in container['args'] %}
-    {{ arg }}: {{ container['values'][arg] }}
+{{ plugin["doc"] }}
+<pre><code class="yaml">    - {{ plugin["name"] }}:
+    {%- for arg in plugin["args"] %}
+        {{ arg }}: {{ plugin["values"][arg] }}
     {%- endfor %}
 </code></pre>
 <hr>
