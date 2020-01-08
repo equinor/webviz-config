@@ -15,6 +15,7 @@ from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
 
+# pylint: disable=too-many-instance-attributes
 class TablePlotter(WebvizPluginABC):
     """### TablePlotter
 
@@ -51,6 +52,7 @@ If feature is requested, the data could also come from a database.
         )
         self.selector_row = f"selector-row{uuid4()}"
         self.plot_option_id = f"plot-option{uuid4()}"
+        self.plotly_theme = app.webviz_settings["theme"].plotly_theme
         self.set_callbacks(app)
 
     def set_filters(self, filter_cols):
@@ -380,7 +382,7 @@ If feature is requested, the data could also come from a database.
                 else:
                     div_style.append(self.style_options_div_hidden)
 
-            return (plotfunc(data, **plotargs), *div_style)
+            return (plotfunc(data, template=self.plotly_theme, **plotargs), *div_style)
 
 
 @CACHE.memoize(timeout=CACHE.TIMEOUT)

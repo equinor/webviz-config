@@ -1,3 +1,6 @@
+import copy
+
+
 class WebvizConfigTheme:
     """Webviz config themes are all instances of this class. The only mandatory
     property is the theme name set at initialization.
@@ -41,7 +44,7 @@ class WebvizConfigTheme:
 
         self._external_stylesheets = []
         self._assets = []
-        self._plotly_layout = {}
+        self._plotly_theme = {}
 
     def adjust_csp(self, dictionary, append=True):
         """If the default CSP settings needs to be changed, this function can
@@ -69,13 +72,13 @@ class WebvizConfigTheme:
         return self._feature_policy
 
     @property
-    def plotly_layout(self):
-        return self._plotly_layout
+    def plotly_theme(self):
+        return copy.deepcopy(self._plotly_theme)
 
-    @plotly_layout.setter
-    def plotly_layout(self, plotly_layout):
+    @plotly_theme.setter
+    def plotly_theme(self, plotly_theme):
         """Layout object of Plotly graph objects."""
-        self._plotly_layout = plotly_layout
+        self._plotly_theme = plotly_theme
 
     @property
     def external_stylesheets(self):
