@@ -1,12 +1,14 @@
 import pandas as pd
 
-from .. import WebvizContainerABC
+from .. import WebvizPluginABC
 from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
 
-class ExamplePortable(WebvizContainerABC):
+class ExamplePortable(WebvizPluginABC):
     def __init__(self, some_number: int):
+        super().__init__()
+
         self.some_number = some_number
 
     def add_webvizstore(self):

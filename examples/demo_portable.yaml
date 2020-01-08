@@ -7,7 +7,7 @@ pages:
 
  - title: Front page
    content: 
-    - container: ExamplePortable
-      some_number: 42
-    - container: ExampleAssets
-      picture_path: ./example_banner.png
+    - ExamplePortable:
+        some_number: 42
+    - ExampleAssets:
+        picture_path: ./example_banner.png

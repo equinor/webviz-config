@@ -1,21 +1,21 @@
 # Contributing to Webviz configuration utility
 
-- [Creating a new container](#creating-a-new-container)
-  - [Minimal container](#minimal-container)
-  - [Override container toolbar](#override-container-toolbar)
+- [Creating a new plugin](#creating-a-new-plugin)
+  - [Minimal plugin](#minimal-plugin)
+  - [Override plugin toolbar](#override-plugin-toolbar)
   - [Callbacks](#callbacks)
     - [Data download callback](#data-download-callback)
   - [User provided arguments](#user-provided-arguments)
   - [Data input](#data-input)
     - [Deattaching data from its original source](#deattaching-data-from-its-original-source)
-  - [Custom ad-hoc containers](#custom-ad-hoc-containers)
+  - [Custom ad-hoc plugins](#custom-ad-hoc-plugins)
 - [Run tests](#run-tests)
 - [Build documentation](#build-documentation)
 
-## Creating a new container
+## Creating a new plugin
 
-Most of the development work is towards creating standard containers.
-A container usually does three things:
+Most of the development work is towards creating standard plugins.
+A plugin usually does three things:
 
 *   It has a `layout` property, consisting of multiple
     [Dash components](https://dash.plot.ly/getting-started).
@@ -26,18 +26,18 @@ A container usually does three things:
 *   It sets some [callbacks](https://dash.plot.ly/getting-started-part-2)
     to add user interactivity triggering actions in the Python backend.
 
-### Minimal container
+### Minimal plugin
 
 Of the three things mentioned above, it is only the `layout` proprety that is
-mandatory to provide. A minimal container could look like:
+mandatory to provide. A minimal plugin could look like:
 
 ```python
 import dash_html_components as html
 
-from webviz_config import WebvizContainerABC
+from webviz_config import WebvizPluginABC
 
 
-class ExampleContainer(WebvizContainerABC):
+class ExamplePlugin(WebvizPluginABC):
 
     @property
     def layout(self):
@@ -47,16 +47,16 @@ class ExampleContainer(WebvizContainerABC):
                         ])
 ```
 
-If the file containing `ExampleContainer` is saved to [./webviz_config/containers](./webviz_config/containers),
-and then added to the corresponding [\_\_init\_\_ file](./webviz_config/containers/__init__.py)
-you are done. Alternatively you can create your containers in a separate Python project and `setup.py`.
+If the file containing `ExamplePlugin` is saved to [./webviz_config/plugins](./webviz_config/plugins),
+and then added to the corresponding [\_\_init\_\_ file](./webviz_config/plugins/__init__.py)
+you are done. Alternatively you can create your plugins in a separate Python project and `setup.py`.
 You can then configure the installation by using something like:
 ```python
 setup(
     ...
     entry_points={
-        'webviz_config_containers': [
-            'ExampleContainer = my_package.my_module:ExampleContainer'
+        "webviz_config_plugins": [
+            "ExamplePlugin = my_package.my_module:ExamplePlugin"
         ]
     },
     ...
@@ -64,23 +64,23 @@ setup(
 ```
 See [webviz-subsurface](https://github.com/equinor/webviz-subsurface) for example of this usage.
 
-After installation, the user can then include the container through a configuration file, e.g.
+After installation, the user can then include the plugin through a configuration file, e.g.
 
 ```yaml
 title: Simple Webviz example
 
 pages:
 
- - title: Front page
-   content: 
-    - container: ExampleContainer
+  - title: Front page
+    content: 
+      - ExamplePlugin:
 ```
 
-### Override container toolbar
+### Override plugin toolbar
 
-In the generated webviz application, your container will as default be given
+In the generated webviz application, your plugin will as default be given
 a button toolbar. The default buttons to appear is stored in the class constant
-`WebvizContainerABC.TOOLBAR_BUTTONS`. If you want to override which buttons should
+`WebvizPluginABC.TOOLBAR_BUTTONS`. If you want to override which buttons should
 appear, redefine this class constant in your subclass. To remove all buttons,
 simply define it as an empty list. See [this section](#data-download-callback)
 for more information regarding the `data_download` button.
@@ -95,12 +95,15 @@ from uuid import uuid4
 
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from webviz_config import WebvizContainerABC
+from webviz_config import WebvizPluginABC
 
 
-class ExampleContainer(WebvizContainerABC):
+class ExamplePlugin(WebvizPluginABC):
 
     def __init__(self, app):
+
+        super().__init__()
+
         self.button_id = f'submit-button-{uuid4()}'
         self.div_id = f'output-state-{uuid4()}'
 
@@ -129,15 +132,15 @@ There are three fundamental additions to the minimal example without callbacks:
 
 *   You add the argument `app` to your `__init__` function. This is a special
     argument name which will *not* be originating from the user configuration
-    file, but rather automatically given to the container by the core
+    file, but rather automatically given to the plugin by the core
     functionality of `webviz-config`.
 
 *   You add a class function `set_callbacks` which contains the different
     callbacks to add. This function is called from the `__init__` function,
-    such that the callbacks are set when the container instance is created.
+    such that the callbacks are set when the plugin instance is created.
 
-*   Since the components are reusable (i.e. a user can use the container
-    multiple times within the same application), the container IDs mentioned in
+*   Since the components are reusable (i.e. a user can use the plugin
+    multiple times within the same application), the plugin IDs mentioned in
     the `@app.callback(...)` decorator needs to be unique. One simple way of
     ensuring this is to create unique IDs in the `__init__` function using
     [uuid.uuid4()](https://docs.python.org/3/library/uuid.html#uuid.uuid4),
@@ -145,45 +148,48 @@ There are three fundamental additions to the minimal example without callbacks:
 
 #### Data download callback
 
-There is a [data download button](#override-container-toolbar) provided by
-the `WebvizContainerABC` class. However, it will only appear if the corresponding
+There is a [data download button](#override-plugin-toolbar) provided by
+the `WebvizPluginABC` class. However, it will only appear if the corresponding
 callback is set. A typical data download callback will look like
 
 ```python
-@app.callback(self.container_data_output,
-              [self.container_data_requested])
+@app.callback(self.plugin_data_output,
+              [self.plugin_data_requested])
 def _user_download_data(data_requested):
-    return WebvizContainerABC.container_data_compress(
+    return WebvizPluginABC.plugin_data_compress(
         [{'filename': 'some_file.txt',
           'content': 'Some download data'}]
     ) if data_requested else ''
 ```
-By letting the container define the callback, the container author is able
+By letting the plugin define the callback, the plugin author is able
 to utilize the whole callback machinery, including e.g. state of the individual
-components in the container. This way the data downloaded can e.g. depend on
+components in the plugin. This way the data downloaded can e.g. depend on
 the visual state or user selection.
 
-The attributes `self.container_data_output` and `self.container_data_requested`
+The attributes `self.plugin_data_output` and `self.plugin_data_requested`
 are Dash `Output` and `Input` instances respectively, and are provided by
-the base class `WebvizContainer` (i.e. include them as shown here).
+the base class `WebvizPluginABC` (i.e. include them as shown here).
 
-The function `WebvizContainerABC.container_data_compress` is a utility function
+The function `WebvizPluginABC.plugin_data_compress` is a utility function
 which takes a list of dictionaries, giving filenames and corresponding data,
 and compresses them to a zip archive which is then downloaded by the user.
 
 ### User provided arguments
 
-Since the containers are reusable and generic, they usually take in some
+Since the plugins are reusable and generic, they usually take in some
 user provided arguments. A minimal example could look like:
 
 ```python
 import dash_html_components as html
-from webviz_config import WebvizContainerABC
+from webviz_config import WebvizPluginABC
 
 
-class ExampleContainer(WebvizContainerABC):
+class ExamplePlugin(WebvizPluginABC):
 
     def __init__(self, title: str, number: int=42):
+
+        super().__init__()
+
         self.title = title
         self.number = number
 
@@ -202,10 +208,10 @@ title: Simple Webviz example
 
 pages:
 
- - title: Front page
-   content: 
-    - container: ExampleContainer
-      title: My special title
+  - title: Front page
+    content: 
+      - ExamplePlugin:
+          title: My special title
 ```
 
 The core functionality of `webviz-config` will provide user friendly
@@ -235,29 +241,28 @@ provided the configuration file
 title: Simple Webviz example
 
 pages:
-
- - title: Front page
-   content: 
-    - container: ExampleContainer
-      title: My special title
-      number: Some text instead of number
+  - title: Front page
+    content: 
+      - ExamplePlugin:
+          title: My special title
+          number: Some text instead of number
 ```
 
 this error message will be given:
 ```
-The value provided for argument `number` given to container `ExampleContainer` is of type `str`. Expected type `int`
+The value provided for argument `number` given to plugin `ExamplePlugin` is of type `str`. Expected type `int`
 ```
 
-An additional benefit is that if the container author says an argument should
+An additional benefit is that if the plugin author says an argument should
 be of type `pathlib.Path`, the configuration parser will make sure that
 the user provided path (which is a string to begin with in configuration file,
 potentially non-absolute and relative to the configuration file itself) is
-given to the container as an absolute path, and of type `pathlib.Path`.
+given to the plugin as an absolute path, and of type `pathlib.Path`.
 
 
 ### Data input
 
-The containers get data input through ordinary Python functions.
+The plugins get data input through ordinary Python functions.
 Since these functions can be costly to call, we utilize the
 [flask-caching](https://pythonhosted.org/Flask-Caching/) package.
 By decorating the costly functions with `@CACHE.memoize(timeout=CACHE.TIMEOUT)`
@@ -265,7 +270,7 @@ the result is cached, such that if the same function is called more than once,
 within the timeout, the cached result will be used instead of starting
 a new calculation.
 
-Functionality used by multiple containers should be put in a common module. The
+Functionality used by multiple plugins should be put in a common module. The
 applications common cache instance can be imported using
 ```python
 from webviz_config.common_cache import CACHE
@@ -277,7 +282,7 @@ There are use cases where the generated webviz instance ideally is portable
 and self-contained. At the same time, there are use cases where the data input
 ideally comes from "live sources" (simulations still running, production database...).
 
-Asking each container to take care of both these scenarios to the full extent
+Asking each plugin to take care of both these scenarios to the full extent
 involves a lot of duplicate work. The core of `webviz-config` therefore
 facilitates this transition in the following way.
 
@@ -291,7 +296,7 @@ def get_some_data(some, arguments) -> pd.DataFrame:
 It takes in some possibly user given arguments, reads e.g. data somewhere from
 the file system, and then returns a `pd.DataFrame`. If we want
 `webviz-config` to facilitate the transition to a portable webviz instance,
-the container author needs only do three things:
+the plugin author needs only do three things:
 
 1) Import the decorator: `from webviz_config.webviz_store import webvizstore`
 2) Decorate the function as this:
@@ -299,11 +304,11 @@ the container author needs only do three things:
    @webvizstore
    def get_some_data(some, arguments) -> pd.DataFrame:
    ```
-3) In the container class, define a class method `add_webvizstore` which
-   returns a list of tuples. The first container in each tuple is a reference
-   to a function, the second container is itself a list of argument combinations.
+3) In the plugin class, define a class method `add_webvizstore` which
+   returns a list of tuples. The first plugin in each tuple is a reference
+   to a function, the second plugin is itself a list of argument combinations.
 
-   The author of the container should provide a list of all the argument
+   The author of the plugin should provide a list of all the argument
    combinations that are imaginable during runtime of the application.
    Since it is a class method, the author has access to all the user provided
    arguments.
@@ -317,12 +322,15 @@ A full example could look like e.g.:
 import pandas as pd
 from webviz_config.webviz_store import webvizstore
 from webviz_config.common_cache import CACHE
-from webviz_config import WebvizContainerABC
+from webviz_config import WebvizPluginABC
 
 
-class ExamplePortable(WebvizContainerABC):
+class ExamplePortable(WebvizPluginABC):
 
     def __init__(self, some_number: int):
+
+        super().__init__()
+
         self.some_number = some_number
 
     def add_webvizstore(self):
@@ -383,7 +391,7 @@ best performance.
 
 ### Common settings
 
-If you create multiple containers that have some settings in common, you can
+If you create multiple plugins that have some settings in common, you can
 _"subscribe"_ to keys in the dictionary `shared_settings`, defined by the user
 in the configuration file. E.g. assume that the user enters something like this at
 top level in the configuration file:
@@ -416,7 +424,7 @@ def subscribe(some_key, config_folder, portable):
     return some_key # The returned value here is put back into shared_settings["some_key"]
 ```
 
-The (optionally transformed) `shared_settings` are accessible to containers through
+The (optionally transformed) `shared_settings` are accessible to plugins through
 the `app` instance (see [callbacks](#callbacks)). E.g., in this case the wanted settings
 are found as `app.webviz_settings["shared_settings"]["some_key"]`.
 
@@ -426,21 +434,24 @@ signature is not necessary, however if you do you will get a
 instance representing the absolute path to the configuration file that was used, and/or
 a boolean value stating if the Webviz application running is a portable one.
 
-### Custom ad-hoc containers
+### Custom ad-hoc plugins
 
-It is possible to create custom containers which still can be included through
+It is possible to create custom plugins which still can be included through
 the configuration file, which could be useful for quick prototyping.
 
 As an example, assume someone on your project has made the Python file
 
 ```python
 import dash_html_components as html
-from webviz_config import WebvizContainerABC
+from webviz_config import WebvizPluginABC
 
 
-class OurCustomContainer(WebvizContainerABC):
+class OurCustomPlugin(WebvizPluginABC):
 
     def __init__(self, title: str):
+
+        super().__init__()
+
         self.title = title
 
     @property
@@ -453,24 +464,26 @@ class OurCustomContainer(WebvizContainerABC):
 
 If this is saved such that it is available through e.g. a
 [module](https://docs.python.org/3/tutorial/modules.html)
-`ourmodule`, the user can include the custom container the same way as a standard
-container, with the only change of also naming the module:
+`ourmodule`, the user can include the custom plugin the same way as a standard
+plugin, with the only change of also naming the module:
 ```yaml
 title: Simple Webviz example
 
 pages:
 
- - title: Front page
-   content: 
-    - container: ourmodule.OurCustomContainer
-      title: Title of my custom container
+  - title: Front page
+    content: 
+      - ourmodule.OurCustomPlugin:
+          title: Title of my custom plugin
 ```
 
 Note that this might involve appending your `$PYTHONPATH` environment
 variable with the path where your custom module is located. The same principle
-applies if the custom container is saved in a package with submodule(s),
+applies if the custom plugin is saved in a package with submodule(s),
 ```yaml
-    - container: ourpackage.ourmodule.OurCustomContainer
+    ...
+      - ourpackage.ourmodule.OurCustomPlugin:
+          ...
 ```
 
 ## Run tests

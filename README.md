@@ -28,7 +28,7 @@ This Python package, `webviz-config`, is the core plugin framework. For a real e
 
 *Webviz* will create web applications with very :lock: strict security headers and CSP settings, giving an rating of **A+** on e.g. [Mozilla observatory](https://observatory.mozilla.org/). It also facilitates a :whale: Docker setup, where the Python code can be ran completely unpriviliged in a sandbox (both with respect to file system access and network communication).
 
-Example configuration file and information about the standard containers can be seen in [the documentation](https://equinor.github.io/webviz-config/).
+Example configuration file and information about the standard plugins can be seen in [the documentation](https://equinor.github.io/webviz-config/).
 
 **The workflow can be summarized as this:**
 1) The user provides a :book: configuration file following the [yaml](https://en.wikipedia.org/wiki/YAML) standard.
@@ -96,13 +96,13 @@ webviz certificate --auto-install
 ```
 Certificate installation guidelines will be given when running the command.
 
-### Creating new containers
+### Creating new plugins
 
-If you are interested in creating new containers which can be configured through
+If you are interested in creating new plugins which can be configured through
 the configuration file, take a look at the [contribution guide](./CONTRIBUTING.md).
 
 To quickly get started, we recommend using the corresponding
-[cookiecutter template](https://github.com/equinor/webviz-container-boilerplate).
+[cookiecutter template](https://github.com/equinor/webviz-plugin-boilerplate).
 
 ### License
 

@@ -2,15 +2,14 @@ from pathlib import Path
 
 import dash_core_components as dcc
 
-from .. import WebvizContainerABC
+from .. import WebvizPluginABC
 from ..webviz_store import webvizstore
 
 
-class SyntaxHighlighter(WebvizContainerABC):
+class SyntaxHighlighter(WebvizPluginABC):
     """### Syntax highlighter
 
-This container adds support for syntax highlighting of code. Language is
-automatically detected.
+Adds support for syntax highlighting of code. Language is automatically detected.
 
 * `filename`: Path to a file containing the code to highlight.
 * `dark_theme`: If `True`, the code is shown with a dark theme. Default is
@@ -18,6 +17,8 @@ automatically detected.
 """
 
     def __init__(self, filename: Path, dark_theme: bool = False):
+
+        super().__init__()
 
         self.filename = filename
         self.config = {"theme": "dark"} if dark_theme else {"theme": "light"}
