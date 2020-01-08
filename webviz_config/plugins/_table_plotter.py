@@ -15,7 +15,6 @@ from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
 
-
 # pylint: disable=too-many-instance-attributes
 class TablePlotter(WebvizPluginABC):
     """### TablePlotter
