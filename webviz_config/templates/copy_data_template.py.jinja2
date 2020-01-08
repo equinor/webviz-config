@@ -21,6 +21,9 @@ import {{ module[0] }} as {{ module[1] }}
 {%- endif %}
 {% endfor %}
 
+theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
+theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
+
 app = dash.Dash()
 app.config.suppress_callback_exceptions = True
 
@@ -28,7 +31,7 @@ app.webviz_settings = {
     "shared_settings": webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
         {{ shared_settings }}, {{ config_folder }}, False
     ),
-    "theme": installed_themes["{{ theme }}"],
+    "theme": theme,
 }
 
 CACHE.init_app(app.server)

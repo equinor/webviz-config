@@ -36,6 +36,9 @@ def build_webviz(args):
     for asset in installed_themes[args.theme].assets:
         shutil.copy(asset, os.path.join(build_directory, "assets"))
 
+    with open(os.path.join(build_directory, "theme_settings.json"), "w") as filehandle:
+        filehandle.write(installed_themes[args.theme].to_json())
+
     try:
         if args.portable:
             print(

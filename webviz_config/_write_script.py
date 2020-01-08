@@ -5,7 +5,6 @@ import pathlib
 
 import jinja2
 
-from .themes import installed_themes
 from ._config_parser import ConfigParser
 
 
@@ -18,11 +17,7 @@ def write_script(args, build_directory, template_filename, output_filename):
     configuration["portable"] = args.portable is not None
     configuration["config_folder"] = repr(pathlib.Path(args.yaml_file).resolve().parent)
 
-    theme = installed_themes[args.theme]
-    configuration["csp"] = theme.csp
-    configuration["feature_policy"] = theme.feature_policy
-    configuration["external_stylesheets"] = theme.external_stylesheets
-    configuration["theme"] = args.theme
+    configuration["theme_name"] = args.theme
 
     configuration["author"] = getpass.getuser()
     configuration["current_date"] = datetime.date.today().strftime("%Y-%m-%d")

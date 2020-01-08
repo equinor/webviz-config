@@ -1,4 +1,5 @@
 import copy
+import json
 
 
 class WebvizConfigTheme:
@@ -45,6 +46,13 @@ class WebvizConfigTheme:
         self._external_stylesheets = []
         self._assets = []
         self._plotly_theme = {}
+
+    def to_json(self):
+        return json.dumps(vars(self), indent=4, sort_keys=True)
+
+    def from_json(self, json_string):
+        for key, value in json.loads(json_string).items():
+            setattr(self, key, value)
 
     def adjust_csp(self, dictionary, append=True):
         """If the default CSP settings needs to be changed, this function can
