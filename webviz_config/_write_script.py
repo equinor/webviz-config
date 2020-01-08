@@ -22,7 +22,7 @@ def write_script(args, build_directory, template_filename, output_filename):
     configuration["csp"] = theme.csp
     configuration["feature_policy"] = theme.feature_policy
     configuration["external_stylesheets"] = theme.external_stylesheets
-    configuration["plotly_theme"] = theme.plotly_theme
+    configuration["theme"] = args.theme
 
     configuration["author"] = getpass.getuser()
     configuration["current_date"] = datetime.date.today().strftime("%Y-%m-%d")

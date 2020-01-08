@@ -7,6 +7,7 @@ from pathlib import Path, PosixPath
 import dash
 
 import webviz_config
+from webviz_config.themes import installed_themes
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
@@ -27,7 +28,7 @@ app.webviz_settings = {
     "shared_settings": webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
         {{ shared_settings }}, {{ config_folder }}, False
     ),
-    "plotly_theme": {{ plotly_theme }},
+    "theme": installed_themes["{{ theme }}"],
 }
 
 CACHE.init_app(app.server)

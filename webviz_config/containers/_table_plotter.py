@@ -51,7 +51,7 @@ a database.
         )
         self.selector_row = f"selector-row{uuid4()}"
         self.plot_option_id = f"plot-option{uuid4()}"
-        self.plotly_theme = app.webviz_settings["plotly_theme"]
+        self.plotly_theme = app.webviz_settings["theme"].plotly_theme
         self.set_callbacks(app)
 
     def set_filters(self, filter_cols):

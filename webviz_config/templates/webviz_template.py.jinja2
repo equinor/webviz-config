@@ -16,6 +16,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from flask_talisman import Talisman
 import webviz_config
+from webviz_config.themes import installed_themes
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
@@ -63,7 +64,7 @@ app.webviz_settings = {
         {{ shared_settings }}, {{ config_folder }}, {{ portable }}
     ),
     "portable": {{ portable }},
-    "plotly_theme": {{ plotly_theme }},
+    "theme": installed_themes["{{ theme }}"],
 }
 
 CACHE.init_app(server)

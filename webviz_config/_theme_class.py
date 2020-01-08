@@ -1,3 +1,6 @@
+from copy import deepcopy
+
+
 class WebvizConfigTheme:
     """Webviz config themes are all instances of this class. The only mandatory
     property is the theme name set at initialization.
@@ -70,7 +73,7 @@ class WebvizConfigTheme:
 
     @property
     def plotly_theme(self):
-        return self._plotly_theme
+        return deepcopy(self._plotly_theme)
 
     @plotly_theme.setter
     def plotly_theme(self, plotly_theme):
