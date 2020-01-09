@@ -53,7 +53,10 @@ logging.config.dictConfig(
     }
 )
 
-app = dash.Dash(__name__, external_stylesheets={{ external_stylesheets }})
+theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
+theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
+
+app = dash.Dash(__name__, external_stylesheets=theme.external_stylesheets)
 server = app.server
 
 app.title = "{{ title }}"
@@ -64,15 +67,12 @@ app.webviz_settings = {
         {{ shared_settings }}, {{ config_folder }}, {{ portable }}
     ),
     "portable": {{ portable }},
-    "theme": installed_themes["{{ theme }}"],
+    "theme": theme,
 }
 
 CACHE.init_app(server)
 
-CSP = {{ csp }}
-FEATURE_POLICY = {{ feature_policy }}
-
-Talisman(server, content_security_policy=CSP, feature_policy=FEATURE_POLICY)
+Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy)
 
 WEBVIZ_STORAGE.use_storage = {{portable}}
 WEBVIZ_STORAGE.storage_folder = path.join(
