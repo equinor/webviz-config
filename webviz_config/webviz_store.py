@@ -1,4 +1,5 @@
 import os
+import io
 import glob
 import shutil
 import functools
@@ -25,7 +26,7 @@ class WebvizStorage:
 
         return_type = inspect.getfullargspec(func).annotations["return"]
 
-        if return_type not in [pd.DataFrame, pathlib.Path]:
+        if return_type not in [pd.DataFrame, pathlib.Path, io.BytesIO]:
             raise NotImplementedError(
                 "Currently only storage of dataframes "
                 "and file resources are implemented."
@@ -140,6 +141,9 @@ class WebvizStorage:
                 return pd.read_parquet(f"{path}.parquet")
             if return_type == pathlib.Path:
                 return pathlib.Path(glob.glob(f"{path}*")[0])
+            if return_type == io.BytesIO:
+                with open(f"{path}", 'rb') as f:
+                    return io.BytesIO(f.read())
             raise ValueError(f"Unknown return type {return_type}")
 
         except OSError:
@@ -175,6 +179,8 @@ class WebvizStorage:
                     output.to_parquet(f"{path}.parquet")
                 elif isinstance(output, pathlib.Path):
                     shutil.copy(output, f"{path}{output.suffix}")
+                elif isinstance(output, io.BytesIO):
+                    open(f"{path}", 'wb').write(output.getvalue())
                 else:
                     raise ValueError(f"Unknown return type {type(output)}")
 
