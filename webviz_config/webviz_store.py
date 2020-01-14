@@ -142,8 +142,8 @@ class WebvizStorage:
             if return_type == pathlib.Path:
                 return pathlib.Path(glob.glob(f"{path}*")[0])
             if return_type == io.BytesIO:
-                with open(f"{path}", 'rb') as f:
-                    return io.BytesIO(f.read())
+                with open(f"{path}", "rb") as filehandle:
+                    return io.BytesIO(filehandle.read())
             raise ValueError(f"Unknown return type {return_type}")
 
         except OSError:
@@ -180,7 +180,7 @@ class WebvizStorage:
                 elif isinstance(output, pathlib.Path):
                     shutil.copy(output, f"{path}{output.suffix}")
                 elif isinstance(output, io.BytesIO):
-                    open(f"{path}", 'wb').write(output.getvalue())
+                    open(f"{path}", "wb").write(output.getvalue())
                 else:
                     raise ValueError(f"Unknown return type {type(output)}")
 
