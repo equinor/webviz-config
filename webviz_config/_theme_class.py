@@ -23,8 +23,8 @@ class WebvizConfigTheme:
             "navigate-to": "'self'",
             "base-uri": "'self'",
             "form-action": "'self'",
-            "frame-ancestors": "'none'",
-            "child-src": "'none'",
+            "frame-ancestors": "'self'",  # [3]
+            "frame-src": "'self'",  # [3]
             "object-src": "'self'",
             "plugin-types": "application/pdf",
         }
@@ -34,6 +34,9 @@ class WebvizConfigTheme:
             [1] unsafe-inline for style still needed by plotly
                 (https://github.com/plotly/plotly.js/issues/2355)
             [2] https://github.com/plotly/dash/issues/630
+            [3] We use 'self' instead of 'none' due to what looks like a Chromium bug,
+                where e.g. pdf's included using <embed> is not rendered. Might be
+                related to https://bugs.chromium.org/p/chromium/issues/detail?id=1002610
         """
 
         self._feature_policy = {
