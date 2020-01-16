@@ -1,4 +1,5 @@
 import os
+import io
 import glob
 import shutil
 import functools
@@ -13,6 +14,9 @@ from .utils import terminal_colors
 
 
 class WebvizStorage:
+
+    RETURN_TYPES = [pd.DataFrame, pathlib.Path, io.BytesIO]
+
     def __init__(self):
         self._use_storage = False
         self.storage_functions = set()
@@ -25,10 +29,9 @@ class WebvizStorage:
 
         return_type = inspect.getfullargspec(func).annotations["return"]
 
-        if return_type not in [pd.DataFrame, pathlib.Path]:
+        if return_type not in WebvizStorage.RETURN_TYPES:
             raise NotImplementedError(
-                "Currently only storage of dataframes "
-                "and file resources are implemented."
+                f"Webviz storage type must be one of {WebvizStorage.RETURN_TYPES}"
             )
 
         self.storage_functions.add(func)
@@ -140,6 +143,8 @@ class WebvizStorage:
                 return pd.read_parquet(f"{path}.parquet")
             if return_type == pathlib.Path:
                 return pathlib.Path(glob.glob(f"{path}*")[0])
+            if return_type == io.BytesIO:
+                return io.BytesIO(pathlib.Path(path).read_bytes())
             raise ValueError(f"Unknown return type {return_type}")
 
         except OSError:
@@ -175,6 +180,8 @@ class WebvizStorage:
                     output.to_parquet(f"{path}.parquet")
                 elif isinstance(output, pathlib.Path):
                     shutil.copy(output, f"{path}{output.suffix}")
+                elif isinstance(output, io.BytesIO):
+                    pathlib.Path(path).write_bytes(output.getvalue())
                 else:
                     raise ValueError(f"Unknown return type {type(output)}")
 

@@ -367,7 +367,7 @@ The core of `webviz-config` will do the following:
       functions will return the dataframe from the stored `.parquet` files,
       instead of running the actual function code.
 
-Currently only functions returning `pd.DataFrame` and `pathlib.Path` are
+Currently only functions returning `pd.DataFrame`, `io.BytesIO` or `pathlib.Path` are
 supported. A `NotImplementedError` will be raised if the function being
 decorated with `@webvizstore` does not have a type hint being supported.
 
