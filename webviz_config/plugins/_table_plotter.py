@@ -299,24 +299,24 @@ If feature is requested, the data could also come from a database.
 
     @property
     def layout(self):
-        return html.Div(
+        return self.grid_wrapper(
             children=[
-                html.Div(
-                    style=self.style_page_layout,
-                    children=[
-                        html.Div(
-                            id=self.selector_row,
-                            style=self.style_selectors,
-                            children=self.plot_option_layout(),
-                        ),
-                        html.Div(
-                            style={"height": "100%"},
-                            children=wcc.Graph(id=self.graph_id),
-                        ),
-                        html.Div(children=self.filter_layout()),
-                    ],
-                )
-            ]
+                self.grid_child(
+                    columns=1,
+                    children=html.Div(
+                        id=self.selector_row,
+                        style=self.style_selectors,
+                        children=self.plot_option_layout(),
+                    ),
+                ),
+                self.grid_child(
+                    columns=2,
+                    children=html.Div(
+                        style={"height": "100%"}, children=wcc.Graph(id=self.graph_id),
+                    ),
+                ),
+                self.grid_child(columns=1, children=self.filter_layout()),
+            ],
         )
 
     @property

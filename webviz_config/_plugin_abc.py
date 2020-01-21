@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import bleach
 from dash.dependencies import Input, Output
+import dash_html_components as html
 import webviz_core_components as wcc
 
 warnings.simplefilter("default", DeprecationWarning)
@@ -71,6 +72,22 @@ class WebvizPluginABC(abc.ABC):
         It returns a Dash layout which by webviz-config is added to
         the main Webviz application.
         """
+
+    @staticmethod
+    def grid_wrapper(children, mobile_breakpoint="200px"):
+        return html.Div(
+            style={
+                "display": "grid",
+                "alignContent": "space-around",
+                "justifyContent": "space-between",
+                "gridTemplateColumns": f"repeat(auto-fit, minmax({mobile_breakpoint}, 1fr))",
+            },
+            children=children,
+        )
+
+    @staticmethod
+    def grid_child(children, columns=1):
+        return html.Div(style={"gridColumn": f"span {columns}",}, children=children)
 
     @property
     def _plugin_wrapper_id(self):
