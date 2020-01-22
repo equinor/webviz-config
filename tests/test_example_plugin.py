@@ -13,12 +13,12 @@ def test_example_plugin(dash_duo):
     page = _example_plugin.ExamplePlugin(app, title)
     app.layout = page.layout
     dash_duo.start_server(app)
-    btn = dash_duo.find_element(f"#{page.button_id}")
+    btn = dash_duo.find_element("#" + page.uuid("submit-button"))
     assert btn.text == "Submit"
-    text = dash_duo.find_element(f"#{page.div_id}")
+    text = dash_duo.find_element("#" + page.uuid("output-state"))
     assert text.text == "Button has been pressed 0 times."
     btn.click()
     dash_duo.wait_for_contains_text(
-        f"#{page.div_id}", "Button has been pressed 1 times", timeout=2
+        "#" + page.uuid("output-state"), "Button has been pressed 1 times", timeout=2
     )
     assert text.text == "Button has been pressed 1 times."

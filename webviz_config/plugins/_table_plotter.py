@@ -1,4 +1,3 @@
-from uuid import uuid4
 from pathlib import Path
 from collections import OrderedDict
 
@@ -41,7 +40,6 @@ If feature is requested, the data could also come from a database.
         super().__init__()
 
         self.plot_options = plot_options if plot_options else {}
-        self.graph_id = f"graph-id{uuid4()}"
         self.lock = lock
         self.csv_file = csv_file
         self.data = get_data(self.csv_file)
@@ -50,14 +48,11 @@ If feature is requested, the data could also come from a database.
         self.numeric_columns = list(
             self.data.select_dtypes(include=[np.number]).columns
         )
-        self.selector_row = f"selector-row{uuid4()}"
-        self.plot_option_id = f"plot-option{uuid4()}"
         self.plotly_theme = app.webviz_settings["theme"].plotly_theme
         self.set_callbacks(app)
 
     def set_filters(self, filter_cols):
         self.filter_cols = []
-        self.filter_ids = {}
         self.use_filter = False
         if filter_cols:
             for col in filter_cols:
@@ -66,9 +61,6 @@ If feature is requested, the data could also come from a database.
                         self.filter_cols.append(col)
             if self.filter_cols:
                 self.use_filter = True
-                self.filter_ids = {
-                    col: f"{col}-{str(uuid4())}" for col in self.filter_cols
-                }
 
     def add_webvizstore(self):
         return [(get_data, [{"csv_file": self.csv_file}])]
@@ -191,7 +183,7 @@ If feature is requested, the data could also come from a database.
                                 children=[
                                     html.Summary(col.lower().capitalize()),
                                     dcc.RangeSlider(
-                                        id=self.filter_ids[col],
+                                        id=self.uuid(f"filter-{col}"),
                                         min=min_val,
                                         max=max_val,
                                         step=(max_val - min_val) / 10,
@@ -217,7 +209,7 @@ If feature is requested, the data could also come from a database.
                                 children=[
                                     html.Summary(col.lower().capitalize()),
                                     dcc.Dropdown(
-                                        id=self.filter_ids[col],
+                                        id=self.uuid(f"filter-{col}"),
                                         options=[
                                             {"label": i, "value": i} for i in elements
                                         ],
@@ -242,7 +234,7 @@ If feature is requested, the data could also come from a database.
                     html.H4("Set plot options"),
                     html.P("Plot type"),
                     dcc.Dropdown(
-                        id=f"{self.plot_option_id}-plottype",
+                        id=self.uuid("plottype"),
                         clearable=False,
                         options=[{"label": i, "value": i} for i in self.plots],
                         value=self.plot_options.get("type", "scatter"),
@@ -256,11 +248,11 @@ If feature is requested, the data could also come from a database.
             divs.append(
                 html.Div(
                     style=self.style_options_div,
-                    id=f"{self.plot_option_id}-div-{key}",
+                    id=self.uuid(f"div-{key}"),
                     children=[
                         html.P(key),
                         dcc.Dropdown(
-                            id=f"{self.plot_option_id}-{key}",
+                            id=self.uuid(f"dropdown-{key}"),
                             clearable=False,
                             options=[{"label": i, "value": i} for i in arg["options"]],
                             value=arg["value"],
@@ -305,13 +297,13 @@ If feature is requested, the data could also come from a database.
                     style=self.style_page_layout,
                     children=[
                         html.Div(
-                            id=self.selector_row,
+                            id=self.uuid("selector-row"),
                             style=self.style_selectors,
                             children=self.plot_option_layout(),
                         ),
                         html.Div(
                             style={"height": "100%"},
-                            children=wcc.Graph(id=self.graph_id),
+                            children=wcc.Graph(id=self.uuid("graph-id")),
                         ),
                         html.Div(children=self.filter_layout()),
                     ],
@@ -324,9 +316,9 @@ If feature is requested, the data could also come from a database.
         """Creates list of output dependencies for callback
         The outputs are the graph, and the style of the plot options"""
         outputs = []
-        outputs.append(Output(self.graph_id, "figure"))
+        outputs.append(Output(self.uuid("graph-id"), "figure"))
         for plot_arg in self.plot_args.keys():
-            outputs.append(Output(f"{self.plot_option_id}-div-{plot_arg}", "style"))
+            outputs.append(Output(self.uuid(f"div-{plot_arg}"), "style"))
         return outputs
 
     @property
@@ -336,11 +328,11 @@ If feature is requested, the data could also come from a database.
         for each plot option
         """
         inputs = []
-        inputs.append(Input(f"{self.plot_option_id}-plottype", "value"))
+        inputs.append(Input(self.uuid("plottype"), "value"))
         for plot_arg in self.plot_args.keys():
-            inputs.append(Input(f"{self.plot_option_id}-{plot_arg}", "value"))
+            inputs.append(Input(self.uuid(f"dropdown-{plot_arg}"), "value"))
         for filtcol in self.filter_cols:
-            inputs.append(Input(self.filter_ids[filtcol], "value"))
+            inputs.append(Input(self.uuid(f"filter-{filtcol}"), "value"))
         return inputs
 
     def set_callbacks(self, app):

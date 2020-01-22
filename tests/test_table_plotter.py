@@ -25,19 +25,13 @@ def test_table_plotter(dash_duo):
     # Check that filter is not active
     assert not page.use_filter
 
-    # Checking that the selectors are not hidden
-    selector_row = dash_duo.find_element(f"#{page.selector_row}")
-    assert selector_row.get_attribute("style") == ""
-
     # Checking that the correct plot type is initialized
-    plot_dd = dash_duo.find_element(f"#{page.plot_option_id}-plottype")
+    plot_dd = dash_duo.find_element("#" + page.uuid("plottype"))
     assert plot_dd.text == "scatter"
 
     # Checking that only the relevant options are shown
     for plot_option in page.plot_args.keys():
-        plot_option_dd = dash_duo.find_element(
-            f"#{page.plot_option_id}-div-{plot_option}"
-        )
+        plot_option_dd = dash_duo.find_element("#" + page.uuid(f"div-{plot_option}"))
         if plot_option not in page.plots["scatter"]:
             assert plot_option_dd.get_attribute("style") == "display: none;"
         else:
@@ -45,7 +39,7 @@ def test_table_plotter(dash_duo):
 
     # Checking that options are initialized correctly
     for option in ["x", "y"]:
-        plot_option_dd = dash_duo.find_element(f"#{page.plot_option_id}-{option}")
+        plot_option_dd = dash_duo.find_element("#" + page.uuid(f"dropdown-{option}"))
         assert plot_option_dd.text == "Well"
 
 
@@ -69,18 +63,16 @@ def test_table_plotter_filter(dash_duo):
     assert page.use_filter
     assert page.filter_cols == ["Well"]
     # Checking that the selectors are not hidden
-    selector_row = dash_duo.find_element(f"#{page.selector_row}")
+    selector_row = dash_duo.find_element("#" + page.uuid("selector-row"))
     assert selector_row.get_attribute("style") == ""
 
     # Checking that the correct plot type is initialized
-    plot_dd = dash_duo.find_element(f"#{page.plot_option_id}-plottype")
+    plot_dd = dash_duo.find_element("#" + page.uuid("plottype"))
     assert plot_dd.text == "scatter"
 
     # Checking that only the relevant options are shown
     for plot_option in page.plot_args.keys():
-        plot_option_dd = dash_duo.find_element(
-            f"#{page.plot_option_id}-div-{plot_option}"
-        )
+        plot_option_dd = dash_duo.find_element("#" + page.uuid(f"div-{plot_option}"))
         if plot_option in page.plots["scatter"]:
             assert plot_option_dd.get_attribute("style") == "display: grid;"
         else:
@@ -88,7 +80,7 @@ def test_table_plotter_filter(dash_duo):
 
     # Checking that options are initialized correctly
     for option in ["x", "y"]:
-        plot_option_dd = dash_duo.find_element(f"#{page.plot_option_id}-{option}")
+        plot_option_dd = dash_duo.find_element("#" + page.uuid(f"dropdown-{option}"))
         assert plot_option_dd.text == "Well"
 
 
@@ -121,5 +113,5 @@ def test_initialized_table_plotter(dash_duo):
     assert page.lock
 
     # Checking that the selectors are hidden
-    selector_row = dash_duo.find_element(f"#{page.selector_row}")
+    selector_row = dash_duo.find_element("#" + page.uuid("selector-row"))
     assert selector_row.get_attribute("style") == "display: none;"
