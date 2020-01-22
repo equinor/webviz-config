@@ -34,8 +34,6 @@ def test_table_plotter(dash_duo):
         plot_option_dd = dash_duo.find_element("#" + page.uuid(f"div-{plot_option}"))
         if plot_option not in page.plots["scatter"]:
             assert plot_option_dd.get_attribute("style") == "display: none;"
-        else:
-            assert plot_option_dd.get_attribute("style") == "display: grid;"
 
     # Checking that options are initialized correctly
     for option in ["x", "y"]:
@@ -62,9 +60,6 @@ def test_table_plotter_filter(dash_duo):
     # Check that filter is active
     assert page.use_filter
     assert page.filter_cols == ["Well"]
-    # Checking that the selectors are not hidden
-    selector_row = dash_duo.find_element("#" + page.uuid("selector-row"))
-    assert selector_row.get_attribute("style") == ""
 
     # Checking that the correct plot type is initialized
     plot_dd = dash_duo.find_element("#" + page.uuid("plottype"))
@@ -73,10 +68,8 @@ def test_table_plotter_filter(dash_duo):
     # Checking that only the relevant options are shown
     for plot_option in page.plot_args.keys():
         plot_option_dd = dash_duo.find_element("#" + page.uuid(f"div-{plot_option}"))
-        if plot_option in page.plots["scatter"]:
-            assert plot_option_dd.get_attribute("style") == "display: grid;"
-        else:
-            assert plot_option_dd.get_attribute("style") == "display: none;"
+        if plot_option not in page.plots["scatter"]:
+            assert "display: none;" in plot_option_dd.get_attribute("style")
 
     # Checking that options are initialized correctly
     for option in ["x", "y"]:
@@ -114,4 +107,4 @@ def test_initialized_table_plotter(dash_duo):
 
     # Checking that the selectors are hidden
     selector_row = dash_duo.find_element("#" + page.uuid("selector-row"))
-    assert selector_row.get_attribute("style") == "display: none;"
+    assert "display: none;" in selector_row.get_attribute("style")
