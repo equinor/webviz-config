@@ -53,16 +53,32 @@ class WebvizPluginABC(abc.ABC):
     ASSETS = []
 
     def __init__(self):
-        """This function will later be used for e.g. setting a unique ID at
-        initialization, which then subclasses can use further.
-
-        If a plugin/subclass defines its own `__init__` function
+        """If a plugin/subclass defines its own `__init__` function
         (which they usually do), they should remember to call
         ```python
         super().__init__()
         ```
         in its own `__init__` function in order to also run the parent `__init__`.
         """
+
+        self._plugin_uuid = uuid4()
+
+    def uuid(self, element: str):
+        """Typically used to get a unique ID for some given element/component in
+        a plugins layout. If the element string is unique within the plugin, this
+        function returns a string which is guaranteed to be unique also across the
+        application (even when multiple instances of the same plugin is added).
+
+        Within the same plugin instance, the returned uuid is the same for the same
+        element string. I.e. storing the returned value in the plugin is not necessary.
+
+        Main benefit of using this function instead of creating a UUID directly,
+        is that the abstract base class can in the future provide IDs that
+        are consistent across application restarts (i.e. when the webviz configuration
+        file changes in a non-portable setting).
+        """
+
+        return f"{element}-{self._plugin_uuid}"
 
     @property
     @abc.abstractmethod
@@ -76,9 +92,9 @@ class WebvizPluginABC(abc.ABC):
     def _plugin_wrapper_id(self):
         # pylint: disable=attribute-defined-outside-init
         # We do not have a __init__ method in this abstract base class
-        if not hasattr(self, "_plugin_wrapper_uuid"):
-            self._plugin_wrapper_uuid = uuid4()
-        return f"plugin-wrapper-{self._plugin_wrapper_uuid}"
+        if not hasattr(self, "_plugin_uuid"):
+            self._plugin_uuid = uuid4()
+        return f"plugin-wrapper-{self._plugin_uuid}"
 
     @property
     def plugin_data_output(self):

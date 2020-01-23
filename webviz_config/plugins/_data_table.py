@@ -1,4 +1,3 @@
-from uuid import uuid4
 from pathlib import Path
 
 import pandas as pd
@@ -40,7 +39,6 @@ If feature is requested, the data could also come from a database.
         self.sorting = sorting
         self.filtering = filtering
         self.pagination = pagination
-        self.data_table_id = f"data-table-{uuid4()}"
 
     def add_webvizstore(self):
         return [(get_data, [{"csv_file": self.csv_file}])]
@@ -48,7 +46,6 @@ If feature is requested, the data could also come from a database.
     @property
     def layout(self):
         return dash_table.DataTable(
-            id=self.data_table_id,
             columns=[{"name": i, "id": i} for i in self.df.columns],
             data=self.df.to_dict("records"),
             sort_action="native" if self.sorting else "none",
