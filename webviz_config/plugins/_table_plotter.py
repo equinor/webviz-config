@@ -274,38 +274,23 @@ If feature is requested, the data could also come from a database.
         return {"display": "none"}
 
     @property
-    def style_page_layout(self):
-        """Simple grid layout for the page"""
-        if self.lock:
-            return {}
-        return {
-            "display": "grid",
-            "align-content": "space-around",
-            "justify-content": "space-between",
-            "grid-template-columns": "1fr 5fr 1fr" if self.use_filter else "1fr 5fr",
-        }
-
-    @property
-    def style_selectors(self):
-        return {"display": "none"} if self.lock else {}
-
-    @property
     def layout(self):
         return html.Div(
             children=[
-                html.Div(
-                    style=self.style_page_layout,
+                wcc.FlexBox(
                     children=[
                         html.Div(
                             id=self.uuid("selector-row"),
-                            style=self.style_selectors,
+                            style={"display": "none"}
+                            if self.lock
+                            else {"width": "15%"},
                             children=self.plot_option_layout(),
                         ),
-                        html.Div(
-                            style={"height": "100%"},
-                            children=wcc.Graph(id=self.uuid("graph-id")),
+                        wcc.Graph(
+                            id=self.uuid("graph-id"),
+                            style={"height": "80vh", "width": "60%"},
                         ),
-                        html.Div(children=self.filter_layout()),
+                        html.Div(style={"width": "15%"}, children=self.filter_layout()),
                     ],
                 )
             ]
