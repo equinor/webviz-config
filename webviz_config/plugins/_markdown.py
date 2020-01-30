@@ -5,7 +5,7 @@ import markdown
 from markdown.util import etree
 from markdown.extensions import Extension
 from markdown.inlinepatterns import ImageInlineProcessor, IMAGE_LINK_RE
-import dash_core_components as html
+import dash_core_components as dcc
 
 from .. import WebvizPluginABC
 from ..webviz_assets import WEBVIZ_ASSETS
@@ -178,7 +178,7 @@ the markdown file itself, or absolute paths.
 
     @property
     def layout(self):
-        return html.Markdown(self.html, dangerously_allow_html=True)
+        return dcc.Markdown(self.html, dangerously_allow_html=True)
 
 
 @webvizstore
