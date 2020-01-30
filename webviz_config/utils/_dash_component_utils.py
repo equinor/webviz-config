@@ -3,8 +3,8 @@ import math
 
 def calculate_slider_step(min_value: float, max_value: float, steps=100):
     """Calculates a step value for use in e.g. dcc.RangeSlider() component
-    that will always be rounded. 
-    
+    that will always be rounded.
+
     The number of steps will be atleast the number
     of input steps, but might not be precisely the same due to use of the floor function.
 
