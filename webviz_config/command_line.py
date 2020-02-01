@@ -35,6 +35,15 @@ def main():
     parser_build.add_argument(
         "--theme", type=str, default="default", help="Which installed theme to use."
     )
+    parser_build.add_argument(
+        "--loglevel",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        default="WARNING",
+        type=str,
+        help="Wanted level of logging output from webviz plugins. "
+        "Selecting e.g. INFO will show all log events of level INFO or higher "
+        "(WARNING, ERROR and CRITICAL). Default level is WARNING.",
+    )
 
     parser_build.set_defaults(func=build_webviz)
 

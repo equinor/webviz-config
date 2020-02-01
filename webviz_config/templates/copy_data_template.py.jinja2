@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+import logging
 import datetime
 import os.path as path
 from pathlib import Path, PosixPath
@@ -12,7 +14,6 @@ from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
 
-
 {% for module in _imports %}
 {%- if module is string -%}
 import {{ module }}
@@ -20,6 +21,8 @@ import {{ module }}
 import {{ module[0] }} as {{ module[1] }}
 {%- endif %}
 {% endfor %}
+
+logging.getLogger().setLevel(logging.{{ loglevel }})
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
