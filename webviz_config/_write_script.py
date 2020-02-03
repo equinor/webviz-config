@@ -15,6 +15,7 @@ def write_script(args, build_directory, template_filename, output_filename):
 
     configuration["shared_settings"] = config_parser.shared_settings
     configuration["portable"] = args.portable is not None
+    configuration["loglevel"] = args.loglevel
     configuration["config_folder"] = repr(pathlib.Path(args.yaml_file).resolve().parent)
 
     configuration["theme_name"] = args.theme
