@@ -31,6 +31,7 @@ script:
   - pip install .
   - pip install .[tests]
   - pip install dash[testing]
+  - pip freeze
   - black --check webviz_config tests setup.py
   - pylint webviz_config tests setup.py
   - bandit -r -c ./bandit.yml webviz_config tests setup.py
