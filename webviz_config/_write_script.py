@@ -2,14 +2,19 @@ import os
 import getpass
 import datetime
 import pathlib
+import argparse
 
 import jinja2
 
 from ._config_parser import ConfigParser
 
 
-def write_script(args, build_directory, template_filename, output_filename):
-
+def write_script(
+    args: argparse.Namespace,
+    build_directory: str,
+    template_filename: str,
+    output_filename: str,
+) -> set:
     config_parser = ConfigParser(args.yaml_file)
     configuration = config_parser.configuration
 

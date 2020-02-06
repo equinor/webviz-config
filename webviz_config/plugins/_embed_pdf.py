@@ -29,7 +29,7 @@ Make sure it comes from a trusted source.
         self.width = width
 
     @property
-    def layout(self):
+    def layout(self) -> html.Embed:
 
         style = {"height": f"{self.height}vh", "width": f"{self.width}%"}
 

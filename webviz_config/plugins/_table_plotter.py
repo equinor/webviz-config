@@ -1,5 +1,6 @@
 from pathlib import Path
 from collections import OrderedDict
+from typing import Optional, List, Dict, Any
 
 import numpy as np
 import pandas as pd
@@ -7,6 +8,7 @@ import plotly.express as px
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
+from dash import Dash
 import webviz_core_components as wcc
 
 from .. import WebvizPluginABC
@@ -30,7 +32,7 @@ If feature is requested, the data could also come from a database.
 
     def __init__(
         self,
-        app,
+        app: Dash,
         csv_file: Path,
         plot_options: dict = None,
         filter_cols: list = None,
@@ -51,7 +53,7 @@ If feature is requested, the data could also come from a database.
         self.plotly_theme = app.webviz_settings["theme"].plotly_theme
         self.set_callbacks(app)
 
-    def set_filters(self, filter_cols):
+    def set_filters(self, filter_cols: Optional[list]) -> None:
         self.filter_cols = []
         self.use_filter = False
         if filter_cols:
@@ -62,11 +64,11 @@ If feature is requested, the data could also come from a database.
             if self.filter_cols:
                 self.use_filter = True
 
-    def add_webvizstore(self):
+    def add_webvizstore(self) -> List[tuple]:
         return [(get_data, [{"csv_file": self.csv_file}])]
 
     @property
-    def plots(self):
+    def plots(self) -> dict:
         """A list of available plots and their options"""
         return {
             "scatter": ["x", "y", "size", "color", "facet_col"],
@@ -92,7 +94,7 @@ If feature is requested, the data could also come from a database.
         }
 
     @property
-    def plot_args(self):
+    def plot_args(self) -> dict:
         """A list of possible plot options and their default values"""
         return OrderedDict(
             {
@@ -164,7 +166,7 @@ If feature is requested, the data could also come from a database.
             }
         )
 
-    def filter_layout(self):
+    def filter_layout(self) -> Optional[list]:
         """Makes dropdowns for each dataframe column used for filtering."""
         if not self.use_filter:
             return None
@@ -223,7 +225,7 @@ If feature is requested, the data could also come from a database.
                 )
         return dropdowns
 
-    def plot_option_layout(self):
+    def plot_option_layout(self) -> List[html.Div]:
         """Renders a dropdown widget for each plot option"""
         divs = []
         # The plot type dropdown is handled separate
@@ -264,17 +266,17 @@ If feature is requested, the data could also come from a database.
         return divs
 
     @property
-    def style_options_div(self):
+    def style_options_div(self) -> Dict[str, str]:
         """Style for active plot options"""
         return {"display": "grid"}
 
     @property
-    def style_options_div_hidden(self):
+    def style_options_div_hidden(self) -> Dict[str, str]:
         """Style for hidden plot options"""
         return {"display": "none"}
 
     @property
-    def layout(self):
+    def layout(self) -> html.Div:
         return html.Div(
             children=[
                 wcc.FlexBox(
@@ -297,7 +299,7 @@ If feature is requested, the data could also come from a database.
         )
 
     @property
-    def plot_output_callbacks(self):
+    def plot_output_callbacks(self) -> List[Output]:
         """Creates list of output dependencies for callback
         The outputs are the graph, and the style of the plot options"""
         outputs = []
@@ -307,7 +309,7 @@ If feature is requested, the data could also come from a database.
         return outputs
 
     @property
-    def plot_input_callbacks(self):
+    def plot_input_callbacks(self) -> List[Input]:
         """Creates list of input dependencies for callback
         The inputs are the plot type and the current value
         for each plot option
@@ -320,9 +322,9 @@ If feature is requested, the data could also come from a database.
             inputs.append(Input(self.uuid(f"filter-{filtcol}"), "value"))
         return inputs
 
-    def set_callbacks(self, app):
+    def set_callbacks(self, app: Dash) -> None:
         @app.callback(self.plugin_data_output, [self.plugin_data_requested])
-        def _user_download_data(data_requested):
+        def _user_download_data(data_requested: Optional[int]) -> str:
             return (
                 WebvizPluginABC.plugin_data_compress(
                     [
@@ -337,7 +339,7 @@ If feature is requested, the data could also come from a database.
             )
 
         @app.callback(self.plot_output_callbacks, self.plot_input_callbacks)
-        def _update_output(*args):
+        def _update_output(*args: Any) -> tuple:
             """Updates the graph and shows/hides plot options"""
             plot_type = args[0]
             # pylint: disable=protected-access
@@ -358,18 +360,19 @@ If feature is requested, the data could also come from a database.
                     div_style.append(self.style_options_div)
                 else:
                     div_style.append(self.style_options_div_hidden)
-
             return (plotfunc(data, template=self.plotly_theme, **plotargs), *div_style)
 
 
 @CACHE.memoize(timeout=CACHE.TIMEOUT)
 @webvizstore
-def get_data(csv_file) -> pd.DataFrame:
+def get_data(csv_file: Path) -> pd.DataFrame:
     return pd.read_csv(csv_file, index_col=None)
 
 
 @CACHE.memoize(timeout=CACHE.TIMEOUT)
-def filter_dataframe(dframe, columns, column_values):
+def filter_dataframe(
+    dframe: pd.DataFrame, columns: list, column_values: List[list]
+) -> pd.DataFrame:
     df = dframe.copy()
     if not isinstance(columns, list):
         columns = [columns]

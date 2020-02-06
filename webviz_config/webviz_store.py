@@ -7,6 +7,7 @@ import hashlib
 import inspect
 import pathlib
 from collections import defaultdict
+from typing import Callable, List, Union, Any
 
 import pandas as pd
 
@@ -17,16 +18,15 @@ class WebvizStorage:
 
     RETURN_TYPES = [pd.DataFrame, pathlib.Path, io.BytesIO]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._use_storage = False
-        self.storage_functions = set()
-        self.storage_function_argvalues = defaultdict(dict)
+        self.storage_functions: set = set()
+        self.storage_function_argvalues: defaultdict = defaultdict(dict)
 
-    def register_function(self, func):
+    def register_function(self, func: Callable) -> None:
         """This function is automatically called by the function
         decorator @webvizstore, registering the function it decorates.
         """
-
         return_type = inspect.getfullargspec(func).annotations["return"]
 
         if return_type not in WebvizStorage.RETURN_TYPES:
@@ -37,23 +37,23 @@ class WebvizStorage:
         self.storage_functions.add(func)
 
     @property
-    def storage_folder(self):
+    def storage_folder(self) -> str:
         return self._storage_folder
 
     @storage_folder.setter
-    def storage_folder(self, path):
+    def storage_folder(self, path: str) -> None:
         os.makedirs(path, exist_ok=True)
         self._storage_folder = path
 
     @property
-    def use_storage(self):
+    def use_storage(self) -> bool:
         return self._use_storage
 
     @use_storage.setter
-    def use_storage(self, use_storage):
+    def use_storage(self, use_storage: bool) -> None:
         self._use_storage = use_storage
 
-    def register_function_arguments(self, functionarguments):
+    def register_function_arguments(self, functionarguments: List[tuple]) -> None:
         """The input here is from class functions `add_webvizstore(self)`
         in the different plugins requested from the configuration file.
 
@@ -74,7 +74,7 @@ class WebvizStorage:
                         repr(argtuples)
                     ] = argtuples
 
-    def _unique_path(self, func, argtuples):
+    def _unique_path(self, func: Callable, argtuples: tuple) -> str:
         """Encodes the argumenttuples as bytes, and then does a sha256 on that.
         Mutable arguments are accepted in the argument tuples, however it is
         the plugin author that needs to be responsible for making sure that
@@ -89,31 +89,31 @@ class WebvizStorage:
         return os.path.join(self.storage_folder, filename)
 
     @staticmethod
-    def _undecorate(func):
+    def _undecorate(func: Callable) -> Callable:
         """This unwraps potential multiple level of decorators, to get
         access to the original function.
         """
 
         while hasattr(func, "__wrapped__"):
-            func = func.__wrapped__
+            func = func.__wrapped__  # type: ignore[attr-defined]
 
         return func
 
     @staticmethod
-    def string(func, kwargs):
+    def string(func: Callable, kwargs: dict) -> str:
         strkwargs = ", ".join([f"{k}={v!r}" for k, v in kwargs.items()])
 
         return f"{func.__name__}({strkwargs})"
 
     @staticmethod
-    def _dict_to_tuples(dictionary):
+    def _dict_to_tuples(dictionary: dict) -> tuple:
         """Since dictionaries are not hashable, this is a helper function
         converting a dictionary into a sorted tuple."""
 
         return tuple(sorted(dictionary.items()))
 
     @staticmethod
-    def complete_kwargs(func, kwargs):
+    def complete_kwargs(func: Callable, kwargs: dict) -> dict:
         """This takes in a dictionary kwargs, and returns an updated
         dictionary where missing arguments are added with default values."""
 
@@ -127,7 +127,9 @@ class WebvizStorage:
 
         return kwargs
 
-    def get_stored_data(self, func, *args, **kwargs):
+    def get_stored_data(
+        self, func: Callable, *args: Any, **kwargs: Any
+    ) -> Union[pd.DataFrame, pathlib.Path, io.BytesIO]:
 
         argspec = inspect.getfullargspec(func)
         for arg_name, arg in zip(argspec.args, args):
@@ -154,7 +156,7 @@ class WebvizStorage:
                 f"{WebvizStorage.string(func, kwargs)}."
             )
 
-    def build_store(self):
+    def build_store(self) -> None:
 
         total_calls = sum(
             len(calls) for calls in self.storage_function_argvalues.values()
@@ -193,12 +195,12 @@ class WebvizStorage:
                 )
 
 
-def webvizstore(func):
+def webvizstore(func: Callable) -> Callable:
 
     WEBVIZ_STORAGE.register_function(func)
 
     @functools.wraps(func)
-    def wrapper_decorator(*args, **kwargs):
+    def wrapper_decorator(*args: Any, **kwargs: Any) -> Any:
         if WEBVIZ_STORAGE.use_storage:
             return WEBVIZ_STORAGE.get_stored_data(func, *args, **kwargs)
         return func(*args, **kwargs)
@@ -210,7 +212,7 @@ WEBVIZ_STORAGE = WebvizStorage()
 
 
 @webvizstore
-def get_resource(filename) -> pathlib.Path:
+def get_resource(filename: str) -> pathlib.Path:
     """Utility funtion for getting a filename which works both for
     non-portable and portable webviz instances."""
 

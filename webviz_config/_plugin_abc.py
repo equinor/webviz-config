@@ -4,8 +4,10 @@ import base64
 import zipfile
 import warnings
 from uuid import uuid4
+from typing import List, Optional, Type, Union
 
 import bleach
+from dash.development.base_component import Component
 from dash.dependencies import Input, Output
 import webviz_core_components as wcc
 
@@ -50,9 +52,9 @@ class WebvizPluginABC(abc.ABC):
     # over to the ./assets folder in the generated webviz app.
     # This is typically custom JavaScript and/or CSS files.
     # All paths in the returned ASSETS list should be absolute.
-    ASSETS = []
+    ASSETS: list = []
 
-    def __init__(self):
+    def __init__(self) -> None:
         """If a plugin/subclass defines its own `__init__` function
         (which they usually do), they should remember to call
         ```python
@@ -63,7 +65,7 @@ class WebvizPluginABC(abc.ABC):
 
         self._plugin_uuid = uuid4()
 
-    def uuid(self, element: str):
+    def uuid(self, element: str) -> str:
         """Typically used to get a unique ID for some given element/component in
         a plugins layout. If the element string is unique within the plugin, this
         function returns a string which is guaranteed to be unique also across the
@@ -82,14 +84,14 @@ class WebvizPluginABC(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def layout(self):
+    def layout(self) -> Union[str, Type[Component]]:
         """This is the only required function of a Webviz plugin.
         It returns a Dash layout which by webviz-config is added to
         the main Webviz application.
         """
 
     @property
-    def _plugin_wrapper_id(self):
+    def _plugin_wrapper_id(self) -> str:
         # pylint: disable=attribute-defined-outside-init
         # We do not have a __init__ method in this abstract base class
         if not hasattr(self, "_plugin_uuid"):
@@ -97,14 +99,14 @@ class WebvizPluginABC(abc.ABC):
         return f"plugin-wrapper-{self._plugin_uuid}"
 
     @property
-    def plugin_data_output(self):
+    def plugin_data_output(self) -> Output:
         # pylint: disable=attribute-defined-outside-init
         # We do not have a __init__ method in this abstract base class
         self._add_download_button = True
         return Output(self._plugin_wrapper_id, "zip_base64")
 
     @property
-    def container_data_output(self):
+    def container_data_output(self) -> Output:
         warnings.warn(
             ("Use 'plugin_data_output' instead of 'container_data_output'"),
             DeprecationWarning,
@@ -112,11 +114,11 @@ class WebvizPluginABC(abc.ABC):
         return self.plugin_data_output
 
     @property
-    def plugin_data_requested(self):
+    def plugin_data_requested(self) -> Input:
         return Input(self._plugin_wrapper_id, "data_requested")
 
     @property
-    def container_data_requested(self):
+    def container_data_requested(self) -> Input:
         warnings.warn(
             ("Use 'plugin_data_requested' instead of 'container_data_requested'"),
             DeprecationWarning,
@@ -124,13 +126,13 @@ class WebvizPluginABC(abc.ABC):
         return self.plugin_data_requested
 
     @staticmethod
-    def _reformat_tour_steps(steps):
+    def _reformat_tour_steps(steps: List[dict]) -> List[dict]:
         return [
             {"selector": "#" + step["id"], "content": step["content"]} for step in steps
         ]
 
     @staticmethod
-    def plugin_data_compress(content):
+    def plugin_data_compress(content: List[dict]) -> str:
         byte_io = io.BytesIO()
 
         with zipfile.ZipFile(byte_io, "w") as zipped_data:
@@ -142,14 +144,16 @@ class WebvizPluginABC(abc.ABC):
         return base64.b64encode(byte_io.read()).decode("ascii")
 
     @staticmethod
-    def container_data_compress(content):
+    def container_data_compress(content: List[dict]) -> str:
         warnings.warn(
             ("Use 'plugin_data_compress' instead of 'container_data_compress'"),
             DeprecationWarning,
         )
         return WebvizPluginABC.plugin_data_compress(content)
 
-    def plugin_layout(self, contact_person=None):
+    def plugin_layout(
+        self, contact_person: Optional[dict] = None
+    ) -> Union[str, Type[Component]]:
         """This function returns (if the class constant SHOW_TOOLBAR is True,
         the plugin layout wrapped into a common webviz config plugin
         component, which provides some useful buttons like download of data,
@@ -188,13 +192,14 @@ class WebvizPluginABC(abc.ABC):
             buttons.remove("download_zip")
 
         if buttons:
+            # pylint: disable=no-member
             return wcc.WebvizPluginPlaceholder(
                 id=self._plugin_wrapper_id,
                 buttons=buttons,
                 contact_person=contact_person,
                 children=[self.layout],
                 tour_steps=WebvizPluginABC._reformat_tour_steps(
-                    self.tour_steps  # pylint: disable=no-member
+                    self.tour_steps  # type: ignore[attr-defined]
                 )
                 if "guided_tour" in buttons and hasattr(self, "tour_steps")
                 else [],

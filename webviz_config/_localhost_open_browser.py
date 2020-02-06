@@ -11,7 +11,7 @@ from .utils import terminal_colors
 class LocalhostOpenBrowser:
     # pylint: disable=too-few-public-methods
 
-    def __init__(self, port, token):
+    def __init__(self, port: int, token: str):
         self._port = port
         self._token = token
 
@@ -19,7 +19,7 @@ class LocalhostOpenBrowser:
             # Only open new browser tab if not a reload process
             threading.Thread(target=self._timer).start()
 
-    def _timer(self):
+    def _timer(self) -> None:
         """Waits until the app is ready, and then opens the page
         in the default browser.
         """
@@ -39,14 +39,14 @@ class LocalhostOpenBrowser:
             f"{self._url(with_token=True)}"
         )
 
-    def _url(self, with_token=False, https=True):
+    def _url(self, with_token: bool = False, https: bool = True) -> str:
         return (
             f"{'https' if https else 'http'}://localhost:{self._port}"
             + f"{'?ott=' + self._token if with_token else ''}"
         )
 
     @staticmethod
-    def _get_browser_controller():
+    def _get_browser_controller() -> webbrowser.BaseBrowser:
         for browser in ["chrome", "chromium-browser"]:
             try:
                 return webbrowser.get(using=browser)
@@ -57,7 +57,7 @@ class LocalhostOpenBrowser:
         # preferred browsers are installed:
         return webbrowser.get()
 
-    def _app_ready(self):
+    def _app_ready(self) -> bool:
         """Check if the flask instance is ready.
         """
 
@@ -67,7 +67,7 @@ class LocalhostOpenBrowser:
         try:
             urllib.request.urlopen(self._url(https=False))  # nosec
             app_ready = True
-        except urllib.error.URLError:
+        except urllib.error.URLError:  # type: ignore[attr-defined]
             # The flask instance has not started
             app_ready = False
         except ConnectionResetError:
@@ -79,7 +79,7 @@ class LocalhostOpenBrowser:
 
         return app_ready
 
-    def _open_new_tab(self):
+    def _open_new_tab(self) -> None:
         """Open the url (with token) in the default browser.
         """
 

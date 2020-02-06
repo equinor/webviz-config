@@ -1,8 +1,9 @@
 from pathlib import Path
+from typing import List
+from xml.etree import ElementTree  # nosec
 
 import bleach
 import markdown
-from markdown.util import etree
 from markdown.extensions import Extension
 from markdown.inlinepatterns import ImageInlineProcessor, IMAGE_LINK_RE
 import dash_core_components as dcc
@@ -13,12 +14,12 @@ from ..webviz_store import webvizstore
 
 
 class _WebvizMarkdownExtension(Extension):
-    def __init__(self, base_path):
+    def __init__(self, base_path: Path):
         self.base_path = base_path
 
         super(_WebvizMarkdownExtension, self).__init__()
 
-    def extendMarkdown(self, md):
+    def extendMarkdown(self, md: markdown.core.Markdown) -> None:
         md.inlinePatterns.register(
             item=_MarkdownImageProcessor(IMAGE_LINK_RE, md, self.base_path),
             name="image_link",
@@ -27,12 +28,12 @@ class _WebvizMarkdownExtension(Extension):
 
 
 class _MarkdownImageProcessor(ImageInlineProcessor):
-    def __init__(self, image_link_re, md, base_path):
+    def __init__(self, image_link_re: str, md: markdown.core.Markdown, base_path: Path):
         self.base_path = base_path
 
         super(_MarkdownImageProcessor, self).__init__(image_link_re, md)
 
-    def handleMatch(self, m, data):
+    def handleMatch(self, m, data: str) -> tuple:  # type: ignore[no-untyped-def]
         image, start, index = super().handleMatch(m, data)
 
         if image is None or not image.get("title"):
@@ -48,6 +49,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
             )
 
         image_path = Path(src)
+
         if not image_path.is_absolute():
             image_path = (self.base_path / image_path).resolve()
 
@@ -67,10 +69,10 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
         image.set("src", url)
         image.set("class", "_markdown_image")
 
-        container = etree.Element("span")
+        container = ElementTree.Element("span")
         container.append(image)
 
-        etree.SubElement(
+        ElementTree.SubElement(
             container, "span", attrib={"class": "_markdown_image_caption"}
         ).text = caption
 
@@ -173,14 +175,14 @@ the markdown file itself, or absolute paths.
             styles=Markdown.ALLOWED_STYLES,
         )
 
-    def add_webvizstore(self):
+    def add_webvizstore(self) -> List[tuple]:
         return [(get_path, [{"path": self.markdown_file}])]
 
     @property
-    def layout(self):
+    def layout(self) -> dcc.Markdown:
         return dcc.Markdown(self.html, dangerously_allow_html=True)
 
 
 @webvizstore
-def get_path(path) -> Path:
+def get_path(path: Path) -> Path:
     return path

@@ -1,3 +1,5 @@
+from typing import List
+
 import pandas as pd
 
 from .. import WebvizPluginABC
@@ -11,17 +13,17 @@ class ExamplePortable(WebvizPluginABC):
 
         self.some_number = some_number
 
-    def add_webvizstore(self):
+    def add_webvizstore(self) -> List[tuple]:
         return [(input_data_function, [{"some_number": self.some_number}])]
 
     @property
-    def layout(self):
+    def layout(self) -> str:
         return str(input_data_function(self.some_number))
 
 
 @CACHE.memoize(timeout=CACHE.TIMEOUT)
 @webvizstore
-def input_data_function(some_number) -> pd.DataFrame:
+def input_data_function(some_number: int) -> pd.DataFrame:
     print("This time I'm actually doing the calculation...")
     return pd.DataFrame(
         data={

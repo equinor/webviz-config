@@ -2,7 +2,7 @@ import os
 import socket
 
 
-def get_available_port():
+def get_available_port() -> int:
     """Finds an available port for use in webviz on localhost. If a reload process,
     it will reuse the same port as found in the parent process by using an inherited
     environment variable.
@@ -17,4 +17,4 @@ def get_available_port():
         os.environ["WEBVIZ_PORT"] = str(port)
         return port
 
-    return int(os.environ.get("WEBVIZ_PORT"))
+    return int(os.environ.get("WEBVIZ_PORT"))  # type: ignore[arg-type]
