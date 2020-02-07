@@ -7,7 +7,7 @@ class WebvizConfigTheme:
     property is the theme name set at initialization.
     """
 
-    def __init__(self, theme_name):
+    def __init__(self, theme_name: str):
         self.theme_name = theme_name
 
         self._csp = {
@@ -46,18 +46,18 @@ class WebvizConfigTheme:
             "payment": "'none'",
         }
 
-        self._external_stylesheets = []
-        self._assets = []
-        self._plotly_theme = {}
+        self._external_stylesheets: list = []
+        self._assets: list = []
+        self._plotly_theme: dict = {}
 
-    def to_json(self):
+    def to_json(self) -> str:
         return json.dumps(vars(self), indent=4, sort_keys=True)
 
-    def from_json(self, json_string):
+    def from_json(self, json_string: str) -> None:
         for key, value in json.loads(json_string).items():
             setattr(self, key, value)
 
-    def adjust_csp(self, dictionary, append=True):
+    def adjust_csp(self, dictionary: dict, append: bool = True) -> None:
         """If the default CSP settings needs to be changed, this function can
         be called by giving in a dictionary with key-value pairs which should
         be changed. If `append=True`, the CSP sources given in the dictionary
@@ -73,41 +73,41 @@ class WebvizConfigTheme:
                 self._csp[key] = value
 
     @property
-    def csp(self):
+    def csp(self) -> dict:
         """Returns the content security policy settings for the theme."""
         return self._csp
 
     @property
-    def feature_policy(self):
+    def feature_policy(self) -> dict:
         """Returns the feature policy settings for the theme."""
         return self._feature_policy
 
     @property
-    def plotly_theme(self):
+    def plotly_theme(self) -> dict:
         return copy.deepcopy(self._plotly_theme)
 
     @plotly_theme.setter
-    def plotly_theme(self, plotly_theme):
+    def plotly_theme(self, plotly_theme: dict) -> None:
         """Layout object of Plotly graph objects."""
         self._plotly_theme = plotly_theme
 
     @property
-    def external_stylesheets(self):
+    def external_stylesheets(self) -> list:
         return self._external_stylesheets
 
     @external_stylesheets.setter
-    def external_stylesheets(self, external_stylesheets):
+    def external_stylesheets(self, external_stylesheets: list) -> None:
         """Set optional external stylesheets to be used in the Dash
         application. The input variable `external_stylesheets` should be
         a list."""
         self._external_stylesheets = external_stylesheets
 
     @property
-    def assets(self):
+    def assets(self) -> list:
         return self._assets
 
     @assets.setter
-    def assets(self, assets):
+    def assets(self, assets: list) -> None:
         """Set optional theme assets to be copied over to the `./assets` folder
         when the webviz dash application is created. The input variable
         `assets` should be a list of absolute file paths to the different

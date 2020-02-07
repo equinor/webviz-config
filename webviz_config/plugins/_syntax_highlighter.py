@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import dash_core_components as dcc
 
@@ -23,16 +24,16 @@ Adds support for syntax highlighting of code. Language is automatically detected
         self.filename = filename
         self.config = {"theme": "dark"} if dark_theme else {"theme": "light"}
 
-    def add_webvizstore(self):
+    def add_webvizstore(self) -> List[tuple]:
         return [(get_path, [{"path": self.filename}])]
 
     @property
-    def layout(self):
+    def layout(self) -> dcc.Markdown:
         return dcc.Markdown(
             f"```{get_path(self.filename).read_text()}```", highlight_config=self.config
         )
 
 
 @webvizstore
-def get_path(path) -> Path:
+def get_path(path: Path) -> Path:
     return path

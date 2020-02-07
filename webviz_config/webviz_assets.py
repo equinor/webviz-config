@@ -2,7 +2,9 @@ import re
 import os
 import shutil
 import pathlib
+from typing import Optional
 
+from dash import Dash
 import flask
 
 from .utils import terminal_colors
@@ -32,22 +34,22 @@ class WebvizAssets:
     but with same filename) and also assignes URI friendly resource IDs.
     """
 
-    def __init__(self):
-        self._assets = {}
+    def __init__(self) -> None:
+        self._assets: dict = {}
         self._portable = False
 
     @property
-    def portable(self):
+    def portable(self) -> bool:
         return self._portable
 
     @portable.setter
-    def portable(self, portable):
+    def portable(self, portable: bool) -> None:
         self._portable = portable
 
-    def _base_folder(self):
+    def _base_folder(self) -> str:
         return "assets" if self.portable else "temp"
 
-    def add(self, filename):
+    def add(self, filename: pathlib.Path) -> str:
         path = pathlib.Path(filename)
 
         if filename not in self._assets.values():
@@ -58,7 +60,7 @@ class WebvizAssets:
 
         return os.path.normcase(os.path.join(self._base_folder(), assigned_id))
 
-    def register_app(self, app):
+    def register_app(self, app: Dash) -> None:
         """In non-portable mode, this function can be called by the
         application. It routes the Dash application to the added assets on
         disk, making hot reloading and more interactive development of the
@@ -66,13 +68,13 @@ class WebvizAssets:
         """
 
         @app.server.route(f"/{self._base_folder()}/<path:asset_id>")
-        def _send_file(asset_id):
+        def _send_file(asset_id: str) -> Optional[flask.wrappers.Response]:
             if asset_id in self._assets:  # Only serve white listed resources
                 path = pathlib.Path(self._assets[asset_id])
                 return flask.send_from_directory(path.parent, path.name)
             return None
 
-    def make_portable(self, asset_folder):
+    def make_portable(self, asset_folder: str) -> None:
         """Copy over all added assets to the given folder (asset_folder).
         """
 
@@ -91,7 +93,7 @@ class WebvizAssets:
                 f"{terminal_colors.END}"
             )
 
-    def _generate_id(self, filename):
+    def _generate_id(self, filename: str) -> str:
         """From the filename, create a safe resource id not already present
         """
         asset_id = base_id = re.sub(

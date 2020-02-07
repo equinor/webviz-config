@@ -3,6 +3,7 @@ import time
 import shutil
 import tempfile
 import subprocess  # nosec
+import argparse
 
 from yaml import YAMLError
 
@@ -15,7 +16,7 @@ BUILD_FILENAME = "webviz_app.py"
 STATIC_FOLDER = os.path.join(os.path.dirname(__file__), "static")
 
 
-def build_webviz(args):
+def build_webviz(args: argparse.Namespace) -> None:
 
     if args.theme not in installed_themes:
         raise ValueError(f"Theme `{args.theme}` is not installed.")
@@ -87,7 +88,7 @@ def build_webviz(args):
             shutil.rmtree(build_directory)
 
 
-def run_webviz(args, build_directory):
+def run_webviz(args: argparse.Namespace, build_directory: str) -> None:
 
     print(
         f"{terminal_colors.YELLOW}"

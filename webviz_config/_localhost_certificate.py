@@ -13,7 +13,7 @@ class LocalhostCertificate:
     only readable by the user running the process, and are deleted on exit.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         if not is_reload_process():
             self._ssl_temp_dir = os.environ["WEBVIZ_SSL_TEMP_DIR"] = tempfile.mkdtemp()
             create_certificate(self._ssl_temp_dir)
@@ -21,13 +21,13 @@ class LocalhostCertificate:
         else:
             self._ssl_temp_dir = os.environ["WEBVIZ_SSL_TEMP_DIR"]
 
-    def _delete_temp_dir(self):
+    def _delete_temp_dir(self) -> None:
         """Delete temporary directory with on-the-fly generated localhost certificates
         """
         shutil.rmtree(self._ssl_temp_dir)
 
     @property
-    def ssl_context(self):
+    def ssl_context(self) -> tuple:
         return (
             os.path.join(self._ssl_temp_dir, SERVER_CRT_FILENAME),
             os.path.join(self._ssl_temp_dir, SERVER_KEY_FILENAME),

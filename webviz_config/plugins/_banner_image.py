@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import dash_html_components as html
 
@@ -20,7 +21,7 @@ Useful on e.g. the front page for introducing a field or project.
 * `height`: Height of the banner image (in pixels).
 """
 
-    TOOLBAR_BUTTONS = []
+    TOOLBAR_BUTTONS: List[str] = []
 
     def __init__(
         self,
@@ -42,7 +43,7 @@ Useful on e.g. the front page for introducing a field or project.
         self.image_url = WEBVIZ_ASSETS.add(image)
 
     @property
-    def layout(self):
+    def layout(self) -> html.Div:
 
         style = {
             "color": self.color,

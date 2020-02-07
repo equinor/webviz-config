@@ -13,5 +13,5 @@ class ExampleAssets(WebvizPluginABC):
         self.asset_url = WEBVIZ_ASSETS.add(picture_path)
 
     @property
-    def layout(self):
+    def layout(self) -> html.Img:
         return html.Img(src=self.asset_url)

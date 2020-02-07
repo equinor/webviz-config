@@ -1,6 +1,7 @@
 import copy
 import inspect
 import pathlib
+from typing import Callable, List, Dict
 
 
 class SharedSettingsSubscriptions:
@@ -12,20 +13,22 @@ class SharedSettingsSubscriptions:
     they use are reasonable, and/or do some transformations on them.
     """
 
-    def __init__(self):
-        self._subscriptions = []
+    def __init__(self) -> None:
+        self._subscriptions: List[Dict] = []
 
-    def subscribe(self, key):
+    def subscribe(self, key: str) -> Callable:
         """This is the decorator, which third-party plugin packages will use.
         """
 
-        def register(function):
+        def register(function: Callable) -> Callable:
             self._subscriptions.append({"key": key, "function": function})
             return function
 
         return register
 
-    def transformed_settings(self, shared_settings, config_folder, portable):
+    def transformed_settings(
+        self, shared_settings: Dict, config_folder: str, portable: bool
+    ) -> Dict:
         """Called from the app template, which returns the `shared_settings`
         after all third-party package subscriptions have done their
         (optional) transfomrations.

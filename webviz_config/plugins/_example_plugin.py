@@ -1,11 +1,12 @@
 import dash_html_components as html
 from dash.dependencies import Input, Output
+from dash import Dash
 
 from .. import WebvizPluginABC
 
 
 class ExamplePlugin(WebvizPluginABC):
-    def __init__(self, app, title: str):
+    def __init__(self, app: Dash, title: str):
         super().__init__()
 
         self.title = title
@@ -13,7 +14,7 @@ class ExamplePlugin(WebvizPluginABC):
         self.set_callbacks(app)
 
     @property
-    def layout(self):
+    def layout(self) -> html.Div:
         return html.Div(
             [
                 html.H1(self.title),
@@ -24,10 +25,10 @@ class ExamplePlugin(WebvizPluginABC):
             ]
         )
 
-    def set_callbacks(self, app):
+    def set_callbacks(self, app: Dash) -> None:
         @app.callback(
             Output(self.uuid("output-state"), "children"),
             [Input(self.uuid("submit-button"), "n_clicks")],
         )
-        def _update_output(n_clicks):
+        def _update_output(n_clicks: int) -> str:
             return f"Button has been pressed {n_clicks} times."

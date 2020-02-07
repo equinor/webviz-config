@@ -4,6 +4,7 @@ import pathlib
 import inspect
 import importlib
 import typing
+import types
 import warnings
 
 import yaml
@@ -16,26 +17,26 @@ warnings.simplefilter("default", DeprecationWarning)
 SPECIAL_ARGS = ["self", "app", "container_settings", "_call_signature", "_imports"]
 
 
-def _get_webviz_plugins(module):
+def _get_webviz_plugins(module: types.ModuleType) -> list:
     """Returns a list of all Webviz plugins
     in the module given as input.
     """
 
-    def _is_webviz_plugin(obj):
+    def _is_webviz_plugin(obj: typing.Any) -> bool:
         return inspect.isclass(obj) and issubclass(obj, WebvizPluginABC)
 
     return [member[0] for member in inspect.getmembers(module, _is_webviz_plugin)]
 
 
 def _call_signature(
-    module,
-    module_name,
-    plugin_name,
-    shared_settings,
-    kwargs,
-    config_folder,
-    contact_person=None,
-):
+    module: types.ModuleType,
+    module_name: str,
+    plugin_name: str,
+    shared_settings: dict,
+    kwargs: dict,
+    config_folder: pathlib.Path,
+    contact_person: typing.Optional[dict] = None,
+) -> tuple:
     # pylint: disable=too-many-branches,too-many-statements
     """Takes as input the name of a plugin, the module it is located in,
     together with user given arguments (originating from the configuration
@@ -158,7 +159,7 @@ class ConfigParser:
 
     STANDARD_PLUGINS = _get_webviz_plugins(standard_plugins)
 
-    def __init__(self, yaml_file):
+    def __init__(self, yaml_file: str):
 
         ConfigParser.check_for_tabs_in_file(yaml_file)
 
@@ -181,12 +182,12 @@ class ConfigParser:
             ).with_traceback(sys.exc_info()[2])
 
         self._config_folder = pathlib.Path(yaml_file).parent
-        self._page_ids = []
-        self._assets = set()
+        self._page_ids: typing.List[str] = []
+        self._assets: set = set()
         self.clean_configuration()
 
     @staticmethod
-    def check_for_tabs_in_file(path):
+    def check_for_tabs_in_file(path: str) -> None:
 
         with open(path, "r") as filehandle:
             # Create a list with unique entries of line numbers containing tabs
@@ -209,7 +210,7 @@ class ConfigParser:
                 f"{terminal_colors.END}"
             )
 
-    def _generate_page_id(self, title):
+    def _generate_page_id(self, title: str) -> str:
         """From the user given title, this function provides a unique
         human readable page id, not already present in self._page_ids
         """
@@ -225,7 +226,7 @@ class ConfigParser:
 
         return page_id
 
-    def clean_configuration(self):
+    def clean_configuration(self) -> None:
         # pylint: disable=too-many-branches,too-many-statements
         """Various cleaning and checks of the raw configuration read
         from the user provided yaml configuration file.
@@ -372,13 +373,13 @@ class ConfigParser:
                     self.assets.update(getattr(module, plugin_name).ASSETS)
 
     @property
-    def configuration(self):
+    def configuration(self) -> dict:
         return self._configuration
 
     @property
-    def shared_settings(self):
+    def shared_settings(self) -> dict:
         return self._shared_settings
 
     @property
-    def assets(self):
+    def assets(self) -> set:
         return self._assets

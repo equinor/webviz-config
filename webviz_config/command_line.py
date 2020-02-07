@@ -4,7 +4,7 @@ from ._build_webviz import build_webviz
 from ._certificate import create_ca
 
 
-def main():
+def main() -> None:
 
     parser = argparse.ArgumentParser(
         prog=("Creates a Webviz Dash app from a configuration setup")

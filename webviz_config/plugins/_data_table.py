@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import pandas as pd
 import dash_table
@@ -40,11 +41,11 @@ If feature is requested, the data could also come from a database.
         self.filtering = filtering
         self.pagination = pagination
 
-    def add_webvizstore(self):
+    def add_webvizstore(self) -> List[tuple]:
         return [(get_data, [{"csv_file": self.csv_file}])]
 
     @property
-    def layout(self):
+    def layout(self) -> dash_table.DataTable:
         return dash_table.DataTable(
             columns=[{"name": i, "id": i} for i in self.df.columns],
             data=self.df.to_dict("records"),
@@ -56,5 +57,5 @@ If feature is requested, the data could also come from a database.
 
 @CACHE.memoize(timeout=CACHE.TIMEOUT)
 @webvizstore
-def get_data(csv_file) -> pd.DataFrame:
+def get_data(csv_file: Path) -> pd.DataFrame:
     return pd.read_csv(csv_file)

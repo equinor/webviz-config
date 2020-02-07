@@ -5,6 +5,7 @@ import pathlib
 import getpass
 import datetime
 import subprocess  # nosec
+import argparse
 
 from cryptography import x509
 from cryptography.x509.oid import NameOID
@@ -32,7 +33,7 @@ SERVER_KEY_FILENAME = "server.key"
 SERVER_CRT_FILENAME = "server.crt"
 
 
-def user_data_dir():
+def user_data_dir() -> str:
     """Returns platform specific path to store user application data
     """
 
@@ -45,7 +46,7 @@ def user_data_dir():
     return os.path.expanduser("~/.local/share/webviz")
 
 
-def create_key(key_path):
+def create_key(key_path: str) -> rsa.RSAPrivateKey:
 
     key = rsa.generate_private_key(
         public_exponent=65537, key_size=2048, backend=default_backend()
@@ -63,7 +64,12 @@ def create_key(key_path):
     return key
 
 
-def certificate_template(subject, issuer, public_key, certauthority=False):
+def certificate_template(
+    subject: x509.name.Name,
+    issuer: x509.name.Name,
+    public_key: x509.name.Name,
+    certauthority: bool = False,
+) -> x509.base.CertificateBuilder:
 
     if certauthority:
         not_valid_after = datetime.datetime.utcnow() + datetime.timedelta(days=365 * 10)
@@ -88,7 +94,7 @@ def certificate_template(subject, issuer, public_key, certauthority=False):
     )
 
 
-def create_ca(args):
+def create_ca(args: argparse.Namespace) -> None:
 
     directory = user_data_dir()
 
@@ -180,8 +186,7 @@ def create_ca(args):
         )
 
 
-def create_certificate(directory):
-
+def create_certificate(directory: str) -> None:
     ca_directory = user_data_dir()
     ca_key_path = os.path.join(ca_directory, CA_KEY_FILENAME)
     ca_crt_path = os.path.join(ca_directory, CA_CRT_FILENAME)

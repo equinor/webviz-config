@@ -1,7 +1,9 @@
+from typing import Any
+
 import flask
 
 
-def silence_flask_startup():
+def silence_flask_startup() -> None:
     # pylint: disable=line-too-long
     """Calling this function monkey patches the function flask.cli.show_server_banner
     (https://github.com/pallets/flask/blob/a3f07829ca03bf312b12b3732e917498299fa82d/src/flask/cli.py#L657-L683)
@@ -21,7 +23,7 @@ def silence_flask_startup():
     (all other information/output from the flask instance is untouched).
     """
 
-    def silent_function(*_args, **_kwargs):
+    def silent_function(*_args: Any, **_kwargs: Any) -> None:
         pass
 
-    flask.cli.show_server_banner = silent_function
+    flask.cli.show_server_banner = silent_function  # type: ignore[attr-defined]

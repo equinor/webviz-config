@@ -30,7 +30,7 @@ class LocalhostToken:
     two different localhost applications running simultaneously do not interfere.
     """
 
-    def __init__(self, app, port):
+    def __init__(self, app: flask.app.Flask, port: int):
         self._app = app
         self._port = port
 
@@ -53,17 +53,17 @@ class LocalhostToken:
         self.set_request_decorators()
 
     @staticmethod
-    def generate_token():
+    def generate_token() -> str:
         return secrets.token_urlsafe(nbytes=64)
 
     @property
-    def one_time_token(self):
+    def one_time_token(self) -> str:
         return self._ott
 
-    def set_request_decorators(self):
+    def set_request_decorators(self) -> None:
         # pylint: disable=inconsistent-return-statements
         @self._app.before_request
-        def _check_for_ott_or_cookie():
+        def _check_for_ott_or_cookie():  # type: ignore[no-untyped-def]
             if not self._ott_validated and self._ott == flask.request.args.get("ott"):
                 self._ott_validated = True
                 flask.g.set_cookie_token = True
@@ -77,7 +77,9 @@ class LocalhostToken:
                 flask.abort(401)
 
         @self._app.after_request
-        def _set_cookie_token_in_response(response):
+        def _set_cookie_token_in_response(
+            response: flask.wrappers.Response,
+        ) -> flask.wrappers.Response:
             if "set_cookie_token" in flask.g and flask.g.set_cookie_token:
                 response.set_cookie(
                     key=f"cookie_token_{self._port}", value=self._cookie_token

@@ -10,6 +10,7 @@ TESTS_REQUIRES = [
     "pytest-xdist",
     "black",
     "bandit",
+    "mypy",
 ]
 
 setup(
