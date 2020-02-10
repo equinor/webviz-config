@@ -42,7 +42,7 @@ setup(
         "jinja2~=2.10",
         "markdown~=3.0",
         "pandas~=0.24",
-        "pyarrow~=0.11",
+        "pyarrow~=0.16",
         "pyyaml~=5.1",
         "webviz-core-components>=0.0.16",
     ],
