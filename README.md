@@ -26,7 +26,7 @@ This Python package, `webviz-config`, is the core plugin framework. For a real e
 - **You know [Python](https://www.python.org/)**, and want to create generic or specialized dashboards you or other users can reuse by simply asking for it in the Webviz configuration file. This can be done without knowing JavaScript (see also [Dash](https://plot.ly/dash/) for more information).
 - **You know [React](https://reactjs.org/)**, and want to create highly specialized visualization which Python or pure config-file users can reuse.
 
-*Webviz* will create web applications with very :lock: strict security headers and CSP settings, giving an rating of **A+** on e.g. [Mozilla observatory](https://observatory.mozilla.org/). It also facilitates a :whale: Docker setup, where the Python code can be ran completely unpriviliged in a sandbox (both with respect to file system access and network communication).
+*Webviz* will create web applications with very :lock: strict security headers and CSP settings, giving an rating of **A+** on e.g. [Mozilla observatory](https://observatory.mozilla.org/) (note that generated applications are temporarily not getting A+ due to [this `plotly.js` issue](https://github.com/plotly/plotly.js/issues/897)). It also facilitates a :whale: Docker setup, where the Python code can be ran completely unpriviliged in a sandbox (both with respect to file system access and network communication).
 
 Example configuration file and information about the standard plugins can be seen in [the documentation](https://equinor.github.io/webviz-config/).
 
