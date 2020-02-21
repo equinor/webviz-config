@@ -1,7 +1,8 @@
 import argparse
 
 from ._build_webviz import build_webviz
-from ._certificate import create_ca
+from .certificate._certificate_generator import create_ca
+from ._user_preferences import set_user_preferences, get_user_preference
 
 
 def main() -> None:
@@ -19,7 +20,7 @@ def main() -> None:
 
     # Add "build" argument parser:
 
-    parser_build = subparsers.add_parser("build", help="Build a Webviz " "Dash App")
+    parser_build = subparsers.add_parser("build", help="Build a Webviz Dash App")
 
     parser_build.add_argument(
         "yaml_file", type=str, help="Path to YAML configuration file"
@@ -33,7 +34,12 @@ def main() -> None:
         "and saved to the given folder.",
     )
     parser_build.add_argument(
-        "--theme", type=str, default="default", help="Which installed theme to use."
+        "--theme",
+        type=str,
+        default=get_user_preference("theme")
+        if get_user_preference("theme") is not None
+        else "default",
+        help="Which installed theme to use.",
     )
     parser_build.add_argument(
         "--loglevel",
@@ -69,6 +75,38 @@ def main() -> None:
     )
 
     parser_cert.set_defaults(func=create_ca)
+
+    # Add "preferences" parser:
+
+    parser_preferences = subparsers.add_parser(
+        "preferences", help="Set preferred webviz settings",
+    )
+
+    parser_preferences.add_argument(
+        "--browser",
+        type=str,
+        help="Set the name of your preferred browser, "
+        "in which localhost applications will open automatically.",
+    )
+    parser_preferences.add_argument(
+        "--theme",
+        type=str,
+        help="Set your preferred Webviz theme, which will be used if "
+        "'--theme' is not provided as an argument with the 'webviz build' command.",
+    )
+
+    def entrypoint_preferences(args: argparse.Namespace) -> None:
+
+        if args.theme is not None:
+            set_user_preferences(theme=args.theme)
+
+        if args.browser is not None:
+            set_user_preferences(browser=args.browser)
+
+        print(f"Preferred theme: {get_user_preference('theme')}")
+        print(f"Preferred browser: {get_user_preference('browser')}")
+
+    parser_preferences.set_defaults(func=entrypoint_preferences)
 
     # Do the argument parsing:
 

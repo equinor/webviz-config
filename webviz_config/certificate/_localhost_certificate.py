@@ -3,8 +3,12 @@ import atexit
 import shutil
 import tempfile
 
-from ._is_reload_process import is_reload_process
-from ._certificate import create_certificate, SERVER_KEY_FILENAME, SERVER_CRT_FILENAME
+from .._is_reload_process import is_reload_process
+from ._certificate_generator import (
+    create_certificate,
+    SERVER_KEY_FILENAME,
+    SERVER_CRT_FILENAME,
+)
 
 
 class LocalhostCertificate:

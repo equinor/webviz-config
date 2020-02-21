@@ -2,12 +2,10 @@ import warnings
 
 from pkg_resources import get_distribution, DistributionNotFound
 
+from ._theme_class import WebvizConfigTheme
 from ._localhost_token import LocalhostToken
-from ._localhost_open_browser import LocalhostOpenBrowser
-from ._localhost_certificate import LocalhostCertificate
 from ._is_reload_process import is_reload_process
 from ._plugin_abc import WebvizPluginABC, WebvizContainerABC
-from ._theme_class import WebvizConfigTheme
 from ._shared_settings_subscriptions import SHARED_SETTINGS_SUBSCRIPTIONS
 
 warnings.simplefilter("ignore", DeprecationWarning)
