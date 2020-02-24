@@ -33,6 +33,7 @@ script:
   - mypy --package webviz_config --ignore-missing-imports --disallow-untyped-defs --show-error-codes
 
   - webviz certificate
+  - webviz preferences --theme default
   - pytest tests --forked
   - pushd ./docs; python build_docs.py; popd
 

@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 import pathlib
 import getpass
 import datetime
@@ -13,7 +12,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 
-from .utils import terminal_colors
+from .._user_data_dir import user_data_dir
+from ..utils import terminal_colors
 
 
 NAME = x509.Name(
@@ -31,19 +31,6 @@ CA_CRT_FILENAME = "ca.crt"
 
 SERVER_KEY_FILENAME = "server.key"
 SERVER_CRT_FILENAME = "server.crt"
-
-
-def user_data_dir() -> str:
-    """Returns platform specific path to store user application data
-    """
-
-    if sys.platform == "win32":
-        return os.path.normpath(os.path.expanduser("~/Application Data/webviz"))
-
-    if sys.platform == "darwin":
-        return os.path.expanduser("~/Library/Application Support/webviz")
-
-    return os.path.expanduser("~/.local/share/webviz")
 
 
 def create_key(key_path: str) -> rsa.RSAPrivateKey:

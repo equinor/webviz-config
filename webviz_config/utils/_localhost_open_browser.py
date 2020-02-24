@@ -1,11 +1,13 @@
 import os
 import time
 import urllib
+import warnings
 import threading
 import webbrowser
 
-from ._is_reload_process import is_reload_process
-from .utils import terminal_colors
+from .._is_reload_process import is_reload_process
+from .._user_preferences import get_user_preference
+from . import terminal_colors
 
 
 class LocalhostOpenBrowser:
@@ -47,6 +49,13 @@ class LocalhostOpenBrowser:
 
     @staticmethod
     def _get_browser_controller() -> webbrowser.BaseBrowser:
+
+        if get_user_preference("browser") is not None:
+            try:
+                return webbrowser.get(using=get_user_preference("browser"))
+            except webbrowser.Error:
+                warnings.warn("Could not find the user preferred browser.")
+
         for browser in ["chrome", "chromium-browser"]:
             try:
                 return webbrowser.get(using=browser)
