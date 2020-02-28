@@ -67,7 +67,7 @@ class WebvizStorage:
             undec_func = WebvizStorage._undecorate(func)
             for args in arglist:
                 argtuples = WebvizStorage._dict_to_tuples(
-                    WebvizStorage.complete_kwargs(func, args)
+                    WebvizStorage.complete_kwargs(undec_func, args)
                 )
                 if repr(argtuples) not in self.storage_function_argvalues[undec_func]:
                     self.storage_function_argvalues[undec_func][
