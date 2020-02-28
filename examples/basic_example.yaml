@@ -64,3 +64,8 @@ pages:
           name: Kari Nordmann
           phone: 12345678
           email: someother@email.com
+
+ - title: Example portable
+   content:
+    - ExamplePortable:
+        some_number: 42
