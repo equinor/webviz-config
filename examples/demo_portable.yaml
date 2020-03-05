@@ -11,3 +11,5 @@ pages:
         some_number: 42
     - ExampleAssets:
         picture_path: ./example_banner.png
+        css_path: ./example_stylesheet.css
+        js_path: ./example_javascript.js
