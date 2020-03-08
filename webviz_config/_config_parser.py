@@ -258,8 +258,10 @@ class ConfigParser:
                 "information regarding which pages to create."
                 f"{terminal_colors.END}"
             )
+        self.check_section(self.configuration["pages"])
 
-        if not isinstance(self.configuration["pages"], list):
+    def check_section(self, pages):
+        if not isinstance(pages, list):
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 "The configuration input belonging to the "
@@ -267,8 +269,7 @@ class ConfigParser:
                 f"{terminal_colors.END}"
             )
 
-        for page_number, page in enumerate(self.configuration["pages"]):
-
+        for page_number, page in enumerate(pages):
             if "title" not in page:
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
@@ -289,8 +290,13 @@ class ConfigParser:
 
             self._page_ids.append(page["id"])
 
+            if "pages" in page:
+                print(page)
+                self.check_section(page["pages"])
+                continue
             if "content" not in page:
                 page["content"] = []
+
             elif not isinstance(page["content"], list):
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"

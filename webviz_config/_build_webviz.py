@@ -85,7 +85,7 @@ def build_webviz(args: argparse.Namespace) -> None:
     finally:
         if not args.portable:
             print(f"Deleting temporary folder {build_directory}")
-            shutil.rmtree(build_directory)
+            # shutil.rmtree(build_directory)
 
 
 def run_webviz(args: argparse.Namespace, build_directory: str) -> None:

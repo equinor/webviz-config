@@ -10,8 +10,11 @@ import threading
 import datetime
 import os.path as path
 from pathlib import Path, PosixPath
+from collections import defaultdict
 
 import dash
+from dash.dependencies import Input, Output, State
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from flask_talisman import Talisman
@@ -64,34 +67,38 @@ WEBVIZ_STORAGE.storage_folder = path.join(
 WEBVIZ_ASSETS.portable = {{ portable }}
 {{ "WEBVIZ_ASSETS.register_app(app)" if not portable else ""}}
 
-if {{ not portable }} and not webviz_config.is_reload_process():
-    # When Dash/Flask is started on localhost with hot module reload activated,
-    # we do not want the main process to call expensive component functions in
-    # the layout tree, as the layout tree used on initialization will anyway be called
-    # from the child/restart/reload process.
-    app.layout = html.Div()
-else:
-    app.layout = dcc.Tabs(
-        parent_className="layoutWrapper",
-        content_className="pageWrapper",
-        vertical=True,
-        children=[
-          {% for page in pages %}
-            dcc.Tab(
-              {%- if loop.first -%}
-                id="logo",
-                className="styledLogo",
-              {%- else -%}
-                {%- if loop.last -%}
-                id="last_page",
-                {%- else -%}
-                id="{{page.id}}",
-                {%- endif -%}
-                label="{{page.title}}",
-                selected_className="selectedButton",
-                className="styledButton",
-              {%- endif -%}
-                children=[
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "16rem",
+    "padding": "2rem 1rem",
+}
+CONTENT_STYLE = {
+    "margin-left": "18rem",
+    "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
+
+
+page_content = defaultdict(dict)
+{% for page in pages %}
+{% if "pages" in page %}
+{% for subpage in page.pages %}
+page_content["{{page.id}}"]["{{subpage.id}}"] = [
+                  {% for content in subpage.content -%}
+                  {%- if content is string -%}
+                    dcc.Markdown(r"""{{ content }}""")
+                  {%- else -%}
+                    {{ content._call_signature[0] }}.{{ content._call_signature[1] }}
+                  {%- endif -%}
+                  {{- "" if loop.last else ","}}
+                  {% endfor -%}
+                ]
+{% endfor %}
+{% else %}
+page_content["{{page.id}}"] = [
                   {% for content in page.content -%}
                   {%- if content is string -%}
                     dcc.Markdown(r"""{{ content }}""")
@@ -100,10 +107,106 @@ else:
                   {%- endif -%}
                   {{- "" if loop.last else ","}}
                   {% endfor -%}
-                ],
-            )  {{- "" if loop.last else "," -}}
-        {% endfor %}],
+                ]
+{% endif %}
+
+{% endfor %}
+
+if {{ not portable }} and not webviz_config.is_reload_process():
+    # When Dash/Flask is started on localhost with hot module reload activated,
+    # we do not want the main process to call expensive component functions in
+    # the layout tree, as the layout tree used on initialization will anyway be called
+    # from the child/restart/reload process.
+    app.layout = html.Div()
+else:
+    sidebar = html.Div(
+        children=[
+            dbc.Nav(
+                children=[
+                        {% for page in pages %}
+                        
+                        {% if "pages" in page %}
+                        html.Li(id="{{page.id}}", children=[
+                            dbc.Row([
+                                dbc.Col(className="styledButton", children="{{page.title}}"),
+                            ])
+                        ]),
+                        dbc.Collapse(
+                            [
+                            {% for subpage in page.pages %}
+                                dbc.NavLink(className="styledButtonSmall", style={'textDecoration':'none'},  children="{{subpage.title}}", href="/{{page.id}}/{{subpage.id}}"),
+                            {% endfor %}
+                            ],id="{{page.id}}-collapse",
+                        )
+                        {% else %}
+                        html.Li(id="{{page.id}}",  children=[
+                             dbc.Row([
+                                dbc.Col(className="styledButton", children=dbc.NavLink(style={'textDecoration':'none'}, children="{{page.title}}", href="/{{page.id}}"))])])
+                            
+                        {% endif %}
+                          {{- "" if loop.last else "," -}}
+                            {% endfor %}
+                            ], vertical=True
+                            )], 
+            style=SIDEBAR_STYLE,
+        id="sidebar",
+        className="lead")
+
+    content = html.Div(id="page-content", style=CONTENT_STYLE)
+    app.layout = html.Div(
+        className="layoutWrapper", children=[dcc.Location(id="url"), sidebar, content]
     )
+
+
+
+
+
+# this function applies the "open" class to rotate the chevron
+def set_navitem_class(is_open):
+    if is_open:
+        return "open"
+    return ""
+
+subpages = []
+{% for page in pages %}
+{% if "pages" in page %}
+@app.callback(
+        Output("{{page.id}}-collapse", "is_open"), 
+        [Input("{{page.id}}","n_clicks")],
+        [State("{{page.id}}-collapse", "is_open")]
+        )
+# this function is used to toggle the is_open property of each Collapse
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+{% endif %}
+{% endfor %}
+
+@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
+def render_page_content(pathname):
+    {% for page in pages %}
+    {% if "pages" in page %}
+    {% for subpage in page.pages %}
+    if pathname == "/{{page.id}}/{{subpage.id}}":
+        return page_content["{{page.id}}"]["{{subpage.id}}"]
+    {% endfor %}
+    {% else %}
+    if pathname == "/{{page.id}}":
+        return page_content["{{page.id}}"]
+    {% endif %}
+    {% endfor %}
+
+
+    # If the user tries to reach a different page, return a 404 message
+    return dbc.Jumbotron(
+        [
+            html.H1("404: Not found", className="text-danger"),
+            html.Hr(),
+            html.P(f"The pathname {pathname} was not recognised..."),
+        ]
+    )
+
 
 if __name__ == "__main__":
     # This part is ignored when the webviz app is started

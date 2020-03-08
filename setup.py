@@ -35,6 +35,7 @@ setup(
         # Pinning dash to the 1.7-series as long as
         # https://github.com/plotly/dash-core-components/issues/746 is open
         "dash~=1.7.0",
+        "dash-bootstrap-components==0.8.2",
         "bleach~=3.1",
         "cryptography~=2.4",
         "flask-caching~=1.4",

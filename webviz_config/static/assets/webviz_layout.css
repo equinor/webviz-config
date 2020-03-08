@@ -43,7 +43,68 @@ div.pageWrapper.tab-content {
     margin: 20px;
 
 }
+div.styledLogo {
+    border: none;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    text-align: left;
+    box-sizing: none;
+    padding: 20px 30px;
+}
 
+.styledButton {
+    border: none;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    transition: background-color, color 200ms;
+    text-align: left;
+    box-sizing: none;
+    font-size: 16px;
+    font-family: var(--menuLinkFont);
+    font-weight: var(--menuLinkFontWeight);
+    font-style: var(--menuLinkFontStyle);
+    color: var(--menuLinkColor);
+    text-decoration: none;
+    padding: 20px 30px;
+    border-bottom: 1px solid white;
+}
+
+.styledButtonSmall {
+    border: none;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    transition: background-color, color 200ms;
+    text-align: left;
+    box-sizing: none;
+    font-size: 12px;
+    font-family: var(--menuLinkFont);
+    font-weight: var(--menuLinkFontWeight);
+    font-style: var(--menuLinkFontStyle);
+    color: var(--menuLinkColor);
+    text-decoration: none;
+    padding: 5px 8px;
+    border-bottom: 1px solid white;
+}
+.styledButton:hover {
+    color: var(--menuLinkHoverColor);
+    background-color: var(--menuLinkBackgroundHover);
+}
+
+.selectedButton {
+    color: var(--menuLinkColorSelected);
+    background-color: var(--menuLinkBackgroundSelected);
+}
+
+.pageWrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 20px;
+
+}
 .layoutWrapper {
     width: 100%;
 }
