@@ -50,6 +50,19 @@ class WebvizAssets:
         return "assets" if self.portable else "temp"
 
     def add(self, filename: pathlib.Path) -> str:
+        """Calling this function makes the filename given as input
+        available as a hosted asset when the application is running.
+        The returned string is a URI which the plugin optionally
+        can use internally (e.g. as "src" in image elements).
+
+        Calling this function with the same input path
+        multiple times will return the same URI.
+
+        Filenames added to WebvizAssets that ends with .css or .js
+        are loaded automatically in the browser by Dash,
+        both in non-portable and portable mode.
+        """
+
         path = pathlib.Path(filename)
 
         if filename not in self._assets.values():
@@ -60,12 +73,18 @@ class WebvizAssets:
 
         return os.path.normcase(os.path.join(self._base_folder(), assigned_id))
 
-    def register_app(self, app: Dash) -> None:
+    def directly_host_assets(self, app: Dash) -> None:
         """In non-portable mode, this function can be called by the
         application. It routes the Dash application to the added assets on
         disk, making hot reloading and more interactive development of the
         application possible.
         """
+
+        if self._portable:
+            raise RuntimeError(
+                "The function WebvizAssets.directly_host_assets() "
+                "method is only meaningful in a non-portable settings."
+            )
 
         @app.server.route(f"/{self._base_folder()}/<path:asset_id>")
         def _send_file(asset_id: str) -> Optional[flask.wrappers.Response]:
@@ -73,6 +92,17 @@ class WebvizAssets:
                 path = pathlib.Path(self._assets[asset_id])
                 return flask.send_from_directory(path.parent, path.name)
             return None
+
+        # Add .css and .js files to auto-loaded Dash assets
+        for asset_id, asset_path in self._assets.items():
+            if asset_path.suffix == ".css":
+                app.config.external_stylesheets.append(
+                    f"./{self._base_folder()}/{asset_id}"
+                )
+            elif asset_path.suffix == ".js":
+                app.config.external_scripts.append(
+                    f"./{self._base_folder()}/{asset_id}"
+                )
 
     def make_portable(self, asset_folder: str) -> None:
         """Copy over all added assets to the given folder (asset_folder).

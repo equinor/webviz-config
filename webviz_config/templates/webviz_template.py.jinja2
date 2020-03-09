@@ -63,7 +63,6 @@ WEBVIZ_STORAGE.storage_folder = path.join(
 )
 
 WEBVIZ_ASSETS.portable = {{ portable }}
-{{ "WEBVIZ_ASSETS.register_app(app)" if not portable else ""}}
 
 if {{ not portable }} and not webviz_config.is_reload_process():
     # When Dash/Flask is started on localhost with hot module reload activated,
@@ -105,6 +104,8 @@ else:
             )  {{- "" if loop.last else "," -}}
         {% endfor %}],
     )
+
+{{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
 
 if __name__ == "__main__":
     # This part is ignored when the webviz app is started
