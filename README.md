@@ -18,7 +18,7 @@
 
 Writing a [Dash web application](https://github.com/plotly/dash) gives a lot of flexibility, however, it also requires :snake: Python knowledge from the person setting it up.
 
-*Webviz* is a LGPL-licensed configuration layer on top of Dash, which encourages making reusable components and dashboards, which can then be added/removed when creating an application using a short [`yaml`](https://en.wikipedia.org/wiki/YAML) configuration file.
+*Webviz* is a MIT-licensed configuration layer on top of Dash, which encourages making reusable components and dashboards, which can then be added/removed when creating an application using a short [`yaml`](https://en.wikipedia.org/wiki/YAML) configuration file.
 
 This Python package, `webviz-config`, is the core plugin framework. For a real example repository using this plugin system, see e.g. [`webviz-subsurface`](https://github.com/equinor/webviz-subsurface).
  
@@ -107,7 +107,7 @@ To quickly get started, we recommend using the corresponding
 
 ### License
 
-`webviz-config` is, with a few exceptions listed below, [LGPLv3](./LICENSE).
+`webviz-config` is, with a few exceptions listed below, [MIT](./LICENSE) licensed.
 
 - The [webviz logo](./docs/assets/webviz-logo.svg) is [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
