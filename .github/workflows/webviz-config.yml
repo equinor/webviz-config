@@ -1,0 +1,98 @@
+name: webviz-config
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  release:
+    types:
+      - published
+  schedule:
+    # Run CI daily and check that tests are working with latest dependencies
+    - cron:  '0 0 * * *'
+
+jobs:
+
+  webviz-config:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8']
+        pandas-version: ['0.24.2', '1.*']  # Necessary as long as RHEL6 is used internally
+
+    steps:
+      - name: Checkout commit locally
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install webviz-config with dependencies
+        run: |
+          pip install 'pandas==${{ matrix.pandas-version }}'
+          pip install --upgrade pip
+          pip install .
+
+      - name: Install test dependencies
+        run: |
+          pip install .[tests]
+          pip install dash[testing]
+          wget https://chromedriver.storage.googleapis.com/$(wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE -q -O -)/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+  
+      - name: List all installed packages
+        run: pip freeze
+
+      - name: Check code style & linting
+        run: |
+          black --check webviz_config tests setup.py
+          pylint webviz_config tests setup.py
+          bandit -r -c ./bandit.yml webviz_config tests setup.py
+          mypy --package webviz_config --ignore-missing-imports --disallow-untyped-defs --show-error-codes
+
+      - name: Run tests
+        run: |
+          webviz certificate
+          webviz preferences --theme default
+          pytest ./tests --headless --forked
+          pushd ./docs
+          python build_docs.py
+          popd
+        
+      - name: Build and deploy Python package
+        if: github.event_name == 'release' && matrix.python-version == '3.6'
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.pypi_webviz_token }}
+        run: |
+          python -m pip install --upgrade setuptools wheel twine
+          python setup.py sdist bdist_wheel
+          twine upload dist/*
+
+      - name: Update GitHub pages
+        if: github.ref == 'refs/heads/master' && matrix.python-version == '3.6'
+        run: |
+          cp -R ./docs/_build ../_build
+
+          git config --local user.email "webviz-github-action"
+          git config --local user.name "webviz-github-action"
+          git fetch origin gh-pages
+          git checkout --track origin/gh-pages
+          git clean -f -f -d -x
+          git rm -r *
+
+          cp -R ../_build/* .
+
+          git add .
+
+          if git diff-index --quiet HEAD; then
+            echo "No changes in documentation. Skip documentation deploy."
+          else
+            git commit -m "Update Github Pages"
+            git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+          fi

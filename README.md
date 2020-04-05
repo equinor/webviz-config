@@ -6,9 +6,9 @@
 
 <p align="center">
 <a href="https://badge.fury.io/py/webviz-config"><img src="https://badge.fury.io/py/webviz-config.svg"></a>
-<a href="https://equinor.github.io/webviz-config"><img src="https://img.shields.io/badge/docs-passing-brightgreen"></a>  
+<a href="https://equinor.github.io/webviz-config"><img src="https://img.shields.io/badge/docs-passing-brightgreen"></a>
 <a href="https://github.com/equinor/webviz-config/blob/master/LICENSE"><img src="https://img.shields.io/github/license/equinor/webviz-config.svg?color=dark-green"></a>
-<a href="https://travis-ci.org/equinor/webviz-config"><img src="https://travis-ci.org/equinor/webviz-config.svg?branch=master"></a>
+<a href="https://github.com/equinor/webviz-config/actions?query=branch%3Amaster"><img src="https://github.com/equinor/webviz-config/workflows/webviz-config/badge.svg"></a>
 <a href="https://lgtm.com/projects/g/equinor/webviz-config/alerts/"><img alt="Total alerts" src="https://img.shields.io/lgtm/alerts/g/equinor/webviz-config.svg?logo=lgtm&logoWidth=18"/></a>
 <a href="https://lgtm.com/projects/g/equinor/webviz-config/context:python"><img alt="Language grade: Python" src="https://img.shields.io/lgtm/grade/python/g/equinor/webviz-config.svg?logo=lgtm&logoWidth=18"/></a>
 <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.6%20|%203.7%20|%203.8-blue.svg"></a>
