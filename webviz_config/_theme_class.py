@@ -75,6 +75,34 @@ class WebvizConfigTheme:
             else:
                 self._csp[key] = value
 
+    def create_themed_layout(self, layout: dict) -> dict:
+        """
+        Create a new Plotly layout dict by merging the input layout with the theme layout,
+        prioritizing the input layout if there are conflicts with the theme layout. In addition:
+        For the special case of multiple xaxes or yaxes, e.g. xaxis2 and xaxis3 (for a secondary
+        and tertiary xaxis), the axis will get the theme xaxis/yaxis layout, unless they are
+        defined themselves as e.g. xaxis2 in the theme layout. Note that e.g. xaxis2 still needs to
+        be in the input layout, just not in the theme layout.
+        """
+        # pylint: disable=too-many-nested-blocks
+        def deep_update(update: dict, ref: dict) -> dict:
+            for key, value in ref.items():
+                if key in update:
+                    if isinstance(value, dict):
+                        if isinstance(update[key], dict):
+                            update[key] = deep_update(update[key], value)
+                        if key in ["xaxis", "yaxis"]:
+                            for kkey in update:
+                                if kkey not in ref and kkey.startswith(key):
+                                    update[kkey] = deep_update(update[kkey], value)
+                else:
+                    update[key] = value
+            return update
+
+        return deep_update(
+            copy.deepcopy(layout), copy.deepcopy(self._plotly_theme["layout"])
+        )
+
     @property
     def csp(self) -> dict:
         """Returns the content security policy settings for the theme."""
