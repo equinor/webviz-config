@@ -65,7 +65,7 @@ jobs:
           popd
         
       - name: Build and deploy Python package
-        if: github.event_name == 'release' && matrix.python-version == '3.6'
+        if: github.event_name == 'release' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.pypi_webviz_token }}
@@ -75,7 +75,7 @@ jobs:
           twine upload dist/*
 
       - name: Update GitHub pages
-        if: github.ref == 'refs/heads/master' && matrix.python-version == '3.6'
+        if: github.ref == 'refs/heads/master' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
         run: |
           cp -R ./docs/_build ../_build
 
