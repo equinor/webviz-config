@@ -1,4 +1,3 @@
-import os
 import json
 import webbrowser
 from typing import Optional
@@ -40,7 +39,7 @@ def set_user_preferences(
 
     if new_preferences:
         preferences.update(new_preferences)
-        os.makedirs(USER_SETTINGS_FILE.parent, exist_ok=True)
+        USER_SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
         USER_SETTINGS_FILE.write_text(json.dumps(preferences))
 
 

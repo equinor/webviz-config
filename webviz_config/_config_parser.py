@@ -144,7 +144,7 @@ class ConfigParser:
 
     STANDARD_PLUGINS = _get_webviz_plugins(standard_plugins)
 
-    def __init__(self, yaml_file: str):
+    def __init__(self, yaml_file: pathlib.Path):
 
         ConfigParser.check_for_tabs_in_file(yaml_file)
 
@@ -172,26 +172,24 @@ class ConfigParser:
         self.clean_configuration()
 
     @staticmethod
-    def check_for_tabs_in_file(path: str) -> None:
+    def check_for_tabs_in_file(path: pathlib.Path) -> None:
 
-        with open(path, "r") as filehandle:
-            # Create a list with unique entries of line numbers containing tabs
-            lines_with_tabs = list(
-                dict.fromkeys(
-                    [
-                        str(i + 1)
-                        for i, line in enumerate(filehandle.readlines())
-                        if "\t" in line
-                    ]
-                )
+        line_numbers_with_tabs = sorted(
+            list(
+                {
+                    i + 1
+                    for i, line in enumerate(path.read_text().splitlines())
+                    if "\t" in line
+                }
             )
+        )
 
-        if lines_with_tabs:
+        if line_numbers_with_tabs:
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 "The configuration file contains tabs. You should use ordinary spaces "
                 "instead. The following lines contain tabs:\n"
-                f"{', '.join(lines_with_tabs)}"
+                f"{', '.join([str(line_no) for line_no in line_numbers_with_tabs])}"
                 f"{terminal_colors.END}"
             )
 

@@ -7,7 +7,6 @@
 import logging
 import threading
 import datetime
-import os.path as path
 from pathlib import Path, PosixPath, WindowsPath
 
 import dash
@@ -59,9 +58,7 @@ theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
 Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy)
 
 WEBVIZ_STORAGE.use_storage = {{portable}}
-WEBVIZ_STORAGE.storage_folder = path.join(
-    path.dirname(path.realpath(__file__)), "webviz_storage"
-)
+WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "webviz_storage"
 
 WEBVIZ_ASSETS.portable = {{ portable }}
 
