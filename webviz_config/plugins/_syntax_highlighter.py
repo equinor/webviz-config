@@ -30,7 +30,8 @@ Adds support for syntax highlighting of code. Language is automatically detected
     @property
     def layout(self) -> dcc.Markdown:
         return dcc.Markdown(
-            f"```{get_path(self.filename).read_text()}```", highlight_config=self.config
+            f"```\n{get_path(self.filename).read_text()}\n```",
+            highlight_config=self.config,
         )
 
 
