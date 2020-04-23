@@ -32,11 +32,9 @@ setup(
     },
     entry_points={"console_scripts": ["webviz=webviz_config.command_line:main"]},
     install_requires=[
-        # Pinning dash to the 1.7-series as long as
-        # https://github.com/plotly/dash-core-components/issues/746 is open
-        "dash==1.7",
         "bleach>=3.1",
         "cryptography>=2.4",
+        "dash>=1.7",
         "flask-caching>=1.4",
         "flask-talisman>=0.6",
         "jinja2>=2.10",

@@ -7,6 +7,10 @@
 Hi from a Markdown text file containing Norwegian letters (æ ø å), some
 **bold** letters, _italic_ letters. _You can also **combine** them._
 
+---
+
+Horizontal line splitting two paragraphs.
+
 #### An unordered list
 
 * Item 1

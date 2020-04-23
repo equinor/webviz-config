@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import List
 from xml.etree import ElementTree  # nosec
@@ -174,6 +175,11 @@ the markdown file itself, or absolute paths.
             attributes=Markdown.ALLOWED_ATTRIBUTES,
             styles=Markdown.ALLOWED_STYLES,
         )
+
+        # Workaround for upstream issue https://github.com/plotly/dash-core-components/issues/746,
+        # where we convert void html tags from <tag> to <tag/>.
+        self.html = re.sub("<img (.*?[^/])>", r"<img \1/>", self.html)
+        self.html = self.html.replace("<br>", "<br/>").replace("<hr>", "<hr/>")
 
     def add_webvizstore(self) -> List[tuple]:
         return [(get_path, [{"path": self.markdown_file}])]
