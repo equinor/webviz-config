@@ -34,7 +34,7 @@ setup(
     install_requires=[
         "bleach>=3.1",
         "cryptography>=2.4",
-        "dash>=1.7",
+        "dash>=1.7,<1.11",
         "flask-caching>=1.4",
         "flask-talisman>=0.6",
         "jinja2>=2.10",
