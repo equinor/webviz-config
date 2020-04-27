@@ -49,6 +49,7 @@ jobs:
         run: pip freeze
 
       - name: Check code style & linting
+        if: matrix.pandas-version == '1.*'
         run: |
           black --check webviz_config tests setup.py
           pylint webviz_config tests setup.py
