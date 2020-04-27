@@ -42,7 +42,7 @@ setup(
         "pandas>=0.24",
         "pyarrow>=0.16",
         "pyyaml>=5.1",
-        "webviz-core-components>=0.0.16",
+        "webviz-core-components>=0.0.19",
     ],
     tests_require=TESTS_REQUIRES,
     extras_require={"tests": TESTS_REQUIRES},
