@@ -195,10 +195,10 @@ class ConfigParser:
 
     def _generate_page_id(self, title: str) -> str:
         """From the user given title, this function provides a unique
-        human readable page id, not already present in self._page_ids
+        human readable page id, not already present in `self._page_ids`.
         """
 
-        base_id = re.sub("[^-a-z0-9_]+", "", title.lower().replace(" ", "_"))
+        base_id = re.sub("[^-a-z0-9_]+", "", title.lower().replace(" ", "-"))
 
         page_id = base_id
 

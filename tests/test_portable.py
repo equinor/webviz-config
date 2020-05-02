@@ -25,12 +25,11 @@ def test_portable(dash_duo, tmp_path):
     # Start and test app
     dash_duo.start_server(app)
     for page in [
-        "markdown_example",
-        "table_example",
-        "pdf_example",
-        "syntax_highlighting_example",
-        "plot_a_table",
-        "last_page",
+        "markdown-example",
+        "table-example",
+        "pdf-example",
+        "syntax-highlighting-example",
+        "plot-a-table",
     ]:
         dash_duo.wait_for_element(f"#{page}").click()
     assert dash_duo.get_logs() == [], "browser console should contain no error"
