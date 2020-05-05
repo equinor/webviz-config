@@ -24,31 +24,31 @@ jobs:
         pandas-version: ['0.24.2', '1.*']  # Necessary as long as RHEL6 is used internally
 
     steps:
-      - name: Checkout commit locally
+      - name: 📖 Checkout commit locally
         uses: actions/checkout@v2
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: 🐍 Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install webviz-config with dependencies
+      - name: 📦 Install webviz-config with dependencies
         run: |
           pip install 'pandas==${{ matrix.pandas-version }}'
           pip install --upgrade pip
           pip install .
 
-      - name: Install test dependencies
+      - name: 📦 Install test dependencies
         run: |
           pip install .[tests]
           pip install dash[testing]
           wget https://chromedriver.storage.googleapis.com/$(wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE -q -O -)/chromedriver_linux64.zip
           unzip chromedriver_linux64.zip
   
-      - name: List all installed packages
+      - name: 🧾 List all installed packages
         run: pip freeze
 
-      - name: Check code style & linting
+      - name: 🕵️ Check code style & linting
         if: matrix.pandas-version == '1.*'
         run: |
           black --check webviz_config tests setup.py
@@ -56,7 +56,7 @@ jobs:
           bandit -r -c ./bandit.yml webviz_config tests setup.py
           mypy --package webviz_config --ignore-missing-imports --disallow-untyped-defs --show-error-codes
 
-      - name: Run tests
+      - name: 🤖 Run tests
         run: |
           webviz certificate
           webviz preferences --theme default
@@ -65,7 +65,7 @@ jobs:
           python build_docs.py
           popd
         
-      - name: Build and deploy Python package
+      - name: 🚢 Build and deploy Python package
         if: github.event_name == 'release' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
         env:
           TWINE_USERNAME: __token__
@@ -75,8 +75,8 @@ jobs:
           python setup.py sdist bdist_wheel
           twine upload dist/*
 
-      - name: Update GitHub pages
-        if: github.ref == 'refs/heads/master' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
+      - name: 📚 Update GitHub pages
+        if: github.event_name != 'schedule' && github.ref == 'refs/heads/master' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
         run: |
           cp -R ./docs/_build ../_build
 
