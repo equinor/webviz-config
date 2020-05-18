@@ -26,6 +26,7 @@ If feature is requested, the data could also come from a database.
 * `csv_file`: Path to the csv file containing the tabular data. Either absolute
               path or relative to the configuration file.
 * `plot_options`: A dictionary of plot options to initialize the plot with
+* `filter_cols`: Dataframe columns that can be used to filter data
 * `lock`: If `True`, only the plot is shown, all dropdowns for changing
           plot options are hidden.
 """
@@ -72,15 +73,7 @@ If feature is requested, the data could also come from a database.
         """A list of available plots and their options"""
         return {
             "scatter": ["x", "y", "size", "color", "facet_col"],
-            "histogram": [
-                "x",
-                "y",
-                "color",
-                "facet_col",
-                "barmode",
-                "barnorm",
-                "histnorm",
-            ],
+            "histogram": ["x", "color", "facet_col", "barmode", "barnorm", "histnorm",],
             "bar": ["x", "y", "color", "facet_col"],
             "scatter_3d": ["x", "y", "z", "size", "color"],
             "line": ["x", "y", "color", "line_group", "facet_col"],
@@ -102,46 +95,55 @@ If feature is requested, the data could also come from a database.
                     "options": self.columns,
                     "value": self.plot_options.get("x", self.columns[0]),
                     "multi": False,
+                    "clearable": False,
                 },
                 "y": {
                     "options": self.columns,
                     "value": self.plot_options.get("y", self.columns[0]),
                     "multi": False,
+                    "clearable": False,
                 },
                 "z": {
                     "options": self.columns,
                     "value": self.plot_options.get("z", self.columns[0]),
                     "multi": False,
+                    "clearable": False,
                 },
                 "size": {
                     "options": self.numeric_columns,
                     "value": self.plot_options.get("size", None),
                     "multi": False,
+                    "clearable": True,
                 },
                 "color": {
                     "options": self.columns,
                     "value": self.plot_options.get("color", None),
                     "multi": False,
+                    "clearable": True,
                 },
                 "facet_col": {
                     "options": self.columns,
                     "value": self.plot_options.get("facet_col", None),
                     "multi": False,
+                    "clearable": True,
                 },
                 "line_group": {
                     "options": self.columns,
                     "value": self.plot_options.get("line_group", None),
                     "multi": False,
+                    "clearable": True,
                 },
                 "barmode": {
                     "options": ["stack", "group", "overlay", "relative"],
                     "value": self.plot_options.get("barmode", "stack"),
                     "multi": False,
+                    "clearable": True,
                 },
                 "barnorm": {
                     "options": ["fraction", "percent"],
                     "value": self.plot_options.get("barnorm", None),
                     "multi": False,
+                    "clearable": True,
                 },
                 "histnorm": {
                     "options": [
@@ -152,16 +154,19 @@ If feature is requested, the data could also come from a database.
                     ],
                     "value": self.plot_options.get("histnorm", None),
                     "multi": False,
+                    "clearable": True,
                 },
                 "trendline": {
                     "options": self.numeric_columns,
                     "value": None,
                     "multi": False,
+                    "clearable": True,
                 },
                 "dimensions": {
                     "options": self.columns,
                     "value": self.plot_options.get("dimensions", self.columns),
                     "multi": True,
+                    "clearable": True,
                 },
             }
         )
@@ -210,13 +215,13 @@ If feature is requested, the data could also come from a database.
                                 open=True,
                                 children=[
                                     html.Summary(col.lower().capitalize()),
-                                    dcc.Dropdown(
+                                    wcc.Select(
                                         id=self.uuid(f"filter-{col}"),
                                         options=[
                                             {"label": i, "value": i} for i in elements
                                         ],
                                         value=elements,
-                                        multi=True,
+                                        size=min(15, len(elements)),
                                     ),
                                 ],
                             )
@@ -255,7 +260,7 @@ If feature is requested, the data could also come from a database.
                         html.P(key),
                         dcc.Dropdown(
                             id=self.uuid(f"dropdown-{key}"),
-                            clearable=False,
+                            clearable=arg["clearable"],
                             options=[{"label": i, "value": i} for i in arg["options"]],
                             value=arg["value"],
                             multi=arg["multi"],
