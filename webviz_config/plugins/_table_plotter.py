@@ -1,6 +1,7 @@
 from pathlib import Path
 from collections import OrderedDict
 from typing import Optional, List, Dict, Any
+import inspect
 
 import numpy as np
 import pandas as pd
@@ -16,7 +17,7 @@ from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
 
-# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-instance-attributes, too-many-arguments
 class TablePlotter(WebvizPluginABC):
     """### TablePlotter
 
@@ -27,6 +28,13 @@ If feature is requested, the data could also come from a database.
               path or relative to the configuration file.
 * `plot_options`: A dictionary of plot options to initialize the plot with
 * `filter_cols`: Dataframe columns that can be used to filter data
+* `filter_defaults`: A dictionary with column names as keys, and a list of column values that
+                     should be preselected in the filter. If a columm is not defined, all values
+                     are preselected for the column.
+* `column_color_discrete_maps`: A dictionary with column names as keys, each key containing a new
+                     dictionary with the columns unique values as keys, and the color they should
+                     be plotted with as value. Hex values needs quotes '' to not be read as comment
+                     in the yaml config file.
 * `lock`: If `True`, only the plot is shown, all dropdowns for changing
           plot options are hidden.
 """
@@ -37,6 +45,8 @@ If feature is requested, the data could also come from a database.
         csv_file: Path,
         plot_options: dict = None,
         filter_cols: list = None,
+        filter_defaults: dict = None,
+        column_color_discrete_maps: dict = None,
         lock: bool = False,
     ):
 
@@ -51,6 +61,8 @@ If feature is requested, the data could also come from a database.
         self.numeric_columns = list(
             self.data.select_dtypes(include=[np.number]).columns
         )
+        self.filter_defaults = filter_defaults
+        self.column_color_discrete_maps = column_color_discrete_maps
         self.plotly_theme = app.webviz_settings["theme"].plotly_theme
         self.set_callbacks(app)
 
@@ -70,11 +82,11 @@ If feature is requested, the data could also come from a database.
 
     @property
     def plots(self) -> dict:
-        """A list of available plots and their options"""
+        """A dict of available plots and their options"""
         return {
             "scatter": ["x", "y", "size", "color", "facet_col"],
             "histogram": ["x", "color", "facet_col", "barmode", "barnorm", "histnorm",],
-            "bar": ["x", "y", "color", "facet_col"],
+            "bar": ["x", "y", "color", "facet_col", "barmode"],
             "scatter_3d": ["x", "y", "z", "size", "color"],
             "line": ["x", "y", "color", "line_group", "facet_col"],
             "line_3d": ["x", "y", "z", "color"],
@@ -88,7 +100,7 @@ If feature is requested, the data could also come from a database.
 
     @property
     def plot_args(self) -> dict:
-        """A list of possible plot options and their default values"""
+        """A dict of possible plot options and their default values"""
         return OrderedDict(
             {
                 "x": {
@@ -220,7 +232,15 @@ If feature is requested, the data could also come from a database.
                                         options=[
                                             {"label": i, "value": i} for i in elements
                                         ],
-                                        value=elements,
+                                        value=elements
+                                        if self.filter_defaults is None
+                                        else [
+                                            element
+                                            for element in self.filter_defaults.get(
+                                                col, elements
+                                            )
+                                            if element in elements
+                                        ],
                                         size=min(15, len(elements)),
                                     ),
                                 ],
@@ -254,7 +274,7 @@ If feature is requested, the data could also come from a database.
         for key, arg in self.plot_args.items():
             divs.append(
                 html.Div(
-                    style=self.style_options_div,
+                    style=self.style_options_div_hidden,
                     id=self.uuid(f"div-{key}"),
                     children=[
                         html.P(key),
@@ -360,9 +380,23 @@ If feature is requested, the data could also come from a database.
             else:
                 plot_inputs = args[1:]
             for name, plot_arg in zip(self.plot_args.keys(), plot_inputs):
+                if plot_type in ["parallel_coordinates"] and name == "dimensions":
+                    # This plot type only accepts numerical data
+                    plot_arg = [val for val in plot_arg if val in self.numeric_columns]
                 if name in self.plots[plot_type]:
                     plotargs[name] = plot_arg
                     div_style.append(self.style_options_div)
+
+                    if (
+                        name == "color"
+                        and self.column_color_discrete_maps is not None
+                        and plot_arg in self.column_color_discrete_maps
+                        and "color_discrete_map"
+                        in inspect.signature(plotfunc).parameters
+                    ):
+                        plotargs[
+                            "color_discrete_map"
+                        ] = self.column_color_discrete_maps.get(plot_arg)
                 else:
                     div_style.append(self.style_options_div_hidden)
             return (plotfunc(data, template=self.plotly_theme, **plotargs), *div_style)

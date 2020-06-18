@@ -41,10 +41,28 @@ pages:
    content:
     - TablePlotter:
         csv_file: ./example_data.csv
+        # Everything below are examples of optional settings
         filter_cols:
           - Well
           - Segment
           - Average permeability (D)
+        plot_options:        
+          type: bar
+          facet_col: Well
+          color: Segment
+          barmode: group
+        filter_defaults:
+          Well:
+            - A-1H
+            - A-2H
+            - C-1H
+        column_color_discrete_maps:
+        # Supports css color codes, rgb and hex code.
+        # Note that hex code needs quotes '' to not be read as a comment
+          Segment:
+            A: '#ff0000'
+            B: rgb(0,255,0)
+            C: blue
         contact_person:
           name: Ola Nordmann
           phone: +47 12345678
