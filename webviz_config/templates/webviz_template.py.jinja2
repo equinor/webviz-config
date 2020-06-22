@@ -127,6 +127,7 @@ if __name__ == "__main__":
         ssl_context=webviz_config.certificate.LocalhostCertificate().ssl_context,
         debug=False,
         use_reloader={{not portable}},
+        dev_tools_prune_errors=False,
       {% if not portable -%}
         dev_tools_hot_reload=True,
         dev_tools_hot_reload_interval=1.0,
