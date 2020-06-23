@@ -22,6 +22,10 @@ jobs:
       matrix:
         python-version: ['3.6', '3.7', '3.8']
         pandas-version: ['0.24.2', '1.*']  # Necessary as long as RHEL6 is used internally
+        exclude:
+          # Skip Python 3.8 and Pandas 0.24.2 combination due to missing 3.8 wheel for that specific pandas version
+          - python-version: '3.8'
+            pandas-version: '0.24.2'
 
     steps:
       - name: 📖 Checkout commit locally
