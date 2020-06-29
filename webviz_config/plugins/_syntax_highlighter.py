@@ -8,13 +8,13 @@ from ..webviz_store import webvizstore
 
 
 class SyntaxHighlighter(WebvizPluginABC):
-    """### Syntax highlighter
+    """Adds support for syntax highlighting of code. Language is automatically detected.
 
-Adds support for syntax highlighting of code. Language is automatically detected.
+---
 
-* `filename`: Path to a file containing the code to highlight.
-* `dark_theme`: If `True`, the code is shown with a dark theme. Default is
-                `False` giving a light theme.
+* **`filename`:** Path to a file containing the code to highlight.
+* **`dark_theme`:** If `True`, the code is shown with a dark theme. Default is \
+                `False`, giving a light theme.
 """
 
     def __init__(self, filename: Path, dark_theme: bool = False):

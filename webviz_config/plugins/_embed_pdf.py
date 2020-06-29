@@ -7,17 +7,16 @@ from ..webviz_assets import WEBVIZ_ASSETS
 
 
 class EmbedPdf(WebvizPluginABC):
-    """### Embed PDF file
+    """Embeds a given PDF file into the page.
 
-Embeds a given PDF file into the page.
+!> Webviz does not scan your PDF for malicious code. Make sure it comes from a trusted source.
+---
 
-* `pdf_file`: Path to the PDF file to include. Either absolute path or
+* **`pdf_file`:** Path to the PDF file to include. Either absolute path or \
   relative to the configuration file.
-* `height`: Height of the PDF object (in percent of viewport height).
-* `width`: Width of the PDF object (in percent of available space).
+* **`height`:** Height of the PDF object (in percent of viewport height).
+* **`width`:** Width of the PDF object (in percent of available space).
 
-_Note_: Webviz does not scan your PDF for malicious code.
-Make sure it comes from a trusted source.
 """
 
     def __init__(self, pdf_file: Path, height: int = 80, width: int = 100):

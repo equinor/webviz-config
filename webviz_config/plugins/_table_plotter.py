@@ -19,24 +19,25 @@ from ..common_cache import CACHE
 
 # pylint: disable=too-many-instance-attributes, too-many-arguments
 class TablePlotter(WebvizPluginABC):
-    """### TablePlotter
-
-Adds a plotter to the webviz instance, using tabular data from a provided csv file.
+    """Adds a plotter to the webviz instance, using tabular data from a provided csv file.
 If feature is requested, the data could also come from a database.
 
-* `csv_file`: Path to the csv file containing the tabular data. Either absolute
-              path or relative to the configuration file.
-* `plot_options`: A dictionary of plot options to initialize the plot with
-* `filter_cols`: Dataframe columns that can be used to filter data
-* `filter_defaults`: A dictionary with column names as keys, and a list of column values that
-                     should be preselected in the filter. If a columm is not defined, all values
-                     are preselected for the column.
-* `column_color_discrete_maps`: A dictionary with column names as keys, each key containing a new
-                     dictionary with the columns unique values as keys, and the color they should
-                     be plotted with as value. Hex values needs quotes '' to not be read as comment
-                     in the yaml config file.
-* `lock`: If `True`, only the plot is shown, all dropdowns for changing
-          plot options are hidden.
+---
+
+* **`csv_file`:** Path to the csv file containing the tabular data. \
+                  Either absolute path or relative to the configuration file.
+* **`plot_options`:** A dictionary of plot options to initialize the plot with.
+* **`filter_cols`:** Dataframe columns that can be used to filter data.
+* **`filter_defaults`:** A dictionary with column names as keys, \
+                         and a list of column values that should be preselected in the filter. \
+                         If a columm is not defined, all values are preselected for the column.
+* **`column_color_discrete_maps`:** A dictionary with column names as keys, \
+                                    each key containing a new dictionary with the columns \
+                                    unique values as keys, and the color they should be \
+                                    plotted with as value. Hex values needs quotes '' \
+                                    to not be read as a comment.
+* **`lock`:** If `True`, only the plot is shown, \
+              all dropdowns for changing plot options are hidden.
 """
 
     def __init__(

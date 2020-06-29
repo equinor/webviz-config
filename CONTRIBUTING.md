@@ -509,15 +509,55 @@ black --check webviz_config tests
 
 ## Build documentation
 
-End-user documentation (i.e. YAML configuration file) be created
-after installation by
-
+`webviz-config` can automatically build documentation for all installed plugins. E.g.
+the end user can get an overview of all installed plugins, and their arguments, by
+running
 ```bash
-pip install .[tests]  # if not already done
-cd ./docs
-python ./build_docs.py
+webviz docs
+```
+in the terminal. Behind the scenes, `webviz-config` will then create a
+[`docsify`](https://github.com/docsifyjs/docsify) setup and open it `localhost`.
+
+The setup can also be deployed to e.g. GitHub Pages directly. To store the documentation
+output run
+```bash
+webviz docs --portable ./built_docs --skip-open
+```
+The `--skip-open` argument is useful in a CI/CD setting, to prevent `webviz-config`
+from automatically trying to open the created documentation in the browser.
+
+### Improve plugin documentation
+
+Auto-built `webviz` documentation will:
+- Find all installed plugins.
+- Group them according to top package name.
+- Show a `YAML` snippet with the plugin argument options.
+  - Arguments with default values will be presented with the default value, and be marked as optional.
+  - If an argument has a type annotation, that will be included in the documentation.
+
+In addition, if the plugin class has a docstring, the content in the docstring will
+be used as a short introduction to the plugin. If the docstring has several parts,
+when split by a line containing only `---`, they will be used as follows:
+1. First part is the introduction to the plugin.
+2. Second part is a more detailed explanation of the plugin arguments.
+3. Third part is information regarding plugin data input. E.g assumptions,
+prerequisites and/or required/assumed data format.
+
+Since `docsify` is used behind the scenes, you can create information boxes, warning boxes
+and use GitHub emojis :bowtie: in the plugin docstring.
+See [`docsify` documentation](https://docsify.js.org/#/) for details.
+
+[KaTeX](https://katex.org/) is also used behind the scenes, meaning that you can add
+math (TeX syntax) to your docstrings and get it rendered in the auto-built
+documentation. Remember that `\` is an escape character in Python, i.e. either
+escape it (`\\`) or use raw strings:
+```python
+class HistoryMatch(WebvizPluginABC):
+    r"""This is a docstring with some inline math $\alpha$ and some block math:
+
+$$\alpha = \frac{\beta}{\gamma}$$
+"""
 ```
 
-Officially updated built end-user documentation (i.e. information to the
-person setting up the configuration file) is
-[hosted here on github](https://equinor.github.io/webviz-config/).
+Example of auto-built documentation for `webviz-config` can be seen
+[here on github](https://equinor.github.io/webviz-config/).

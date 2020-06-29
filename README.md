@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="150" src="https://github.com/equinor/webviz-config/raw/master/docs/assets/webviz-logo.svg?sanitize=true">
+  <img height="150" src="https://github.com/equinor/webviz-config/raw/master/webviz_config/_docs/static/webviz-logo.svg?sanitize=true">
 </p>
 
 <h2 align="center">Democratizing Python web applications</h2>
@@ -42,20 +42,20 @@ Example configuration file and information about the standard plugins can be see
 
 ### Installation
 
-The simplest way of installing `webviz-config` is to run
+The recommended and simplest way of installing `webviz-config` is to run
 ```bash
 pip install webviz-config
 ```
 
-If you want to download the latest source code and install it manually you 
+If you want to develop `webviz-config` and install the latest source code manually you
+can do something along the lines of:
 can run
 ```bash
 git clone git@github.com:equinor/webviz-config.git
 cd ./webviz-config
-pip install .
+npm ci --ignore-scripts && npm run postinstall
+pip install -e .
 ```
-
-### Usage
 
 After installation, there is a console script named `webviz` available. You can test the installation by using the provided test
 configuration file,
@@ -74,28 +74,11 @@ The optional arguments can be seen when running
 ```bash
 webviz --help
 ```
-For example will
-```bash
-webviz build ./examples/basic_example.yaml --portable ./my_portable_app
-```
-create a portable instance (with corresponding Dockerfile) and store it in the provided folder.
 
-A feature in Dash is [hot reload](https://community.plot.ly/t/announcing-hot-reload/14177).
-When the Dash Python code file is saved, the content seen in the web browser is
-automatically reloaded (no need for localhost server restart). This feature is passed on to
-the Webviz configuration utility, meaning that if the user runs 
-```bash
-webviz build ./examples/basic_example.yaml
-```
-and then modifies `./examples/basic_example.yaml` while the Webviz application is
-still running, a hot reload will occur.
+### Usage
 
-For quick local analysis, `webviz-config` uses `https` and runs on `localhost`.
-In order to create your personal `https` certificate (only valid for `localhost`), run
-```bash
-webviz certificate --auto-install
-```
-Certificate installation guidelines will be given when running the command.
+See [the introduction](./INTRODUCTION.md) page for information on how you
+create a `webviz` configuration file and use it.
 
 ### Creating new plugins
 

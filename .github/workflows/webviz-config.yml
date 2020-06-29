@@ -36,6 +36,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: 📦 Install npm dependencies
+        run: |
+          npm ci --ignore-scripts
+          npm run postinstall
+
       - name: 📦 Install webviz-config with dependencies
         run: |
           pip install 'pandas==${{ matrix.pandas-version }}'
@@ -65,9 +70,7 @@ jobs:
           webviz certificate
           webviz preferences --theme default
           pytest ./tests --headless --forked
-          pushd ./docs
-          python build_docs.py
-          popd
+          webviz docs --portable ./docs_build --skip-open
         
       - name: 🚢 Build and deploy Python package
         if: github.event_name == 'release' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
@@ -75,6 +78,7 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.pypi_webviz_token }}
         run: |
+          export SETUPTOOLS_SCM_PRETEND_VERSION=${GITHUB_REF//refs\/tags\//}
           python -m pip install --upgrade setuptools wheel twine
           python setup.py sdist bdist_wheel
           twine upload dist/*
@@ -82,7 +86,7 @@ jobs:
       - name: 📚 Update GitHub pages
         if: github.event_name != 'schedule' && github.ref == 'refs/heads/master' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
         run: |
-          cp -R ./docs/_build ../_build
+          cp -R ./docs_build ../docs_build
 
           git config --local user.email "webviz-github-action"
           git config --local user.name "webviz-github-action"
@@ -91,7 +95,7 @@ jobs:
           git clean -f -f -d -x
           git rm -r *
 
-          cp -R ../_build/* .
+          cp -R ../docs_build/* .
 
           git add .
 

@@ -11,3 +11,9 @@ venv
 .DS_Store
 dist
 build
+webviz_config/_docs/static/fonts
+webviz_config/_docs/static/INTRODUCTION.md
+webviz_config/_docs/static/*.js
+webviz_config/_docs/static/*.css
+!webviz_config/_docs/static/webviz-doc.js
+!webviz_config/_docs/static/webviz-doc.css

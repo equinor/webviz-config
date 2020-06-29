@@ -8,17 +8,17 @@ from ..webviz_assets import WEBVIZ_ASSETS
 
 
 class BannerImage(WebvizPluginABC):
-    """### Banner image
-
-Adds a full width _banner image_, with an optional overlayed title.
+    """Adds a full width banner image, with an optional overlayed title.
 Useful on e.g. the front page for introducing a field or project.
 
-* `image`: Path to the picture you want to add. Either absolute path or
-  relative to the configuration file.
-* `title`: Title which will be overlayed over the banner image.
-* `color`: Color to be used for the font.
-* `shadow`: Set to `False` if you do not want text shadow for the title.
-* `height`: Height of the banner image (in pixels).
+---
+
+* **`image`:** Path to the picture you want to add. \
+               Either absolute path or relative to the configuration file.
+* **`title`:** Title which will be overlayed over the banner image.
+* **`color`:** Color to be used for the font.
+* **`shadow`:** Set to `False` if you do not want text shadow for the title.
+* **`height`:** Height of the banner image (in pixels).
 """
 
     TOOLBAR_BUTTONS: List[str] = []

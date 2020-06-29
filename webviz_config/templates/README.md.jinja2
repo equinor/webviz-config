@@ -1,0 +1,51 @@
+# Plugin package {{ package_name }}
+
+?> :bookmark: This documentation is valid for version `{{ package_doc["version"] }}` of `{{ package_name}}`. 
+
+{% if package_doc["doc"] is not none %}   
+{{ package_doc["doc"] }}
+{% endif %} 
+
+---
+
+{% for plugin in package_doc["plugins"] %}
+
+<div class="plugin-doc">
+
+#### {{ plugin["name"] }}
+
+<!-- tabs:start -->
+{% if plugin["description"] is not none %}   
+
+#### ** Description **
+
+{{ plugin["description"] }}
+
+{% endif %} 
+
+#### ** Arguments **
+
+{% if plugin["argument_description"] is not none %}   
+{{ plugin["argument_description"] }}
+{% endif %}
+
+```yaml
+    - {{ plugin["name"] }}:
+    {%- for arg, string in plugin["arg_strings"].items() %}
+        {{ arg }}: {{ string }}
+    {%- endfor %}
+```
+
+{% if plugin["data_input"] is not none %}   
+
+#### ** Data input **
+
+{{ plugin["data_input"] }}
+
+{% endif %} 
+
+<!-- tabs:end -->
+
+</div>
+
+{% endfor %}

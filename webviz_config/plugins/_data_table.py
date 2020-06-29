@@ -10,18 +10,18 @@ from ..common_cache import CACHE
 
 
 class DataTable(WebvizPluginABC):
-    """### Data table
-
-Adds a table to the webviz instance, using tabular data from a provided csv file.
+    """Adds a table to the webviz instance, using tabular data from a provided csv file.
 If feature is requested, the data could also come from a database.
 
-* `csv_file`: Path to the csv file containing the tabular data. Either absolute
+---
+
+* **`csv_file`:** Path to the csv file containing the tabular data. Either absolute \
               path or relative to the configuration file.
-* `sorting`: If `True`, the table can be sorted interactively based
+* **`sorting`:** If `True`, the table can be sorted interactively based \
              on data in the individual columns.
-* `filtering`: If `True`, the table can be filtered based on values in the
+* **`filtering`:** If `True`, the table can be filtered based on values in the \
                individual columns.
-* `pagination`: If `True`, only a subset of the table is displayed at once.
+* **`pagination`:** If `True`, only a subset of the table is displayed at once. \
                 Different subsets can be viewed from 'previous/next' buttons
 """
 
