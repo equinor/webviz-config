@@ -23,10 +23,12 @@ setup(
     packages=find_packages(exclude=["tests"]),
     package_data={
         "webviz_config": [
-            "templates/*",
+            "_docs/static/*",
+            "_docs/static/fonts/*",
             "static/*",
             "static/.dockerignore",
             "static/assets/*",
+            "templates/*",
             "themes/default_assets/*",
         ]
     },
@@ -42,6 +44,7 @@ setup(
         "pandas>=0.24",
         "pyarrow>=0.16",
         "pyyaml>=5.1",
+        "typing-extensions>=3.7",  # Needed on Python < 3.8
         "webviz-core-components>=0.0.19",
     ],
     tests_require=TESTS_REQUIRES,

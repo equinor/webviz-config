@@ -1,7 +1,9 @@
 import argparse
+import pathlib
 
 from ._build_webviz import build_webviz
 from .certificate._certificate_generator import create_ca
+from ._docs.open_docs import open_docs
 from ._user_preferences import set_user_preferences, get_user_preference
 
 
@@ -75,6 +77,36 @@ def main() -> None:
     )
 
     parser_cert.set_defaults(func=create_ca)
+
+    # Add "documentation" parser:
+
+    parser_docs = subparsers.add_parser(
+        "docs", help="Get documentation on installed Webviz plugins",
+    )
+
+    parser_docs.add_argument(
+        "--portable",
+        type=pathlib.Path,
+        default=None,
+        metavar="OUTPUTFOLDER",
+        help="Build documentation in given folder, "
+        "which then can be deployed directly to e.g. GitHub pages.",
+    )
+
+    parser_docs.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite existing output (this flag "
+        "only has effect if --portable is given)",
+    )
+
+    parser_docs.add_argument(
+        "--skip-open",
+        action="store_true",
+        help="Skip opening the documentation automatically in browser.",
+    )
+
+    parser_docs.set_defaults(func=open_docs)
 
     # Add "preferences" parser:
 

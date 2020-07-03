@@ -1,6 +1,4 @@
-"""### _Basic plugins_
-
-These are the basic Webviz configuration plugins, distributed through
+"""These are the basic Webviz configuration plugins, distributed through
 the utility itself.
 """
 

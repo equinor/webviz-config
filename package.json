@@ -1,0 +1,17 @@
+{
+  "name": "webviz-config",
+  "description": "Documentation system for webviz-config plugins",
+  "scripts": {
+    "postinstall": "cd ./node_modules; cp ./docsify/lib/docsify.min.js ./docsify/lib/themes/vue.css ./docsify-tabs/dist/docsify-tabs.min.js ./prismjs/components/prism-bash.min.js ./prismjs/components/prism-python.min.js ./prismjs/components/prism-yaml.min.js ./docsify-copy-code/dist/docsify-copy-code.min.js ./katex/dist/katex.min.css ./docsify-katex/dist/docsify-katex.js ../INTRODUCTION.md ../webviz_config/_docs/static/; mkdir -p ../webviz_config/_docs/static/fonts; cp ./katex/dist/fonts/*.woff2 ../webviz_config/_docs/static/fonts/; cd .."
+  },
+  "author": "Equinor",
+  "license": "MIT",
+  "dependencies": {
+    "docsify": "^4.11.4",
+    "docsify-copy-code": "^2.1.0",
+    "docsify-katex": "^1.4.3",
+    "docsify-tabs": "^1.4.3",
+    "katex": "^0.11.1",
+    "prismjs": "^1.20.0"
+  }
+}
