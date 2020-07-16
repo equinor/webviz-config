@@ -52,7 +52,7 @@ plugins = []
 {% for page in pages %}
 {% for content in page.content %}
 {% if content is not string %}
-plugins.append({{ content._call_signature[0] }})
+plugins.append({{ content._call_signature[2] }})
 {% endif %}
 {% endfor %}
 {% endfor %}
