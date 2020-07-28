@@ -4,10 +4,9 @@ import shutil
 import pathlib
 from typing import Optional
 
+from tqdm import tqdm
 from dash import Dash
 import flask
-
-from .utils import terminal_colors
 
 
 class WebvizAssets:
@@ -108,20 +107,12 @@ class WebvizAssets:
         """Copy over all added assets to the given folder (asset_folder).
         """
 
-        for counter, (assigned_id, filename) in enumerate(self._assets.items()):
-            print(
-                f"{terminal_colors.PURPLE} Copying over {filename} {terminal_colors.END}",
-                end="",
-                flush=True,
-            )
-
+        for assigned_id, filename in tqdm(
+            self._assets.items(),
+            bar_format="{l_bar} {bar} | Copied {n_fmt}/{total_fmt}",
+        ):
+            tqdm.write(f"Copying over {filename}")
             shutil.copyfile(filename, os.path.join(asset_folder, assigned_id))
-
-            print(
-                f"{terminal_colors.PURPLE}{terminal_colors.BOLD} "
-                f"[\u2713] Copied ({counter + 1}/{len(self._assets)})"
-                f"{terminal_colors.END}"
-            )
 
     def _generate_id(self, filename: str) -> str:
         """From the filename, create a safe resource id not already present

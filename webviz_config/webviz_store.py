@@ -10,8 +10,7 @@ from collections import defaultdict
 from typing import Callable, List, Union, Any
 
 import pandas as pd
-
-from .utils import terminal_colors
+from tqdm import tqdm
 
 
 class WebvizStorage:
@@ -162,37 +161,28 @@ class WebvizStorage:
             len(calls) for calls in self.storage_function_argvalues.values()
         )
 
-        counter = 0
-        for func in self.storage_functions:
-            for argtuples in self.storage_function_argvalues[func].values():
-                kwargs = dict(argtuples)
+        with tqdm(
+            total=total_calls, bar_format="{l_bar} {bar} | Saved {n_fmt}/{total_fmt}"
+        ) as progress_bar:
+            for func in self.storage_functions:
+                if self.storage_function_argvalues[func]:
+                    progress_bar.write(
+                        f"Storing output of {func.__module__}.{func.__name__}"
+                    )
+                for argtuples in self.storage_function_argvalues[func].values():
+                    output = func(**dict(argtuples))
+                    path = self._unique_path(func, argtuples)
 
-                print(
-                    f"{terminal_colors.PURPLE}"
-                    f" Running {WebvizStorage.string(func, kwargs)}"
-                    f"{terminal_colors.END}",
-                    end="",
-                    flush=True,
-                )
+                    if isinstance(output, pd.DataFrame):
+                        output.to_parquet(f"{path}.parquet")
+                    elif isinstance(output, pathlib.Path):
+                        shutil.copy(output, f"{path}{output.suffix}")
+                    elif isinstance(output, io.BytesIO):
+                        pathlib.Path(path).write_bytes(output.getvalue())
+                    else:
+                        raise ValueError(f"Unknown return type {type(output)}")
 
-                output = func(**kwargs)
-                path = self._unique_path(func, argtuples)
-
-                if isinstance(output, pd.DataFrame):
-                    output.to_parquet(f"{path}.parquet")
-                elif isinstance(output, pathlib.Path):
-                    shutil.copy(output, f"{path}{output.suffix}")
-                elif isinstance(output, io.BytesIO):
-                    pathlib.Path(path).write_bytes(output.getvalue())
-                else:
-                    raise ValueError(f"Unknown return type {type(output)}")
-
-                counter += 1
-                print(
-                    f"{terminal_colors.PURPLE}{terminal_colors.BOLD}"
-                    f"[\u2713] Saved ({counter}/{total_calls})"
-                    f"{terminal_colors.END}"
-                )
+                    progress_bar.update()
 
 
 def webvizstore(func: Callable) -> Callable:
