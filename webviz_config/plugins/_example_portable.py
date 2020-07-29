@@ -8,11 +8,15 @@ from ..common_cache import CACHE
 
 
 class ExamplePortable(WebvizPluginABC):
-    def __init__(self, some_number: int):
+    def __init__(self, some_number: int, _skip_portable_build: bool = False):
         super().__init__()
 
         self.some_number = some_number
         self.some_string = "a"
+        if not _skip_portable_build:
+            self.output_string = str(
+                input_data_function(self.some_string, some_number=self.some_number)
+            )
 
     def add_webvizstore(self) -> List[tuple]:
         return [
@@ -24,7 +28,7 @@ class ExamplePortable(WebvizPluginABC):
 
     @property
     def layout(self) -> str:
-        return str(input_data_function(self.some_string, some_number=self.some_number))
+        return self.output_string
 
 
 @CACHE.memoize(timeout=CACHE.TIMEOUT)
