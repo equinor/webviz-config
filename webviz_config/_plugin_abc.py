@@ -2,7 +2,6 @@ import io
 import abc
 import base64
 import zipfile
-import warnings
 from uuid import uuid4
 from typing import List, Optional, Type, Union
 
@@ -10,8 +9,6 @@ import bleach
 from dash.development.base_component import Component
 from dash.dependencies import Input, Output
 import webviz_core_components as wcc
-
-warnings.simplefilter("default", DeprecationWarning)
 
 
 class WebvizPluginABC(abc.ABC):
@@ -92,10 +89,6 @@ class WebvizPluginABC(abc.ABC):
 
     @property
     def _plugin_wrapper_id(self) -> str:
-        # pylint: disable=attribute-defined-outside-init
-        # We do not have a __init__ method in this abstract base class
-        if not hasattr(self, "_plugin_uuid"):
-            self._plugin_uuid = uuid4()
         return f"plugin-wrapper-{self._plugin_uuid}"
 
     @property
@@ -106,24 +99,8 @@ class WebvizPluginABC(abc.ABC):
         return Output(self._plugin_wrapper_id, "zip_base64")
 
     @property
-    def container_data_output(self) -> Output:
-        warnings.warn(
-            ("Use 'plugin_data_output' instead of 'container_data_output'"),
-            DeprecationWarning,
-        )
-        return self.plugin_data_output
-
-    @property
     def plugin_data_requested(self) -> Input:
         return Input(self._plugin_wrapper_id, "data_requested")
-
-    @property
-    def container_data_requested(self) -> Input:
-        warnings.warn(
-            ("Use 'plugin_data_requested' instead of 'container_data_requested'"),
-            DeprecationWarning,
-        )
-        return self.plugin_data_requested
 
     @staticmethod
     def _reformat_tour_steps(steps: List[dict]) -> List[dict]:
@@ -143,14 +120,6 @@ class WebvizPluginABC(abc.ABC):
 
         return base64.b64encode(byte_io.read()).decode("ascii")
 
-    @staticmethod
-    def container_data_compress(content: List[dict]) -> str:
-        warnings.warn(
-            ("Use 'plugin_data_compress' instead of 'container_data_compress'"),
-            DeprecationWarning,
-        )
-        return WebvizPluginABC.plugin_data_compress(content)
-
     def plugin_layout(
         self, contact_person: Optional[dict] = None
     ) -> Union[str, Type[Component]]:
@@ -165,19 +134,6 @@ class WebvizPluginABC(abc.ABC):
         If `TOOLBAR_BUTTONS` is empty, this functions returns the same
         dash layout as the plugin class provides directly.
         """
-
-        if isinstance(self, WebvizContainerABC):
-            warnings.warn(
-                (
-                    "The class name 'WebvizContainerABC' is deprecated. You "
-                    "should change to 'WebvizPluginABC'. If you have a __init__ "
-                    "function, you should at the same time call super().__init__(). "
-                    "See https://github.com/equinor/webviz-config/pull/174 for "
-                    "details. This warning will eventually "
-                    "turn into an error in a future release of webviz-config."
-                ),
-                DeprecationWarning,
-            )
 
         buttons = self.__class__.TOOLBAR_BUTTONS.copy()
 
@@ -205,9 +161,3 @@ class WebvizPluginABC(abc.ABC):
                 else [],
             )
         return self.layout
-
-
-# pylint: disable=abstract-method
-class WebvizContainerABC(WebvizPluginABC):
-    """This class only exist during the deprecation period.
-    """

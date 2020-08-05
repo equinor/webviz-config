@@ -5,7 +5,6 @@ import inspect
 import importlib
 import typing
 import types
-import warnings
 
 import yaml
 
@@ -13,8 +12,7 @@ from . import plugins as standard_plugins
 from . import WebvizPluginABC
 from .utils import terminal_colors
 
-warnings.simplefilter("default", DeprecationWarning)
-SPECIAL_ARGS = ["self", "app", "container_settings", "_call_signature", "_imports"]
+SPECIAL_ARGS = ["self", "app", "_call_signature", "_imports"]
 
 
 def _get_webviz_plugins(module: types.ModuleType) -> list:
@@ -32,7 +30,6 @@ def _call_signature(
     module: types.ModuleType,
     module_name: str,
     plugin_name: str,
-    shared_settings: dict,
     kwargs: dict,
     config_folder: pathlib.Path,
     contact_person: typing.Optional[dict] = None,
@@ -133,18 +130,6 @@ def _call_signature(
     if "app" in argspec.args:
         special_args += "app=app, "
 
-    if "container_settings" in argspec.args:
-        kwargs["container_settings"] = shared_settings
-        warnings.warn(
-            (
-                "The 'container_settings' argument is deprecated. See "
-                "https://github.com/equinor/webviz-config/pull/162 for how to "
-                "update your code. This warning will eventually turn into an error "
-                "in a future release of webviz-config."
-            ),
-            DeprecationWarning,
-        )
-
     return (
         f"{module_name}.{plugin_name}({special_args}**{kwargs})",
         f"plugin_layout(contact_person={contact_person})",
@@ -236,15 +221,6 @@ class ConfigParser:
 
         if "shared_settings" in self.configuration:
             self._shared_settings = self.configuration["shared_settings"]
-        elif "container_settings" in self.configuration:
-            self._shared_settings = self.configuration["container_settings"]
-            warnings.warn(
-                (
-                    "You should rename from 'container_settings' "
-                    "to 'shared_settings' in your configuration file."
-                ),
-                DeprecationWarning,
-            )
         else:
             self._shared_settings = {}
 
@@ -302,22 +278,9 @@ class ConfigParser:
             plugins = [e for e in page["content"] if isinstance(e, dict)]
 
             for plugin in plugins:
-                if "container" in plugin:
-                    kwargs = {} if plugin is None else {**plugin}
-                    plugin_name = kwargs.pop("container")
-                    warnings.warn(
-                        (
-                            "The configuration format has changed slightly, removing "
-                            "the need of explicitly typing 'container'. See "
-                            "https://github.com/equinor/webviz-config/pull/174 "
-                            "for how to get rid of this deprecation warning."
-                        ),
-                        DeprecationWarning,
-                    )
-                else:
-                    plugin_name = next(iter(plugin))
-                    plugin_variables = next(iter(plugin.values()))
-                    kwargs = {} if plugin_variables is None else {**plugin_variables}
+                plugin_name = next(iter(plugin))
+                plugin_variables = next(iter(plugin.values()))
+                kwargs = {} if plugin_variables is None else {**plugin_variables}
 
                 if "." not in plugin_name:
                     if plugin_name not in ConfigParser.STANDARD_PLUGINS:
@@ -338,7 +301,6 @@ class ConfigParser:
                         standard_plugins,
                         "standard_plugins",
                         plugin_name,
-                        self._shared_settings,
                         kwargs,
                         self._config_folder,
                     )
@@ -362,12 +324,7 @@ class ConfigParser:
 
                     self.configuration["_imports"].add(module_name)
                     plugin["_call_signature"] = _call_signature(
-                        module,
-                        module_name,
-                        plugin_name,
-                        self._shared_settings,
-                        kwargs,
-                        self._config_folder,
+                        module, module_name, plugin_name, kwargs, self._config_folder,
                     )
 
                     self.assets.update(getattr(module, plugin_name).ASSETS)

@@ -16,10 +16,10 @@ class ExampleDataDownload(WebvizPluginABC):
         return html.H1(self.title)
 
     def set_callbacks(self, app: Dash) -> None:
-        @app.callback(self.container_data_output, [self.container_data_requested])
+        @app.callback(self.plugin_data_output, [self.plugin_data_requested])
         def _user_download_data(data_requested: bool) -> str:
             return (
-                WebvizPluginABC.container_data_compress(
+                WebvizPluginABC.plugin_data_compress(
                     [{"filename": "some_file.txt", "content": "Some download data"}]
                 )
                 if data_requested
