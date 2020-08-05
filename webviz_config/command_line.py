@@ -14,11 +14,14 @@ def main() -> None:
     )
 
     subparsers = parser.add_subparsers(
-        help="The options available. "
-        'Type e.g. "webviz build --help" '
-        "to get help on that particular "
-        "option."
+        metavar="SUBCOMMAND",
+        help="Below are the available subcommands listed. "
+        "Type e.g. 'webviz build --help' "
+        "to get help on one particular "
+        "subcommand.",
     )
+    # When dropping Python 3.6 support, 'required' can be given as an argument to add_subparsers.
+    subparsers.required = True
 
     # Add "build" argument parser:
 
