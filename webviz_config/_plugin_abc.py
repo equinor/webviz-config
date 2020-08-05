@@ -2,7 +2,6 @@ import io
 import abc
 import base64
 import zipfile
-from uuid import uuid4
 from typing import List, Optional, Type, Union
 
 import bleach
@@ -25,6 +24,13 @@ class WebvizPluginABC(abc.ABC):
             ...
     ```
     """
+
+    # Class variable used for counting number of plugin instances, which
+    # is again used for giving semi-deterministic plugin IDs. E.g. runs
+    # coming from the same configuration file or webviz app will have
+    # the same ID for the different plugin instances, which makes it possible
+    # for plugins to utilize the Dash persistence system.
+    _number_instances = 0
 
     # This is the default set of buttons to show in the rendered plugin
     # toolbar. If the list is empty, the subclass plugin layout will be
@@ -60,7 +66,10 @@ class WebvizPluginABC(abc.ABC):
         in its own `__init__` function in order to also run the parent `__init__`.
         """
 
-        self._plugin_uuid = uuid4()
+        WebvizPluginABC._number_instances += 1
+        self._plugin_id = (
+            f"{self.__class__.__name__}-{WebvizPluginABC._number_instances}"
+        )
 
     def uuid(self, element: str) -> str:
         """Typically used to get a unique ID for some given element/component in
@@ -71,13 +80,12 @@ class WebvizPluginABC(abc.ABC):
         Within the same plugin instance, the returned uuid is the same for the same
         element string. I.e. storing the returned value in the plugin is not necessary.
 
-        Main benefit of using this function instead of creating a UUID directly,
-        is that the abstract base class can in the future provide IDs that
-        are consistent across application restarts (i.e. when the webviz configuration
-        file changes in a non-portable setting).
+        Main benefit of using this function instead of creating a UUID directly in
+        the plugin subclass, is that the abstract base class provides IDs that are
+        unique and constant across application restarts (which makes it possible to use
+        e.g. Dash's persistence framework in plugins).
         """
-
-        return f"{element}-{self._plugin_uuid}"
+        return f"{element}-{self._plugin_id}"
 
     @property
     @abc.abstractmethod
@@ -89,7 +97,7 @@ class WebvizPluginABC(abc.ABC):
 
     @property
     def _plugin_wrapper_id(self) -> str:
-        return f"plugin-wrapper-{self._plugin_uuid}"
+        return f"plugin-wrapper-{self._plugin_id}"
 
     @property
     def plugin_data_output(self) -> Output:
