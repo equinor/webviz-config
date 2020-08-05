@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import shutil
 import tempfile
@@ -54,7 +55,7 @@ def build_webviz(args: argparse.Namespace) -> None:
             )
 
             if subprocess.call(  # nosec
-                ["python", "copy_data.py"], cwd=build_directory
+                [sys.executable, "copy_data.py"], cwd=build_directory
             ):
                 raise RuntimeError(
                     "Something went wrong. This is probably "
@@ -97,7 +98,7 @@ def run_webviz(args: argparse.Namespace, build_directory: str) -> None:
     )
 
     app_process = subprocess.Popen(  # nosec
-        ["python", BUILD_FILENAME], cwd=build_directory
+        [sys.executable, BUILD_FILENAME], cwd=build_directory
     )
 
     lastmtime = os.path.getmtime(args.yaml_file)
