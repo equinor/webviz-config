@@ -2,8 +2,6 @@
 the utility itself.
 """
 
-import warnings
-
 import pkg_resources
 
 from ._example_plugin import ExamplePlugin
@@ -18,8 +16,6 @@ from ._table_plotter import TablePlotter
 from ._embed_pdf import EmbedPdf
 from ._markdown import Markdown
 
-warnings.simplefilter("default", DeprecationWarning)
-
 __all__ = [
     "ExamplePlugin",
     "ExampleAssets",
@@ -32,19 +28,6 @@ __all__ = [
     "EmbedPdf",
     "Markdown",
 ]
-
-for entry_point in pkg_resources.iter_entry_points("webviz_config_containers"):
-    globals()[entry_point.name] = entry_point.load()
-    __all__.append(entry_point.name)
-
-    warnings.warn(
-        (
-            "The setup.py entry point name 'webviz_config_containers' is deprecated. "
-            "You should change to 'webviz_config_plugins'. This warning will "
-            "eventually turn into an error in a future release of webviz-config."
-        ),
-        DeprecationWarning,
-    )
 
 for entry_point in pkg_resources.iter_entry_points("webviz_config_plugins"):
     globals()[entry_point.name] = entry_point.load()
