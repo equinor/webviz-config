@@ -26,8 +26,15 @@ import webviz_config.plugins
 from webviz_config._config_parser import SPECIAL_ARGS
 
 
+class ArgInfo(TypedDict, total=False):
+    required: bool
+    default: Any
+    typehint: Any
+    typehint_string: str
+
+
 class PluginInfo(TypedDict):
-    arg_strings: Dict[str, str]
+    arg_info: Dict[str, ArgInfo]
     argument_description: Optional[str]
     data_input: Optional[str]
     description: Optional[str]
@@ -52,7 +59,7 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
     top_package_name = subpackage.split(".")[0]  # type: ignore
 
     plugin_info: PluginInfo = {
-        "arg_strings": {arg: "" for arg in argspec.args if arg not in SPECIAL_ARGS},
+        "arg_info": {arg: {} for arg in argspec.args if arg not in SPECIAL_ARGS},
         "argument_description": docstring_parts[1]
         if len(docstring_parts) > 1
         else None,
@@ -65,27 +72,21 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         "package_version": pkg_resources.get_distribution(top_package_name).version,
     }
 
-    # Add default value and the string '# Optional' to plugin
-    # arguments with default values:
     if argspec.defaults is not None:
         for arg, default in dict(
             zip(reversed(argspec.args), reversed(argspec.defaults))
         ).items():
-            if default == "":
-                default = "''"
-            plugin_info["arg_strings"][arg] = f"{default}  # Optional."
+            plugin_info["arg_info"][arg]["default"] = default
 
-    # ...and for the other arguments add '# Required':
-    for arg, string in plugin_info["arg_strings"].items():
-        if string == "":
-            plugin_info["arg_strings"][arg] = "  # Required."
+    for arg, arg_info in plugin_info["arg_info"].items():
+        arg_info["required"] = "default" not in arg_info
 
-    # Add a human readable type hint (for arguments with type annotation):
     for arg, annotation in argspec.annotations.items():
-        if arg in plugin_info["arg_strings"]:
-            plugin_info["arg_strings"][
-                arg
-            ] += f" Type {_annotation_to_string(annotation)}."
+        if arg not in SPECIAL_ARGS:
+            plugin_info["arg_info"][arg]["typehint"] = annotation
+            plugin_info["arg_info"][arg]["typehint_string"] = _annotation_to_string(
+                annotation
+            )
 
     return plugin_info
 

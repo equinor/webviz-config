@@ -4,13 +4,14 @@ with open("README.md", "r") as fh:
     LONG_DESCRIPTION = fh.read()
 
 TESTS_REQUIRES = [
-    "pylint~=2.3",
-    "selenium~=3.141",
-    "mock",
-    "pytest-xdist",
-    "black",
     "bandit",
+    "black",
+    "jsonschema",
+    "mock",
     "mypy",
+    "pylint~=2.3",
+    "pytest-xdist",
+    "selenium~=3.141",
 ]
 
 setup(

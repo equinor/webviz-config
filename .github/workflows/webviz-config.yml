@@ -76,6 +76,7 @@ jobs:
           webviz preferences --theme default
           pytest ./tests --headless --forked
           webviz docs --portable ./docs_build --skip-open
+          webviz schema
         
       - name: 🚢 Build and deploy Python package
         if: github.event_name == 'release' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
