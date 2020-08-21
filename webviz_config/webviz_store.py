@@ -148,12 +148,12 @@ class WebvizStorage:
                 return io.BytesIO(pathlib.Path(path).read_bytes())
             raise ValueError(f"Unknown return type {return_type}")
 
-        except OSError:
+        except OSError as exc:
             raise OSError(
                 f"Could not find file {path}, which should be the "
                 "stored output of the function call "
                 f"{WebvizStorage.string(func, kwargs)}."
-            )
+            ) from exc
 
     def build_store(self) -> None:
 
