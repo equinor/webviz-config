@@ -18,7 +18,7 @@ class _WebvizMarkdownExtension(Extension):
     def __init__(self, base_path: Path):
         self.base_path = base_path
 
-        super(_WebvizMarkdownExtension, self).__init__()
+        super().__init__()
 
     def extendMarkdown(self, md: markdown.core.Markdown) -> None:
         md.inlinePatterns.register(
@@ -32,7 +32,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
     def __init__(self, image_link_re: str, md: markdown.core.Markdown, base_path: Path):
         self.base_path = base_path
 
-        super(_MarkdownImageProcessor, self).__init__(image_link_re, md)
+        super().__init__(image_link_re, md)
 
     def handleMatch(self, m, data: str) -> tuple:  # type: ignore[no-untyped-def]
         image, start, index = super().handleMatch(m, data)

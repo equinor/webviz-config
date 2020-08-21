@@ -31,10 +31,10 @@ def set_user_preferences(
     if browser is not None:
         try:
             webbrowser.get(using=browser)
-        except webbrowser.Error:
+        except webbrowser.Error as exc:
             raise ValueError(
                 f"Could not find an installed browser with the name {browser}."
-            )
+            ) from exc
 
         new_preferences["browser"] = browser
 
