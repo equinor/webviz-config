@@ -31,8 +31,8 @@
 
 ```yaml
     - {{ plugin["name"] }}:
-    {%- for arg, string in plugin["arg_strings"].items() %}
-        {{ arg }}: {{ string }}
+    {%- for arg, arg_info in plugin["arg_info"].items() %}
+        {{ arg }}: {{ arg_info["default"] | tojson if "default" in arg_info else "" }} # {{ "Required" if arg_info["required"] else "Optional" }}{{ ", type " + arg_info["typehint_string"] | string if "typehint_string" in arg_info }}.    
     {%- endfor %}
 ```
 

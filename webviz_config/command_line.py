@@ -1,9 +1,12 @@
+import json
 import argparse
 import pathlib
 
 from ._build_webviz import build_webviz
 from .certificate._certificate_generator import create_ca
 from ._docs.open_docs import open_docs
+from ._docs._create_schema import create_schema
+from ._user_data_dir import user_data_dir
 from ._user_preferences import set_user_preferences, get_user_preference
 
 
@@ -142,6 +145,28 @@ def main() -> None:
         print(f"Preferred browser: {get_user_preference('browser')}")
 
     parser_preferences.set_defaults(func=entrypoint_preferences)
+
+    # Add "schema" parser:
+
+    parser_schema = subparsers.add_parser(
+        "schema",
+        help="Create YAML (JSON) schema for webviz configuration "
+        "file (including all installed plugins)",
+    )
+
+    parser_schema.add_argument(
+        "--output",
+        type=pathlib.Path,
+        default=user_data_dir() / "webviz_schema.json",
+        help="Name of output JSON schema file. If not given, "
+        "it will be stored in your Webviz application settings folder.",
+    )
+
+    def entrypoint_schema(args: argparse.Namespace) -> None:
+        args.output.write_text(json.dumps(create_schema(), indent=4))
+        print(f"Schema written to {args.output}")
+
+    parser_schema.set_defaults(func=entrypoint_schema)
 
     # Do the argument parsing:
 

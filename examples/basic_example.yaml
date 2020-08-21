@@ -33,10 +33,6 @@ pages:
     - SyntaxHighlighter:
         filename: ./basic_example.yaml
 
- - title: Tour example
-   content:
-    - ExampleTour:
-
  - title: Plot a table
    content:
     - TablePlotter:
@@ -82,8 +78,3 @@ pages:
           name: Kari Nordmann
           phone: 12345678
           email: someother@email.com
-
- - title: Example portable
-   content:
-    - ExamplePortable:
-        some_number: 42
