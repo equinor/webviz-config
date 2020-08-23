@@ -51,6 +51,8 @@ class WebvizPluginABC(abc.ABC):
     # All paths in the returned ASSETS list should be absolute.
     ASSETS: list = []
 
+    portable_recommended: bool = False
+
     def __init__(self) -> None:
         """If a plugin/subclass defines its own `__init__` function
         (which they usually do), they should remember to call
