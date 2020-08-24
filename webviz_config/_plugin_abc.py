@@ -51,7 +51,7 @@ class WebvizPluginABC(abc.ABC):
     # All paths in the returned ASSETS list should be absolute.
     ASSETS: list = []
 
-    def __init__(self) -> None:
+    def __init__(self, screenshot_filename: str = "webviz-screenshot.png") -> None:
         """If a plugin/subclass defines its own `__init__` function
         (which they usually do), they should remember to call
         ```python
@@ -61,6 +61,7 @@ class WebvizPluginABC(abc.ABC):
         """
 
         self._plugin_uuid = uuid4()
+        self._screenshot_filename = screenshot_filename
 
     def uuid(self, element: str) -> str:
         """Typically used to get a unique ID for some given element/component in
@@ -154,6 +155,7 @@ class WebvizPluginABC(abc.ABC):
                 buttons=buttons,
                 contact_person=contact_person,
                 children=[self.layout],
+                screenshot_filename=self._screenshot_filename,
                 tour_steps=WebvizPluginABC._reformat_tour_steps(
                     self.tour_steps  # type: ignore[attr-defined]
                 )
