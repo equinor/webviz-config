@@ -24,7 +24,11 @@ JSON_SCHEMA = {
                     "content": {
                         "description": "Content on the page",
                         "type": "array",
-                        "items": {"oneOf": [{"type": "string"},]},
+                        "items": {
+                            "oneOf": [
+                                {"type": "string"},
+                            ]
+                        },
                     },
                 },
                 "required": ["title", "content"],

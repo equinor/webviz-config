@@ -86,7 +86,14 @@ If feature is requested, the data could also come from a database.
         """A dict of available plots and their options"""
         return {
             "scatter": ["x", "y", "size", "color", "facet_col"],
-            "histogram": ["x", "color", "facet_col", "barmode", "barnorm", "histnorm",],
+            "histogram": [
+                "x",
+                "color",
+                "facet_col",
+                "barmode",
+                "barnorm",
+                "histnorm",
+            ],
             "bar": ["x", "y", "color", "facet_col", "barmode"],
             "scatter_3d": ["x", "y", "z", "size", "color"],
             "line": ["x", "y", "color", "line_group", "facet_col"],

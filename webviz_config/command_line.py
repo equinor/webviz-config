@@ -87,7 +87,8 @@ def main() -> None:
     # Add "documentation" parser:
 
     parser_docs = subparsers.add_parser(
-        "docs", help="Get documentation on installed Webviz plugins",
+        "docs",
+        help="Get documentation on installed Webviz plugins",
     )
 
     parser_docs.add_argument(
@@ -117,7 +118,8 @@ def main() -> None:
     # Add "preferences" parser:
 
     parser_preferences = subparsers.add_parser(
-        "preferences", help="Set preferred webviz settings",
+        "preferences",
+        help="Set preferred webviz settings",
     )
 
     parser_preferences.add_argument(

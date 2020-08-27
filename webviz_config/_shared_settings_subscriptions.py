@@ -17,8 +17,7 @@ class SharedSettingsSubscriptions:
         self._subscriptions: List[Dict] = []
 
     def subscribe(self, key: str) -> Callable:
-        """This is the decorator, which third-party plugin packages will use.
-        """
+        """This is the decorator, which third-party plugin packages will use."""
 
         def register(function: Callable) -> Callable:
             self._subscriptions.append({"key": key, "function": function})

@@ -3,8 +3,7 @@ from pathlib import Path
 
 
 def user_data_dir() -> Path:
-    """Returns platform specific path to store user application data
-    """
+    """Returns platform specific path to store user application data"""
 
     if sys.platform == "win32":
         return Path.home() / "Application Data" / "webviz"

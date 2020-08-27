@@ -67,8 +67,7 @@ class LocalhostOpenBrowser:
         return webbrowser.get()
 
     def _app_ready(self) -> bool:
-        """Check if the flask instance is ready.
-        """
+        """Check if the flask instance is ready."""
 
         no_proxy_env = os.environ.get("NO_PROXY")
         os.environ["NO_PROXY"] = "localhost"
@@ -89,8 +88,7 @@ class LocalhostOpenBrowser:
         return app_ready
 
     def _open_new_tab(self) -> None:
-        """Open the url (with token) in the default browser.
-        """
+        """Open the url (with token) in the default browser."""
 
         print(
             f"{terminal_colors.GREEN}{terminal_colors.BOLD}"

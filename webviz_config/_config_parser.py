@@ -324,7 +324,11 @@ class ConfigParser:
 
                     self.configuration["_imports"].add(module_name)
                     plugin["_call_signature"] = _call_signature(
-                        module, module_name, plugin_name, kwargs, self._config_folder,
+                        module,
+                        module_name,
+                        plugin_name,
+                        kwargs,
+                        self._config_folder,
                     )
 
                     self.assets.update(getattr(module, plugin_name).ASSETS)
