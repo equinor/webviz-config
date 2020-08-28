@@ -26,8 +26,7 @@ class LocalhostCertificate:
             self._ssl_temp_dir = os.environ["WEBVIZ_SSL_TEMP_DIR"]
 
     def _delete_temp_dir(self) -> None:
-        """Delete temporary directory with on-the-fly generated localhost certificates
-        """
+        """Delete temporary directory with on-the-fly generated localhost certificates"""
         shutil.rmtree(self._ssl_temp_dir)
 
     @property

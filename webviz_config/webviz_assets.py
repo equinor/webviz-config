@@ -104,8 +104,7 @@ class WebvizAssets:
                 )
 
     def make_portable(self, asset_folder: str) -> None:
-        """Copy over all added assets to the given folder (asset_folder).
-        """
+        """Copy over all added assets to the given folder (asset_folder)."""
 
         for assigned_id, filename in tqdm(
             self._assets.items(),
@@ -115,8 +114,7 @@ class WebvizAssets:
             shutil.copyfile(filename, os.path.join(asset_folder, assigned_id))
 
     def _generate_id(self, filename: str) -> str:
-        """From the filename, create a safe resource id not already present
-        """
+        """From the filename, create a safe resource id not already present"""
         asset_id = base_id = re.sub(
             "[^-a-z0-9._]+", "", filename.lower().replace(" ", "_")
         )
