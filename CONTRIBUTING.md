@@ -305,16 +305,16 @@ the plugin author needs only do three things:
    def get_some_data(some, arguments) -> pd.DataFrame:
    ```
 3) In the plugin class, define a class method `add_webvizstore` which
-   returns a list of tuples. The first plugin in each tuple is a reference
-   to a function, the second plugin is itself a list of argument combinations.
+   returns a list of tuples. The first item in each tuple is a reference
+   to a function, the second item is a list of argument combinations
+   (formatted as dictionaries with `'argument_name': value` pairs).
+   Arguments with a default value in the function signature does not need to
+   be provided in the argument dictionaries.
 
    The author of the plugin should provide a list of all the argument
    combinations that are imaginable during runtime of the application.
    Since it is a class method, the author has access to all the user provided
    arguments.
-
-   Arguments with a default value in the function signature does not need to
-   be provided in the argument dictionaries.
 
 A full example could look like e.g.:
 
