@@ -1,6 +1,6 @@
 # Plugin package webviz_config
 
-?> :bookmark: This documentation is valid for version `0.1.0` of `webviz_config`. 
+?> :bookmark: This documentation is valid for version `0.1.1` of `webviz_config`. 
 
    
 These are the basic Webviz configuration plugins, distributed through
@@ -153,7 +153,7 @@ Renders and includes the content from a Markdown file.
 
    
 
-* **`markdown_file`:** Path to the markdown file to render and include.                        Either absolute path or relative to the configuration file.
+* **`markdown_file`:** Path to the markdown file to render and include.                         Either absolute path or relative to the configuration file.
 
 
 
@@ -170,7 +170,7 @@ Renders and includes the content from a Markdown file.
 Images are supported, and should in the markdown file be given as either
 relative paths to the markdown file itself, or as absolute paths.
 
-> The markdown syntax for images has been extended to support   providing width and/or height for individual images (optional).   To specify the dimensions write e.g.
+> The markdown syntax for images has been extended to support     providing width and/or height for individual images (optional).     To specify the dimensions write e.g.
 > ```markdown
 > ![width=40%,height=300px](./example_banner.png "Some caption")
 > ```
