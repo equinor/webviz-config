@@ -93,12 +93,12 @@ class Markdown(WebvizPluginABC):
     Images are supported, and should in the markdown file be given as either
     relative paths to the markdown file itself, or as absolute paths.
 
-> The markdown syntax for images has been extended to support \
-providing width and/or height for individual images (optional). \
-To specify the dimensions write e.g.
-> ```markdown
-> ![width=40%,height=300px](./example_banner.png "Some caption")
-> ```
+    > The markdown syntax for images has been extended to support \
+    providing width and/or height for individual images (optional). \
+    To specify the dimensions write e.g.
+    > ```markdown
+    > ![width=40%,height=300px](./example_banner.png "Some caption")
+    > ```
 
     """
 
