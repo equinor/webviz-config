@@ -55,6 +55,7 @@ app.webviz_settings = {
 
 CACHE.init_app(server)
 
+theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
 Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy)
 
 WEBVIZ_STORAGE.use_storage = {{portable}}
