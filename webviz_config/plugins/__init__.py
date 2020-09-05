@@ -2,7 +2,12 @@
 the utility itself.
 """
 
-import pkg_resources
+try:
+    # Python 3.8+
+    from importlib.metadata import entry_points  # type: ignore
+except ModuleNotFoundError:
+    # Python < 3.8
+    from importlib_metadata import entry_points  # type: ignore
 
 from ._example_plugin import ExamplePlugin
 from ._example_data_download import ExampleDataDownload
@@ -29,6 +34,6 @@ __all__ = [
     "Markdown",
 ]
 
-for entry_point in pkg_resources.iter_entry_points("webviz_config_plugins"):
+for entry_point in entry_points().get("webviz_config_plugins", []):
     globals()[entry_point.name] = entry_point.load()
     __all__.append(entry_point.name)
