@@ -152,6 +152,19 @@ def build_docs(build_directory: pathlib.Path) -> None:
         build_directory,
     )
 
+    # While waiting for https://github.com/jhildenbiddle/docsify-tabs/pull/30
+    # to be reviewed, merged and released:
+    substring_prefix = (
+        r"/[\r\n]*(\s*)<!-+\s+tab:\s*(.*)\s+-+>[\r\n]+([\s\S]*?)[\r\n]*\s*"
+    )
+    docsify_tabs_file = build_directory / "docsify-tabs.min.js"
+    docsify_tabs_file.write_text(
+        docsify_tabs_file.read_text().replace(
+            substring_prefix + r"(?=<!-+\s+tabs?:)/m",
+            substring_prefix + r"(?=<!-+\s+(tab:\s*(.*)|tabs:\s*?end)\s+-+>)/m",
+        )
+    )
+
     template_environment = jinja2.Environment(  # nosec
         loader=jinja2.PackageLoader("webviz_config", "templates"),
         undefined=jinja2.StrictUndefined,
@@ -162,13 +175,23 @@ def build_docs(build_directory: pathlib.Path) -> None:
 
     template = template_environment.get_template("README.md.jinja2")
     for package_name, package_doc in plugin_documentation.items():
-        (build_directory / (package_name + ".md")).write_text(
+        (build_directory / f"{package_name}.md").write_text(
             template.render({"package_name": package_name, "package_doc": package_doc})
         )
 
     template = template_environment.get_template("sidebar.md.jinja2")
     (build_directory / "sidebar.md").write_text(
         template.render({"packages": plugin_documentation.keys()})
+    )
+
+    template = template_environment.get_template("webviz-doc.js.jinja2")
+    (build_directory / "webviz-doc.js").write_text(
+        template.render(
+            {
+                "paths": ["/"]
+                + [f"/{package_name}" for package_name in plugin_documentation]
+            }
+        )
     )
 
 
