@@ -46,8 +46,8 @@ setup(
         "pyarrow>=0.16",
         "pyyaml>=5.1",
         "tqdm>=4.8",
-        "importlib_metadata>=1.7; python_version<'3.8'",
-        "typing-extensions>=3.7",  # Needed on Python < 3.8
+        "importlib-metadata>=1.7; python_version<'3.8'",
+        "typing-extensions>=3.7; python_version<'3.8'",
         "webviz-core-components>=0.0.19",
     ],
     tests_require=TESTS_REQUIRES,
