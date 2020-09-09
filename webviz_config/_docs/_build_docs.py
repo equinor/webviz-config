@@ -18,7 +18,14 @@ from importlib import import_module
 from collections import defaultdict
 from typing import Any, Dict, Optional, Tuple, List
 
-import pkg_resources
+try:
+    # Python 3.8+
+    # pylint: disable=ungrouped-imports
+    from importlib.metadata import version  # type: ignore
+except ModuleNotFoundError:
+    # Python < 3.8
+    from importlib_metadata import version  # type: ignore
+
 import jinja2
 from typing_extensions import TypedDict
 
@@ -69,7 +76,7 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         "module": module.__name__,  # type: ignore
         "package": top_package_name,
         "package_doc": import_module(subpackage).__doc__,  # type: ignore
-        "package_version": pkg_resources.get_distribution(top_package_name).version,
+        "package_version": version(top_package_name),
     }
 
     if argspec.defaults is not None:
