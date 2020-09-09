@@ -61,6 +61,48 @@ div.pageWrapper.tab-content {
     align-items: center;
 }
 
+.sideBar {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 100vh;
+    scrollbar-width: thin;
+    scrollbar-color: var(--menuBackground) var(--menuBackground); /* thumb and track color */
+}
+
+.sideBar:hover {
+    scrollbar-color: var(--menuLinkColor) var(--menuBackground); /* thumb and track color */
+}
+
+.sideBar::-webkit-scrollbar
+{
+	width: 3px;
+	background-color:var(--menuBackground);
+}
+
+.sideBar::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 3px var(--menuBackground);
+	background-color: var(--menuBackground);
+}
+
+.sideBar:hover::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 3px var(--menuLinkBackgroundHover);
+    
+	background-color: var(--menuBackground);
+}
+
+.sideBar::-webkit-scrollbar-thumb
+{
+	background-color: var(--menuBackground);
+}
+
+.sideBar:hover::-webkit-scrollbar-thumb
+{
+	background-color: var(--menuLinkColor);
+}
+
+
 /* Needed to override border for the last tab */
 #last_page {border: none!important;} /* csslint allow: known-properties, important */
-#logo {border: none!important;} /* csslint allow: known-properties, important */
+#logo {padding:50px!important; border: none!important;max-width: 100%; height:auto;} /* csslint allow: known-properties, important */

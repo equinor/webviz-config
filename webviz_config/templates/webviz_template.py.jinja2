@@ -74,6 +74,7 @@ else:
     app.layout = dcc.Tabs(
         parent_className="layoutWrapper",
         content_className="pageWrapper",
+        className="sideBar",
         vertical=True,
         children=[
           {% for page in pages %}
