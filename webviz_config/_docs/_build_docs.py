@@ -22,12 +22,13 @@ try:
     # Python 3.8+
     # pylint: disable=ungrouped-imports
     from importlib.metadata import version  # type: ignore
-except ModuleNotFoundError:
+    from typing import TypedDict  # type: ignore
+except (ImportError, ModuleNotFoundError):
     # Python < 3.8
     from importlib_metadata import version  # type: ignore
+    from typing_extensions import TypedDict  # type: ignore
 
 import jinja2
-from typing_extensions import TypedDict
 
 import webviz_config.plugins
 from webviz_config._config_parser import SPECIAL_ARGS
