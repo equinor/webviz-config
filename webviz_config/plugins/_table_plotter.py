@@ -1,7 +1,8 @@
+import base64
+import inspect
 from pathlib import Path
 from collections import OrderedDict
 from typing import Optional, List, Dict, Any
-import inspect
 
 import numpy as np
 import pandas as pd
@@ -12,7 +13,7 @@ from dash.dependencies import Input, Output
 from dash import Dash
 import webviz_core_components as wcc
 
-from .. import WebvizPluginABC
+from .. import WebvizPluginABC, EncodedFile
 from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
@@ -356,19 +357,18 @@ If feature is requested, the data could also come from a database.
         return inputs
 
     def set_callbacks(self, app: Dash) -> None:
-        @app.callback(self.plugin_data_output, [self.plugin_data_requested])
-        def _user_download_data(data_requested: Optional[int]) -> str:
+        @app.callback(self.plugin_data_output, self.plugin_data_requested)
+        def _user_download_data(data_requested: Optional[int]) -> Optional[EncodedFile]:
             return (
-                WebvizPluginABC.plugin_data_compress(
-                    [
-                        {
-                            "filename": "table_plotter.csv",
-                            "content": get_data(self.csv_file).to_csv(),
-                        }
-                    ]
-                )
+                {
+                    "filename": "table-plotter.csv",
+                    "content": base64.b64encode(
+                        get_data(self.csv_file).to_csv().encode()
+                    ).decode("ascii"),
+                    "mime_type": "text/csv",
+                }
                 if data_requested
-                else ""
+                else None
             )
 
         @app.callback(self.plot_output_callbacks, self.plot_input_callbacks)
