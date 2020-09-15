@@ -37,7 +37,13 @@ logging.getLogger().setLevel(logging.{{ loglevel }})
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
 
-app = dash.Dash(__name__, external_stylesheets=theme.external_stylesheets)
+app = dash.Dash(
+    __name__,
+    external_stylesheets=theme.external_stylesheets,
+    meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ],
+)
 app.logger.setLevel(logging.WARNING)
 server = app.server
 
