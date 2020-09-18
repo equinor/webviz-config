@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - YYYY-MM-DD
 ### Added
+- [#283](https://github.com/equinor/webviz-config/pull/283) - Auto-generated Webviz plugin documentation
+now has search functionality (using [`docsify` full text search](https://docsify.js.org/#/plugins?id=full-text-search)).
 - [#278](https://github.com/equinor/webviz-config/pull/278) - Plugin authors can now use Dash inline callbacks
 (i.e. `app.clientside_callback(...)`) without being in conflict with the strict
 [CSP rules](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy)
