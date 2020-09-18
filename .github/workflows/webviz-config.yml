@@ -18,6 +18,8 @@ jobs:
 
   webviz-config:
     runs-on: ubuntu-latest
+    env:
+      PYTHONWARNINGS: default  # We want to see e.g. DeprecationWarnings    
     strategy:
       matrix:
         python-version: ['3.6', '3.7', '3.8']
