@@ -13,6 +13,7 @@ from webviz_config.themes import installed_themes
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
+from webviz_config.utils._unique_pandas_repr import patch_unique_pandas_repr
 
 {% for module in _imports %}
 {%- if module is string -%}
@@ -26,6 +27,8 @@ logging.getLogger().setLevel(logging.{{ loglevel }})
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
+
+patch_unique_pandas_repr()
 
 app = dash.Dash()
 app.config.suppress_callback_exceptions = True
