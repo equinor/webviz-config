@@ -14,6 +14,8 @@ now has search functionality (using [`docsify` full text search](https://docsify
 enforced by `webviz-config` (inline script hashes are added automatically).
 
 ### Changed
+- [#294](https://github.com/equinor/webviz-config/pull/294) - Plugin authors can now define file type to download
+(including specifying MIME type). Before only `.zip` archives were supported.
 - [#281](https://github.com/equinor/webviz-config/pull/281) - Now uses `importlib` instead of `pkg_resources` for
 detecting plugin entry points and package versions.
 

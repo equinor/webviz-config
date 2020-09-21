@@ -83,7 +83,7 @@ a button toolbar. The default buttons to appear is stored in the class constant
 `WebvizPluginABC.TOOLBAR_BUTTONS`. If you want to override which buttons should
 appear, redefine this class constant in your subclass. To remove all buttons,
 simply define it as an empty list. See [this section](#data-download-callback)
-for more information regarding the `data_download` button.
+for more information regarding downloading plugin data.
 
 ### Callbacks
 
@@ -150,17 +150,40 @@ There are three fundamental additions to the minimal example without callbacks:
 
 There is a [data download button](#override-plugin-toolbar) provided by
 the `WebvizPluginABC` class. However, it will only appear if the corresponding
-callback is set. A typical data download callback will look like
+callback is set. A typical compressed data download callback will look like
 
 ```python
 @app.callback(self.plugin_data_output,
-              [self.plugin_data_requested])
+              self.plugin_data_requested)
 def _user_download_data(data_requested):
-    return WebvizPluginABC.plugin_data_compress(
-        [{'filename': 'some_file.txt',
-          'content': 'Some download data'}]
-    ) if data_requested else ''
+    return (
+        WebvizPluginABC.plugin_compressed_data(
+            filename="webviz-data.zip",
+            content=[{"filename": "some_file.txt", "content": "Some download data"}],
+        )
+        if data_requested
+        else None
+    )
 ```
+
+A typical CSV data download from e.g. a `pandas.DataFrame` will look like:
+```python
+@app.callback(self.plugin_data_output,
+              self.plugin_data_requested)
+def _user_download_data(data_requested):
+    return (
+        {
+            "filename": "some-file.csv",
+            "content": base64.b64encode(
+                some_pandas_dataframe.to_csv().encode()
+            ).decode("ascii"),
+            "mime_type": "text/csv",
+        }
+        if data_requested
+        else None
+    )     
+```
+
 By letting the plugin define the callback, the plugin author is able
 to utilize the whole callback machinery, including e.g. state of the individual
 components in the plugin. This way the data downloaded can e.g. depend on
@@ -170,8 +193,8 @@ The attributes `self.plugin_data_output` and `self.plugin_data_requested`
 are Dash `Output` and `Input` instances respectively, and are provided by
 the base class `WebvizPluginABC` (i.e. include them as shown here).
 
-The function `WebvizPluginABC.plugin_data_compress` is a utility function
-which takes a list of dictionaries, giving filenames and corresponding data,
+The function `WebvizPluginABC.plugin_compressed_data` is a utility function
+which takes a file name and a list of dictionaries, containing file names and corresponding data,
 and compresses them to a zip archive which is then downloaded by the user.
 
 ### User provided arguments

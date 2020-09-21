@@ -1,7 +1,9 @@
+from typing import Optional
+
 import dash_html_components as html
 from dash import Dash
 
-from .. import WebvizPluginABC
+from .. import WebvizPluginABC, EncodedFile
 
 
 class ExampleDataDownload(WebvizPluginABC):
@@ -16,12 +18,15 @@ class ExampleDataDownload(WebvizPluginABC):
         return html.H1(self.title)
 
     def set_callbacks(self, app: Dash) -> None:
-        @app.callback(self.plugin_data_output, [self.plugin_data_requested])
-        def _user_download_data(data_requested: bool) -> str:
+        @app.callback(self.plugin_data_output, self.plugin_data_requested)
+        def _user_download_data(data_requested: bool) -> Optional[EncodedFile]:
             return (
-                WebvizPluginABC.plugin_data_compress(
-                    [{"filename": "some_file.txt", "content": "Some download data"}]
+                WebvizPluginABC.plugin_compressed_data(
+                    filename="webviz-data.zip",
+                    content=[
+                        {"filename": "some_file.txt", "content": "Some download data"}
+                    ],
                 )
                 if data_requested
-                else ""
+                else None
             )

@@ -2,13 +2,37 @@ import io
 import abc
 import base64
 import zipfile
+import warnings
+
 from uuid import uuid4
 from typing import List, Optional, Type, Union
+
+try:
+    # Python 3.8+
+    # pylint: disable=ungrouped-imports
+    from typing import TypedDict  # type: ignore
+except (ImportError, ModuleNotFoundError):
+    # Python < 3.8
+    from typing_extensions import TypedDict  # type: ignore
+
 
 import bleach
 from dash.development.base_component import Component
 from dash.dependencies import Input, Output
 import webviz_core_components as wcc
+
+
+class ZipFileMember(TypedDict):
+    filename: str  # Filename to be given within the archive
+    content: str  # String representing file content
+
+
+class EncodedFile(ZipFileMember):
+    # Same keys as in ZipFileMember, with the following changes:
+    # - filename is now name of the actual downloaded file.
+    # - content is now a base64 encoded ASCII string.
+    # - mime_type needs to be added as well.
+    mime_type: str
 
 
 class WebvizPluginABC(abc.ABC):
@@ -40,7 +64,6 @@ class WebvizPluginABC(abc.ABC):
     TOOLBAR_BUTTONS = [
         "screenshot",
         "expand",
-        "download_zip",
         "contact_person",
         "guided_tour",
     ]
@@ -62,6 +85,7 @@ class WebvizPluginABC(abc.ABC):
 
         self._plugin_uuid = uuid4()
         self._screenshot_filename = screenshot_filename
+        self._add_download_button = False
 
     def uuid(self, element: str) -> str:
         """Typically used to get a unique ID for some given element/component in
@@ -94,10 +118,8 @@ class WebvizPluginABC(abc.ABC):
 
     @property
     def plugin_data_output(self) -> Output:
-        # pylint: disable=attribute-defined-outside-init
-        # We do not have a __init__ method in this abstract base class
         self._add_download_button = True
-        return Output(self._plugin_wrapper_id, "zip_base64")
+        return Output(self._plugin_wrapper_id, "download")
 
     @property
     def plugin_data_requested(self) -> Input:
@@ -110,16 +132,28 @@ class WebvizPluginABC(abc.ABC):
         ]
 
     @staticmethod
-    def plugin_data_compress(content: List[dict]) -> str:
-        byte_io = io.BytesIO()
+    def plugin_compressed_data(
+        filename: str, content: List[ZipFileMember]
+    ) -> EncodedFile:
+        with io.BytesIO() as bytes_io:
+            with zipfile.ZipFile(bytes_io, "w") as zipped_data:
+                for data in content:
+                    zipped_data.writestr(data["filename"], data["content"])
 
-        with zipfile.ZipFile(byte_io, "w") as zipped_data:
-            for data in content:
-                zipped_data.writestr(data["filename"], data["content"])
+            bytes_io.seek(0)
+            return {
+                "filename": filename,
+                "content": base64.b64encode(bytes_io.read()).decode("ascii"),
+                "mime_type": "application/zip",
+            }
 
-        byte_io.seek(0)
-
-        return base64.b64encode(byte_io.read()).decode("ascii")
+    @staticmethod
+    def plugin_data_compress(content: List[ZipFileMember]) -> EncodedFile:
+        warnings.warn(
+            "Use 'plugin_compressed_data' instead of 'plugin_data_compress'",
+            DeprecationWarning,
+        )
+        return WebvizPluginABC.plugin_compressed_data("webviz-data.zip", content)
 
     def plugin_layout(
         self, contact_person: Optional[dict] = None
@@ -145,8 +179,8 @@ class WebvizPluginABC(abc.ABC):
             for key in contact_person:
                 contact_person[key] = bleach.clean(str(contact_person[key]))
 
-        if "download_zip" in buttons and not hasattr(self, "_add_download_button"):
-            buttons.remove("download_zip")
+        if self._add_download_button:
+            buttons.append("download")
 
         if buttons:
             # pylint: disable=no-member
