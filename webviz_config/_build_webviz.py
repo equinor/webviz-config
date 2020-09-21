@@ -84,7 +84,6 @@ def build_webviz(args: argparse.Namespace) -> None:
 
     finally:
         if not args.portable:
-            print(f"Deleting temporary folder {build_directory}")
             shutil.rmtree(build_directory)
 
 
@@ -103,9 +102,9 @@ def run_webviz(args: argparse.Namespace, build_directory: pathlib.Path) -> None:
     lastmtime = args.yaml_file.stat().st_mtime
 
     while app_process.poll() is None:
-        time.sleep(1)
-
         try:
+            time.sleep(1)
+
             if lastmtime != args.yaml_file.stat().st_mtime:
                 lastmtime = args.yaml_file.stat().st_mtime
                 write_script(
@@ -125,11 +124,21 @@ def run_webviz(args: argparse.Namespace, build_directory: pathlib.Path) -> None:
                 f"{terminal_colors.END}"
             )
 
+        except KeyboardInterrupt:
+            app_process.kill()
+            print(
+                f"\r{terminal_colors.BLUE}{terminal_colors.BOLD}"
+                " Shutting down the webviz application on user request."
+                f"{terminal_colors.END}"
+            )
+            app_process.wait()
+
         except Exception as excep:
             app_process.kill()
             print(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                "Unexpected error. Killing the webviz dash application process."
+                "Unexpected error. Killing the webviz application process."
                 f"{terminal_colors.END}"
             )
+            app_process.wait()
             raise excep

@@ -149,7 +149,7 @@ class ConfigParser:
         ConfigParser.check_for_tabs_in_file(yaml_file)
 
         try:
-            self._configuration = yaml.safe_load(open(yaml_file, "r"))
+            self._configuration = yaml.safe_load(yaml_file.read_text())
         except yaml.MarkedYAMLError as excep:
             extra_info = (
                 f"There is something wrong in the configuration file {yaml_file}. "
