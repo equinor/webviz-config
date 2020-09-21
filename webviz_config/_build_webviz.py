@@ -1,7 +1,7 @@
-import os
 import sys
 import time
 import shutil
+import pathlib
 import tempfile
 import subprocess  # nosec
 import argparse
@@ -14,7 +14,7 @@ from .themes import installed_themes
 from .utils import terminal_colors
 
 BUILD_FILENAME = "webviz_app.py"
-STATIC_FOLDER = os.path.join(os.path.dirname(__file__), "static")
+STATIC_FOLDER = pathlib.Path(__file__).resolve().parent / "static"
 
 
 def build_webviz(args: argparse.Namespace) -> None:
@@ -23,23 +23,22 @@ def build_webviz(args: argparse.Namespace) -> None:
         raise ValueError(f"Theme `{args.theme}` is not installed.")
 
     if args.portable is None:
-        build_directory = tempfile.mkdtemp()
+        build_directory = pathlib.Path(tempfile.mkdtemp())
     else:
-        build_directory = args.portable
-        os.makedirs(build_directory)
+        build_directory = args.portable.resolve()
+        build_directory.mkdir(parents=True)
 
-    shutil.copytree(
-        os.path.join(STATIC_FOLDER, "assets"), os.path.join(build_directory, "assets")
-    )
+    shutil.copytree(STATIC_FOLDER / "assets", build_directory / "assets")
 
     for filename in ["README.md", "Dockerfile", ".dockerignore"]:
-        shutil.copy(os.path.join(STATIC_FOLDER, filename), build_directory)
+        shutil.copy(STATIC_FOLDER / filename, build_directory)
 
     for asset in installed_themes[args.theme].assets:
-        shutil.copy(asset, os.path.join(build_directory, "assets"))
+        shutil.copy(asset, build_directory / "assets")
 
-    with open(os.path.join(build_directory, "theme_settings.json"), "w") as filehandle:
-        filehandle.write(installed_themes[args.theme].to_json())
+    (build_directory / "theme_settings.json").write_text(
+        installed_themes[args.theme].to_json()
+    )
 
     try:
         if args.portable:
@@ -65,7 +64,7 @@ def build_webviz(args: argparse.Namespace) -> None:
                     "error message and traceback above"
                 )
 
-            os.remove(os.path.join(build_directory, "copy_data.py"))
+            (build_directory / "copy_data.py").unlink()
 
             print(
                 f"{terminal_colors.GREEN}{terminal_colors.BOLD}"
@@ -78,7 +77,7 @@ def build_webviz(args: argparse.Namespace) -> None:
         )
 
         for asset in non_default_assets:
-            shutil.copy(asset, os.path.join(build_directory, "assets"))
+            shutil.copy(asset, build_directory / "assets")
 
         if not args.portable:
             run_webviz(args, build_directory)
@@ -89,7 +88,7 @@ def build_webviz(args: argparse.Namespace) -> None:
             shutil.rmtree(build_directory)
 
 
-def run_webviz(args: argparse.Namespace, build_directory: str) -> None:
+def run_webviz(args: argparse.Namespace, build_directory: pathlib.Path) -> None:
 
     print(
         f"{terminal_colors.YELLOW}"
@@ -101,14 +100,14 @@ def run_webviz(args: argparse.Namespace, build_directory: str) -> None:
         [sys.executable, BUILD_FILENAME], cwd=build_directory
     )
 
-    lastmtime = os.path.getmtime(args.yaml_file)
+    lastmtime = args.yaml_file.stat().st_mtime
 
     while app_process.poll() is None:
         time.sleep(1)
 
         try:
-            if lastmtime != os.path.getmtime(args.yaml_file):
-                lastmtime = os.path.getmtime(args.yaml_file)
+            if lastmtime != args.yaml_file.stat().st_mtime:
+                lastmtime = args.yaml_file.stat().st_mtime
                 write_script(
                     args, build_directory, "webviz_template.py.jinja2", BUILD_FILENAME
                 )

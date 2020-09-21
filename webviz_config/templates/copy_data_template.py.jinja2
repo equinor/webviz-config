@@ -3,7 +3,6 @@
 
 import logging
 import datetime
-import os.path as path
 from pathlib import Path, PosixPath, WindowsPath
 
 import dash
@@ -39,9 +38,7 @@ app.webviz_settings = {
 
 CACHE.init_app(app.server)
 
-WEBVIZ_STORAGE.storage_folder = path.join(
-    path.dirname(path.realpath(__file__)), "webviz_storage"
-)
+WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "webviz_storage"
 
 # The lines below can be simplified when assignment
 # expressions become available in Python 3.8
@@ -63,4 +60,4 @@ for plugin in plugins:
 
 WEBVIZ_STORAGE.build_store()
 
-WEBVIZ_ASSETS.make_portable(path.join(path.dirname(path.realpath(__file__)), "assets"))
+WEBVIZ_ASSETS.make_portable(Path(__file__).resolve().parent / "assets")

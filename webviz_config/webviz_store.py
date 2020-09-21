@@ -1,4 +1,3 @@
-import os
 import io
 import glob
 import shutil
@@ -36,12 +35,12 @@ class WebvizStorage:
         self.storage_functions.add(func)
 
     @property
-    def storage_folder(self) -> str:
+    def storage_folder(self) -> pathlib.Path:
         return self._storage_folder
 
     @storage_folder.setter
-    def storage_folder(self, path: str) -> None:
-        os.makedirs(path, exist_ok=True)
+    def storage_folder(self, path: pathlib.Path) -> None:
+        path.mkdir(parents=True, exist_ok=True)
         self._storage_folder = path
 
     @property
@@ -85,7 +84,7 @@ class WebvizStorage:
 
         filename = f"{func.__module__}-{func.__name__}-{hashed_args}"
 
-        return os.path.join(self.storage_folder, filename)
+        return str(self.storage_folder / filename)
 
     @staticmethod
     def _undecorate(func: Callable) -> Callable:

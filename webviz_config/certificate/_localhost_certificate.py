@@ -1,5 +1,6 @@
 import os
 import atexit
+import pathlib
 import shutil
 import tempfile
 
@@ -19,11 +20,12 @@ class LocalhostCertificate:
 
     def __init__(self) -> None:
         if not is_reload_process():
-            self._ssl_temp_dir = os.environ["WEBVIZ_SSL_TEMP_DIR"] = tempfile.mkdtemp()
+            self._ssl_temp_dir = pathlib.Path(tempfile.mkdtemp())
+            os.environ["WEBVIZ_SSL_TEMP_DIR"] = str(self._ssl_temp_dir)
             create_certificate(self._ssl_temp_dir)
             atexit.register(self._delete_temp_dir)
         else:
-            self._ssl_temp_dir = os.environ["WEBVIZ_SSL_TEMP_DIR"]
+            self._ssl_temp_dir = pathlib.Path(os.environ["WEBVIZ_SSL_TEMP_DIR"])
 
     def _delete_temp_dir(self) -> None:
         """Delete temporary directory with on-the-fly generated localhost certificates"""
@@ -32,6 +34,6 @@ class LocalhostCertificate:
     @property
     def ssl_context(self) -> tuple:
         return (
-            os.path.join(self._ssl_temp_dir, SERVER_CRT_FILENAME),
-            os.path.join(self._ssl_temp_dir, SERVER_KEY_FILENAME),
+            self._ssl_temp_dir / SERVER_CRT_FILENAME,
+            self._ssl_temp_dir / SERVER_KEY_FILENAME,
         )

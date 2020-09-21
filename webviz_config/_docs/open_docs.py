@@ -39,7 +39,7 @@ def open_docs(args: argparse.Namespace) -> None:
     if args.portable is None:
         build_directory = pathlib.Path(tempfile.mkdtemp())
     else:
-        build_directory = pathlib.Path(args.portable).resolve()
+        build_directory = args.portable.resolve()
         if build_directory.exists():
             if not args.force:
                 raise ValueError(

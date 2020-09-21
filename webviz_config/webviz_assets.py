@@ -1,5 +1,4 @@
 import re
-import os
 import shutil
 import pathlib
 from typing import Optional
@@ -70,7 +69,7 @@ class WebvizAssets:
         else:
             assigned_id = {v: k for k, v in self._assets.items()}[filename]
 
-        return os.path.normcase(os.path.join(self._base_folder(), assigned_id))
+        return str(pathlib.Path(self._base_folder()) / assigned_id)
 
     def directly_host_assets(self, app: Dash) -> None:
         """In non-portable mode, this function can be called by the
@@ -103,7 +102,7 @@ class WebvizAssets:
                     f"./{self._base_folder()}/{asset_id}"
                 )
 
-    def make_portable(self, asset_folder: str) -> None:
+    def make_portable(self, asset_folder: pathlib.Path) -> None:
         """Copy over all added assets to the given folder (asset_folder)."""
 
         for assigned_id, filename in tqdm(
@@ -111,7 +110,7 @@ class WebvizAssets:
             bar_format="{l_bar} {bar} | Copied {n_fmt}/{total_fmt}",
         ):
             tqdm.write(f"Copying over {filename}")
-            shutil.copyfile(filename, os.path.join(asset_folder, assigned_id))
+            shutil.copyfile(filename, asset_folder / assigned_id)
 
     def _generate_id(self, filename: str) -> str:
         """From the filename, create a safe resource id not already present"""

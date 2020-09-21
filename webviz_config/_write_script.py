@@ -1,4 +1,3 @@
-import os
 import getpass
 import datetime
 import pathlib
@@ -11,7 +10,7 @@ from ._config_parser import ConfigParser
 
 def write_script(
     args: argparse.Namespace,
-    build_directory: str,
+    build_directory: pathlib.Path,
     template_filename: str,
     output_filename: str,
 ) -> set:
@@ -21,7 +20,7 @@ def write_script(
     configuration["shared_settings"] = config_parser.shared_settings
     configuration["portable"] = args.portable is not None
     configuration["loglevel"] = args.loglevel
-    configuration["config_folder"] = repr(pathlib.Path(args.yaml_file).resolve().parent)
+    configuration["config_folder"] = repr(args.yaml_file.resolve().parent)
 
     configuration["theme_name"] = args.theme
 
@@ -36,7 +35,6 @@ def write_script(
 
     template = template_environment.get_template(template_filename)
 
-    with open(os.path.join(build_directory, output_filename), "w") as filehandle:
-        filehandle.write(template.render(configuration))
+    (build_directory / output_filename).write_text(template.render(configuration))
 
     return config_parser.assets

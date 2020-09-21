@@ -1,4 +1,3 @@
-import os
 import re
 import pathlib
 import getpass
@@ -33,7 +32,7 @@ SERVER_KEY_FILENAME = "server.key"
 SERVER_CRT_FILENAME = "server.crt"
 
 
-def create_key(key_path: str) -> rsa.RSAPrivateKey:
+def create_key(key_path: pathlib.Path) -> rsa.RSAPrivateKey:
 
     key = rsa.generate_private_key(
         public_exponent=65537, key_size=2048, backend=default_backend()
@@ -85,12 +84,12 @@ def create_ca(args: argparse.Namespace) -> None:
 
     directory = user_data_dir()
 
-    os.makedirs(directory, exist_ok=True)
+    directory.mkdir(parents=True, exist_ok=True)
 
-    ca_key_path = os.path.join(directory, CA_KEY_FILENAME)
-    ca_crt_path = os.path.join(directory, CA_CRT_FILENAME)
+    ca_key_path = directory / CA_KEY_FILENAME
+    ca_crt_path = directory / CA_CRT_FILENAME
 
-    if not args.force and os.path.isfile(ca_crt_path):
+    if not args.force and ca_crt_path.is_file():
         raise OSError(
             f"The file {ca_crt_path} already exists. Add the "
             "command line flag --force if you want to overwrite"
@@ -173,15 +172,15 @@ def create_ca(args: argparse.Namespace) -> None:
         )
 
 
-def create_certificate(directory: str) -> None:
+def create_certificate(directory: pathlib.Path) -> None:
     ca_directory = user_data_dir()
-    ca_key_path = os.path.join(ca_directory, CA_KEY_FILENAME)
-    ca_crt_path = os.path.join(ca_directory, CA_CRT_FILENAME)
+    ca_key_path = ca_directory / CA_KEY_FILENAME
+    ca_crt_path = ca_directory / CA_CRT_FILENAME
 
-    server_key_path = os.path.join(directory, SERVER_KEY_FILENAME)
-    server_crt_path = os.path.join(directory, SERVER_CRT_FILENAME)
+    server_key_path = directory / SERVER_KEY_FILENAME
+    server_crt_path = directory / SERVER_CRT_FILENAME
 
-    if not os.path.isfile(ca_key_path) or not os.path.isfile(ca_crt_path):
+    if not ca_key_path.is_file() or not ca_crt_path.is_file():
         raise RuntimeError(
             "Could not find CA key and certificate. Please "
             'run the command "webviz certificate --auto-install" and '

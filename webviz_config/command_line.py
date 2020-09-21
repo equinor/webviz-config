@@ -31,11 +31,11 @@ def main() -> None:
     parser_build = subparsers.add_parser("build", help="Build a Webviz Dash App")
 
     parser_build.add_argument(
-        "yaml_file", type=str, help="Path to YAML configuration file"
+        "yaml_file", type=pathlib.Path, help="Path to YAML configuration file"
     )
     parser_build.add_argument(
         "--portable",
-        type=str,
+        type=pathlib.Path,
         default=None,
         metavar="OUTPUTFOLDER",
         help="A portable webviz instance will created "
