@@ -19,6 +19,12 @@ enforced by `webviz-config` (inline script hashes are added automatically).
 - [#281](https://github.com/equinor/webviz-config/pull/281) - Now uses `importlib` instead of `pkg_resources` for
 detecting plugin entry points and package versions.
 
+### Fixed
+- [#295](https://github.com/equinor/webviz-config/pull/295) - Menu width is now specified. This both ensures
+the menu does not collapse if plugin content is wide, as well as not too wide itself if page titles are long
+(instead page titles in the menu are wrapped). Also added `<meta name="viewport" content="width=device-width, initial-scale=1">`
+for better experience on mobiles.
+
 ## [0.1.2] - 2020-09-09
 ### Added
 - [#279](https://github.com/equinor/webviz-config/pull/279) - Added scrollbar to menu (when larger than screen size).
