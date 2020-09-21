@@ -18,6 +18,9 @@ enforced by `webviz-config` (inline script hashes are added automatically).
 (including specifying MIME type). Before only `.zip` archives were supported.
 - [#281](https://github.com/equinor/webviz-config/pull/281) - Now uses `importlib` instead of `pkg_resources` for
 detecting plugin entry points and package versions.
+- [#306](https://github.com/equinor/webviz-config/pull/306) - Now runs `WEBVIZ_ASSETS.make_portable` before 
+`WEBVIZ_STORE.build_store` when building portables, as it usually takes shorter time, and therefore will give
+feedback quicker if something is wrong.
 
 ### Fixed
 - [#295](https://github.com/equinor/webviz-config/pull/295) - Menu width is now specified. This both ensures

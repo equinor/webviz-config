@@ -58,6 +58,6 @@ for plugin in plugins:
     if hasattr(plugin, "add_webvizstore"):
         WEBVIZ_STORAGE.register_function_arguments(plugin.add_webvizstore())
 
-WEBVIZ_STORAGE.build_store()
-
 WEBVIZ_ASSETS.make_portable(Path(__file__).resolve().parent / "assets")
+
+WEBVIZ_STORAGE.build_store()
