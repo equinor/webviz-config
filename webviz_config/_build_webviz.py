@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import shutil
@@ -39,6 +40,8 @@ def build_webviz(args: argparse.Namespace) -> None:
     (build_directory / "theme_settings.json").write_text(
         installed_themes[args.theme].to_json()
     )
+
+    _store_komodo_release(build_directory)
 
     try:
         if args.portable:
@@ -142,3 +145,23 @@ def run_webviz(args: argparse.Namespace, build_directory: pathlib.Path) -> None:
             )
             app_process.wait()
             raise excep
+
+
+def _store_komodo_release(build_directory: pathlib.Path) -> None:
+    """Internally in Equinor, https://github.com/equinor/komodo is one platform used
+    for software deployment. For portable builds we want, until cloud hosting is common for
+    everyone, to mention for the user which specific Komodo release (~= pip list) that was used
+    to build the portable Webviz application.
+
+    This function stores the Komodo release used, if Komodo is used, in a file komodo_release.txt.
+    """
+
+    if "KOMODO_RELEASE" in os.environ:# and sys.executable.startswith("/prog/res/komodo"):
+        (build_directory / "komodo_release.txt").write_text(
+            "This portable Webviz application was built with Komodo release:\n\n"
+            f"    {os.environ['KOMODO_RELEASE']}\n\n"
+            "Try sourcing this Komodo release first if you experience problems with future Komodo releases:\n\n"
+            f"    source /prog/res/komodo/{os.environ['KOMODO_RELEASE']}/enable\n"
+            "    python webviz_app.py\n\n"
+            "Append .csh to the command if you are not using bash.\n"
+        )
