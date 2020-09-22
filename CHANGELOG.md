@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#311](https://github.com/equinor/webviz-config/pull/311) - Automatically add a comment
 in generated application regarding which Python executable (`sys.executable`) was used
 when building a portable application.
+- [#310](https://github.com/equinor/webviz-config/pull/310) - Added `RuntimeWarning`
+which appears if `@webvizstore` decorated functions are given argument values of type
+`pandas.DataFrame` or `pandas.Series` (Which are known to not have `__repr__` functions
+useful for hashing).
 
 ### Fixed
 - [#313](https://github.com/equinor/webviz-config/pull/313) - Added `min-width` to menu CSS

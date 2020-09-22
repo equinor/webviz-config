@@ -5,6 +5,7 @@ import functools
 import hashlib
 import inspect
 import pathlib
+import warnings
 from collections import defaultdict
 from typing import Callable, List, Union, Any
 
@@ -71,6 +72,24 @@ class WebvizStorage:
                     self.storage_function_argvalues[undec_func][
                         repr(argtuples)
                     ] = argtuples
+
+                for (argname, argvalue) in argtuples:
+                    # Check that values of decorated functions are not pandas objects.
+                    # This function could probably at some point be moved into a pytest
+                    # fixture (given that plugins use type hints) in order to slightly
+                    # reduce running time.
+                    if isinstance(argvalue, (pd.DataFrame, pd.Series)):
+                        warnings.warn(
+                            f"{func.__module__}.{func.__name__} is a @webvizstore decorated "
+                            f"function, and argument {argname} has been given a pandas "
+                            "object as value. Since pandas.DataFrames and pandas.Series are "
+                            "known to not have unique/deterministic __repr__ functions, "
+                            "they do not work well with @webvizstore (or flask-caching). "
+                            "Consider moving to another object with a deterministic "
+                            "__repr__ representation more suitable for hashing.",
+                            RuntimeWarning,
+                            stacklevel=0,
+                        )
 
     def _unique_path(self, func: Callable, argtuples: tuple) -> str:
         """Encodes the argumenttuples as bytes, and then does a sha256 on that.
