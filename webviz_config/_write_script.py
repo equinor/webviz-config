@@ -1,3 +1,4 @@
+import sys
 import getpass
 import datetime
 import pathlib
@@ -26,6 +27,7 @@ def write_script(
 
     configuration["author"] = getpass.getuser()
     configuration["current_date"] = datetime.date.today().strftime("%Y-%m-%d")
+    configuration["sys_executable"] = sys.executable
 
     template_environment = jinja2.Environment(  # nosec
         loader=jinja2.PackageLoader("webviz_config", "templates"),

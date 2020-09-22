@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED] - YYYY-MM-DD
+
+### Added
+- [#311](https://github.com/equinor/webviz-config/pull/311) - Automatically add a comment
+in generated application regarding which Python executable (`sys.executable`) was used
+when building a portable application.
+
 ## [0.1.3] - 2020-09-22
 ### Added
 - [#283](https://github.com/equinor/webviz-config/pull/283) - Auto-generated Webviz plugin documentation
