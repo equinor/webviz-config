@@ -23,6 +23,9 @@ detecting plugin entry points and package versions.
 feedback quicker if something is wrong.
 
 ### Fixed
+- [#308](https://github.com/equinor/webviz-config/pull/308) - Fixed `UnclosedFile` and `Resource` warnings,
+which would appear if developer enabled e.g. `export PYTHONWARNINGS=default`. Also, Webviz now gracefully
+exits on CTRL+C (`KeyboardInterrupt`) instead of giving (unnecessary) traceback to the user.
 - [#295](https://github.com/equinor/webviz-config/pull/295) - Menu width is now specified. This both ensures
 the menu does not collapse if plugin content is wide, as well as not too wide itself if page titles are long
 (instead page titles in the menu are wrapped). Also added `<meta name="viewport" content="width=device-width, initial-scale=1">`
