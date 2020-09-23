@@ -15,7 +15,7 @@ def _hash_pandas_object(
     return hashlib.sha256(content_as_bytes).hexdigest()
 
 
-def hashable_pandas_repr():
+def hashable_pandas_repr() -> None:
     """flask-caching package uses repr() on input arguments to create
     unique hashes of function arguments, in order to cache expensive function calls.
 
