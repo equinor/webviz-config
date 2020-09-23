@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 in generated application regarding which Python executable (`sys.executable`) was used
 when building a portable application.
 
+### Fixed
+- [#313](https://github.com/equinor/webviz-config/pull/313) - Added `min-width` to menu CSS
+such that it does not collapse on wide content. In addition, make sure menu `width` is
+only specified on screen widths wide enough to be above the Dash `Tabs` provided breakpoint at
+`800px`.
+
 ## [0.1.3] - 2020-09-22
 ### Added
 - [#283](https://github.com/equinor/webviz-config/pull/283) - Auto-generated Webviz plugin documentation
