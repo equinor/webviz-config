@@ -206,3 +206,45 @@ def get_resource(filename: str) -> pathlib.Path:
     non-portable and portable webviz instances."""
 
     return pathlib.Path(filename)
+
+
+def _new_repr_pandas_object(
+    obj: Union[pd.DataFrame, pd.Series], dataframe: bool
+) -> str:
+    """flask-caching package uses repr() on input arguments to create
+    unique hashes of function arguments, in order to cache expensive function calls.
+
+    This works as long as repr() on individual input arguments behaves such that
+    repr() gives a unique and deterministic representation string, for instances
+    which intuitively represent the same "data"/values.
+
+    For pandas.DataFrames and pandas.Series, which are commonly used by plugin authors,
+    this is not entirely the case by default. Their repr() depends on pandas print
+    settings (how e.g. DataFrames should be printed to terminal). In addition,
+    their __str__ and __repr__ functions are identical.
+
+    Since there is a large risk for plugin authors forgetting that input arguments
+    need a unique repr (combined with pandas objects being commonly used), we either
+    need to special case Pandas objects in upstream flask-caching, or
+    make pandas __repr__ functions unique + deterministic. This function does the
+    latter by monkey-patching pandas.DataFrame.__repr__ and pandas.Series.__repr__.
+
+    We include the reference to this module in the repr output for transparency
+    and to make it easy to see where the new repr is defined.
+    """
+
+    content_as_bytes = pd.util.hash_pandas_object(obj, index=True).values.tobytes()
+    if dataframe:
+        type_str = "DataFrame"        
+        content_as_bytes += repr(obj.columns.values).encode()
+    else:
+        type_str = "Series"
+        content_as_bytes += repr(obj.name).encode()
+    return f"<pandas.{'DataFrame' if dataframe else 'Series'} webviz_config.webviz_storage repr {hashlib.sha256(content_as_bytes).hexdigest()}>"
+
+
+# See docstring of function above for explanation.
+pd.DataFrame.__str__ = pd.DataFrame.__repr__
+pd.DataFrame.__repr__ = lambda self: _new_repr_pandas_object(self, True)
+pd.Series.__str__ = pd.Series.__repr__
+pd.Series.__repr__ = lambda self: _new_repr_pandas_object(self, False)
