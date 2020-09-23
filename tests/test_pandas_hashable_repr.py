@@ -5,8 +5,9 @@ from webviz_config.utils.hashable_pandas_repr import hashable_pandas_repr
 
 hashable_pandas_repr()
 
+
 @pytest.mark.parametrize(
-    "input_df, expected_repr",
+    "input_object, expected_repr",
     [
         (
             pd.DataFrame([1.0, 2.0, 3.0]),
@@ -28,6 +29,3 @@ hashable_pandas_repr()
 )
 def test_pandas_object_repr(input_object, expected_repr):
     assert repr(input_object) == expected_repr
-
-
-print(repr(pd.Series([1, 2, 3], dtype=int)))
