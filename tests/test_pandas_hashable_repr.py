@@ -3,11 +3,11 @@ import sys
 import pytest
 import pandas as pd
 
-import webviz_config.webviz_store  # pylint: disable=unused import
+import webviz_config.webviz_store  # pylint: disable=unused-import
 
 
 @pytest.mark.parametrize(
-    "input_object, hash",
+    "input_object, hash_str",
     [
         (
             pd.DataFrame([1.0, 2.0, 3.0], dtype=float),
@@ -32,10 +32,13 @@ import webviz_config.webviz_store  # pylint: disable=unused import
         (
             pd.Series([1, 2, 3], dtype=int, name="Some name"),
             "3b2fe2c10b8164593b891877480f9f6fb3ea96970f5e85ce9163eb11a674aaf0",
-        ),        
+        ),
     ],
 )
-def test_pandas_object_repr(input_object, hash):
-    type_str = 'DataFrame' if isinstance(input_object, pd.DataFrame) else 'Series'
+def test_pandas_object_repr(input_object, hash_str):
+    type_str = "DataFrame" if isinstance(input_object, pd.DataFrame) else "Series"
 
-    assert repr(input_object) == f"<pandas.{type_str} webviz_config.webviz_storage repr {hash}>"
+    assert (
+        repr(input_object)
+        == f"<pandas.{type_str} webviz_config.webviz_storage repr {hash_str}>"
+    )

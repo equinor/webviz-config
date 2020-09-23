@@ -235,12 +235,16 @@ def _new_repr_pandas_object(
 
     content_as_bytes = pd.util.hash_pandas_object(obj, index=True).values.tobytes()
     if dataframe:
-        type_str = "DataFrame"        
+        type_str = "DataFrame"
         content_as_bytes += repr(obj.columns.values).encode()
     else:
         type_str = "Series"
         content_as_bytes += repr(obj.name).encode()
-    return f"<pandas.{'DataFrame' if dataframe else 'Series'} webviz_config.webviz_storage repr {hashlib.sha256(content_as_bytes).hexdigest()}>"
+
+    return (
+        f"<pandas.{type_str} webviz_config.webviz_storage "
+        f"repr {hashlib.sha256(content_as_bytes).hexdigest()}>"
+    )
 
 
 # See docstring of function above for explanation.
