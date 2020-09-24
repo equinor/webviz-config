@@ -58,10 +58,9 @@ def build_webviz(args: argparse.Namespace) -> None:
             ):
                 raise RuntimeError(
                     "Something went wrong. This is probably "
-                    "not related to webviz-config, but more "
-                    "likely in one of the  dependencies used "
-                    "by one or more containers. See exact "
-                    "error message and traceback above"
+                    "not related to the webviz plugin framework, but more "
+                    "likely one of the included plugins in your configuration. "
+                    "See exact error message and traceback above."
                 )
 
             (build_directory / "copy_data.py").unlink()
