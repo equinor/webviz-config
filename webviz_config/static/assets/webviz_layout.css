@@ -41,7 +41,6 @@ div.pageWrapper.tab-content {
     flex-direction: column;
     width: 100%;
     margin: 20px;
-
 }
 
 .layoutWrapper {
@@ -65,9 +64,15 @@ div.pageWrapper.tab-content {
     overflow-x: hidden;
     overflow-y: scroll;
     height: 100vh;
-    width: 25rem;
+    min-width: 30rem;
     scrollbar-width: thin;
     scrollbar-color: var(--menuBackground) var(--menuBackground); /* thumb and track color */
+}
+
+@media (min-width: 800px) {
+    .sideBar {
+        width: 30rem;
+    }
 }
 
 .sideBar:hover {
