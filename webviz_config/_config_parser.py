@@ -2,11 +2,11 @@ import re
 import sys
 import pathlib
 import inspect
-import typing
+from typing import Dict, List, Optional
 
 import yaml
 
-from . import plugins as standard_plugins
+import webviz_config.plugins
 from .utils import terminal_colors
 from .utils._get_webviz_plugins import _get_webviz_plugins
 
@@ -17,7 +17,7 @@ def _call_signature(
     plugin_name: str,
     kwargs: dict,
     config_folder: pathlib.Path,
-    contact_person: typing.Optional[dict] = None,
+    contact_person: Optional[dict] = None,
 ) -> tuple:
     # pylint: disable=too-many-branches,too-many-statements
     """Takes as input the name of a plugin together with user given arguments
@@ -31,7 +31,9 @@ def _call_signature(
       * If there is type mismatch between user given argument value, and type
         hint in __init__ signature (given that type hint exist)
     """
-    argspec = inspect.getfullargspec(getattr(standard_plugins, plugin_name).__init__)
+    argspec = inspect.getfullargspec(
+        getattr(webviz_config.plugins, plugin_name).__init__
+    )
 
     if argspec.defaults is not None:
         required_args = argspec.args[: -len(argspec.defaults)]
@@ -90,7 +92,7 @@ def _call_signature(
 
             if expected_type == pathlib.Path:
                 kwargs[arg] = (config_folder / pathlib.Path(kwargs[arg])).resolve()
-            elif expected_type == typing.List[pathlib.Path]:
+            elif expected_type == List[pathlib.Path]:
                 kwargs[arg] = [
                     (config_folder / pathlib.Path(patharg)).resolve()
                     for patharg in kwargs[arg]
@@ -128,7 +130,9 @@ class ParserError(Exception):
 
 class ConfigParser:
 
-    STANDARD_PLUGINS = [name for (name, _) in _get_webviz_plugins(standard_plugins)]
+    STANDARD_PLUGINS = [
+        name for (name, _) in _get_webviz_plugins(webviz_config.plugins)
+    ]
 
     def __init__(self, yaml_file: pathlib.Path):
 
@@ -153,8 +157,9 @@ class ConfigParser:
             ).with_traceback(sys.exc_info()[2])
 
         self._config_folder = pathlib.Path(yaml_file).parent
-        self._page_ids: typing.List[str] = []
+        self._page_ids: List[str] = []
         self._assets: set = set()
+        self._plugin_metadata: Dict[str, dict] = {}
         self._used_plugin_packages: set = set()
         self.clean_configuration()
 
@@ -283,7 +288,10 @@ class ConfigParser:
                     self._config_folder,
                 )
 
-                self.assets.update(getattr(standard_plugins, plugin_name).ASSETS)
+                self._assets.update(getattr(webviz_config.plugins, plugin_name).ASSETS)
+                self._plugin_metadata[
+                    plugin_name
+                ] = webviz_config.plugins.plugin_metadata[plugin_name]
 
     @property
     def configuration(self) -> dict:
@@ -296,3 +304,10 @@ class ConfigParser:
     @property
     def assets(self) -> set:
         return self._assets
+
+    @property
+    def plugin_metadata(self) -> Dict[str, dict]:
+        """Returns a dictionary of plugin metadata, and only for
+        plugins included in the configuration file.
+        """
+        return self._plugin_metadata

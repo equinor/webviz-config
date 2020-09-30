@@ -1,0 +1,66 @@
+apiVersion: radix.equinor.com/v1
+kind: RadixApplication
+metadata:
+  name: {{ application_name }}
+spec:
+  environments:
+    - name: prod
+      build:
+        from: main
+  components:
+    - name: auth
+      image: quay.io/pusher/oauth2_proxy:v6.1.1
+      ports:
+        - name: http
+          port: 8000
+      publicPort: http
+      secrets:
+        - OAUTH2_PROXY_CLIENT_SECRET
+        - OAUTH2_PROXY_COOKIE_SECRET
+        - OAUTH2_PROXY_REDIRECT_URL  # Redirect URL a "secret" so it can be configured per cluster, but it's not sensitive information.
+      environmentConfig:
+        - environment: prod
+          variables:
+            OAUTH2_PROXY_SCOPE: openid offline_access profile {{ app_registration_id }}/user_impersonation email
+            OAUTH2_PROXY_CLIENT_ID: {{ app_registration_id }}
+            OAUTH2_PROXY_COOKIE_REFRESH: "60m" # How often should the token be refreshed. Default for Azure AD is currently 60m
+            OAUTH2_PROXY_EMAIL_DOMAINS: "*" # Any email address registered in AD should be accepted
+            OAUTH2_PROXY_HTTP_ADDRESS: "http://:8000" # The port oauth2_proxy listens on
+            OAUTH2_PROXY_OIDC_ISSUER_URL: "https://login.microsoftonline.com/{{ tenant_id }}/v2.0"
+            OAUTH2_PROXY_PASS_ACCESS_TOKEN: "true" # Pass the access token upstream (to the proxy component)
+            OAUTH2_PROXY_PASS_BASIC_AUTH: "false" # Disable unused default
+            OAUTH2_PROXY_PASS_USER_HEADERS: "false" # Disable unused default
+            OAUTH2_PROXY_PROVIDER: "oidc" # The "azure" provider doesn't seem to work properly
+            OAUTH2_PROXY_REDIS_CONNECTION_URL: "redis://auth-state:6379" # Where to store session info (the auth-state component)
+            OAUTH2_PROXY_SESSION_STORE_TYPE: "redis" # We're using Redis for storing session info instead of cookies (cookies would get too big)
+            OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true" # We don't want a "click to login" page; just issue a redirect
+            OAUTH2_PROXY_UPSTREAMS: "http://main:5000" # Where authenticated requests are routed to: the web application
+
+    - name: auth-state
+      image: redis:5-alpine
+      ports:
+        - name: redis
+          port: 6379
+
+    - name: main
+      src: "."
+      ports:
+        - name: http
+          port: 5000
+      environmentConfig:
+        - environment: prod
+          resources:
+            requests:
+              memory: "400Mi"
+              cpu: "100m"
+            limits:
+              memory: "8G"
+              cpu: "1000m"
+          volumeMounts:
+            - type: blob
+              name: storage1
+              container: {{ azure_storage_container_name }}
+              path: /home/appuser/dash_app/resources
+  dnsAppAlias:
+    environment: prod
+    component: auth

@@ -8,10 +8,11 @@
   - [User provided arguments](#user-provided-arguments)
   - [Data input](#data-input)
     - [Deattaching data from its original source](#deattaching-data-from-its-original-source)
-  - [Custom ad-hoc plugins](#custom-ad-hoc-plugins)
   - [OAuth 2.0 Authorization Code flow](#oauth-2.0-authorization-code-flow)
 - [Run tests](#run-tests)
 - [Build documentation](#build-documentation)
+  - [Improve plugin documentation](#improve-plugin-documentation)
+- [Make your plugin project available](#make-your-plugin-project-available)
 
 ## Creating a new plugin
 
@@ -386,7 +387,7 @@ The core of `webviz-config` will do the following:
 2) If the user asks for a portable version, it will
    1) Before writing the actual dash code, it will run all decorated functions
       with the given argument combinations. The resulting dataframes are stored
-      in a folder `./webviz_storage` as parquet files.
+      in a folder `./resources/webviz_storage` as parquet files.
    2) It writes the webviz-dash code (as usual), but this the decorated
       functions will return the dataframe from the stored `.parquet` files,
       instead of running the actual function code.
@@ -478,58 +479,6 @@ class ExamplePlugin(WebvizPluginABC):
         self.some_key = webviz_settings.shared_settings["some_key"]
 
         self.set_callbacks(app)
-```
-
-### Custom ad-hoc plugins
-
-It is possible to create custom plugins which still can be included through
-the configuration file, which could be useful for quick prototyping.
-
-As an example, assume someone on your project has made the Python file
-
-```python
-import dash_html_components as html
-from webviz_config import WebvizPluginABC
-
-
-class OurCustomPlugin(WebvizPluginABC):
-
-    def __init__(self, title: str):
-
-        super().__init__()
-
-        self.title = title
-
-    @property
-    def layout(self):
-        return html.Div([
-                         html.H1(self.title),
-                         'This is just some ordinary text'
-                        ])
-```
-
-If this is saved such that it is available through e.g. a
-[module](https://docs.python.org/3/tutorial/modules.html)
-`ourmodule`, the user can include the custom plugin the same way as a standard
-plugin, with the only change of also naming the module:
-```yaml
-title: Simple Webviz example
-
-pages:
-
-  - title: Front page
-    content:
-      - ourmodule.OurCustomPlugin:
-          title: Title of my custom plugin
-```
-
-Note that this might involve appending your `$PYTHONPATH` environment
-variable with the path where your custom module is located. The same principle
-applies if the custom plugin is saved in a package with submodule(s),
-```yaml
-    ...
-      - ourpackage.ourmodule.OurCustomPlugin:
-          ...
 ```
 
 ### OAuth 2.0 Authorization Code flow
@@ -636,3 +585,39 @@ $$\alpha = \frac{\beta}{\gamma}$$
 
 Example of auto-built documentation for `webviz-config` can be seen
 [here on github](https://equinor.github.io/webviz-config/).
+
+## Make your plugin project available
+
+It is strongly recommended to store your plugin project code base in a `git` solution,
+e.g. [in a new GitHub repository](https://github.com/new). If possible, it is also
+_highly_ recommended to let it be an open source repository. This has several advantages:
+ - Others can reuse your work - and help each other achieve better code quality, add more features and share maintenance
+ - You will from the beginning make sure you keep a good separation between visualization code and data loading/processing code.
+ - It becomes easier for your plugin users to use it in e.g. Docker and in cloud hosting.
+
+`webviz-config` will make sure that portable builds, which uses one (or more) plugins
+from your plugin project, includes installation instructions for the project also in
+the Docker build instructions. In order for `webviz-config` to do this, you should add
+[`project_urls` metadata](https://packaging.python.org/guides/distributing-packages-using-setuptools/#project-urls)
+in the project's `setup.py`. An example:
+```
+    project_urls={
+        "Download": "https://pypi.org/project/webviz-config",
+        "Source": "https://github.com/equinor/webviz-config",
+    },
+```
+The following logic applies when the user creates a portable application:
+- If `Download` is specified *and* the plugin project version installed is available
+  on PyPI, the Dockerfile will `pip install` the same version from PyPI.
+- Otherwise the Dockerfile will install from the `Source` url. From the `setuptools_scm`
+  provided version, the correct commit/version/tag will be installed.
+
+Note that if you are a developer and working on a fork, you might want to temporarily
+override the `Source` url to your fork. You can do this by specifying an environment
+variable `SOURCE_URL_NAME_PLUGIN_PROJECT=https://urlyourfork`. If you also want to
+explicitly state git pointer/reference (thereby not use the one derived from
+`setuptools_scm` version) you can set the environment variable
+`GIT_POINTER_NAME_PLUGIN_PROJECT`.
+
+For private repositories, a GitHub SSH deploy key will need to be provided to the Docker
+build process (see instructions in `README` created with the portable application).

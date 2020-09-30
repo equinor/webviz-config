@@ -5,13 +5,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED] - YYYY-MM-DD
-### Fixed
-- [#415](https://github.com/equinor/webviz-config/pull/415) - Reduce height of main
-sidebar to prevent overflow.
+
+### Added
+- [#318](https://github.com/equinor/webviz-config/pull/318) - `webviz-config`
+now facilitates automatically including necessary plugin projects as dependencies
+in generated Docker setup. Private repositories are also supported, however the
+Docker build process would then need to be given deploy keys as environment variable
+secrets. First iteration of automatically creating a corresponding
+[Radix config](https://www.radix.equinor.com/) and deploying a Radix application
+is also added.
 
 ### Changed
 - [#409](https://github.com/equinor/webviz-config/pull/409) - Relax Python test
 dependency constraints.
+- [#318](https://github.com/equinor/webviz-config/pull/318) - Ad-hoc plugins not
+supported anymore (i.e. plugins not being part of a Python project with `setup.py`).
+This enables us to reserve the configuration file syntax `prefix.PluginName` to later.
+Requiring a formal Python project also enables useful features in the framework
+(see e.g. the `Added` section for this PR).
+
+### Fixed
+- [#415](https://github.com/equinor/webviz-config/pull/415) - Reduce height of main
+sidebar to prevent overflow.
 
 ## [0.2.9] - 2021-02-23
 

@@ -4,6 +4,7 @@ import argparse
 import pathlib
 
 from ._build_webviz import build_webviz
+from ._deployment import main_radix_deployment
 from ._docs.open_docs import open_docs
 from ._docs._create_schema import create_schema
 from ._user_data_dir import user_data_dir
@@ -83,6 +84,50 @@ def main() -> None:
     )
 
     parser_cert.set_defaults(func=_dummy_create_ca)
+
+    # Add "deploy" parser:
+
+    parser_deploy = subparsers.add_parser(
+        "deploy",
+        help="Facilitates deployment of a portable Webviz application",
+    )
+
+    deployment_subparsers = parser_deploy.add_subparsers(
+        metavar="DEPLOYMENT_METHOD",
+        help="Below are the available deployment subcommands listed. "
+        "Type e.g. 'webviz deploy radix --help' "
+        "to get help on one particular "
+        "subcommand.",
+    )
+
+    # When dropping Python 3.6 support, 'required' can be given as an argument to add_subparsers.
+    deployment_subparsers.required = True
+
+    parser_radix_deploy = deployment_subparsers.add_parser(
+        "radix",
+        help="Deploy the app using Radix.",
+    )
+
+    parser_radix_deploy.add_argument(
+        "portable_app",
+        type=pathlib.Path,
+        help="Path to portable Webviz application folder",
+    )
+
+    parser_radix_deploy.add_argument(
+        "github_slug",
+        type=str,
+        help="GitHub slug (i.e. the string 'owner/repo_name').",
+    )
+
+    parser_radix_deploy.add_argument(
+        "--initial-deploy",
+        action="store_true",
+        help="Add this flag when setting up a new up application for the first time. "
+        "Do not include this if only overwriting an existing application.",
+    )
+
+    parser_radix_deploy.set_defaults(func=main_radix_deployment)
 
     # Add "documentation" parser:
 

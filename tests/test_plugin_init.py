@@ -30,7 +30,7 @@ dist_mock3 = DistMock([plugin_entrypoint_mock2], "dist_mock3")
 def test_no_warning():
     globals_mock = {}
     with warnings.catch_warnings(record=True) as warn:
-        metadata = load_webviz_plugins_with_metadata(
+        metadata, _ = load_webviz_plugins_with_metadata(
             [dist_mock1, dist_mock3], globals_mock
         )
         assert len(warn) == 0, "Too many warnings"
@@ -43,12 +43,13 @@ def test_no_warning():
 def test_warning_multiple():
     globals_mock = {}
     with warnings.catch_warnings(record=True) as warn:
-        metadata = load_webviz_plugins_with_metadata(
+        metadata, _ = load_webviz_plugins_with_metadata(
             [dist_mock1, dist_mock2], globals_mock
         )
 
         assert len(warn) == 1
         assert issubclass(warn[-1].category, RuntimeWarning)
+        print(warn[-1].message)
         assert str(warn[-1].message) == (
             "Multiple versions of plugin with name SomePlugin1. "
             "Already loaded from project dist_mock1. "

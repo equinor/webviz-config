@@ -49,6 +49,7 @@ setup(
             "py.typed",
             "static/*",
             "static/.dockerignore",
+            "static/.gitignore",
             "static/assets/*",
             "templates/*",
             "themes/default_assets/*",
@@ -84,12 +85,16 @@ setup(
         "pandas>=1.0",
         "pyarrow>=0.16",
         "pyyaml>=5.1",
+        "requests>=2.20",
         "tqdm>=4.8",
         "importlib-metadata>=1.7; python_version<'3.8'",
         "typing-extensions>=3.7; python_version<'3.8'",
         "webviz-core-components>=0.1.0",
     ],
-    extras_require={"tests": TESTS_REQUIRES},
+    extras_require={
+        "tests": TESTS_REQUIRES,
+        "deployment": ["azure-cli"],
+    },
     setup_requires=["setuptools_scm~=3.2"],
     python_requires="~=3.6",
     use_scm_version=True,
@@ -97,6 +102,7 @@ setup(
     project_urls={
         "Documentation": "https://equinor.github.io/webviz-config",
         "Download": "https://pypi.org/project/webviz-config",
+        "Source": "https://github.com/equinor/webviz-config",
         "Tracker": "https://github.com/equinor/webviz-config/issues",
     },
     classifiers=[

@@ -10,6 +10,7 @@ from yaml import YAMLError
 
 from ._config_parser import ParserError
 from ._write_script import write_script
+from ._dockerize import create_docker_setup
 from .themes import installed_themes
 from .utils import terminal_colors
 
@@ -17,6 +18,8 @@ BUILD_FILENAME = "webviz_app.py"
 STATIC_FOLDER = pathlib.Path(__file__).resolve().parent / "static"
 
 
+# Restructure here before merge.
+# pylint: disable=too-many-branches
 def build_webviz(args: argparse.Namespace) -> None:
 
     if args.theme not in installed_themes:
@@ -28,13 +31,10 @@ def build_webviz(args: argparse.Namespace) -> None:
         build_directory = args.portable.resolve()
         build_directory.mkdir(parents=True)
 
-    shutil.copytree(STATIC_FOLDER / "assets", build_directory / "assets")
-
-    for filename in ["README.md", "Dockerfile", ".dockerignore"]:
-        shutil.copy(STATIC_FOLDER / filename, build_directory)
+    shutil.copytree(STATIC_FOLDER / "assets", build_directory / "resources" / "assets")
 
     for asset in installed_themes[args.theme].assets:
-        shutil.copy(asset, build_directory / "assets")
+        shutil.copy(asset, build_directory / "resources" / "assets")
 
     (build_directory / "theme_settings.json").write_text(
         installed_themes[args.theme].to_json()
@@ -71,14 +71,18 @@ def build_webviz(args: argparse.Namespace) -> None:
                 f"{terminal_colors.END}"
             )
 
-        non_default_assets = write_script(
+        non_default_assets, plugin_metadata = write_script(
             args, build_directory, "webviz_template.py.jinja2", BUILD_FILENAME
         )
 
         for asset in non_default_assets:
-            shutil.copy(asset, build_directory / "assets")
+            shutil.copy(asset, build_directory / "resources" / "assets")
 
-        if not args.portable:
+        if args.portable:
+            for filename in ["README.md", ".dockerignore", ".gitignore"]:
+                shutil.copy(STATIC_FOLDER / filename, build_directory)
+            create_docker_setup(build_directory, plugin_metadata)
+        else:
             run_webviz(args, build_directory)
 
     finally:

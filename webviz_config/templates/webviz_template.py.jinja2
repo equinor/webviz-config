@@ -34,6 +34,7 @@ theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_t
 app = dash.Dash(
     __name__,
     external_stylesheets=theme.external_stylesheets,
+    assets_folder=Path("resources") / "assets",
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ],
@@ -73,7 +74,7 @@ theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
 Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy, force_https=False, session_cookie_secure=False)
 
 WEBVIZ_STORAGE.use_storage = {{portable}}
-WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "webviz_storage"
+WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "resources" / "webviz_storage"
 
 WEBVIZ_ASSETS.portable = {{ portable }}
 

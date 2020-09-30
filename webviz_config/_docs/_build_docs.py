@@ -29,6 +29,7 @@ except (ImportError, ModuleNotFoundError):
 import jinja2
 
 import webviz_config.plugins
+from webviz_config.plugins import plugin_metadata, plugin_project_metadata
 from .._config_parser import SPECIAL_ARGS
 from ..utils._get_webviz_plugins import _get_webviz_plugins
 
@@ -62,6 +63,7 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
     argspec = inspect.getfullargspec(reference.__init__)
     module = inspect.getmodule(reference)
     subpackage = inspect.getmodule(module).__package__  # type: ignore
+    dist_name = plugin_metadata[name]["dist_name"]
 
     plugin_info: PluginInfo = {
         "arg_info": {arg: {} for arg in argspec.args if arg not in SPECIAL_ARGS},
@@ -72,8 +74,8 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         "description": docstring_parts[0] if docstring != "" else None,
         "name": name,
         "package_doc": import_module(subpackage).__doc__,  # type: ignore
-        "dist_name": webviz_config.plugins.metadata[name]["dist_name"],
-        "dist_version": webviz_config.plugins.metadata[name]["dist_version"],
+        "dist_name": dist_name,
+        "dist_version": plugin_project_metadata[dist_name]["dist_version"],
     }
 
     if argspec.defaults is not None:

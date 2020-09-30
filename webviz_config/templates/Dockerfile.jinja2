@@ -1,0 +1,79 @@
+######################
+# Installation image #
+######################
+
+FROM python:{{python_version_major}}.{{python_version_minor}}-slim AS builder
+
+# Install git and ssh, in order to install Python
+# packages not available from PyPI.
+RUN apt-get update && \
+    apt-get install -y git {{ "ssh" if ssh_required else "" }}
+
+# Changing to non-root user early
+RUN useradd --create-home appuser
+WORKDIR /home/appuser
+USER appuser
+
+# Set environment variables
+ENV PATH="${PATH}:/home/appuser/.local/bin"{% if ssh_required %}  \
+    GIT_SSH_COMMAND="ssh $(cat ssh_identity_files) -o IdentitiesOnly=yes -o UserKnownHostsFile=./temp-known-host" \
+    KNOWN_GITHUB_FINGERPRINT="SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8"
+
+# Read GitHub deploy key environment variable, and move to
+# temporary files which the ssh command can read from.
+ARG GITHUB_DEPLOY_KEYS
+RUN python -c "\
+import os; from pathlib import Path; \
+keys = os.environ['GITHUB_DEPLOY_KEYS'].replace(' ', '\n').split(','); \
+paths = [f'github_deploy_key_{i}' for i, _ in enumerate(keys)]; \
+[Path(path).write_text(key) for path, key in zip(paths, keys)]; \
+Path('ssh_identity_files').write_text('-i ' + ' -i '.join(paths))"
+
+# Add github.com ssh as known host, and verify that fingerprint equals known value
+RUN FINGERPRINT=$(ssh-keyscan -t rsa github.com | tee ./temp-known-host | ssh-keygen -lf -) && \
+    if [ -n "${FINGERPRINT##*$KNOWN_GITHUB_FINGERPRINT*}" ] ;then \
+      echo "ERROR: GitHub SSH fingerprint does not match known fingerprint!"; \
+      exit 1; \
+    fi
+{% endif %}
+
+# Install relevant Python packages
+COPY --chown=appuser requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+###############
+# Final image #
+###############
+
+FROM python:{{python_version_major}}.{{python_version_minor}}-slim
+
+# Changing to non-root user early
+RUN useradd --create-home appuser
+WORKDIR /home/appuser
+USER appuser
+
+# Set environment variables
+ENV PATH="${PATH}:/home/appuser/.local/bin" \
+    PYTHONFAULTHANDLER=1
+
+# Copy over appuser installed Python packages
+COPY --from=builder /home/appuser/.local /home/appuser/.local
+
+# Copy over the created Webviz application
+COPY --chown=appuser . dash_app
+
+EXPOSE 5000
+
+# Define startup command of container image
+CMD gunicorn \
+        --access-logfile "-" \
+        --bind 0.0.0.0:5000 \
+        --keep-alive 120 \
+        --max-requests 40 \
+        --preload \
+        --workers 2 \
+        --worker-class gthread \
+        --worker-tmp-dir /dev/shm \
+        --threads 2 \
+        --timeout 100000 \
+        "dash_app.webviz_app:server"
