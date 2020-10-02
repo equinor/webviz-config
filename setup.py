@@ -33,7 +33,10 @@ setup(
             "themes/default_assets/*",
         ]
     },
-    entry_points={"console_scripts": ["webviz=webviz_config.command_line:main"]},
+    entry_points={
+        "console_scripts": ["webviz=webviz_config.command_line:main"],
+        "pytest11": ["webviz = webviz_config.testing.plugin"],
+    },
     install_requires=[
         "bleach>=3.1",
         "cryptography>=2.4",

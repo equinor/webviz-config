@@ -17,3 +17,4 @@ webviz_config/_docs/static/*.js
 webviz_config/_docs/static/*.css
 !webviz_config/_docs/static/webviz-doc.js
 !webviz_config/_docs/static/webviz-doc.css
+geckodriver.log
