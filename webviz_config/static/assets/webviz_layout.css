@@ -1,4 +1,4 @@
-div.styledLogo.tab {
+.styledLogo {
     border: none;
     background: transparent;
     outline: none;
@@ -8,7 +8,7 @@ div.styledLogo.tab {
     padding: 20px 30px;
 }
 
-div.styledButton.tab {
+.styledButton {
     border: none;
     background: transparent;
     outline: none;
@@ -26,17 +26,17 @@ div.styledButton.tab {
     border-bottom: 1px solid white;
 }
 
-div.styledButton.tab:hover {
+.styledButton:hover {
     color: var(--menuLinkHoverColor);
     background-color: var(--menuLinkBackgroundHover);
 }
 
-div.selectedButton.tab--selected {
+.selectedButton--selected {
     color: var(--menuLinkColorSelected);
     background-color: var(--menuLinkBackgroundSelected);
 }
 
-div.pageWrapper.tab-content {
+.pageWrapper {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -44,13 +44,29 @@ div.pageWrapper.tab-content {
 }
 
 .layoutWrapper {
+    display: flex;
+    flex-direction: row;
     width: 100%;
 }
-
-.wrapper {
+.sideWrapper {
     display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 100vh;
+    min-width: 30rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--menuBackground) var(--menuBackground); /* thumb and track color */    
+}
+
+.pageContent {
+    display: flex;
+    flex: 8;
+    flex-direction: column;
     height: 100%;
     width: 100%;
+    padding: 15px;
 }
 
 .logoWrapper {
@@ -60,55 +76,47 @@ div.pageWrapper.tab-content {
     align-items: center;
 }
 
-.sideBar {
-    overflow-x: hidden;
-    overflow-y: scroll;
-    height: 100vh;
-    min-width: 30rem;
-    scrollbar-width: thin;
-    scrollbar-color: var(--menuBackground) var(--menuBackground); /* thumb and track color */
-}
-
 @media (min-width: 800px) {
-    .sideBar {
+    .sideWrapper {
         width: 30rem;
     }
 }
 
-.sideBar:hover {
+.sideWrapper:hover {
     scrollbar-color: var(--menuLinkColor) var(--menuBackground); /* thumb and track color */
 }
 
-.sideBar::-webkit-scrollbar
+.sideWrapper::-webkit-scrollbar
 {
 	width: 3px;
 	background-color:var(--menuBackground);
 }
 
-.sideBar::-webkit-scrollbar-track
+.sideWrapper::-webkit-scrollbar-track
 {
 	-webkit-box-shadow: inset 0 0 3px var(--menuBackground);
 	background-color: var(--menuBackground);
 }
 
-.sideBar:hover::-webkit-scrollbar-track
+.sideWrapper:hover::-webkit-scrollbar-track
 {
     -webkit-box-shadow: inset 0 0 3px var(--menuLinkBackgroundHover);
-    
 	background-color: var(--menuBackground);
 }
 
-.sideBar::-webkit-scrollbar-thumb
+.sideWrapper::-webkit-scrollbar-thumb
 {
 	background-color: var(--menuBackground);
 }
 
-.sideBar:hover::-webkit-scrollbar-thumb
+.sideWrapper:hover::-webkit-scrollbar-thumb
 {
 	background-color: var(--menuLinkColor);
 }
 
-
-/* Needed to override border for the last tab */
-#last_page {border: none!important;} /* csslint allow: known-properties, important */
-#logo {padding:50px!important; border: none!important;max-width: 100%; height:auto;} /* csslint allow: known-properties, important */
+#logo {
+    padding: 50px;
+    border: none;
+    max-width: 100%;
+    height: auto;
+}

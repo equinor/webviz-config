@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED] - YYYY-MM-DD
+
+### Changed
+
+- [#230](https://github.com/equinor/webviz-config/pull/230) - Instead of using
+`dcc.Tabs` to give the impression of a "multipage app", webviz now uses `dcc.Link` and
+`dcc.Location`. This has two main advantages: Big applications can have significantly
+faster loading time, as only callbacks on selected "page" fire initially. In addition,
+the user can navigate with forward/backward buttons in browser, as well as getting
+an URL they can share with others in order to point them to the correct "page". Plugin
+authors should check that persistence is set to `session` on Dash components they use
+if they want user selections to remain across "page" changes. In order to get more
+easily typed URLs, runtime generated page IDs now use `-` instead of `_` for spaces.
+
 ## [0.1.4] - 2020-09-24
 
 ### Added
