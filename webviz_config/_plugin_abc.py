@@ -139,11 +139,9 @@ class WebvizPluginABC(abc.ABC):
             with zipfile.ZipFile(bytes_io, "w") as zipped_data:
                 for data in content:
                     zipped_data.writestr(data["filename"], data["content"])
-
-            bytes_io.seek(0)
             return {
                 "filename": filename,
-                "content": base64.b64encode(bytes_io.read()).decode("ascii"),
+                "content": base64.b64encode(bytes_io.getvalue()).decode("ascii"),
                 "mime_type": "application/zip",
             }
 
