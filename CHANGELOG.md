@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED] - YYYY-MM-DD
 
 ### Changed
-
 - [#230](https://github.com/equinor/webviz-config/pull/230) - Instead of using
 `dcc.Tabs` to give the impression of a "multipage app", webviz now uses `dcc.Link` and
 `dcc.Location`. This has two main advantages: Big applications can have significantly
@@ -17,6 +16,10 @@ an URL they can share with others in order to point them to the correct "page". 
 authors should check that persistence is set to `session` on Dash components they use
 if they want user selections to remain across "page" changes. In order to get more
 easily typed URLs, runtime generated page IDs now use `-` instead of `_` for spaces.
+
+### Fixed
+- [#321](https://github.com/equinor/webviz-config/pull/321) - Allowed for `blob:`
+in `img-src` CSP such that `plotly.js` "Download to png" works properly.
 
 ## [0.1.4] - 2020-09-24
 
