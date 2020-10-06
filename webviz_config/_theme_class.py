@@ -19,12 +19,12 @@ class WebvizConfigTheme:
                 "'self'",
                 "'unsafe-eval'",  # [2]
             ],
-            "img-src": ["'self'", "data:"],
+            "img-src": ["'self'", "data:", "blob:"],  # [3]
             "navigate-to": "'self'",
             "base-uri": "'self'",
             "form-action": "'self'",
-            "frame-ancestors": "'self'",  # [3]
-            "frame-src": "'self'",  # [3]
+            "frame-ancestors": "'self'",  # [4]
+            "frame-src": "'self'",  # [4]
             "object-src": "'self'",
             "plugin-types": "application/pdf",
         }
@@ -35,7 +35,10 @@ class WebvizConfigTheme:
                 (https://github.com/plotly/plotly.js/issues/2355)
             [2] unsafe-eval still needed for plotly.js bundle
                 (https://github.com/plotly/plotly.js/issues/897)
-            [3] We use 'self' instead of 'none' due to what looks like a Chromium bug,
+            [3] html2canvas in webviz-core-components needs "data:" in img-src to create
+                screenshots, while plotly.js "Download screenshot to png" requires
+                "blob:" in img-src.
+            [4] We use 'self' instead of 'none' due to what looks like a Chromium bug,
                 where e.g. pdf's included using <embed> is not rendered. Might be
                 related to https://bugs.chromium.org/p/chromium/issues/detail?id=1002610
         """
