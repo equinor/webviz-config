@@ -14,6 +14,7 @@ TESTS_REQUIRES = [
     "selenium~=3.141",
 ]
 
+# pylint: disable=line-too-long
 setup(
     name="webviz-config",
     description="Configuration file support for webviz",
@@ -33,7 +34,22 @@ setup(
             "themes/default_assets/*",
         ]
     },
-    entry_points={"console_scripts": ["webviz=webviz_config.command_line:main"]},
+    entry_points={
+        "console_scripts": ["webviz=webviz_config.command_line:main"],
+        "webviz_config_plugins": [
+            "ExampleAssets = webviz_config.generic_plugins._example_assets:ExampleAssets",
+            "ExampleDataDownload = webviz_config.generic_plugins._example_data_download:ExampleDataDownload",
+            "ExamplePlugin = webviz_config.generic_plugins._example_plugin:ExamplePlugin",
+            "ExamplePortable = webviz_config.generic_plugins._example_portable:ExamplePortable",
+            "ExampleTour = webviz_config.generic_plugins._example_tour:ExampleTour",
+            "BannerImage = webviz_config.generic_plugins._banner_image:BannerImage",
+            "DataTable = webviz_config.generic_plugins._data_table:DataTable",
+            "EmbedPdf = webviz_config.generic_plugins._embed_pdf:EmbedPdf",
+            "Markdown = webviz_config.generic_plugins._markdown:Markdown",
+            "SyntaxHighlighter = webviz_config.generic_plugins._syntax_highlighter:SyntaxHighlighter",
+            "TablePlotter = webviz_config.generic_plugins._table_plotter:TablePlotter",
+        ],
+    },
     install_requires=[
         "bleach>=3.1",
         "cryptography>=2.4",
