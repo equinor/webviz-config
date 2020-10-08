@@ -2,43 +2,27 @@ import re
 import sys
 import pathlib
 import inspect
-import importlib
 import typing
-import types
 
 import yaml
 
 from . import plugins as standard_plugins
-from . import WebvizPluginABC
 from .utils import terminal_colors
+from .utils._get_webviz_plugins import _get_webviz_plugins
 
-SPECIAL_ARGS = ["self", "app", "_call_signature", "_imports"]
-
-
-def _get_webviz_plugins(module: types.ModuleType) -> list:
-    """Returns a list of all Webviz plugins
-    in the module given as input.
-    """
-
-    def _is_webviz_plugin(obj: typing.Any) -> bool:
-        return inspect.isclass(obj) and issubclass(obj, WebvizPluginABC)
-
-    return [member[0] for member in inspect.getmembers(module, _is_webviz_plugin)]
+SPECIAL_ARGS = ["self", "app", "_call_signature"]
 
 
 def _call_signature(
-    module: types.ModuleType,
-    module_name: str,
     plugin_name: str,
     kwargs: dict,
     config_folder: pathlib.Path,
     contact_person: typing.Optional[dict] = None,
 ) -> tuple:
     # pylint: disable=too-many-branches,too-many-statements
-    """Takes as input the name of a plugin, the module it is located in,
-    together with user given arguments (originating from the configuration
-    file). Returns the equivalent Python code wrt. initiating an instance of
-    that plugin (with the given arguments).
+    """Takes as input the name of a plugin together with user given arguments
+    (originating from the configuration file). Returns the equivalent Python code wrt.
+    initiating an instance of that plugin (with the given arguments).
 
     Raises ParserError in the following scenarios:
       * User is missing a required (i.e. no default value) __init__ argument
@@ -47,7 +31,7 @@ def _call_signature(
       * If there is type mismatch between user given argument value, and type
         hint in __init__ signature (given that type hint exist)
     """
-    argspec = inspect.getfullargspec(getattr(module, plugin_name).__init__)
+    argspec = inspect.getfullargspec(getattr(standard_plugins, plugin_name).__init__)
 
     if argspec.defaults is not None:
         required_args = argspec.args[: -len(argspec.defaults)]
@@ -131,7 +115,7 @@ def _call_signature(
         special_args += "app=app, "
 
     return (
-        f"{module_name}.{plugin_name}({special_args}**{kwargs})",
+        f"{plugin_name}({special_args}**{kwargs})",
         f"plugin_layout(contact_person={contact_person})",
     )
 
@@ -142,7 +126,7 @@ class ParserError(Exception):
 
 class ConfigParser:
 
-    STANDARD_PLUGINS = _get_webviz_plugins(standard_plugins)
+    STANDARD_PLUGINS = [name for (name, _) in _get_webviz_plugins(standard_plugins)]
 
     def __init__(self, yaml_file: pathlib.Path):
 
@@ -169,6 +153,7 @@ class ConfigParser:
         self._config_folder = pathlib.Path(yaml_file).parent
         self._page_ids: typing.List[str] = []
         self._assets: set = set()
+        self._used_plugin_packages: set = set()
         self.clean_configuration()
 
     @staticmethod
@@ -280,56 +265,23 @@ class ConfigParser:
                 plugin_variables = next(iter(plugin.values()))
                 kwargs = {} if plugin_variables is None else {**plugin_variables}
 
-                if "." not in plugin_name:
-                    if plugin_name not in ConfigParser.STANDARD_PLUGINS:
-                        raise ParserError(
-                            f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                            "You have included a plugin with "
-                            f"name `{plugin_name}` in your "
-                            "configuration file. This is not a "
-                            "standard plugin."
-                            f"{terminal_colors.END}"
-                        )
-
-                    self.configuration["_imports"].add(
-                        ("webviz_config.plugins", "standard_plugins")
+                if plugin_name not in ConfigParser.STANDARD_PLUGINS:
+                    raise ParserError(
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                        "You have included a plugin with "
+                        f"name `{plugin_name}` in your "
+                        "configuration file. This is not a "
+                        "standard plugin."
+                        f"{terminal_colors.END}"
                     )
 
-                    plugin["_call_signature"] = _call_signature(
-                        standard_plugins,
-                        "standard_plugins",
-                        plugin_name,
-                        kwargs,
-                        self._config_folder,
-                    )
+                plugin["_call_signature"] = _call_signature(
+                    plugin_name,
+                    kwargs,
+                    self._config_folder,
+                )
 
-                    self.assets.update(getattr(standard_plugins, plugin_name).ASSETS)
-
-                else:
-                    parts = plugin_name.split(".")
-
-                    plugin_name = parts[-1]
-                    module_name = ".".join(parts[:-1])
-                    module = importlib.import_module(module_name)
-
-                    if plugin_name not in _get_webviz_plugins(module):
-                        raise ParserError(
-                            f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                            f"Module `{module}` does not have a "
-                            f"plugin named `{plugin_name}`"
-                            f"{terminal_colors.END}"
-                        )
-
-                    self.configuration["_imports"].add(module_name)
-                    plugin["_call_signature"] = _call_signature(
-                        module,
-                        module_name,
-                        plugin_name,
-                        kwargs,
-                        self._config_folder,
-                    )
-
-                    self.assets.update(getattr(module, plugin_name).ASSETS)
+                self.assets.update(getattr(standard_plugins, plugin_name).ASSETS)
 
     @property
     def configuration(self) -> dict:

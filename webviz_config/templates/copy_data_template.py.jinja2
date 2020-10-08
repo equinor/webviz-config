@@ -8,18 +8,11 @@ from pathlib import Path, PosixPath, WindowsPath
 import dash
 
 import webviz_config
+import webviz_config.plugins
 from webviz_config.themes import installed_themes
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
-
-{% for module in _imports %}
-{%- if module is string -%}
-import {{ module }}
-{%- else -%}
-import {{ module[0] }} as {{ module[1] }}
-{%- endif %}
-{% endfor %}
 
 logging.getLogger().setLevel(logging.{{ loglevel }})
 
@@ -49,7 +42,7 @@ plugins = []
 {% for page in pages %}
 {% for content in page.content %}
 {% if content is not string %}
-plugins.append({{ content._call_signature[0] }})
+plugins.append(webviz_config.plugins.{{ content._call_signature[0] }})
 {% endif %}
 {% endfor %}
 {% endfor %}

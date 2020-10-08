@@ -21,17 +21,16 @@ from typing import Any, Dict, Optional, Tuple, List
 try:
     # Python 3.8+
     # pylint: disable=ungrouped-imports
-    from importlib.metadata import version  # type: ignore
     from typing import TypedDict  # type: ignore
 except (ImportError, ModuleNotFoundError):
     # Python < 3.8
-    from importlib_metadata import version  # type: ignore
     from typing_extensions import TypedDict  # type: ignore
 
 import jinja2
 
 import webviz_config.plugins
-from webviz_config._config_parser import SPECIAL_ARGS
+from .._config_parser import SPECIAL_ARGS
+from ..utils._get_webviz_plugins import _get_webviz_plugins
 
 
 class ArgInfo(TypedDict, total=False):
@@ -46,11 +45,10 @@ class PluginInfo(TypedDict):
     argument_description: Optional[str]
     data_input: Optional[str]
     description: Optional[str]
-    module: str
+    dist_name: str
+    dist_version: str
     name: str
-    package: str
     package_doc: Optional[str]
-    package_version: str
 
 
 def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
@@ -64,7 +62,6 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
     argspec = inspect.getfullargspec(reference.__init__)
     module = inspect.getmodule(reference)
     subpackage = inspect.getmodule(module).__package__  # type: ignore
-    top_package_name = subpackage.split(".")[0]  # type: ignore
 
     plugin_info: PluginInfo = {
         "arg_info": {arg: {} for arg in argspec.args if arg not in SPECIAL_ARGS},
@@ -74,10 +71,9 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         "data_input": docstring_parts[2] if len(docstring_parts) > 2 else None,
         "description": docstring_parts[0] if docstring != "" else None,
         "name": name,
-        "module": module.__name__,  # type: ignore
-        "package": top_package_name,
         "package_doc": import_module(subpackage).__doc__,  # type: ignore
-        "package_version": version(top_package_name),
+        "dist_name": webviz_config.plugins.metadata[name]["dist_name"],
+        "dist_version": webviz_config.plugins.metadata[name]["dist_version"],
     }
 
     if argspec.defaults is not None:
@@ -106,17 +102,17 @@ def get_plugin_documentation() -> defaultdict:
 
     plugin_doc = [
         _document_plugin(plugin)
-        for plugin in inspect.getmembers(webviz_config.plugins, inspect.isclass)
+        for plugin in _get_webviz_plugins(webviz_config.plugins)
         if not plugin[0].startswith("Example")
     ]
 
     # Sort the plugins by package:
     package_ordered: defaultdict = defaultdict(lambda: {"plugins": []})
-    for sorted_plugin in sorted(plugin_doc, key=lambda x: (x["module"], x["name"])):
-        package = sorted_plugin["package"]
+    for sorted_plugin in sorted(plugin_doc, key=lambda x: (x["dist_name"], x["name"])):
+        package = sorted_plugin["dist_name"]
         package_ordered[package]["plugins"].append(sorted_plugin)
         package_ordered[package]["doc"] = sorted_plugin["package_doc"]
-        package_ordered[package]["version"] = sorted_plugin["package_version"]
+        package_ordered[package]["dist_version"] = sorted_plugin["dist_version"]
 
     return package_ordered
 
@@ -174,9 +170,9 @@ def build_docs(build_directory: pathlib.Path) -> None:
     plugin_documentation = get_plugin_documentation()
 
     template = template_environment.get_template("README.md.jinja2")
-    for package_name, package_doc in plugin_documentation.items():
-        (build_directory / f"{package_name}.md").write_text(
-            template.render({"package_name": package_name, "package_doc": package_doc})
+    for dist_name, package_doc in plugin_documentation.items():
+        (build_directory / f"{dist_name}.md").write_text(
+            template.render({"dist_name": dist_name, "package_doc": package_doc})
         )
 
     template = template_environment.get_template("sidebar.md.jinja2")
@@ -187,10 +183,7 @@ def build_docs(build_directory: pathlib.Path) -> None:
     template = template_environment.get_template("webviz-doc.js.jinja2")
     (build_directory / "webviz-doc.js").write_text(
         template.render(
-            {
-                "paths": ["/"]
-                + [f"/{package_name}" for package_name in plugin_documentation]
-            }
+            {"paths": ["/"] + [f"/{dist_name}" for dist_name in plugin_documentation]}
         )
     )
 
