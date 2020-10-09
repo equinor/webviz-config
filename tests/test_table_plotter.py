@@ -3,7 +3,7 @@ import dash
 
 from webviz_config.common_cache import CACHE
 from webviz_config.themes import default_theme
-from webviz_config.plugins import _table_plotter
+from webviz_config.generic_plugins import _table_plotter
 
 
 def test_table_plotter(dash_duo):

@@ -1,7 +1,7 @@
 import dash
 
 from webviz_config.common_cache import CACHE
-from webviz_config.plugins import _example_plugin
+from webviz_config.generic_plugins import _example_plugin
 
 
 def test_example_plugin(dash_duo):

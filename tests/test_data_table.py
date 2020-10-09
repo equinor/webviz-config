@@ -3,10 +3,10 @@ import pandas as pd
 import dash
 
 from webviz_config.common_cache import CACHE
-from webviz_config.plugins import _data_table
+from webviz_config.generic_plugins import _data_table
 
 # mocked functions
-GET_DATA = "webviz_config.plugins._data_table.get_data"
+GET_DATA = "webviz_config.generic_plugins._data_table.get_data"
 
 
 def test_data_table(dash_duo):

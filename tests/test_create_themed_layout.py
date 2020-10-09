@@ -6,7 +6,7 @@ import dash
 from webviz_config import WebvizConfigTheme
 from webviz_config.common_cache import CACHE
 from webviz_config.themes import default_theme
-from webviz_config.plugins import _syntax_highlighter
+from webviz_config.generic_plugins import _syntax_highlighter
 
 
 def test_create_themed_layout():
@@ -125,7 +125,9 @@ def test_create_themed_layout_on_app(dash_duo):
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
     code_file = Path("./tests/data/basic_example.yaml")
-    with mock.patch("webviz_config.plugins._syntax_highlighter.get_path") as mock_path:
+    with mock.patch(
+        "webviz_config.generic_plugins._syntax_highlighter.get_path"
+    ) as mock_path:
         mock_path.return_value = code_file
         page = _syntax_highlighter.SyntaxHighlighter(app, code_file)
         app.layout = page.layout
