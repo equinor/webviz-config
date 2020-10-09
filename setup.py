@@ -1,7 +1,18 @@
 from setuptools import setup, find_packages
+import re
+import os
 
-with open("README.md", "r") as fh:
-    LONG_DESCRIPTION = fh.read()
+def get_long_description():
+    with open('README.md', "r") as f:
+        raw_readme = f.read()
+    
+    if 'GITHUB_SHA' in os.environ:
+        full_url = f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/blob/{os.environ['GITHUB_SHA']}/"
+        substituted_readme = re.sub('\\]\\((?!https)', '](' + full_url, raw_readme)
+        return substituted_readme
+    else:
+        return raw_readme
+
 
 TESTS_REQUIRES = [
     "bandit",
@@ -18,7 +29,7 @@ TESTS_REQUIRES = [
 setup(
     name="webviz-config",
     description="Configuration file support for webviz",
-    long_description=LONG_DESCRIPTION,
+    long_description=get_long_description(),
     long_description_content_type="text/markdown",
     url="https://github.com/equinor/webviz-config",
     author="R&T Equinor",
