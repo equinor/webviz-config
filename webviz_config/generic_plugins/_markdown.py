@@ -20,8 +20,8 @@ class _WebvizMarkdownExtension(Extension):
 
         super().__init__()
 
-    def extendMarkdown(self, md: markdown.core.Markdown) -> None:
-        md.inlinePatterns.register(
+    def extendMarkdown(self, md: markdown.Markdown) -> None:
+        md.inlinePatterns.register(  # type: ignore[attr-defined]
             item=_MarkdownImageProcessor(IMAGE_LINK_RE, md, self.base_path),
             name="image_link",
             priority=50,
