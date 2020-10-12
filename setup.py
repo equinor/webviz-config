@@ -1,17 +1,25 @@
-from setuptools import setup, find_packages
-import re
 import os
+import re
+import pathlib
 
-def get_long_description():
-    with open('README.md', "r") as f:
-        raw_readme = f.read()
-    
-    if 'GITHUB_SHA' in os.environ:
-        full_url = f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/blob/{os.environ['GITHUB_SHA']}/"
-        substituted_readme = re.sub('\\]\\((?!https)', '](' + full_url, raw_readme)
-        return substituted_readme
-    else:
-        return raw_readme
+from setuptools import setup, find_packages
+
+
+def get_long_description() -> str:
+    """Converts relative repository links to absolute URLs
+    if GITHUB_REPOSITORY and GITHUB_SHA environment variables exist.
+    If not, it returns the raw content in README.md.
+    """
+
+    raw_readme = pathlib.Path("README.md").read_text()
+
+    repository = os.environ.get("GITHUB_REPOSITORY")
+    sha = os.environ.get("GITHUB_SHA")
+
+    if repository is not None and sha is not None:
+        full_url = f"https://github.com/{repository}/blob/{sha}/"
+        return re.sub(r"]\((?!https)", "](" + full_url, raw_readme)
+    return raw_readme
 
 
 TESTS_REQUIRES = [
