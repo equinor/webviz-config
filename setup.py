@@ -1,7 +1,26 @@
+import os
+import re
+import pathlib
+
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
-    LONG_DESCRIPTION = fh.read()
+
+def get_long_description() -> str:
+    """Converts relative repository links to absolute URLs
+    if GITHUB_REPOSITORY and GITHUB_SHA environment variables exist.
+    If not, it returns the raw content in README.md.
+    """
+
+    raw_readme = pathlib.Path("README.md").read_text()
+
+    repository = os.environ.get("GITHUB_REPOSITORY")
+    sha = os.environ.get("GITHUB_SHA")
+
+    if repository is not None and sha is not None:
+        full_url = f"https://github.com/{repository}/blob/{sha}/"
+        return re.sub(r"]\((?!https)", "](" + full_url, raw_readme)
+    return raw_readme
+
 
 TESTS_REQUIRES = [
     "bandit",
@@ -18,7 +37,7 @@ TESTS_REQUIRES = [
 setup(
     name="webviz-config",
     description="Configuration file support for webviz",
-    long_description=LONG_DESCRIPTION,
+    long_description=get_long_description(),
     long_description_content_type="text/markdown",
     url="https://github.com/equinor/webviz-config",
     author="R&T Equinor",
