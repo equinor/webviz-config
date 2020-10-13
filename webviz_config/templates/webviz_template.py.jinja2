@@ -15,19 +15,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 from flask_talisman import Talisman
 import webviz_config
+import webviz_config.plugins
 import webviz_config.certificate
 from webviz_config.themes import installed_themes
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
-
-{% for module in _imports %}
-{%- if module is string -%}
-import {{ module }}
-{%- else -%}
-import {{ module[0] }} as {{ module[1] }}
-{%- endif %}
-{% endfor %}
 
 # We do not want to show INFO regarding werkzeug routing as that is too verbose,
 # however we want other log handlers (typically coming from webviz plugin dependencies)
@@ -83,7 +76,7 @@ else:
        {%- if content is string -%}
          dcc.Markdown(r"""{{ content }}""")
        {%- else -%}
-         {{ content._call_signature[0] }}.{{ content._call_signature[1] }}
+         webviz_config.plugins.{{ content._call_signature[0] }}.{{ content._call_signature[1] }}
        {%- endif -%}
        {{- "" if loop.last else ","}}
        {% endfor -%}

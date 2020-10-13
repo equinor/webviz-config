@@ -91,6 +91,11 @@ setup(
     python_requires="~=3.6",
     use_scm_version=True,
     zip_safe=False,
+    project_urls={
+        "Documentation": "https://equinor.github.io/webviz-config",
+        "Download": "https://pypi.org/project/webviz-config",
+        "Tracker": "https://github.com/equinor/webviz-config/issues",
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",

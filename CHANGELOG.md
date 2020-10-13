@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [#324](https://github.com/equinor/webviz-config/pull/324) - Now also `webviz-config`
 shipped plugins install themselves through the `webviz_config_plugins` entrypoints group.
+- [#325](https://github.com/equinor/webviz-config/pull/325) - Removed support for
+ad-hoc plugins as this is costly to maintain. Also, the `module.PluginName` notation in 
+configuration files can then in future be used fo distinguish between multiple plugin
+packages using the same plugin name.
+
+### Fixed
+- [#325](https://github.com/equinor/webviz-config/pull/325) - Support plugin projects
+that use different name for top level package and distribution name.
 
 ## [0.2.0] - 2020-10-06
 
