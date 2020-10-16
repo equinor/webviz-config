@@ -4,7 +4,7 @@ the utility itself.
 
 import inspect
 from typing import Optional
-from plugin_utils import write_metadata
+from .plugin_utils import write_metadata
 
 try:
     # Python 3.8+

@@ -1,3 +1,4 @@
+import warnings
 
 def write_metadata(distributions, metadata):
     for dist in distributions:
@@ -16,6 +17,9 @@ def write_metadata(distributions, metadata):
                     "download_url": project_urls.get("Download"),
                     "tracker_url": project_urls.get("Tracker"),
                 }
-                #if entry_point.name in globals()[entry_point.name]
+
+                if entry_point.name in globals():
+                    warning_string = f"Plugin {entry_point.name} already exists. Overwriting."
+                    warnings.warn(warning_string, RuntimeWarning)
 
                 globals()[entry_point.name] = entry_point.load()
