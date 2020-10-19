@@ -96,7 +96,7 @@ If feature is requested, the data could also come from a database.
                 "histnorm",
             ],
             "bar": ["x", "y", "color", "facet_col", "barmode"],
-            "pie": ["values"],
+            "pie": ["values", "names"],
             "scatter_3d": ["x", "y", "z", "size", "color"],
             "line": ["x", "y", "color", "line_group", "facet_col"],
             "line_3d": ["x", "y", "z", "color"],
@@ -134,6 +134,18 @@ If feature is requested, the data could also come from a database.
                 "values": {
                     "options": self.numeric_columns,
                     "value": self.plot_options.get("values", None),
+                    "multi": False,
+                    "clearable": True,
+                },
+                "names": {
+                    "options": self.columns,
+                    "value": self.plot_options.get("names", self.columns[0]),
+                    "multi": False,
+                    "clearable": False,
+                },
+                "labels": {
+                    "options": self.columns,
+                    "value": self.plot_options.get("labels", self.columns[0]),
                     "multi": False,
                     "clearable": True,
                 },
