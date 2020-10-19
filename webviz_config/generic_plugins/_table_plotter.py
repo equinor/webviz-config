@@ -135,7 +135,7 @@ If feature is requested, the data could also come from a database.
                     "options": self.numeric_columns,
                     "value": self.plot_options.get("values", None),
                     "multi": False,
-                    "clearable": False,
+                    "clearable": True,
                 },
                 "size": {
                     "options": self.numeric_columns,
