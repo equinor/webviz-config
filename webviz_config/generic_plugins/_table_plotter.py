@@ -297,8 +297,7 @@ If feature is requested, the data could also come from a database.
                         dcc.Dropdown(
                             id=self.uuid(f"dropdown-{key}"),
                             clearable=arg["clearable"],
-                            options=[{"label": i, "value": i}
-                                     for i in arg["options"]],
+                            options=[{"label": i, "value": i} for i in arg["options"]],
                             value=arg["value"],
                             multi=arg["multi"],
                         ),
@@ -334,8 +333,7 @@ If feature is requested, the data could also come from a database.
                             id=self.uuid("graph-id"),
                             style={"height": "80vh", "width": "60%"},
                         ),
-                        html.Div(style={"width": "15%"},
-                                 children=self.filter_layout()),
+                        html.Div(style={"width": "15%"}, children=self.filter_layout()),
                     ],
                 )
             ]
@@ -391,16 +389,15 @@ If feature is requested, the data could also come from a database.
             data = self.data
             # Filter dataframe if filter columns are available
             if self.use_filter:
-                plot_inputs = args[1: -len(self.filter_cols)]
-                filter_inputs = args[-len(self.filter_cols):]
+                plot_inputs = args[1 : -len(self.filter_cols)]
+                filter_inputs = args[-len(self.filter_cols) :]
                 data = filter_dataframe(data, self.filter_cols, filter_inputs)
             else:
                 plot_inputs = args[1:]
             for name, plot_arg in zip(self.plot_args.keys(), plot_inputs):
                 if plot_type in ["parallel_coordinates"] and name == "dimensions":
                     # This plot type only accepts numerical data
-                    plot_arg = [
-                        val for val in plot_arg if val in self.numeric_columns]
+                    plot_arg = [val for val in plot_arg if val in self.numeric_columns]
                 if name in self.plots[plot_type]:
                     plotargs[name] = plot_arg
                     div_style.append(self.style_options_div)
