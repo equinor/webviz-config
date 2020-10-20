@@ -139,13 +139,7 @@ If feature is requested, the data could also come from a database.
                 },
                 "names": {
                     "options": self.columns,
-                    "value": self.plot_options.get("names", self.columns[0]),
-                    "multi": False,
-                    "clearable": False,
-                },
-                "labels": {
-                    "options": self.columns,
-                    "value": self.plot_options.get("labels", self.columns[0]),
+                    "value": self.plot_options.get("names", None),
                     "multi": False,
                     "clearable": True,
                 },
