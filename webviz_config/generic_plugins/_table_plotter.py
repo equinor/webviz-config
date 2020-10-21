@@ -133,7 +133,7 @@ If feature is requested, the data could also come from a database.
                 },
                 "values": {
                     "options": self.numeric_columns,
-                    "value": self.plot_options.get("values", None),
+                    "value": self.plot_options.get("values", self.numeric_columns[0]),
                     "multi": False,
                     "clearable": True,
                 },
