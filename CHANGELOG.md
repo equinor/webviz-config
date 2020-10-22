@@ -13,6 +13,8 @@ shipped plugins install themselves through the `webviz_config_plugins` entrypoin
 ad-hoc plugins as this is costly to maintain. Also, the `module.PluginName` notation in 
 configuration files can then in future be used fo distinguish between multiple plugin
 packages using the same plugin name.
+- [#330](https://github.com/equinor/webviz-config/pull/330) - Pie chart plot type now 
+available in table plotter.
 
 ### Fixed
 - [#325](https://github.com/equinor/webviz-config/pull/325) - Support plugin projects
