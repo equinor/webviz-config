@@ -10,6 +10,12 @@ def write_metadata(distributions, metadata):
                     if key == "Project-URL"
                 }
 
+                ep = entry_point.load()
+                if entry_point.name in globals():
+                    if entry_point.name in metadata and metadata[entry_point.name]['dist_name'] != dist.metadata['name']:
+                        warning_string = f"Plugin {entry_point.name} already exists. Previously loaded from package: '{metadata[entry_point.name]['dist_name']}'. Overwriting using package : '{dist.metadata['name']}'"          
+                        warnings.warn(warning_string, RuntimeWarning)
+                
                 metadata[entry_point.name] = {
                     "dist_name": dist.metadata["name"],
                     "dist_version": dist.version,
@@ -17,9 +23,5 @@ def write_metadata(distributions, metadata):
                     "download_url": project_urls.get("Download"),
                     "tracker_url": project_urls.get("Tracker"),
                 }
-
-                if entry_point.name in globals():
-                    warning_string = f"Plugin {entry_point.name} already exists. Overwriting."
-                    warnings.warn(warning_string, RuntimeWarning)
-
-                globals()[entry_point.name] = entry_point.load()
+                    
+                globals()[entry_point.name] = ep

@@ -2,7 +2,6 @@
 the utility itself.
 """
 
-import inspect
 from typing import Optional
 from .plugin_utils import write_metadata
 
@@ -28,6 +27,3 @@ class PluginDistInfo(TypedDict):
 metadata = {}
 
 write_metadata(distributions(), metadata)
-
-
-
