@@ -1,2 +1,2 @@
 * [Introduction](/)
-* [webviz_config package](webviz_config.md)
+* [webviz-config package](webviz-config.md)
