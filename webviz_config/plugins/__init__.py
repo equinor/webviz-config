@@ -3,7 +3,7 @@ the utility itself.
 """
 
 from typing import Optional
-from .plugin_utils import write_metadata
+from .plugin_utils import load_webviz_plugins_with_metadata
 
 try:
     # Python 3.8+
@@ -26,4 +26,4 @@ class PluginDistInfo(TypedDict):
 
 metadata = {}
 
-write_metadata(distributions(), metadata)
+load_webviz_plugins_with_metadata(distributions(), metadata, globals())
