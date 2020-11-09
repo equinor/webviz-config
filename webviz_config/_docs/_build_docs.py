@@ -148,19 +148,6 @@ def build_docs(build_directory: pathlib.Path) -> None:
         build_directory,
     )
 
-    # While waiting for https://github.com/jhildenbiddle/docsify-tabs/pull/30
-    # to be reviewed, merged and released:
-    substring_prefix = (
-        r"/[\r\n]*(\s*)<!-+\s+tab:\s*(.*)\s+-+>[\r\n]+([\s\S]*?)[\r\n]*\s*"
-    )
-    docsify_tabs_file = build_directory / "docsify-tabs.min.js"
-    docsify_tabs_file.write_text(
-        docsify_tabs_file.read_text().replace(
-            substring_prefix + r"(?=<!-+\s+tabs?:)/m",
-            substring_prefix + r"(?=<!-+\s+(tab:\s*(.*)|tabs:\s*?end)\s+-+>)/m",
-        )
-    )
-
     template_environment = jinja2.Environment(  # nosec
         loader=jinja2.PackageLoader("webviz_config", "templates"),
         undefined=jinja2.StrictUndefined,
