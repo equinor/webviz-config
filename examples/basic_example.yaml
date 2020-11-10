@@ -78,3 +78,17 @@ pages:
           name: Kari Nordmann
           phone: 12345678
           email: someother@email.com
+
+ - title: Pivot Table
+   content:
+    - PivotTable:
+        csv_file: ./example_data.csv
+        options:
+          cols:
+            - Well
+          rows:
+            - Segment
+          vals:
+            - Average permeability (D)
+          aggregatorName: Average
+          rendererName: Table Heatmap

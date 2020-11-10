@@ -30,6 +30,7 @@ def test_portable(dash_duo, tmp_path):
         "pdf-example",
         "syntax-highlighting-example",
         "plot-a-table",
+        "pivot-table",
     ]:
         dash_duo.wait_for_element(f"#{page}").click()
     assert dash_duo.get_logs() == [], "browser console should contain no error"
