@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED] - 2020-11-16
+
+## Fixed
+- [#339](https://github.com/equinor/webviz-config/pull/339) - After
+[#230](https://github.com/equinor/webviz-config/pull/230) generated app started using
+Dash `dcc.Location` and `dcc.Link` instead of tabs for multi-page apps. This enabled
+URL routing. At the same time, the root url `/` special case was set to show
+"Front page", however, users did not from before necessarily have a page called
+"Front page", as the "Front page" shown earlier was simply the first page in the list.
+Changed back to behavior prior to #230 - i.e. show first page in config as "Front page"
+and not rely on page title.
+
 ## [0.2.1] - 2020-10-29
 
 ### Changed

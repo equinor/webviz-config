@@ -119,7 +119,7 @@ else:
 def update_page(pathname):
     pathname = pathname.replace("/", "")
     if not pathname:
-        pathname = "front-page"
+        pathname = list(page_content.keys())[0] 
     return page_content.get(pathname, "Oooppss... Page not found.")
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
