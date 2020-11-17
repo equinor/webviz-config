@@ -4,9 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED] - YYYY-MM-DD
+
+### Added
+- [#337](https://github.com/equinor/webviz-config/pull/337) - New generic plugin to
+generate a [Pivot table](https://en.wikipedia.org/wiki/Pivot_table) based on
+[Dash Pivottable](https://github.com/plotly/dash-pivottable).
+
 ## [0.2.2] - 2020-11-16
 
-## Fixed
+### Fixed
 - [#339](https://github.com/equinor/webviz-config/pull/339) - After
 [#230](https://github.com/equinor/webviz-config/pull/230) generated app started using
 Dash `dcc.Location` and `dcc.Link` instead of tabs for multi-page apps. This enabled
