@@ -2,50 +2,59 @@ import warnings
 
 import mock
 
-from webviz_config.plugins.plugin_utils import load_webviz_plugins_with_metadata
+from webviz_config.plugins._utils import load_webviz_plugins_with_metadata
 
 
 class DistMock:
+    # pylint: disable=too-few-public-methods
     def __init__(self, entry_points, name):
-        self.metadata = {
-            "name": name,
-            "Project-URL": "Documentation, test.com",
-            "Project-URL": "Download, test.com",
-            "Project-URL": "Tracker, test.com"
-        }
+        self.metadata = {"name": name}
 
         self.entry_points = entry_points
         self.version = "123"
 
 
-mock_entrypoint = mock.Mock()
-mock_entrypoint.group = "webviz_config_plugins"
-mock_entrypoint.name = "testName"
+plugin_entrypoint_mock1 = mock.Mock()
+plugin_entrypoint_mock1.group = "webviz_config_plugins"
+plugin_entrypoint_mock1.name = "SomePlugin1"
 
-dist_mock = DistMock([mock_entrypoint], 'dist_mock_1')
-dist_mock2 = DistMock([mock_entrypoint, mock_entrypoint, mock_entrypoint], 'dist_mock_2')
+plugin_entrypoint_mock2 = mock.Mock()
+plugin_entrypoint_mock2.group = "webviz_config_plugins"
+plugin_entrypoint_mock2.name = "SomePlugin2"
 
-metadata = {}
-with warnings.catch_warnings(record=True) as w:
-    load_webviz_plugins_with_metadata([dist_mock], metadata, globals())
+dist_mock1 = DistMock([plugin_entrypoint_mock1], "dist_mock1")
+dist_mock2 = DistMock([plugin_entrypoint_mock1], "dist_mock2")
+dist_mock3 = DistMock([plugin_entrypoint_mock2], "dist_mock3")
+
+
+def test_no_warning():
+    globals_mock = {}
+    with warnings.catch_warnings(record=True) as warn:
+        metadata = load_webviz_plugins_with_metadata(
+            [dist_mock1, dist_mock3], globals_mock
+        )
+        assert len(warn) == 0, "Too many warnings"
+
+    assert len(metadata) == 2, "Wrong number of items in metadata"
+    assert "SomePlugin1" in globals_mock
+    assert "SomePlugin2" in globals_mock
+
+
+def test_warning_multiple():
+    globals_mock = {}
+    with warnings.catch_warnings(record=True) as warn:
+        metadata = load_webviz_plugins_with_metadata(
+            [dist_mock1, dist_mock2], globals_mock
+        )
+
+        assert len(warn) == 1
+        assert issubclass(warn[-1].category, RuntimeWarning)
+        assert str(warn[-1].message) == (
+            "Multiple versions of plugin with name SomePlugin1. "
+            "Already loaded from project dist_mock1. "
+            "Overwriting using plugin with from project dist_mock2"
+        )
+
     assert len(metadata) == 1, "Wrong number of items in metadata"
-    assert len(w) == 0, "Too many warnings"
-
-metadata = {}
-with warnings.catch_warnings(record=True) as w:
-    load_webviz_plugins_with_metadata([dist_mock, dist_mock2], metadata, globals())   
-    assert len(w) == 1
-    assert issubclass(w[-1].category, RuntimeWarning)
-    assert str(w[-1].message) == "Plugin testName already exists. Previously loaded from package: 'dist_mock_1'. Overwriting using package : 'dist_mock_2'"
-
-    assert len(metadata) == 1, "Wrong number of items in metadata"
-    assert metadata["testName"]["dist_name"] ==  "dist_mock_2", "Wrong dist name"
-
-metadata = {}
-load_webviz_plugins_with_metadata([dist_mock2], metadata, globals())
-
-assert len(metadata) == 1, "Wrong number of items in metadata"
-
-assert metadata["testName"]["dist_name"] ==  "dist_mock_2", "Wrong dist name"
-
-assert "testName" in globals()
+    assert metadata["SomePlugin1"]["dist_name"] == "dist_mock2", "Wrong dist name"
+    assert "SomePlugin1" in globals_mock

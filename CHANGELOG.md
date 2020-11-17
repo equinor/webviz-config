@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#337](https://github.com/equinor/webviz-config/pull/337) - New generic plugin to
 generate a [Pivot table](https://en.wikipedia.org/wiki/Pivot_table) based on
 [Dash Pivottable](https://github.com/plotly/dash-pivottable).
+- [#333](https://github.com/equinor/webviz-config/pull/333) - Warning is now raised
+if more than one plugin project provides a plugin with the same name.
 
 ## [0.2.2] - 2020-11-16
 
