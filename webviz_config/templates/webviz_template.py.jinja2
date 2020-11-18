@@ -73,6 +73,8 @@ WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "webviz_storag
 
 WEBVIZ_ASSETS.portable = {{ portable }}
 
+use_oauth2 = False
+
 if {{ not portable }} and not webviz_config.is_reload_process():
     # When Dash/Flask is started on localhost with hot module reload activated,
     # we do not want the main process to call expensive component functions in
@@ -82,16 +84,17 @@ if {{ not portable }} and not webviz_config.is_reload_process():
 else:
     page_content = {}
     {% for page in pages %}
-    page_content["{{page.id}}"] = [
-       {% for content in page.content -%}
-       {%- if content is string -%}
-         dcc.Markdown(r"""{{ content }}""")
-       {%- else -%}
-         webviz_config.plugins.{{ content._call_signature[0] }}.{{ content._call_signature[1] }}
-       {%- endif -%}
-       {{- "" if loop.last else ","}}
-       {% endfor -%}
-    ]
+    page_content["{{page.id}}"] = []
+    {% for content in page.content -%}
+    {% if content is string %}
+    page_content["{{page.id}}"].append(dcc.Markdown(r"""{{ content }}"""))
+    {% else %}
+    plugin_content = webviz_config.plugins.{{ content._call_signature[0] }}
+    if not use_oauth2:
+        use_oauth2 = plugin_content.oauth2 if hasattr(plugin_content, "oauth2") else use_oauth2
+    page_content["{{page.id}}"].append(plugin_content.{{ content._call_signature[1] }})
+    {% endif %}
+    {% endfor %}
     {% endfor %}
     app.layout = html.Div(
         className="layoutWrapper", 
@@ -124,6 +127,7 @@ else:
             ])]),
         html.Div(className="pageContent", id="page-content")])
 
+oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
 @app.callback(dash.dependencies.Output("page-content", "children"),
               dash.dependencies.Input("url", "pathname"))
@@ -144,7 +148,7 @@ if __name__ == "__main__":
 
     port = webviz_config.utils.get_available_port(preferred_port=5000)
 
-    token = webviz_config.LocalhostToken(app.server, port).one_time_token
+    token = webviz_config.LocalhostToken(app.server, port, oauth2).one_time_token
     webviz_config.utils.LocalhostOpenBrowser(port, token)
 
     webviz_config.utils.silence_flask_startup()
@@ -161,3 +165,7 @@ if __name__ == "__main__":
         dev_tools_silence_routes_logging=False,
       {% endif %}
     )
+else:
+    # This will be applied if not running on localhost
+    if use_oauth2:
+        oauth2.set_oauth2_before_request_decorator()

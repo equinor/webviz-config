@@ -44,6 +44,7 @@ jobs:
 
       - name: 📦 Install webviz-config with dependencies
         run: |
+          pip install urllib3==1.24.3
           pip install 'pandas==1.1.4' # Pinned to 1.1.4 due to pandas 1.1.5 bug with pylint: https://github.com/pandas-dev/pandas/issues/38355
           pip install --upgrade pip==20.2.4 # Pinned to 20.2.4 for black install compatibility: https://github.com/psf/black/issues/1847
           pip install .

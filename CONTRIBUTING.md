@@ -9,6 +9,7 @@
   - [Data input](#data-input)
     - [Deattaching data from its original source](#deattaching-data-from-its-original-source)
   - [Custom ad-hoc plugins](#custom-ad-hoc-plugins)
+  - [OAuth 2.0 Authorization Code flow](#oauth-2.0-authorization-code-flow)
 - [Run tests](#run-tests)
 - [Build documentation](#build-documentation)
 
@@ -530,6 +531,29 @@ applies if the custom plugin is saved in a package with submodule(s),
       - ourpackage.ourmodule.OurCustomPlugin:
           ...
 ```
+
+### OAuth 2.0 Authorization Code flow
+
+It is possible to use OAuth 2.0 Authorization Code flow to secure a `webviz` application. 
+In order to do so, add `oauth2` attribute in a custom plugin with a boolean `True` value. 
+The following is an example.
+
+```python
+class OurCustomPlugin(WebvizPluginABC):
+
+    def __init__(self):
+        super().__init__()
+        self.use_oauth2 = True
+
+    @property
+    def oauth2(self):
+        return self.use_oauth2
+```
+
+Information related to the application for OAuth 2.0 has to be provided in environment 
+variables. These environment variables are `WEBVIZ_TENANT_ID`, `WEBVIZ_CLIENT_ID`, 
+`WEBVIZ_CLIENT_SECRET`, `WEBVIZ_SCOPE`. One additional environment variable 
+`WEBVIZ_SESSION_SECRET_KEY` is also required for signing the Flask session cookie.
 
 ## Run tests
 

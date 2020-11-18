@@ -4,6 +4,7 @@ import secrets
 import flask
 
 from ._is_reload_process import is_reload_process
+from ._oauth2 import Oauth2
 
 
 class LocalhostToken:
@@ -29,9 +30,10 @@ class LocalhostToken:
     two different localhost applications running simultaneously do not interfere.
     """
 
-    def __init__(self, app: flask.app.Flask, port: int):
+    def __init__(self, app: flask.app.Flask, port: int, oauth2: Oauth2 = None):
         self._app = app
         self._port = port
+        self._oauth2 = oauth2
 
         if not is_reload_process():
             # One time token (per run) user has to provide
@@ -63,6 +65,7 @@ class LocalhostToken:
         # pylint: disable=inconsistent-return-statements
         @self._app.before_request
         def _check_for_ott_or_cookie():  # type: ignore[no-untyped-def]
+
             if not self._ott_validated and self._ott == flask.request.args.get("ott"):
                 self._ott_validated = True
                 flask.g.set_cookie_token = True
@@ -72,6 +75,16 @@ class LocalhostToken:
                 f"cookie_token_{self._port}"
             ):
                 self._ott_validated = True
+
+                if self._oauth2:
+                    # The session of the request does not contain access token, redirect to /login
+                    is_redirected, redirect_url = self._oauth2.is_empty_token()
+                    if is_redirected:
+                        return flask.redirect(redirect_url)
+
+                    # The session contains access token, check (and set) its expiration date
+                    self._oauth2.check_and_set_token_expiry()
+
             else:
                 flask.abort(401)
 
