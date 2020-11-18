@@ -515,11 +515,7 @@ To run tests it is necessary to first install the [selenium chrome driver](https
 Then install the Python development requirements:
 ```bash
 pip install .[tests]
-pip install dash[testing]
 ```
-The second of these commands appears to be necessary as long as
-[this `pip` issue is open](https://github.com/pypa/pip/issues/4957).
-
 You can then run the tests using
 ```bash
 pytest tests --forked
