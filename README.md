@@ -18,22 +18,22 @@
 
 Writing a [Dash web application](https://github.com/plotly/dash) gives a lot of flexibility, however, it also requires :snake: Python knowledge from the person setting it up.
 
-*Webviz* is a MIT-licensed configuration layer on top of Dash, which encourages making reusable components and dashboards, which can then be added/removed when creating an application using a short [`yaml`](https://en.wikipedia.org/wiki/YAML) configuration file.
+*Webviz™* is a MIT-licensed configuration layer on top of Dash, which encourages making reusable components and dashboards, which can then be added/removed when creating an application using a short [`yaml`](https://en.wikipedia.org/wiki/YAML) configuration file.
 
 This Python package, `webviz-config`, is the core plugin framework. For a real example repository using this plugin system, see e.g. [`webviz-subsurface`](https://github.com/equinor/webviz-subsurface).
  
-**These are the main user groups targeted by *Webviz*:**
+**These are the main user groups targeted by *Webviz™*:**
 - **You do not know Python**, and only want to add different predefined dashboards or visualizations/components in a certain order and/or on different pages in the application. Optionally with some text and mathematical equations (that you provide) inbetween the  dashboards, explaining what the user is looking at.
-- **You know [Python](https://www.python.org/)**, and want to create generic or specialized dashboards you or other users can reuse by simply asking for it in the Webviz configuration file. This can be done without knowing JavaScript (see also [Dash](https://plot.ly/dash/) for more information).
+- **You know [Python](https://www.python.org/)**, and want to create generic or specialized dashboards you or other users can reuse by simply asking for it in the Webviz™ configuration file. This can be done without knowing JavaScript (see also [Dash](https://plot.ly/dash/) for more information).
 - **You know [React](https://reactjs.org/)**, and want to create highly specialized visualization which Python or pure config-file users can reuse.
 
-*Webviz* will create web applications with very :lock: strict security headers and CSP settings, giving an rating of **A+** on e.g. [Mozilla observatory](https://observatory.mozilla.org/). It also facilitates a :whale: Docker setup, where the Python code can be ran completely unpriviliged in a sandbox (both with respect to file system access and network communication).
+*Webviz™* will create web applications with very :lock: strict security headers and CSP settings, giving an rating of **A+** on e.g. [Mozilla observatory](https://observatory.mozilla.org/). It also facilitates a :whale: Docker setup, where the Python code can be ran completely unpriviliged in a sandbox (both with respect to file system access and network communication).
 
 Example configuration file and information about the standard plugins can be seen in [the documentation](https://equinor.github.io/webviz-config/).
 
 **The workflow can be summarized as this:**
 1) The user provides a :book: configuration file following the [yaml](https://en.wikipedia.org/wiki/YAML) standard.
-2) *Webviz* reads the configuration file and automatically writes the corresponding :snake: Python code.
+2) *Webviz™* reads the configuration file and automatically writes the corresponding :snake: Python code.
 3) The created application can be viewed locally, or deployed using :whale: Docker to a cloud provider. Both out of the box.
 
 ![technical_drawing](https://user-images.githubusercontent.com/31612826/67282250-9f54fc80-f4d1-11e9-9f77-b352ec2710ed.png)
@@ -95,5 +95,5 @@ To quickly get started, we recommend using the corresponding
 
 `webviz-config` is, with a few exceptions listed below, [MIT](./LICENSE) licensed.
 
-- The [webviz logo](./docs/assets/webviz-logo.svg) is [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+- The [`webviz-config` logo](./webviz_config/_docs/static/webviz-logo.svg) is [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
