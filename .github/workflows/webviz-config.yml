@@ -12,22 +12,21 @@ on:
       - published
   schedule:
     # Run CI daily and check that tests are working with latest dependencies
-    - cron:  '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
-
   webviz-config:
     runs-on: ubuntu-latest
     env:
-      PYTHONWARNINGS: default  # We want to see e.g. DeprecationWarnings    
+      PYTHONWARNINGS: default # We want to see e.g. DeprecationWarnings
     strategy:
       matrix:
-        python-version: ['3.6', '3.7', '3.8']
-        pandas-version: ['0.24.2', '1.*']  # Necessary as long as RHEL6 is used internally
+        python-version: ["3.6", "3.7", "3.8"]
+        pandas-version: ["0.24.2", "1.*"] # Necessary as long as RHEL6 is used internally
         exclude:
           # Skip Python 3.8 and Pandas 0.24.2 combination due to missing 3.8 wheel for that specific pandas version
-          - python-version: '3.8'
-            pandas-version: '0.24.2'
+          - python-version: "3.8"
+            pandas-version: "0.24.2"
 
     steps:
       - name: 📖 Checkout commit locally
@@ -36,7 +35,7 @@ jobs:
       - name: Set setuptools_scm version
         if: github.event_name == 'release'
         # Need to instruct setuptools_scm to use the GitHub provided tag, despite local git changes (due to build step)
-        run: echo '::set-env name=SETUPTOOLS_SCM_PRETEND_VERSION::${{ github.event.release.tag_name }}'
+        run: echo "SETUPTOOLS_SCM_PRETEND_VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
       - name: 🐍 Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
@@ -58,7 +57,7 @@ jobs:
           pip install --use-feature=2020-resolver .[tests]
           wget https://chromedriver.storage.googleapis.com/$(wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE -q -O -)/chromedriver_linux64.zip
           unzip chromedriver_linux64.zip
-  
+
       - name: 🧾 List all installed packages
         run: pip freeze
 
@@ -77,7 +76,7 @@ jobs:
           pytest ./tests --headless --forked
           webviz docs --portable ./docs_build --skip-open
           webviz schema
-        
+
       - name: 🚢 Build and deploy Python package
         if: github.event_name == 'release' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
         env:
