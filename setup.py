@@ -25,7 +25,6 @@ def get_long_description() -> str:
 TESTS_REQUIRES = [
     "bandit",
     "black",
-    "dash[testing]",
     "jsonschema",
     "mock",
     "mypy",
