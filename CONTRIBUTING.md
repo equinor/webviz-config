@@ -72,7 +72,7 @@ title: Simple Webviz example
 pages:
 
   - title: Front page
-    content: 
+    content:
       - ExamplePlugin:
 ```
 
@@ -181,7 +181,7 @@ def _user_download_data(data_requested):
         }
         if data_requested
         else None
-    )     
+    )
 ```
 
 By letting the plugin define the callback, the plugin author is able
@@ -232,7 +232,7 @@ title: Simple Webviz example
 pages:
 
   - title: Front page
-    content: 
+    content:
       - ExamplePlugin:
           title: My special title
 ```
@@ -265,7 +265,7 @@ title: Simple Webviz example
 
 pages:
   - title: Front page
-    content: 
+    content:
       - ExamplePlugin:
           title: My special title
           number: Some text instead of number
@@ -379,7 +379,7 @@ webviz build some_config.yaml --portable /some/outputfolder
 
 The core of `webviz-config` will do the following:
 
-1) If the user has *not* asked for a portable version (i.e. not given the 
+1) If the user has *not* asked for a portable version (i.e. not given the
    `--portable` command line argument, the decorator `@webvizstore` will
    not change the attached function.
 2) If the user asks for a portable version, it will
@@ -409,7 +409,7 @@ has a `__repr__` function associated with it such that instances representing
 different input also have different string output from `__repr__`.
 
 > :rocket: If you nest decorations, e.g. use both `@webvizstore` and
-`@CACHE.memoize`, following the same order as in the example above usually gives 
+`@CACHE.memoize`, following the same order as in the example above usually gives
 best performance.
 
 ### Common settings
@@ -495,7 +495,7 @@ title: Simple Webviz example
 pages:
 
   - title: Front page
-    content: 
+    content:
       - ourmodule.OurCustomPlugin:
           title: Title of my custom plugin
 ```
@@ -515,7 +515,11 @@ To run tests it is necessary to first install the [selenium chrome driver](https
 Then install the Python development requirements:
 ```bash
 pip install .[tests]
+pip install dash[testing]
 ```
+The second of these commands appears to be necessary as long as
+[this `pip` issue is open](https://github.com/pypa/pip/issues/4957).
+
 You can then run the tests using
 ```bash
 pytest tests --forked

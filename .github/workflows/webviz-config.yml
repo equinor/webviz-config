@@ -49,12 +49,14 @@ jobs:
 
       - name: 📦 Install webviz-config with dependencies
         run: |
-          pip install --upgrade pip wheel
-          pip install --use-feature=2020-resolver . 'pandas==${{ matrix.pandas-version }}'
+          pip install 'pandas==${{ matrix.pandas-version }}'
+          pip install --upgrade pip
+          pip install .
 
       - name: 📦 Install test dependencies
         run: |
-          pip install --use-feature=2020-resolver .[tests]
+          pip install .[tests]
+          pip install dash[testing]
           wget https://chromedriver.storage.googleapis.com/$(wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE -q -O -)/chromedriver_linux64.zip
           unzip chromedriver_linux64.zip
 
