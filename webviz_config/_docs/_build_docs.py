@@ -80,7 +80,11 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         for arg, default in dict(
             zip(reversed(argspec.args), reversed(argspec.defaults))
         ).items():
-            plugin_info["arg_info"][arg]["default"] = default
+            # Casting pathlib.Path to str could become unnecessary if outsourcing creation
+            # of json schema to pydantic https://pydantic-docs.helpmanual.io/
+            plugin_info["arg_info"][arg]["default"] = (
+                str(default) if isinstance(default, pathlib.Path) else default
+            )
 
     for arg, arg_info in plugin_info["arg_info"].items():
         arg_info["required"] = "default" not in arg_info

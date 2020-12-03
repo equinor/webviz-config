@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED] - YYYY-MM-DD
+## [0.2.4] - 2020-12-04
+
+### Fixed
+- [#351](https://github.com/equinor/webviz-config/pull/351) - Fixed bug in automatically
+generated docs when having a defaulted input argument of type `pathlib.Path` in plugin
+arguments.
+
+## [0.2.3] - 2020-11-26
 
 ### Added
 - [#337](https://github.com/equinor/webviz-config/pull/337) - New generic plugin to
@@ -31,10 +38,10 @@ and not rely on page title.
 - [#324](https://github.com/equinor/webviz-config/pull/324) - Now also `webviz-config`
 shipped plugins install themselves through the `webviz_config_plugins` entrypoints group.
 - [#325](https://github.com/equinor/webviz-config/pull/325) - Removed support for
-ad-hoc plugins as this is costly to maintain. Also, the `module.PluginName` notation in 
+ad-hoc plugins as this is costly to maintain. Also, the `module.PluginName` notation in
 configuration files can then in future be used fo distinguish between multiple plugin
 packages using the same plugin name.
-- [#330](https://github.com/equinor/webviz-config/pull/330) - Pie chart plot type now 
+- [#330](https://github.com/equinor/webviz-config/pull/330) - Pie chart plot type now
 available in table plotter.
 
 ### Fixed
@@ -89,7 +96,7 @@ enforced by `webviz-config` (inline script hashes are added automatically).
 (including specifying MIME type). Before only `.zip` archives were supported.
 - [#281](https://github.com/equinor/webviz-config/pull/281) - Now uses `importlib` instead of `pkg_resources` for
 detecting plugin entry points and package versions.
-- [#306](https://github.com/equinor/webviz-config/pull/306) - Now runs `WEBVIZ_ASSETS.make_portable` before 
+- [#306](https://github.com/equinor/webviz-config/pull/306) - Now runs `WEBVIZ_ASSETS.make_portable` before
 `WEBVIZ_STORE.build_store` when building portables, as it usually takes shorter time, and therefore will give
 feedback quicker if something is wrong.
 
