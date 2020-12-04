@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.4] - 2020-12-04
+## [UNRELEASED] - YYYY-MM-DD
 
 ### Fixed
 - [#351](https://github.com/equinor/webviz-config/pull/351) - Fixed bug in automatically
 generated docs when having a defaulted input argument of type `pathlib.Path` in plugin
 arguments.
+- [#354](https://github.com/equinor/webviz-config/pull/354) - Fixed bug in automatically
+generated docs when having type hinted return value of plugin `__init__` functions.
 
 ## [0.2.3] - 2020-11-26
 

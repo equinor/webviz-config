@@ -90,7 +90,7 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         arg_info["required"] = "default" not in arg_info
 
     for arg, annotation in argspec.annotations.items():
-        if arg not in SPECIAL_ARGS:
+        if arg not in SPECIAL_ARGS and arg != "return":
             plugin_info["arg_info"][arg]["typehint"] = annotation
             plugin_info["arg_info"][arg]["typehint_string"] = _annotation_to_string(
                 annotation
