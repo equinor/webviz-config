@@ -79,7 +79,7 @@ setup(
         "flask-talisman>=0.6",
         "jinja2>=2.10",
         "markdown>=3.0",
-        "pandas>=0.24",
+        "pandas>=1.0",
         "pyarrow>=0.16",
         "pyyaml>=5.1",
         "tqdm>=4.8",
