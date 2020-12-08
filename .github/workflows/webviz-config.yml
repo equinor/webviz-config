@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.6", "3.7", "3.8"]
-        pandas-version: ["0.24.2", "1.*"] # Necessary as long as RHEL6 is used internally
+        pandas-version: ["0.24.2", "1.1.4"] # 0.24.2 necessary as long as RHEL6 is used internally. Pinned to 1.1.4 due to pandas 1.1.5 bug with pylint https://github.com/pandas-dev/pandas/issues/38355
         exclude:
           # Skip Python 3.8 and Pandas 0.24.2 combination due to missing 3.8 wheel for that specific pandas version
           - python-version: "3.8"
