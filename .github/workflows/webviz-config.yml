@@ -22,11 +22,6 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.6", "3.7", "3.8"]
-        pandas-version: ["0.24.2", "1.1.4"] # 0.24.2 necessary as long as RHEL6 is used internally. Pinned to 1.1.4 due to pandas 1.1.5 bug with pylint https://github.com/pandas-dev/pandas/issues/38355
-        exclude:
-          # Skip Python 3.8 and Pandas 0.24.2 combination due to missing 3.8 wheel for that specific pandas version
-          - python-version: "3.8"
-            pandas-version: "0.24.2"
 
     steps:
       - name: 📖 Checkout commit locally
@@ -49,7 +44,7 @@ jobs:
 
       - name: 📦 Install webviz-config with dependencies
         run: |
-          pip install 'pandas==${{ matrix.pandas-version }}'
+          pip install 'pandas==1.1.4' # Pinned to 1.1.4 due to pandas 1.1.5 bug with pylint: https://github.com/pandas-dev/pandas/issues/38355
           pip install --upgrade pip
           pip install .
 
@@ -64,7 +59,7 @@ jobs:
         run: pip freeze
 
       - name: 🕵️ Check code style & linting
-        if: matrix.pandas-version == '1.*' && matrix.python-version == '3.8'
+        if: matrix.python-version == '3.8'
         run: |
           black --check webviz_config tests setup.py
           pylint webviz_config tests setup.py
@@ -80,7 +75,7 @@ jobs:
           webviz schema
 
       - name: 🚢 Build and deploy Python package
-        if: github.event_name == 'release' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
+        if: github.event_name == 'release' && matrix.python-version == '3.6'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.pypi_webviz_token }}
@@ -90,7 +85,7 @@ jobs:
           twine upload dist/*
 
       - name: 📚 Update GitHub pages
-        if: github.event_name == 'release' && matrix.python-version == '3.6' && matrix.pandas-version == '1.*'
+        if: github.event_name == 'release' && matrix.python-version == '3.6'
         run: |
           cp -R ./docs_build ../docs_build
 
