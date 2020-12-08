@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.2.4] - 2020-12-08
+
 ### Changed
-- [#361](https://github.com/equinor/webviz-config/pull/361) - Bumped pandas requirement
+- [#362](https://github.com/equinor/webviz-config/pull/362) - Bumped pandas requirement
 to `pandas>=1.0`, as `pandas==0.24.2` is no longer needed in internal deployment.
 
 ### Fixed
