@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Changed
+- [#367](https://github.com/equinor/webviz-config/pull/367) - Made type information
+available to package consumers by indicating support for typing as specified in PEP 561.
+
 ## [0.2.4] - 2020-12-08
 
 ### Changed
