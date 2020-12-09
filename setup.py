@@ -46,6 +46,7 @@ setup(
         "webviz_config": [
             "_docs/static/*",
             "_docs/static/fonts/*",
+            "py.typed",
             "static/*",
             "static/.dockerignore",
             "static/assets/*",
