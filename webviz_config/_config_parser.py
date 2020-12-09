@@ -10,7 +10,7 @@ from . import plugins as standard_plugins
 from .utils import terminal_colors
 from .utils._get_webviz_plugins import _get_webviz_plugins
 
-SPECIAL_ARGS = ["self", "app", "_call_signature"]
+SPECIAL_ARGS = ["self", "app", "webviz_settings", "_call_signature"]
 
 
 def _call_signature(
@@ -113,6 +113,8 @@ def _call_signature(
     special_args = ""
     if "app" in argspec.args:
         special_args += "app=app, "
+    if "webviz_settings" in argspec.args:
+        special_args += "webviz_settings=webviz_settings, "
 
     return (
         f"{plugin_name}({special_args}**{kwargs})",

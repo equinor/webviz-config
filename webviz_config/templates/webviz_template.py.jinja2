@@ -9,6 +9,7 @@ import logging
 import threading
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
+import warnings
 
 import dash
 import dash_core_components as dcc
@@ -21,6 +22,7 @@ from webviz_config.themes import installed_themes
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
+from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 
 # We do not want to show INFO regarding werkzeug routing as that is too verbose,
 # however we want other log handlers (typically coming from webviz plugin dependencies)
@@ -44,13 +46,34 @@ server = app.server
 app.title = "{{ title }}"
 app.config.suppress_callback_exceptions = True
 
-app.webviz_settings = {
-    "shared_settings": webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
-        {{ shared_settings }}, {{ config_folder }}, {{ portable }}
+# Create the webviz_setting object that will get passed as an argument to 
+# all plugins that require it.
+webviz_settings: webviz_config.WebvizSettings = webviz_config.WebvizSettings(
+    shared_settings=webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
+        {{ shared_settings }}, {{ config_folder }}, {{ portable }} 
     ),
-    "portable": {{ portable }},
-    "theme": theme,
+    portable={{ portable }},
+    theme=theme,
+)
+
+# Previously, webviz_settings was piggybacked onto the Dash application object.
+# For a period of time, mark access to the webviz_settings attribute on 
+# the Dash application object as deprecated.
+deprecate_webviz_settings_attribute_in_dash_app()
+app._deprecated_webviz_settings = {
+    "shared_settings" : webviz_settings.shared_settings,
+    "portable" : webviz_settings.portable,
+    "theme" : webviz_settings.theme
 }
+
+
+# !!!!
+# !!!!
+# TODO(Sigurd) Must be removed
+# Hack for testing
+# To make deprecation warnings show
+warnings.simplefilter("default")
+
 
 CACHE.init_app(server)
 

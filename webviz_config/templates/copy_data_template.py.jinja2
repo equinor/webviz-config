@@ -4,6 +4,7 @@
 import logging
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
+import warnings
 
 import dash
 
@@ -13,6 +14,7 @@ from webviz_config.themes import installed_themes
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
+from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 
 logging.getLogger().setLevel(logging.{{ loglevel }})
 
@@ -22,12 +24,35 @@ theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_t
 app = dash.Dash()
 app.config.suppress_callback_exceptions = True
 
-app.webviz_settings = {
-    "shared_settings": webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
-        {{ shared_settings }}, {{ config_folder }}, False
+# Create the webviz_setting object that will get passed as an argument to 
+# all plugins that require it.
+# TODO(Sigurd) What should the value of portable be during this invocation of the plugins?
+# TODO(Sigurd) Does it even make sense to hav portable as a property on WebvizSettings?
+webviz_settings: webviz_config.WebvizSettings = webviz_config.WebvizSettings(
+    shared_settings=webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
+        {{ shared_settings }}, {{ config_folder }}, {{ False }} 
     ),
-    "theme": theme,
+    portable=False,
+    theme=theme,
+)
+
+# Previously, webviz_settings was piggybacked onto the Dash application object.
+# For a period of time, mark access to the webviz_settings attribute on 
+# the Dash application object as deprecated.
+deprecate_webviz_settings_attribute_in_dash_app()
+app._deprecated_webviz_settings = {
+    "shared_settings" : webviz_settings.shared_settings,
+    "theme" : webviz_settings.theme
 }
+
+
+# !!!!
+# !!!!
+# TODO(Sigurd) Must be removed
+# Hack for testing
+# To make deprecation warnings show
+warnings.simplefilter("default")
+
 
 CACHE.init_app(app.server)
 
