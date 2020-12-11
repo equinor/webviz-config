@@ -66,15 +66,6 @@ If feature is requested, the data could also come from a database.
         )
         self.filter_defaults = filter_defaults
         self.column_color_discrete_maps = column_color_discrete_maps
-
-        # !!!!
-        # TODO(Sigurd) Must be removed
-        # This will now give deprecation warning, if they are enabled
-        self.plotly_theme = app.webviz_settings["theme"].plotly_theme
-
-        # !!!!
-        # TODO(Sigurd) Remove comments
-        # This will now be the way to get hold of settings
         self.plotly_theme = webviz_settings.theme.plotly_theme
         self.set_callbacks(app)
 
