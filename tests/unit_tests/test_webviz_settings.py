@@ -1,11 +1,12 @@
-import pytest
-import sys
 from typing import cast
+
+import pytest
 
 from webviz_config import WebvizConfigTheme, WebvizSettings
 
 
 def test_construction_and_basic_access() -> None:
+    # pylint: disable=unidiomatic-typecheck
     the_shared_settings = {"somenumber": 10, "somestring": "abc"}
     the_theme = WebvizConfigTheme("dummyThemeName")
     settings_obj = WebvizSettings(the_shared_settings, the_theme)
@@ -28,8 +29,8 @@ def test_construction_and_basic_access() -> None:
 def test_construction_with_invalid_types() -> None:
     with pytest.raises(TypeError):
         theme = WebvizConfigTheme("dummyThemeName")
-        settings_obj = WebvizSettings(cast(dict, None), theme)
+        _settings_obj = WebvizSettings(cast(dict, None), theme)
 
     with pytest.raises(TypeError):
         shared_settings = {"somenumber": 10, "somestring": "abc"}
-        settings_obj = WebvizSettings(shared_settings, cast(WebvizConfigTheme, None))
+        _settings_obj = WebvizSettings(shared_settings, cast(WebvizConfigTheme, None))
