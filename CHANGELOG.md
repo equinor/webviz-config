@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Added
+- [#529](https://github.com/equinor/webviz-subsurface/pull/529) - Added support for PVDO and PVTG to PVT plot and to respective data modules.
+
 ### Changed
 - [#367](https://github.com/equinor/webviz-config/pull/367) - Made type information
 available to package consumers by indicating support for typing as specified in [PEP 561](https://www.python.org/dev/peps/pep-0561/).
