@@ -7,8 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED] - YYYY-MM-DD
 
 ### Changed
+- [#368](https://github.com/equinor/webviz-config/pull/368) - Made Webviz global
+settings available to plugin implementations through special `webviz_settings` 
+argument. This argument is an instance of the `WebvizSettings` class and currently
+contains both the `shared_settings` and `theme` properties.
 - [#367](https://github.com/equinor/webviz-config/pull/367) - Made type information
-available to package consumers by indicating support for typing as specified in [PEP 561](https://www.python.org/dev/peps/pep-0561/).
+available to package consumers by indicating support for typing as specified in 
+[PEP 561](https://www.python.org/dev/peps/pep-0561/).
+
+### Deprecated
+- [#368](https://github.com/equinor/webviz-config/pull/368) - Access to `webviz_settings`
+as an attribute on the Dash application instance object (currently being passed to the
+plugins as the special `app` argument) has been deprecated.
 
 ## [0.2.4] - 2020-12-08
 
