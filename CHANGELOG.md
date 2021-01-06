@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Fixed
+- [#373](https://github.com/equinor/webviz-config/pull/373) - Fix for import of TypedDict 
+in Python versions older than 3.8. Check against Python version instead of using try-except.
+
 ## [0.2.5] - 2020-12-19
 
 ### Changed
