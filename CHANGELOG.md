@@ -11,14 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 settings available to plugin implementations through special `webviz_settings` 
 argument. This argument is an instance of the `WebvizSettings` class and currently
 contains both the `shared_settings` and `theme` properties.
-- [#367](https://github.com/equinor/webviz-config/pull/367) - Made type information
-available to package consumers by indicating support for typing as specified in 
-[PEP 561](https://www.python.org/dev/peps/pep-0561/).
 
 ### Deprecated
 - [#368](https://github.com/equinor/webviz-config/pull/368) - Access to `webviz_settings`
 as an attribute on the Dash application instance object (currently being passed to the
 plugins as the special `app` argument) has been deprecated.
+
+## [0.2.6] - 2021-01-07
+
+### Fixed
+- [#373](https://github.com/equinor/webviz-config/pull/373) - Fix for import of TypedDict 
+in Python versions older than 3.8. Check against Python version instead of using try-except.
+
+## [0.2.5] - 2020-12-19
+
+### Changed
+- [#367](https://github.com/equinor/webviz-config/pull/367) - Made type information
+available to package consumers by indicating support for typing as specified in 
+[PEP 561](https://www.python.org/dev/peps/pep-0561/).
 
 ## [0.2.4] - 2020-12-08
 
