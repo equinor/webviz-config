@@ -6,7 +6,8 @@ import dash
 
 def _get_deprecated_webviz_settings(self: Any) -> dict:
     warnings.warn(
-        "Accessing webviz_settings through the Dash application object has been deprecated",
+        "Accessing webviz_settings through the Dash application object has been deprecated, "
+        "see https://github.com/equinor/webviz-config/pull/368",
         DeprecationWarning,
         stacklevel=2,
     )
