@@ -3,18 +3,15 @@ import abc
 import base64
 import zipfile
 import warnings
-
+import sys
 from uuid import uuid4
 from typing import List, Optional, Type, Union
 
-try:
-    # Python 3.8+
-    # pylint: disable=ungrouped-imports
-    from typing import TypedDict  # type: ignore
-except (ImportError, ModuleNotFoundError):
-    # Python < 3.8
-    from typing_extensions import TypedDict  # type: ignore
-
+# pylint: disable=wrong-import-position
+if sys.version_info >= (3, 8):
+    from typing import TypedDict
+else:
+    from typing_extensions import TypedDict
 
 import bleach
 from dash.development.base_component import Component
