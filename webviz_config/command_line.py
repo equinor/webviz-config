@@ -1,9 +1,9 @@
+import sys
 import json
 import argparse
 import pathlib
 
 from ._build_webviz import build_webviz
-from .certificate._certificate_generator import create_ca
 from ._docs.open_docs import open_docs
 from ._docs._create_schema import create_schema
 from ._user_data_dir import user_data_dir
@@ -82,7 +82,7 @@ def main() -> None:
         "your personal public key infrastructure",
     )
 
-    parser_cert.set_defaults(func=create_ca)
+    parser_cert.set_defaults(func=_dummy_create_ca)
 
     # Add "documentation" parser:
 
@@ -175,3 +175,14 @@ def main() -> None:
     args = parser.parse_args()
 
     args.func(args)
+
+
+def _dummy_create_ca(_args: argparse.Namespace) -> None:
+    """
+    Print out a message about certs being unnecessary and exit gracefully (ie.
+    returncode 0)
+    """
+    print(
+        "The 'certificate' command is no longer needed as Webviz uses HTTP for local servers"
+    )
+    sys.exit(0)

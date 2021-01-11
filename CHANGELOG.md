@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Changed
+- [#374](https://github.com/equinor/webviz-config/pull/374) - Removed Webviz
+  SSL certificate generation and forcing of HTTPS connections.
+
 ## [0.2.7] - 2021-01-14
 
 ### Changed

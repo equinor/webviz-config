@@ -16,7 +16,6 @@ import dash_html_components as html
 from flask_talisman import Talisman
 import webviz_config
 import webviz_config.plugins
-import webviz_config.certificate
 from webviz_config.themes import installed_themes
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
@@ -67,7 +66,7 @@ app._deprecated_webviz_settings = {
 CACHE.init_app(server)
 
 theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
-Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy)
+Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy, force_https=False)
 
 WEBVIZ_STORAGE.use_storage = {{portable}}
 WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "webviz_storage"
@@ -153,7 +152,6 @@ if __name__ == "__main__":
     app.run_server(
         host="localhost",
         port=port,
-        ssl_context=webviz_config.certificate.LocalhostCertificate().ssl_context,
         debug=False,
         use_reloader={{not portable}},
         dev_tools_prune_errors=False,

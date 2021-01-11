@@ -41,9 +41,9 @@ class LocalhostOpenBrowser:
             f"{self._url(with_token=True)}"
         )
 
-    def _url(self, with_token: bool = False, https: bool = True) -> str:
+    def _url(self, with_token: bool = False) -> str:
         return (
-            f"{'https' if https else 'http'}://localhost:{self._port}"
+            f"http://localhost:{self._port}"
             + f"{'?ott=' + self._token if with_token else ''}"
         )
 
@@ -73,7 +73,11 @@ class LocalhostOpenBrowser:
         os.environ["NO_PROXY"] = "localhost"
 
         try:
-            urllib.request.urlopen(self._url(https=False))  # nosec
+            urllib.request.urlopen(self._url())  # nosec
+            app_ready = True
+        except urllib.error.HTTPError:  # type: ignore[attr-defined]
+            # The flask instance responded with some HTTP error (likely 401),
+            # but is otherwise ready to accept connections
             app_ready = True
         except urllib.error.URLError:  # type: ignore[attr-defined]
             # The flask instance has not started
@@ -93,6 +97,10 @@ class LocalhostOpenBrowser:
         print(
             f"{terminal_colors.GREEN}{terminal_colors.BOLD}"
             f" Opening the application ({self._url()}) in your browser.\n"
+            f"{terminal_colors.BLUE}"
+            " Note that your browser might display security issues.\n"
+            " See: https://equinor.github.io/webviz-config/#/?id=localhost-hsts\n"
+            f"{terminal_colors.GREEN}"
             " Press CTRL + C in this terminal window to stop the application."
             f"{terminal_colors.END}"
         )
