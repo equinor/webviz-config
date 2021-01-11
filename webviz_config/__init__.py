@@ -6,6 +6,7 @@ except ModuleNotFoundError:
     from importlib_metadata import version, PackageNotFoundError  # type: ignore
 
 from ._theme_class import WebvizConfigTheme
+from ._webviz_settings_class import WebvizSettings
 from ._localhost_token import LocalhostToken
 from ._is_reload_process import is_reload_process
 from ._plugin_abc import WebvizPluginABC, EncodedFile, ZipFileMember

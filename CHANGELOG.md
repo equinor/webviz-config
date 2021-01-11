@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Changed
+- [#368](https://github.com/equinor/webviz-config/pull/368) - Made Webviz global
+settings available to plugin implementations through special `webviz_settings` 
+argument. This argument is an instance of the `WebvizSettings` class and currently
+contains both the `shared_settings` and `theme` properties.
+
+### Deprecated
+- [#368](https://github.com/equinor/webviz-config/pull/368) - Access to `webviz_settings`
+as an attribute on the Dash application instance object (currently being passed to the
+plugins as the special `app` argument) has been deprecated.
+
 ## [0.2.6] - 2021-01-07
 
 ### Fixed

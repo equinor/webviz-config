@@ -13,6 +13,7 @@ from webviz_config.themes import installed_themes
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
+from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 
 logging.getLogger().setLevel(logging.{{ loglevel }})
 
@@ -22,11 +23,22 @@ theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_t
 app = dash.Dash()
 app.config.suppress_callback_exceptions = True
 
-app.webviz_settings = {
-    "shared_settings": webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
-        {{ shared_settings }}, {{ config_folder }}, False
+# Create the common webviz_setting object that will get passed as an
+# argument to all plugins that request it.
+webviz_settings: webviz_config.WebvizSettings = webviz_config.WebvizSettings(
+    shared_settings=webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
+        {{ shared_settings }}, {{ config_folder }}, {{ False }} 
     ),
-    "theme": theme,
+    theme=theme,
+)
+
+# Previously, webviz_settings was piggybacked onto the Dash application object.
+# For a period of time, keep it but mark access to the webviz_settings attribute
+# on the Dash application object as deprecated.
+deprecate_webviz_settings_attribute_in_dash_app()
+app._deprecated_webviz_settings = {
+    "shared_settings" : webviz_settings.shared_settings,
+    "theme" : webviz_settings.theme
 }
 
 CACHE.init_app(app.server)

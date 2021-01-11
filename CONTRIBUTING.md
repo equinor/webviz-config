@@ -447,15 +447,37 @@ def subscribe(some_key, config_folder, portable):
     return some_key # The returned value here is put back into shared_settings["some_key"]
 ```
 
-The (optionally transformed) `shared_settings` are accessible to plugins through
-the `app` instance (see [callbacks](#callbacks)). E.g., in this case the wanted settings
-are found as `app.webviz_settings["shared_settings"]["some_key"]`.
-
 Stating the input arguments named `config_folder` and/or `portable` in the function
 signature is not necessary, however if you do you will get a
 [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)
 instance representing the absolute path to the configuration file that was used, and/or
 a boolean value stating if the Webviz application running is a portable one.
+
+The (optionally transformed) `shared_settings` can be retrieved in a plugin by adding
+a specially named `webviz_settings` argument to the plugin's `__init__` function. The 
+`webviz_settings` argument works similar to the `app` argument in that it is a special 
+argument name that will not be originating from the configuration file, but will be 
+automatically given to the plugin by the core functionality of webviz-config. 
+
+Shared settings can then be accessed through `webviz_settings`. E.g., in the case 
+above, the wanted settings are found as `webviz_settings.shared_settings["some_key"]` 
+as shown in the example below:
+
+```python
+from webviz_config import WebvizPluginABC, WebvizSettings
+
+class ExamplePlugin(WebvizPluginABC):
+
+    def __init__(self, app, webviz_settings: WebvizSettings, title: str, number: int=42):
+
+        super().__init__()
+
+        self.title = title
+        self.number = number
+        self.some_key = webviz_settings.shared_settings["some_key"]
+
+        self.set_callbacks(app)
+```
 
 ### Custom ad-hoc plugins
 

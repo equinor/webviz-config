@@ -13,7 +13,7 @@ from dash.dependencies import Input, Output
 from dash import Dash
 import webviz_core_components as wcc
 
-from .. import WebvizPluginABC, EncodedFile
+from .. import WebvizPluginABC, WebvizSettings, EncodedFile
 from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
@@ -44,13 +44,14 @@ If feature is requested, the data could also come from a database.
     def __init__(
         self,
         app: Dash,
+        webviz_settings: WebvizSettings,
         csv_file: Path,
         plot_options: dict = None,
         filter_cols: list = None,
         filter_defaults: dict = None,
         column_color_discrete_maps: dict = None,
         lock: bool = False,
-    ):
+    ) -> None:
 
         super().__init__()
 
@@ -65,7 +66,7 @@ If feature is requested, the data could also come from a database.
         )
         self.filter_defaults = filter_defaults
         self.column_color_discrete_maps = column_color_discrete_maps
-        self.plotly_theme = app.webviz_settings["theme"].plotly_theme
+        self.plotly_theme = webviz_settings.theme.plotly_theme
         self.set_callbacks(app)
 
     def set_filters(self, filter_cols: Optional[list]) -> None:

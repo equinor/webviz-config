@@ -1,19 +1,23 @@
 import time
-import dash
+from pathlib import Path
 
+import dash
+from dash.testing.composite import DashComposite
+
+from webviz_config import WebvizSettings
 from webviz_config.common_cache import CACHE
 from webviz_config.themes import default_theme
 from webviz_config.generic_plugins import _table_plotter
 
 
-def test_table_plotter(dash_duo):
+def test_table_plotter(dash_duo: DashComposite) -> None:
 
     app = dash.Dash(__name__)
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
-    app.webviz_settings = {"theme": default_theme}
-    csv_file = "./tests/data/example_data.csv"
-    page = _table_plotter.TablePlotter(app, csv_file)
+    webviz_settings = WebvizSettings({}, default_theme)
+    csv_file = Path("./tests/data/example_data.csv")
+    page = _table_plotter.TablePlotter(app, webviz_settings, csv_file)
     app.layout = page.layout
     dash_duo.start_server(app)
 
@@ -41,14 +45,16 @@ def test_table_plotter(dash_duo):
         assert plot_option_dd.text == "Well"
 
 
-def test_table_plotter_filter(dash_duo):
+def test_table_plotter_filter(dash_duo: DashComposite) -> None:
 
     app = dash.Dash(__name__)
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
-    app.webviz_settings = {"theme": default_theme}
-    csv_file = "./tests/data/example_data.csv"
-    page = _table_plotter.TablePlotter(app, csv_file, filter_cols=["Well"])
+    webviz_settings = WebvizSettings({}, default_theme)
+    csv_file = Path("./tests/data/example_data.csv")
+    page = _table_plotter.TablePlotter(
+        app, webviz_settings, csv_file, filter_cols=["Well"]
+    )
     app.layout = page.layout
     dash_duo.start_server(app)
 
@@ -77,15 +83,15 @@ def test_table_plotter_filter(dash_duo):
         assert plot_option_dd.text == "Well"
 
 
-def test_initialized_table_plotter(dash_duo):
+def test_initialized_table_plotter(dash_duo: DashComposite) -> None:
 
     app = dash.Dash(__name__)
     app.css.config.serve_locally = True
     app.scripts.config.serve_locally = True
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
-    app.webviz_settings = {"theme": default_theme}
-    csv_file = "./tests/data/example_data.csv"
+    webviz_settings = WebvizSettings({}, default_theme)
+    csv_file = Path("./tests/data/example_data.csv")
     plot_options = dict(
         x="Well",
         y="Initial reservoir pressure (bar)",
@@ -94,7 +100,7 @@ def test_initialized_table_plotter(dash_duo):
     )
 
     page = _table_plotter.TablePlotter(
-        app, csv_file, lock=True, plot_options=plot_options
+        app, webviz_settings, csv_file, lock=True, plot_options=plot_options
     )
     app.layout = page.layout
     dash_duo.start_server(app)
