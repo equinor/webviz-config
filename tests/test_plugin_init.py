@@ -2,7 +2,9 @@ import warnings
 
 import mock
 
-from webviz_config.plugins._utils import load_webviz_plugins_with_metadata
+from webviz_config.plugin_registry._load_webviz_plugins_with_metadata import (
+    load_webviz_plugins_with_metadata,
+)
 
 
 class DistMock:
