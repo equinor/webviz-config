@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.2.7] - 2021-01-14
+
 ### Changed
 - [#368](https://github.com/equinor/webviz-config/pull/368) - Made Webviz global
 settings available to plugin implementations through special `webviz_settings` 
