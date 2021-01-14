@@ -6,9 +6,8 @@ import typing
 
 import yaml
 
-from . import plugins as standard_plugins
+from . import plugin_registry
 from .utils import terminal_colors
-from .utils._get_webviz_plugins import _get_webviz_plugins
 
 SPECIAL_ARGS = ["self", "app", "webviz_settings", "_call_signature"]
 
@@ -31,7 +30,7 @@ def _call_signature(
       * If there is type mismatch between user given argument value, and type
         hint in __init__ signature (given that type hint exist)
     """
-    argspec = inspect.getfullargspec(getattr(standard_plugins, plugin_name).__init__)
+    argspec = inspect.getfullargspec(plugin_registry.plugin_class(plugin_name).__init__)
 
     if argspec.defaults is not None:
         required_args = argspec.args[: -len(argspec.defaults)]
@@ -116,8 +115,13 @@ def _call_signature(
     if "webviz_settings" in argspec.args:
         special_args += "webviz_settings=webviz_settings, "
 
+    # Temporary hack, extend the tuple to contain the plugin class name
+    # These should be named in a meaningful way instead of just being a tuple that
+    # is stored as _call_signature.
+    # Eg. plugin_class_name, plugin_init_str, layout_call_signature_str
     return (
-        f"{plugin_name}({special_args}**{kwargs})",
+        f"{plugin_name}",
+        f"{special_args}**{kwargs}",
         f"plugin_layout(contact_person={contact_person})",
     )
 
@@ -127,9 +131,6 @@ class ParserError(Exception):
 
 
 class ConfigParser:
-
-    STANDARD_PLUGINS = [name for (name, _) in _get_webviz_plugins(standard_plugins)]
-
     def __init__(self, yaml_file: pathlib.Path):
 
         ConfigParser.check_for_tabs_in_file(yaml_file)
@@ -267,7 +268,7 @@ class ConfigParser:
                 plugin_variables = next(iter(plugin.values()))
                 kwargs = {} if plugin_variables is None else {**plugin_variables}
 
-                if plugin_name not in ConfigParser.STANDARD_PLUGINS:
+                if not plugin_registry.has_plugin(plugin_name):
                     raise ParserError(
                         f"{terminal_colors.RED}{terminal_colors.BOLD}"
                         "You have included a plugin with "
@@ -283,7 +284,7 @@ class ConfigParser:
                     self._config_folder,
                 )
 
-                self.assets.update(getattr(standard_plugins, plugin_name).ASSETS)
+                self.assets.update(plugin_registry.plugin_class(plugin_name).ASSETS)
 
     @property
     def configuration(self) -> dict:

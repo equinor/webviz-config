@@ -28,9 +28,8 @@ except (ImportError, ModuleNotFoundError):
 
 import jinja2
 
-import webviz_config.plugins
+from .. import plugin_registry
 from .._config_parser import SPECIAL_ARGS
-from ..utils._get_webviz_plugins import _get_webviz_plugins
 
 
 class ArgInfo(TypedDict, total=False):
@@ -72,8 +71,8 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         "description": docstring_parts[0] if docstring != "" else None,
         "name": name,
         "package_doc": import_module(subpackage).__doc__,  # type: ignore
-        "dist_name": webviz_config.plugins.metadata[name]["dist_name"],
-        "dist_version": webviz_config.plugins.metadata[name]["dist_version"],
+        "dist_name": plugin_registry.plugin_metadata(name)["dist_name"],
+        "dist_version": plugin_registry.plugin_metadata(name)["dist_version"],
     }
 
     if argspec.defaults is not None:
@@ -105,9 +104,9 @@ def get_plugin_documentation() -> defaultdict:
     """
 
     plugin_doc = [
-        _document_plugin(plugin)
-        for plugin in _get_webviz_plugins(webviz_config.plugins)
-        if not plugin[0].startswith("Example")
+        _document_plugin((plugin_name, plugin_registry.plugin_class(plugin_name)))
+        for plugin_name in plugin_registry.all_plugin_names()
+        if not plugin_name.startswith("Example")
     ]
 
     # Sort the plugins by package:

@@ -1,9 +1,9 @@
 import webviz_config
-from webviz_config.plugins import metadata
+from webviz_config import plugin_registry
 
 
 def test_webviz_config_metadata():
-    meta = metadata["BannerImage"]
+    meta = plugin_registry.plugin_metadata("BannerImage")
 
     assert meta["dist_name"] == "webviz-config"
     assert meta["dist_version"] == webviz_config.__version__

@@ -56,4 +56,8 @@ def load_webviz_plugins_with_metadata(
 
                 loaded_plugins[entry_point.name] = entry_point.load()
 
+                # We should add a check here to verify that the loaded entry point
+                # is actually a WebvizPlugin. Something akint to the code in _get_webviz_plugins()
+                # which may then be deleted
+
     return metadata

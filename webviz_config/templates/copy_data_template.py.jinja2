@@ -8,7 +8,7 @@ from pathlib import Path, PosixPath, WindowsPath
 import dash
 
 import webviz_config
-import webviz_config.plugins
+import webviz_config.plugin_registry
 from webviz_config.themes import installed_themes
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
@@ -54,7 +54,7 @@ plugins = []
 {% for page in pages %}
 {% for content in page.content %}
 {% if content is not string %}
-plugins.append(webviz_config.plugins.{{ content._call_signature[0] }})
+plugins.append(webviz_config.plugin_registry.plugin_class("{{ content._call_signature[0] }}")({{ content._call_signature[1] }}))
 {% endif %}
 {% endfor %}
 {% endfor %}
