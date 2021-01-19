@@ -12,6 +12,8 @@ from .utils import terminal_colors
 SPECIAL_ARGS = ["self", "app", "webviz_settings", "_plugin_creation_spec"]
 
 
+# Candidate for dataclass once we're past python 3.6
+# pylint: disable=too-few-public-methods
 class PluginCreationSpec:
     """Contains spec for creating an instance of a webviz plugin"""
 
