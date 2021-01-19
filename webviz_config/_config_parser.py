@@ -9,7 +9,18 @@ import yaml
 from . import plugin_registry
 from .utils import terminal_colors
 
-SPECIAL_ARGS = ["self", "app", "webviz_settings", "_call_signature"]
+SPECIAL_ARGS = ["self", "app", "webviz_settings", "_plugin_creation_spec"]
+
+
+class PluginCreationSpec:
+    """Contains spec for creating an instance of a webviz plugin"""
+
+    def __init__(
+        self, plugin_name: str, init_arg_str: str, layout_call_signature_str: str
+    ) -> None:
+        self.plugin_name = plugin_name
+        self.init_arg_str = init_arg_str
+        self.layout_call_signature_str = layout_call_signature_str
 
 
 def _call_signature(
@@ -17,11 +28,12 @@ def _call_signature(
     kwargs: dict,
     config_folder: pathlib.Path,
     contact_person: typing.Optional[dict] = None,
-) -> tuple:
+) -> PluginCreationSpec:
     # pylint: disable=too-many-branches,too-many-statements
     """Takes as input the name of a plugin together with user given arguments
-    (originating from the configuration file). Returns the equivalent Python code wrt.
-    initiating an instance of that plugin (with the given arguments).
+    (originating from the configuration file). Returns a plugin creation spec that
+    has sufficien information to instantiate the wanted plugin instance (with the
+    given arguments).
 
     Raises ParserError in the following scenarios:
       * User is missing a required (i.e. no default value) __init__ argument
@@ -115,14 +127,10 @@ def _call_signature(
     if "webviz_settings" in argspec.args:
         special_args += "webviz_settings=webviz_settings, "
 
-    # Temporary hack, extend the tuple to contain the plugin class name
-    # These should be named in a meaningful way instead of just being a tuple that
-    # is stored as _call_signature.
-    # Eg. plugin_class_name, plugin_init_str, layout_call_signature_str
-    return (
-        f"{plugin_name}",
-        f"{special_args}**{kwargs}",
-        f"plugin_layout(contact_person={contact_person})",
+    return PluginCreationSpec(
+        plugin_name=f"{plugin_name}",
+        init_arg_str=f"{special_args}**{kwargs}",
+        layout_call_signature_str=f"plugin_layout(contact_person={contact_person})",
     )
 
 
@@ -156,6 +164,7 @@ class ConfigParser:
         self._config_folder = pathlib.Path(yaml_file).parent
         self._page_ids: typing.List[str] = []
         self._assets: set = set()
+        # TODO(Sigurd) Seems to be unused
         self._used_plugin_packages: set = set()
         self.clean_configuration()
 
@@ -261,11 +270,13 @@ class ConfigParser:
                     f"{terminal_colors.END}"
                 )
 
-            plugins = [e for e in page["content"] if isinstance(e, dict)]
+            # Plugin invocations, not direct strings
+            # plugin_invocations
+            plugin_entries_on_page = [e for e in page["content"] if isinstance(e, dict)]
 
-            for plugin in plugins:
-                plugin_name = next(iter(plugin))
-                plugin_variables = next(iter(plugin.values()))
+            for entry in plugin_entries_on_page:
+                plugin_name = next(iter(entry))
+                plugin_variables = next(iter(entry.values()))
                 kwargs = {} if plugin_variables is None else {**plugin_variables}
 
                 if not plugin_registry.has_plugin(plugin_name):
@@ -278,11 +289,13 @@ class ConfigParser:
                         f"{terminal_colors.END}"
                     )
 
-                plugin["_call_signature"] = _call_signature(
+                plugin_creation_spec: PluginCreationSpec = _call_signature(
                     plugin_name,
                     kwargs,
                     self._config_folder,
                 )
+                # Attach the necessary spec for creating plugin instance to the page contents entry
+                entry["_plugin_creation_spec"] = plugin_creation_spec
 
                 self.assets.update(plugin_registry.plugin_class(plugin_name).ASSETS)
 

@@ -54,7 +54,7 @@ plugins = []
 {% for page in pages %}
 {% for content in page.content %}
 {% if content is not string %}
-plugins.append(webviz_config.plugin_registry.plugin_class("{{ content._call_signature[0] }}")({{ content._call_signature[1] }}))
+plugins.append( webviz_config.plugin_registry.plugin_class("{{ content._plugin_creation_spec.plugin_name }}")({{ content._plugin_creation_spec.init_arg_str }}) )
 {% endif %}
 {% endfor %}
 {% endfor %}

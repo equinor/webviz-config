@@ -9,7 +9,7 @@ from typing import List, Optional, Type, Union
 
 # pylint: disable=wrong-import-position
 if sys.version_info >= (3, 8):
-    from typing import TypedDict
+    from typing import TypedDict  # pylint: disable=no-name-in-module
 else:
     from typing_extensions import TypedDict
 

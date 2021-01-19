@@ -88,8 +88,7 @@ else:
        {%- if content is string -%}
          dcc.Markdown(r"""{{ content }}""")
        {%- else -%}
-         # Temp hack here, should have more meaningful attribute name(s)
-         webviz_config.plugin_registry.plugin_class("{{ content._call_signature[0] }}")({{ content._call_signature[1] }}).{{ content._call_signature[2] }}
+         webviz_config.plugin_registry.plugin_class("{{ content._plugin_creation_spec.plugin_name }}")({{ content._plugin_creation_spec.init_arg_str }}).{{ content._plugin_creation_spec.layout_call_signature_str }}
        {%- endif -%}
        {{- "" if loop.last else ","}}
        {% endfor -%}
