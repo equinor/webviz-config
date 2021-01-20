@@ -9,15 +9,6 @@ def test_portable(dash_duo, tmp_path):
         ["webviz", "build", "basic_example.yaml", "--portable", appdir], cwd="examples"
     )
 
-    # Remove Talisman
-    filename = appdir / "webviz_app.py"
-    with open(filename, "r") as filehandle:
-        lines = filehandle.readlines()
-    with open(filename, "w") as filehandle:
-        for line in lines:
-            if not line.strip("\n").startswith("Talisman"):
-                filehandle.write(line)
-
     # Import generated app
     sys.path.append(str(appdir))
     from webviz_app import app  # pylint: disable=import-error, import-outside-toplevel

@@ -30,7 +30,6 @@ def _start_doc_app(build_directory: pathlib.Path) -> None:
         host="localhost",
         port=port,
         debug=False,
-        ssl_context=webviz_config.certificate.LocalhostCertificate().ssl_context,
     )
 
 
