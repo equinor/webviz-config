@@ -39,6 +39,18 @@ def load_webviz_plugins_with_metadata(
                 }
 
                 if entry_point.name in metadata:
+                    if metadata[entry_point.name] == PluginDistInfo(
+                        {
+                            "dist_name": dist.metadata["name"],
+                            "dist_version": dist.version,
+                            "documentation_url": project_urls.get("Documentation"),
+                            "download_url": project_urls.get("Download"),
+                            "tracker_url": project_urls.get("Tracker"),
+                        }
+                    ):
+                        # May occur if folders in virtual environment are symlinked.
+                        continue
+
                     warnings.warn(
                         f"Multiple versions of plugin with name {entry_point.name}. "
                         f"Already loaded from project {metadata[entry_point.name]['dist_name']}. "
@@ -46,13 +58,15 @@ def load_webviz_plugins_with_metadata(
                         RuntimeWarning,
                     )
 
-                metadata[entry_point.name] = {
-                    "dist_name": dist.metadata["name"],
-                    "dist_version": dist.version,
-                    "documentation_url": project_urls.get("Documentation"),
-                    "download_url": project_urls.get("Download"),
-                    "tracker_url": project_urls.get("Tracker"),
-                }
+                metadata[entry_point.name] = PluginDistInfo(
+                    {
+                        "dist_name": dist.metadata["name"],
+                        "dist_version": dist.version,
+                        "documentation_url": project_urls.get("Documentation"),
+                        "download_url": project_urls.get("Download"),
+                        "tracker_url": project_urls.get("Tracker"),
+                    }
+                )
 
                 loaded_plugins[entry_point.name] = entry_point.load()
 
