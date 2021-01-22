@@ -66,7 +66,7 @@ app._deprecated_webviz_settings = {
 CACHE.init_app(server)
 
 theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
-Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy, force_https=False)
+Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy, force_https=False, session_cookie_secure=False)
 
 WEBVIZ_STORAGE.use_storage = {{portable}}
 WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "webviz_storage"

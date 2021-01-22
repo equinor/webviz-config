@@ -128,7 +128,7 @@ class Oauth2:
             and flask.request.path != "/login"
             and flask.request.path != "/auth-return"
         ):
-            login_uri = replace_http_with_https(get_login_uri(flask.request.url_root))
+            login_uri = get_login_uri(flask.request.url_root)
             return True, login_uri
 
         return False, ""
@@ -161,12 +161,8 @@ class Oauth2:
 
 
 def get_login_uri(url_root: str) -> str:
-    return replace_http_with_https(url_root + "login")
+    return url_root + "login"
 
 
 def get_auth_redirect_uri(url_root: str) -> str:
-    return replace_http_with_https(url_root + "auth-return")
-
-
-def replace_http_with_https(url: str) -> str:
-    return url.replace("http://", "https://")
+    return url_root + "auth-return"
