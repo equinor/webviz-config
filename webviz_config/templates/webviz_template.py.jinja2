@@ -39,6 +39,10 @@ app = dash.Dash(
     ],
 )
 app.logger.setLevel(logging.WARNING)
+
+# For signing session cookies
+app.server.secret_key = webviz_config.LocalhostToken.generate_token()
+
 server = app.server
 
 app.title = "{{ title }}"

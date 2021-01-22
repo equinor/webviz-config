@@ -18,12 +18,6 @@ class Oauth2:
         self._client_secret = os.environ["WEBVIZ_CLIENT_SECRET"]
         self._scope = os.environ["WEBVIZ_SCOPE"]
 
-        # Secret key to sign the session cookie
-        self._session_secret_key = os.environ["WEBVIZ_SESSION_SECRET_KEY"]
-
-        # Set Flask secret key
-        self._app.secret_key = self._session_secret_key
-
         # Initiate msal
         self._msal_app = msal.ConfidentialClientApplication(
             client_id=self._client_id,

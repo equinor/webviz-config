@@ -552,8 +552,15 @@ class OurCustomPlugin(WebvizPluginABC):
 
 Information related to the application for OAuth 2.0 has to be provided in environment 
 variables. These environment variables are `WEBVIZ_TENANT_ID`, `WEBVIZ_CLIENT_ID`, 
-`WEBVIZ_CLIENT_SECRET`, `WEBVIZ_SCOPE`. One additional environment variable 
-`WEBVIZ_SESSION_SECRET_KEY` is also required for signing the Flask session cookie.
+`WEBVIZ_CLIENT_SECRET`, `WEBVIZ_SCOPE`.
+
+The values can be found in the Azure AD configuration page. Short explanation of these environment variables:
+```
+WEBVIZ_TENANT_ID: The organization's Azure tenant ID (Equinor has exactly one tenant ID).
+WEBVIZ_CLIENT_ID: ID of the Webviz Azure AD app.
+WEBVIZ_CLIENT_SECRET: Webviz Azure AD app's client secret
+WEBVIZ_SCOPE: The API permission for this Webviz Azure AD app.
+```
 
 ## Run tests
 
