@@ -555,12 +555,11 @@ variables. These environment variables are `WEBVIZ_TENANT_ID`, `WEBVIZ_CLIENT_ID
 `WEBVIZ_CLIENT_SECRET`, `WEBVIZ_SCOPE`.
 
 The values can be found in the Azure AD configuration page. Short explanation of these environment variables:
-```
-WEBVIZ_TENANT_ID: The organization's Azure tenant ID (Equinor has exactly one tenant ID).
-WEBVIZ_CLIENT_ID: ID of the Webviz Azure AD app.
-WEBVIZ_CLIENT_SECRET: Webviz Azure AD app's client secret
-WEBVIZ_SCOPE: The API permission for this Webviz Azure AD app.
-```
+
+- `WEBVIZ_TENANT_ID`: The organization's Azure tenant ID (Equinor has exactly one tenant ID).
+- `WEBVIZ_CLIENT_ID`: ID of the Webviz Azure AD app.
+- `WEBVIZ_CLIENT_SECRET`: Webviz Azure AD app's client secret.
+- `WEBVIZ_SCOPE`: The API permission for this Webviz Azure AD app.
 
 ## Run tests
 
