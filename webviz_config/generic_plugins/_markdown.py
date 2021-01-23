@@ -34,7 +34,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
 
         super().__init__(image_link_re, md)
 
-    def handleMatch(self, m, data: str) -> tuple:  # type: ignore[no-untyped-def]
+    def handleMatch(self, m, data: str) -> tuple:  # type: ignore[no-untyped-def, override]
         image, start, index = super().handleMatch(m, data)
 
         if image is None or not image.get("title"):
@@ -43,7 +43,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
         src = image.get("src")
         caption = image.get("title")
 
-        if src.startswith("http"):
+        if src is None or src.startswith("http"):
             raise ValueError(
                 f"Image path {src} has been given. Only images "
                 "available on the file system can be added."
@@ -57,7 +57,7 @@ class _MarkdownImageProcessor(ImageInlineProcessor):
         url = WEBVIZ_ASSETS.add(image_path)
 
         image_style = ""
-        for style_prop in image.get("alt").split(","):
+        for style_prop in image.get("alt", default="").split(","):
             prop, value = style_prop.split("=")
             if prop == "width":
                 image_style += f"width: {value};"
