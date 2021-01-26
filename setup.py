@@ -80,6 +80,7 @@ setup(
         "flask-talisman>=0.6",
         "jinja2>=2.10",
         "markdown>=3.0",
+        "msal>=1.5.0",
         "pandas>=1.0",
         "pyarrow>=0.16",
         "pyyaml>=5.1",
