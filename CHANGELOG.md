@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.2.8] - 2021-01-26
+
 ### Added
 - [#345](https://github.com/equinor/webviz-config/pull/345) - Added Oauth2 
 Authorization Code flow support for Azure AD applications.
