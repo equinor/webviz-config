@@ -9,6 +9,7 @@
   - [Data input](#data-input)
     - [Deattaching data from its original source](#deattaching-data-from-its-original-source)
   - [Custom ad-hoc plugins](#custom-ad-hoc-plugins)
+  - [OAuth 2.0 Authorization Code flow](#oauth-2.0-authorization-code-flow)
 - [Run tests](#run-tests)
 - [Build documentation](#build-documentation)
 
@@ -530,6 +531,35 @@ applies if the custom plugin is saved in a package with submodule(s),
       - ourpackage.ourmodule.OurCustomPlugin:
           ...
 ```
+
+### OAuth 2.0 Authorization Code flow
+
+It is possible to use OAuth 2.0 Authorization Code flow to secure a `webviz` application. 
+In order to do so, add `oauth2` attribute in a custom plugin with a boolean `True` value. 
+The following is an example.
+
+```python
+class OurCustomPlugin(WebvizPluginABC):
+
+    def __init__(self):
+        super().__init__()
+        self.use_oauth2 = True
+
+    @property
+    def oauth2(self):
+        return self.use_oauth2
+```
+
+Information related to the application for OAuth 2.0 has to be provided in environment 
+variables. These environment variables are `WEBVIZ_TENANT_ID`, `WEBVIZ_CLIENT_ID`, 
+`WEBVIZ_CLIENT_SECRET`, `WEBVIZ_SCOPE`.
+
+The values can be found in the Azure AD configuration page. Short explanation of these environment variables:
+
+- `WEBVIZ_TENANT_ID`: The organization's Azure tenant ID (Equinor has exactly one tenant ID).
+- `WEBVIZ_CLIENT_ID`: ID of the Webviz Azure AD app.
+- `WEBVIZ_CLIENT_SECRET`: Webviz Azure AD app's client secret.
+- `WEBVIZ_SCOPE`: The API permission for this Webviz Azure AD app.
 
 ## Run tests
 
