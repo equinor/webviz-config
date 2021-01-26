@@ -43,9 +43,6 @@ class Oauth2:
         An Azure AD application should be registered, and the following environment
         variables should be set: WEBVIZ_TENANT_ID, WEBVIZ_CLIENT_ID,
         WEBVIZ_CLIENT_SECRET, WEBVIZ_SCOPE.
-
-        WEBVIZ_SESSION_SECRET_KEY environment variable is also needed for signing the
-        session cookie.
         """
 
         @self._app.route("/login")
