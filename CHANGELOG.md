@@ -14,6 +14,10 @@ Authorization Code flow support for Azure AD applications.
 - [#374](https://github.com/equinor/webviz-config/pull/374) - Removed Webviz
   SSL certificate generation and forcing of HTTPS connections.
 
+### Fixed
+- [#380](https://github.com/equinor/webviz-config/pull/380) - Don't write warning
+for multiple versions of same plugin if the metadata is equal.
+
 ## [0.2.7] - 2021-01-14
 
 ### Changed
