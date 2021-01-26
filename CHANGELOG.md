@@ -13,6 +13,10 @@ Authorization Code flow support for Azure AD applications.
 ### Changed
 - [#374](https://github.com/equinor/webviz-config/pull/374) - Removed Webviz
   SSL certificate generation and forcing of HTTPS connections.
+- [#388](https://github.com/equinor/webviz-config/pull/388) - Firefox preferred as
+default browser over Chrome/Chromium to ease the transition on localhost after #374.
+Browser defined with `webviz preferences --browser somebrowser` is still used instead
+of the new default (Firefox).
 
 ### Fixed
 - [#380](https://github.com/equinor/webviz-config/pull/380) - Don't write warning

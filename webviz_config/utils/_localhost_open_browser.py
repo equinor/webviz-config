@@ -56,7 +56,7 @@ class LocalhostOpenBrowser:
             except webbrowser.Error:
                 warnings.warn("Could not find the user preferred browser.")
 
-        for browser in ["chrome", "chromium-browser"]:
+        for browser in ["firefox", "chrome", "chromium-browser"]:
             try:
                 return webbrowser.get(using=browser)
             except webbrowser.Error:
