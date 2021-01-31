@@ -7,11 +7,11 @@
   "author": "Equinor",
   "license": "MIT",
   "dependencies": {
-    "docsify": "^4.11.4",
+    "docsify": "^4.11.6",
     "docsify-copy-code": "^2.1.1",
     "docsify-katex": "^1.4.3",
     "docsify-tabs": "^1.4.4",
     "katex": "^0.12.0",
-    "prismjs": "^1.21.0"
+    "prismjs": "^1.23.0"
   }
 }
