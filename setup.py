@@ -28,9 +28,9 @@ TESTS_REQUIRES = [
     "jsonschema",
     "mock",
     "mypy",
-    "pylint~=2.3",
+    "pylint",
     "pytest-xdist",
-    "selenium~=3.141",
+    "selenium",
 ]
 
 # pylint: disable=line-too-long
@@ -89,7 +89,6 @@ setup(
         "typing-extensions>=3.7; python_version<'3.8'",
         "webviz-core-components>=0.1.0",
     ],
-    tests_require=TESTS_REQUIRES,
     extras_require={"tests": TESTS_REQUIRES},
     setup_requires=["setuptools_scm~=3.2"],
     python_requires="~=3.6",
