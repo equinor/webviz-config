@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Changed
+- [#409](https://github.com/equinor/webviz-config/pull/409) - Relax Python test
+dependency constraints.
+
+## [0.2.9] - 2021-02-23
+
+### Changed
+- [#395](https://github.com/equinor/webviz-config/pull/395) - Update `npm` dependencies.
+See also [#392](https://github.com/equinor/webviz-config/pull/392)
+(`docsify-copy-code` update) and [#393](https://github.com/equinor/webviz-config/pull/393)
+(`katex` update).
+
 ## [0.2.8] - 2021-01-26
 
 ### Added
