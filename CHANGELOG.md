@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - [#415](https://github.com/equinor/webviz-config/pull/415) - Reduce height of main
 sidebar to prevent overflow.
+- [#416](https://github.com/equinor/webviz-config/pull/416) - Highlight selected
+button in main sidebar.
 
 ### Changed
 - [#409](https://github.com/equinor/webviz-config/pull/409) - Relax Python test

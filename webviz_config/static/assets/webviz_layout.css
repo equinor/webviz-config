@@ -26,12 +26,30 @@
     border-bottom: 1px solid white;
 }
 
+.selectedButton {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: background-color, color 200ms;
+    text-align: left;
+    box-sizing: none;
+    font-size: 16px;
+    font-family: var(--menuLinkFont);
+    font-weight: var(--menuLinkFontWeight);
+    font-style: var(--menuLinkFontStyle);
+    text-decoration: none;
+    padding: 20px 30px;
+    border-bottom: 1px solid white;
+    background: var(--menuLinkBackgroundSelected);
+    color: var(--menuLinkColorSelected);
+}
+
 .styledButton:hover {
     color: var(--menuLinkHoverColor);
     background-color: var(--menuLinkBackgroundHover);
 }
 
-.selectedButton--selected {
+.selectedButton:hover {
     color: var(--menuLinkColorSelected);
     background-color: var(--menuLinkBackgroundSelected);
 }
