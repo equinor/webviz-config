@@ -47,7 +47,7 @@
     flex-direction: column;
     overflow-x: hidden;
     overflow-y: scroll;
-    height: 100vh;
+    height: 98vh;
     min-width: 30rem;
     scrollbar-width: thin;
     scrollbar-color: var(--menuBackground) var(--menuBackground); /* thumb and track color */    
