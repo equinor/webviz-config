@@ -39,7 +39,7 @@ def test_portable(dash_duo, tmp_path):
     for page in [
         "markdown-example",
         "table-example",
-        "pdf-exampe",
+        "pdf-example",
         "syntax-highlighting-example",
         "plot-a-table",
         "pivot-table",
