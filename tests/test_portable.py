@@ -1,5 +1,26 @@
 import sys
+import json
 import subprocess  # nosec
+
+
+def _stringify_object_id(uuid) -> str:
+    """Object ids must be sorted and converted to
+    css strings to be recognized as dom elements"""
+    sorted_uuid_obj = json.loads(
+        json.dumps(
+            uuid,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    )
+    string = ["{"]
+    for idx, (key, value) in enumerate(sorted_uuid_obj.items()):
+        string.append(f'\\"{key}\\"\\:\\"{value}\\"\\')
+        if idx == len(sorted_uuid_obj) - 1:
+            string.append("}")
+        else:
+            string.append(",")
+    return ("").join(string)
 
 
 def test_portable(dash_duo, tmp_path):
@@ -18,10 +39,12 @@ def test_portable(dash_duo, tmp_path):
     for page in [
         "markdown-example",
         "table-example",
-        "pdf-example",
+        "pdf-exampe",
         "syntax-highlighting-example",
         "plot-a-table",
         "pivot-table",
     ]:
-        dash_duo.wait_for_element(f"#{page}").click()
+        dash_duo.wait_for_element_by_id(
+            _stringify_object_id({"id": page, "type": "page_child"})
+        ).click()
     assert dash_duo.get_logs() == [], "browser console should contain no error"
