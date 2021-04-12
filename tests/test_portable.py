@@ -5,7 +5,7 @@ import subprocess  # nosec
 
 def _stringify_object_id(uuid) -> str:
     """Object ids must be sorted and converted to
-    css strings to be recognized as dom elements"""
+    CSS strings to be recognized as DOM elements"""
     sorted_uuid_obj = json.loads(
         json.dumps(
             uuid,
@@ -45,6 +45,8 @@ def test_portable(dash_duo, tmp_path):
         "pivot-table",
     ]:
         dash_duo.wait_for_element_by_id(
-            _stringify_object_id({"id": page, "type": "page_child"})
+            _stringify_object_id(
+                {"id": page, "type": "webviz_config_main_sidebar_link"}
+            )
         ).click()
     assert dash_duo.get_logs() == [], "browser console should contain no error"

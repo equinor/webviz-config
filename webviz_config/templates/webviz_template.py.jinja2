@@ -120,7 +120,7 @@ else:
                     {%- else -%}
                     "{{page.title}}",
                     className="styledButton",
-                    id={"id":"{{page.id}}","type":"page_child"},
+                    id={"id":"{{page.id}}","type":"webviz_config_main_sidebar_link"},
                     href="/{{page.id}}",
                     {%- endif -%}
                     )
@@ -141,15 +141,13 @@ def update_page(pathname):
 
 {% if pages|length > 1 %}
 @app.callback(
-    Output({"id": ALL, "type": "page_child"}, "className"),
+    Output({"id": ALL, "type": "webviz_config_main_sidebar_link"}, "className"),
     Input("url", "pathname"),
-    State({"id": ALL, "type": "page_child"}, "href"),
+    State({"id": ALL, "type": "webviz_config_main_sidebar_link"}, "href"),
 )
 def _update_class(pathname, children_hrefs):
     """Update style to 'selectedButton' for the active page
     else use 'styledButton'"""
-    if not children_hrefs:
-        raise PreventUpdate
     return [
         "selectedButton" if href == pathname else "styledButton"
         for href in children_hrefs
