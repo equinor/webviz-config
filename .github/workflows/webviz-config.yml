@@ -45,7 +45,7 @@ jobs:
       - name: 📦 Install webviz-config with dependencies
         run: |
           pip install --upgrade pip==20.2.4 # Pinned to 20.2.4 for black install compatibility: https://github.com/psf/black/issues/1847
-          pip install .
+          pip install . .[deployment]
 
       - name: 📦 Install test dependencies
         run: |
@@ -71,6 +71,14 @@ jobs:
           pytest ./tests --headless --forked
           webviz docs --portable ./docs_build --skip-open
           webviz schema
+
+      - name: 🐳 Build Docker example image
+        run: |
+          export GIT_POINTER_WEBVIZ_CONFIG=$GITHUB_REF
+          webviz build ./examples/basic_example.yaml --portable ./some_portable_app
+          pushd ./some_portable_app
+          docker build .
+          rm -rf ./some_portable_app
 
       - name: 🚢 Build and deploy Python package
         if: github.event_name == 'release' && matrix.python-version == '3.6'

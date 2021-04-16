@@ -43,7 +43,7 @@ app._deprecated_webviz_settings = {
 
 CACHE.init_app(app.server)
 
-WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "webviz_storage"
+WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "resources" / "webviz_storage"
 
 # The lines below can be simplified when assignment
 # expressions become available in Python 3.8
@@ -63,6 +63,6 @@ for plugin in plugins:
     if hasattr(plugin, "add_webvizstore"):
         WEBVIZ_STORAGE.register_function_arguments(plugin.add_webvizstore())
 
-WEBVIZ_ASSETS.make_portable(Path(__file__).resolve().parent / "assets")
+WEBVIZ_ASSETS.make_portable(Path(__file__).resolve().parent / "resources" / "assets")
 
 WEBVIZ_STORAGE.build_store()

@@ -11,7 +11,9 @@ except ModuleNotFoundError:
     # Python < 3.8
     from importlib_metadata import distributions  # type: ignore
 
-from ._utils import load_webviz_plugins_with_metadata, PluginDistInfo
+from ._utils import load_webviz_plugins_with_metadata, PluginProjectMetaData
 
 
-metadata = load_webviz_plugins_with_metadata(distributions(), globals())
+plugin_metadata, plugin_project_metadata = load_webviz_plugins_with_metadata(
+    distributions(), globals()
+)

@@ -25,7 +25,7 @@ class WebvizAssets:
     testing fast.
 
     When creating a portable webviz instance however, the files are copied
-    over the ./assets folder, and normal Dash usage applies.
+    over the ./resources/assets folder, and normal Dash usage applies.
 
     In both portable and non-portable mode, WebvizAssets makes sure there are
     no name conflicts (i.e. it supports multiple assets on different paths,

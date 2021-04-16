@@ -3,6 +3,7 @@ import getpass
 import datetime
 import pathlib
 import argparse
+from typing import Dict, Tuple
 
 import jinja2
 
@@ -14,7 +15,11 @@ def write_script(
     build_directory: pathlib.Path,
     template_filename: str,
     output_filename: str,
-) -> set:
+) -> Tuple[set, Dict[str, dict]]:
+    """Writes rendered script to build directory. Also returns information regarding
+    assets and which plugins that are incluced in the user provided configuration file.
+    """
+
     config_parser = ConfigParser(args.yaml_file)
     configuration = config_parser.configuration
 
@@ -39,4 +44,4 @@ def write_script(
 
     (build_directory / output_filename).write_text(template.render(configuration))
 
-    return config_parser.assets
+    return config_parser.assets, config_parser.plugin_metadata
