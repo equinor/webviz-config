@@ -1,18 +1,4 @@
-# Contributing to Webviz configuration utility
-
-- [Creating a new plugin](#creating-a-new-plugin)
-  - [Minimal plugin](#minimal-plugin)
-  - [Override plugin toolbar](#override-plugin-toolbar)
-  - [Callbacks](#callbacks)
-    - [Data download callback](#data-download-callback)
-  - [User provided arguments](#user-provided-arguments)
-  - [Data input](#data-input)
-    - [Deattaching data from its original source](#deattaching-data-from-its-original-source)
-  - [OAuth 2.0 Authorization Code flow](#oauth-2.0-authorization-code-flow)
-- [Run tests](#run-tests)
-- [Build documentation](#build-documentation)
-  - [Improve plugin documentation](#improve-plugin-documentation)
-- [Make your plugin project available](#make-your-plugin-project-available)
+# Contributing to Webviz
 
 ## Creating a new plugin
 
