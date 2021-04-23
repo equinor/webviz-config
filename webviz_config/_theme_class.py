@@ -26,7 +26,6 @@ class WebvizConfigTheme:
             "frame-ancestors": "'self'",  # [4]
             "frame-src": "'self'",  # [4]
             "object-src": "'self'",
-            "plugin-types": "application/pdf",
         }
 
         """

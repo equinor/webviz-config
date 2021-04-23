@@ -27,6 +27,7 @@ Requiring a formal Python project also enables useful features in the framework
 ### Fixed
 - [#415](https://github.com/equinor/webviz-config/pull/415) - Reduce height of main
 sidebar to prevent overflow.
+- [#422](https://github.com/equinor/webviz-config/pull/422) - Remove deprecated 'plugin-types' CSP directive.
 
 ## [0.2.9] - 2021-02-23
 
