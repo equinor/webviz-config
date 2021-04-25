@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED] - YYYY-MM-DD
 
 ### Added
+- [#426](https://github.com/equinor/webviz-config/pull/426) - Added centralized factory
+registry exposed through `WEBVIZ_FACTORY_REGISTRY` for sharing factories between plugins.
 - [#318](https://github.com/equinor/webviz-config/pull/318) - `webviz-config`
 now facilitates automatically including necessary plugin projects as dependencies
 in generated Docker setup. Private repositories are also supported, however the
