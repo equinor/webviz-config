@@ -91,7 +91,7 @@ def _find_plugin_deprecated_arguments(plugin: Any) -> Dict[str, Tuple[str, str]]
 
 def _extract_init_arguments_and_check_for_deprecation(
     docstring: Optional[str], reference: Any
-) -> Tuple[bool, Dict[str, ArgumentInfo]]:
+) -> Tuple[bool, Dict[str, ArgumentInfo], str]:
     """Returns all arguments of the given class' __init__ function including
     related documentation strings, typehints and deprecation information.
     """
