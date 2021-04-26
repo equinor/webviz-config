@@ -16,7 +16,7 @@ class WebvizFactoryRegistry:
     the registry instance is useless until the initialize() method has been called.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._is_initialized: bool = False
         self._app_instance_info: Optional[WebvizInstanceInfo] = None
         self._factory_settings_dict: Dict[str, Any] = {}
