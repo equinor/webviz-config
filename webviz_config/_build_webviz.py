@@ -98,50 +98,51 @@ def run_webviz(args: argparse.Namespace, build_directory: pathlib.Path) -> None:
         f"{terminal_colors.END}"
     )
 
-    app_process = subprocess.Popen(  # nosec
+    with subprocess.Popen(  # nosec
         [sys.executable, BUILD_FILENAME], cwd=build_directory
-    )
+    ) as app_process:
 
-    lastmtime = args.yaml_file.stat().st_mtime
+        lastmtime = args.yaml_file.stat().st_mtime
 
-    while app_process.poll() is None:
-        try:
-            time.sleep(1)
+        while app_process.poll() is None:
+            try:
+                time.sleep(1)
 
-            if lastmtime != args.yaml_file.stat().st_mtime:
-                lastmtime = args.yaml_file.stat().st_mtime
-                write_script(
-                    args, build_directory, "webviz_template.py.jinja2", BUILD_FILENAME
-                )
+                if lastmtime != args.yaml_file.stat().st_mtime:
+                    lastmtime = args.yaml_file.stat().st_mtime
+                    write_script(
+                        args,
+                        build_directory,
+                        "webviz_template.py.jinja2",
+                        BUILD_FILENAME,
+                    )
+                    print(
+                        f"{terminal_colors.BLUE}{terminal_colors.BOLD}"
+                        " Rebuilt webviz dash app from configuration file"
+                        f"{terminal_colors.END}"
+                    )
+
+            except (ParserError, YAMLError) as excep:
                 print(
-                    f"{terminal_colors.BLUE}{terminal_colors.BOLD}"
-                    " Rebuilt webviz dash app from configuration file"
+                    f"{excep} {terminal_colors.RED}{terminal_colors.BOLD}"
+                    "Fix the error and save the configuration file in "
+                    "order to trigger a new rebuild."
                     f"{terminal_colors.END}"
                 )
 
-        except (ParserError, YAMLError) as excep:
-            print(
-                f"{excep} {terminal_colors.RED}{terminal_colors.BOLD}"
-                "Fix the error and save the configuration file in "
-                " order to trigger a new rebuild."
-                f"{terminal_colors.END}"
-            )
+            except KeyboardInterrupt:
+                app_process.kill()
+                print(
+                    f"\r{terminal_colors.BLUE}{terminal_colors.BOLD}"
+                    " Shutting down the webviz application on user request."
+                    f"{terminal_colors.END}"
+                )
 
-        except KeyboardInterrupt:
-            app_process.kill()
-            print(
-                f"\r{terminal_colors.BLUE}{terminal_colors.BOLD}"
-                " Shutting down the webviz application on user request."
-                f"{terminal_colors.END}"
-            )
-            app_process.wait()
-
-        except Exception as excep:
-            app_process.kill()
-            print(
-                f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                "Unexpected error. Killing the webviz application process."
-                f"{terminal_colors.END}"
-            )
-            app_process.wait()
-            raise excep
+            except Exception as excep:
+                app_process.kill()
+                print(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    "Unexpected error. Killing the webviz application process."
+                    f"{terminal_colors.END}"
+                )
+                raise excep
