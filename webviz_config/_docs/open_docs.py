@@ -27,9 +27,7 @@ def _start_doc_app(build_directory: pathlib.Path) -> None:
     webviz_config.utils.LocalhostOpenBrowser(port, token)
 
     app.run(
-        host="localhost",
-        port=port,
-        debug=False,
+        host="localhost", port=port, debug=False,
     )
 
 

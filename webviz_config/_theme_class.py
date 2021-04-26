@@ -15,10 +15,7 @@ class WebvizConfigTheme:
             "connect-src": "'self'",
             "prefetch-src": "'self'",
             "style-src": ["'self'", "'unsafe-inline'"],  # [1]
-            "script-src": [
-                "'self'",
-                "'unsafe-eval'",  # [2]
-            ],
+            "script-src": ["'self'", "'unsafe-eval'",],  # [2]
             "img-src": ["'self'", "data:", "blob:"],  # [3]
             "navigate-to": "'self'",
             "base-uri": "'self'",
