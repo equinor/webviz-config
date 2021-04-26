@@ -31,7 +31,7 @@ except (ImportError, ModuleNotFoundError):
 import jinja2
 
 import webviz_config.plugins
-from webviz_config.plugins import plugin_metadata, plugin_project_metadata
+from webviz_config.plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
 from .._config_parser import SPECIAL_ARGS
 from ..utils._get_webviz_plugins import _get_webviz_plugins
 from .._deprecation_store import (
@@ -154,7 +154,7 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
     docstring_parts = _split_docstring(docstring)
     module = inspect.getmodule(reference)
     subpackage = inspect.getmodule(module).__package__  # type: ignore
-    dist_name = plugin_metadata[name]["dist_name"]
+    dist_name = PLUGIN_METADATA[name]["dist_name"]
     (
         has_deprecated_arguments,
         arguments,
@@ -174,7 +174,7 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         "name": name,
         "package_doc": import_module(subpackage).__doc__,  # type: ignore
         "dist_name": dist_name,
-        "dist_version": plugin_project_metadata[dist_name]["dist_version"],
+        "dist_version": PLUGIN_PROJECT_METADATA[dist_name]["dist_version"],
         "deprecated": deprecated is not None,
         "deprecation_text_short": deprecated.short_message if deprecated else "",
         "deprecation_text_long": deprecated.long_message if deprecated else "",
@@ -234,7 +234,8 @@ def build_docs(build_directory: pathlib.Path) -> None:
     # Then the rmtree command can be removed.
     shutil.rmtree(build_directory)
     shutil.copytree(
-        pathlib.Path(__file__).resolve().parent / "static", build_directory,
+        pathlib.Path(__file__).resolve().parent / "static",
+        build_directory,
     )
 
     template_environment = jinja2.Environment(  # nosec

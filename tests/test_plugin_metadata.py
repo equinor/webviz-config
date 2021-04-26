@@ -1,10 +1,10 @@
 import webviz_config
-from webviz_config.plugins import plugin_project_metadata
+from webviz_config.plugins import PLUGIN_PROJECT_METADATA
 
 
 def test_webviz_config_metadata():
 
-    metadata = plugin_project_metadata["webviz-config"]
+    metadata = PLUGIN_PROJECT_METADATA["webviz-config"]
 
     assert metadata["dist_version"] == webviz_config.__version__
     assert metadata["documentation_url"] == "https://equinor.github.io/webviz-config"

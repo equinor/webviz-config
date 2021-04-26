@@ -14,10 +14,16 @@ from ._deprecation_store import (
 def deprecated_plugin(
     short_message: str = "", long_message: str = ""
 ) -> Callable[[WebvizPluginABC], WebvizPluginABC]:
-    def wrapper(original_plugin: WebvizPluginABC,) -> WebvizPluginABC:
+    def wrapper(
+        original_plugin: WebvizPluginABC,
+    ) -> WebvizPluginABC:
 
         DEPRECATION_STORE.register_deprecated_plugin(
-            DeprecatedPlugin(original_plugin, short_message, long_message,)
+            DeprecatedPlugin(
+                original_plugin,
+                short_message,
+                long_message,
+            )
         )
 
         warnings.warn(

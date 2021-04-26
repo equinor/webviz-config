@@ -183,14 +183,18 @@ class WebvizPluginABC(abc.ABC):
 
         if deprecation_warnings:
             # pylint: disable=import-outside-toplevel
-            from .plugins import plugin_metadata
+            from .plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
 
             plugin_name = getattr(getattr(self, "__class__"), "__name__")
-            metadata = plugin_metadata[plugin_name]
-            url = (
-                f"{metadata['documentation_url']}"
-                f"/#/deprecations?id={plugin_name.lower()}"
-            )
+            dist_name = PLUGIN_METADATA[plugin_name]["dist_name"]
+            metadata = PLUGIN_PROJECT_METADATA[dist_name]
+            if metadata and "documentation_url" in metadata:
+                url = (
+                    f"{metadata['documentation_url']}"
+                    f"/#/deprecations?id={plugin_name.lower()}"
+                )
+            else:
+                url = ""
 
             for deprecation_warning in deprecation_warnings:
                 extended_deprecation_warnings.append(
