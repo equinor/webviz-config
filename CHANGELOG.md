@@ -14,6 +14,10 @@ Docker build process would then need to be given deploy keys as environment vari
 secrets. First iteration of automatically creating a corresponding
 [Radix config](https://www.radix.equinor.com/) and deploying a Radix application
 is also added.
+- [#423](https://github.com/equinor/webviz-config/pull/423) - Added class name
+`webviz-config-markdown` to the output from the `webviz-config` `Markdown` plugin
+output, such that Webviz themes can optionally reduce CSS scope to the output from
+the `Markdown` plugin.
 
 ### Changed
 - [#409](https://github.com/equinor/webviz-config/pull/409) - Relax Python test
