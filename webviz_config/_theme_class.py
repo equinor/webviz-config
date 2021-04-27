@@ -17,8 +17,8 @@ class WebvizConfigTheme:
             "style-src": ["'self'", "'unsafe-inline'"],  # [1]
             "script-src": [
                 "'self'",
-                "'unsafe-eval'",
-            ],  # [2]
+                "'unsafe-eval'",  # [2]
+            ],
             "img-src": ["'self'", "data:", "blob:"],  # [3]
             "navigate-to": "'self'",
             "base-uri": "'self'",
