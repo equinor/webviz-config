@@ -358,7 +358,9 @@ class ConfigParser:
                     )
 
                 plugin["_call_signature"] = _call_signature(
-                    plugin_name, kwargs, self._config_folder,
+                    plugin_name,
+                    kwargs,
+                    self._config_folder,
                 )
 
                 self._assets.update(getattr(webviz_config.plugins, plugin_name).ASSETS)

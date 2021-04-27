@@ -67,8 +67,8 @@ class ArgumentInfo(TypedDict, total=False):
 
 
 def _find_plugin_deprecated_arguments(plugin: Any) -> Dict[str, Tuple[str, str]]:
-    deprecated_arguments = _ds.DEPRECATION_STORE.get_stored_plugin_argument_deprecations(
-        plugin.__init__
+    deprecated_arguments = (
+        _ds.DEPRECATION_STORE.get_stored_plugin_argument_deprecations(plugin.__init__)
     )
     result: Dict[str, Tuple[str, str]] = {}
     for deprecated_argument in deprecated_arguments:
@@ -230,7 +230,8 @@ def build_docs(build_directory: pathlib.Path) -> None:
     # Then the rmtree command can be removed.
     shutil.rmtree(build_directory)
     shutil.copytree(
-        pathlib.Path(__file__).resolve().parent / "static", build_directory,
+        pathlib.Path(__file__).resolve().parent / "static",
+        build_directory,
     )
 
     template_environment = jinja2.Environment(  # nosec
