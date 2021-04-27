@@ -2,13 +2,15 @@ import re
 import sys
 import pathlib
 import inspect
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
+import warnings
 
 import yaml
 
 import webviz_config.plugins
 from .utils import terminal_colors
 from .utils._get_webviz_plugins import _get_webviz_plugins
+from . import _deprecation_store as _ds
 
 SPECIAL_ARGS = ["self", "app", "webviz_settings", "_call_signature"]
 
@@ -19,7 +21,7 @@ def _call_signature(
     config_folder: pathlib.Path,
     contact_person: Optional[dict] = None,
 ) -> tuple:
-    # pylint: disable=too-many-branches,too-many-statements
+    # pylint: disable=too-many-branches,too-many-statements,too-many-locals
     """Takes as input the name of a plugin together with user given arguments
     (originating from the configuration file). Returns the equivalent Python code wrt.
     initiating an instance of that plugin (with the given arguments).
@@ -112,6 +114,76 @@ def _call_signature(
             except TypeError:
                 pass
 
+    kwargs_including_defaults = kwargs
+    deprecation_warnings = []
+
+    deprecated_plugin = _ds.DEPRECATION_STORE.get_stored_plugin_deprecation(
+        getattr(webviz_config.plugins, plugin_name)
+    )
+    if deprecated_plugin:
+        deprecation_warnings.append(deprecated_plugin.short_message)
+
+    deprecations = _ds.DEPRECATION_STORE.get_stored_plugin_argument_deprecations(
+        getattr(webviz_config.plugins, plugin_name).__init__
+    )
+
+    signature = inspect.signature(getattr(webviz_config.plugins, plugin_name).__init__)
+    for key, value in signature.parameters.items():
+        if value.default is not inspect.Parameter.empty and key not in kwargs.keys():
+            kwargs_including_defaults[key] = value.default
+
+    for deprecation in deprecations:
+        if isinstance(deprecation, _ds.DeprecatedArgument):
+            if deprecation.argument_name in kwargs_including_defaults.keys():
+                deprecation_warnings.append(deprecation.short_message)
+                warnings.warn(
+                    """Deprecated Argument: {} with value '{}' in method {} in module {}
+------------------------
+{}
+===
+{}
+""".format(
+                        deprecation.argument_name,
+                        kwargs_including_defaults[deprecation.argument_name],
+                        deprecation.method_name,
+                        getattr(deprecation.method_reference, "__module__"),
+                        deprecation.short_message,
+                        deprecation.long_message,
+                    ),
+                    FutureWarning,
+                )
+        elif isinstance(deprecation, _ds.DeprecatedArgumentCheck):
+            mapped_args: Dict[str, Any] = {}
+            for arg in deprecation.argument_names:
+                for name, value in kwargs_including_defaults.items():
+                    if arg == name:
+                        mapped_args[arg] = value
+                        break
+
+            result = deprecation.callback(**mapped_args)  # type: ignore
+            if result:
+                deprecation_warnings.append(result[0])
+                warnings.warn(
+                    """Deprecated Argument(s): {} with value '{}' in method {} in module {}
+------------------------
+{}
+===
+{}
+""".format(
+                        deprecation.argument_names,
+                        [
+                            value
+                            for key, value in kwargs_including_defaults.items()
+                            if key in deprecation.argument_names
+                        ],
+                        deprecation.method_name,
+                        getattr(deprecation.method_reference, "__module__"),
+                        result[0],
+                        result[1],
+                    ),
+                    FutureWarning,
+                )
+
     special_args = ""
     if "app" in argspec.args:
         special_args += "app=app, "
@@ -120,7 +192,10 @@ def _call_signature(
 
     return (
         f"{plugin_name}({special_args}**{kwargs})",
-        f"plugin_layout(contact_person={contact_person})",
+        (
+            f"plugin_layout(contact_person={contact_person}"
+            f", deprecation_warnings={deprecation_warnings})"
+        ),
     )
 
 
@@ -291,7 +366,7 @@ class ConfigParser:
                 self._assets.update(getattr(webviz_config.plugins, plugin_name).ASSETS)
                 self._plugin_metadata[
                     plugin_name
-                ] = webviz_config.plugins.plugin_metadata[plugin_name]
+                ] = webviz_config.plugins.PLUGIN_METADATA[plugin_name]
 
     @property
     def configuration(self) -> dict:

@@ -17,6 +17,8 @@ import pathlib
 from importlib import import_module
 from collections import defaultdict
 from typing import Any, Dict, Optional, Tuple, List
+import re
+
 
 try:
     # Python 3.8+
@@ -29,9 +31,10 @@ except (ImportError, ModuleNotFoundError):
 import jinja2
 
 import webviz_config.plugins
-from webviz_config.plugins import plugin_metadata, plugin_project_metadata
+from webviz_config.plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
 from .._config_parser import SPECIAL_ARGS
 from ..utils._get_webviz_plugins import _get_webviz_plugins
+from .. import _deprecation_store as _ds
 
 
 class ArgInfo(TypedDict, total=False):
@@ -52,6 +55,91 @@ class PluginInfo(TypedDict):
     package_doc: Optional[str]
 
 
+class ArgumentInfo(TypedDict, total=False):
+    description: str
+    default_value: str
+    required: bool
+    typehint: Any
+    typehint_string: str
+    deprecated: bool
+    deprecation_message: str
+    deprecation_code: str
+
+
+def _find_plugin_deprecated_arguments(plugin: Any) -> Dict[str, Tuple[str, str]]:
+    deprecated_arguments = (
+        _ds.DEPRECATION_STORE.get_stored_plugin_argument_deprecations(plugin.__init__)
+    )
+    result: Dict[str, Tuple[str, str]] = {}
+    for deprecated_argument in deprecated_arguments:
+        if isinstance(deprecated_argument, _ds.DeprecatedArgumentCheck):
+            for arg in deprecated_argument.argument_names:
+                result[arg] = ("", deprecated_argument.callback_code)
+    # Completely deprecated arguments have priority over deprecation check functions
+    for deprecated_argument in deprecated_arguments:
+        if isinstance(deprecated_argument, _ds.DeprecatedArgument):
+            result[deprecated_argument.argument_name] = (
+                deprecated_argument.long_message,
+                "",
+            )
+    return result
+
+
+def _extract_init_arguments_and_check_for_deprecation(
+    docstring: Optional[str], reference: Any
+) -> Tuple[bool, Dict[str, ArgumentInfo], str]:
+    """Returns all arguments of the given class' __init__ function including
+    related documentation strings, typehints and deprecation information.
+    """
+    result: Dict[str, ArgumentInfo] = {}
+    deprecated_arguments = _find_plugin_deprecated_arguments(reference)
+    regex = (
+        "(\\* \\*\\*`([a-zA-Z0-9_]+)`:\\*\\*)((.|\\n|\\r)+?)"
+        "((?=\\* \\*\\*`([a-zA-Z0-9_]+)`:\\*\\*)|$)"
+    )
+    documented_args: Dict[str, str] = {}
+    deprecation_check_code = ""
+
+    if docstring:
+        for match in re.finditer(regex, docstring):
+            documented_args[match.group(2)] = match.group(3)
+
+    argspec = inspect.getfullargspec(reference.__init__)
+    result = {arg: ArgumentInfo() for arg in argspec.args if arg not in SPECIAL_ARGS}
+
+    if argspec.defaults is not None:
+        for arg, default in dict(
+            zip(reversed(argspec.args), reversed(argspec.defaults))
+        ).items():
+            # Casting pathlib.Path to str could become unnecessary if outsourcing creation
+            # of json schema to pydantic https://pydantic-docs.helpmanual.io/
+            result[arg]["default_value"] = (
+                str(default) if isinstance(default, pathlib.Path) else default
+            )
+
+    for arg, arg_info in result.items():
+        arg_info["required"] = "default_value" not in arg_info
+
+    for arg, annotation in argspec.annotations.items():
+        if arg not in SPECIAL_ARGS and arg != "return":
+            result[arg]["typehint"] = annotation
+            result[arg]["typehint_string"] = _annotation_to_string(annotation)
+
+    for arg, arg_info in result.items():
+        arg_info["description"] = " ".join(documented_args.get(arg, "").split())
+
+        if arg in deprecated_arguments:
+            arg_info["deprecated"] = True
+            arg_info["deprecation_message"] = deprecated_arguments[arg][0]
+            arg_info["deprecation_code"] = deprecated_arguments[arg][1]
+            if deprecation_check_code == "" and deprecated_arguments[arg][1] != "":
+                deprecation_check_code = deprecated_arguments[arg][1]
+        else:
+            arg_info["deprecated"] = False
+
+    return (bool(deprecated_arguments), result, deprecation_check_code)
+
+
 def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
     """Takes in a tuple (from e.g. inspect.getmembers), and returns
     a dictionary according to the type definition PluginInfo.
@@ -60,13 +148,20 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
     name, reference = plugin
     docstring = reference.__doc__ if reference.__doc__ is not None else ""
     docstring_parts = _split_docstring(docstring)
-    argspec = inspect.getfullargspec(reference.__init__)
     module = inspect.getmodule(reference)
     subpackage = inspect.getmodule(module).__package__  # type: ignore
-    dist_name = plugin_metadata[name]["dist_name"]
+    dist_name = PLUGIN_METADATA[name]["dist_name"]
+    (
+        has_deprecated_arguments,
+        arguments,
+        deprecation_check_code,
+    ) = _extract_init_arguments_and_check_for_deprecation(
+        docstring_parts[1] if len(docstring_parts) > 1 else None, reference
+    )
+    deprecated = _ds.DEPRECATION_STORE.get_stored_plugin_deprecation(reference)
 
     plugin_info: PluginInfo = {
-        "arg_info": {arg: {} for arg in argspec.args if arg not in SPECIAL_ARGS},
+        "arg_info": arguments,
         "argument_description": docstring_parts[1]
         if len(docstring_parts) > 1
         else None,
@@ -75,28 +170,13 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         "name": name,
         "package_doc": import_module(subpackage).__doc__,  # type: ignore
         "dist_name": dist_name,
-        "dist_version": plugin_project_metadata[dist_name]["dist_version"],
+        "dist_version": PLUGIN_PROJECT_METADATA[dist_name]["dist_version"],
+        "deprecated": deprecated is not None,
+        "deprecation_text_short": deprecated.short_message if deprecated else "",
+        "deprecation_text_long": deprecated.long_message if deprecated else "",
+        "has_deprecated_arguments": has_deprecated_arguments,
+        "deprecation_check_code": deprecation_check_code,
     }
-
-    if argspec.defaults is not None:
-        for arg, default in dict(
-            zip(reversed(argspec.args), reversed(argspec.defaults))
-        ).items():
-            # Casting pathlib.Path to str could become unnecessary if outsourcing creation
-            # of json schema to pydantic https://pydantic-docs.helpmanual.io/
-            plugin_info["arg_info"][arg]["default"] = (
-                str(default) if isinstance(default, pathlib.Path) else default
-            )
-
-    for arg, arg_info in plugin_info["arg_info"].items():
-        arg_info["required"] = "default" not in arg_info
-
-    for arg, annotation in argspec.annotations.items():
-        if arg not in SPECIAL_ARGS and arg != "return":
-            plugin_info["arg_info"][arg]["typehint"] = annotation
-            plugin_info["arg_info"][arg]["typehint_string"] = _annotation_to_string(
-                annotation
-            )
 
     return plugin_info
 
@@ -162,6 +242,14 @@ def build_docs(build_directory: pathlib.Path) -> None:
 
     plugin_documentation = get_plugin_documentation()
 
+    deprecated_packages = {}
+    for dist_name, package_doc in plugin_documentation.items():
+        if any(
+            plugin["deprecated"] or plugin["has_deprecated_arguments"]
+            for plugin in package_doc["plugins"]
+        ):
+            deprecated_packages[dist_name] = package_doc
+
     template = template_environment.get_template("README.md.jinja2")
     for dist_name, package_doc in plugin_documentation.items():
         (build_directory / f"{dist_name}.md").write_text(
@@ -170,7 +258,12 @@ def build_docs(build_directory: pathlib.Path) -> None:
 
     template = template_environment.get_template("sidebar.md.jinja2")
     (build_directory / "sidebar.md").write_text(
-        template.render({"packages": plugin_documentation.keys()})
+        template.render(
+            {
+                "packages": plugin_documentation.keys(),
+                "deprecated_plugins": bool(deprecated_packages),
+            }
+        )
     )
 
     template = template_environment.get_template("webviz-doc.js.jinja2")
@@ -178,6 +271,11 @@ def build_docs(build_directory: pathlib.Path) -> None:
         template.render(
             {"paths": ["/"] + [f"/{dist_name}" for dist_name in plugin_documentation]}
         )
+    )
+
+    template = template_environment.get_template("deprecations.md.jinja2")
+    (build_directory / "deprecations.md").write_text(
+        template.render({"packages": deprecated_packages})
     )
 
 

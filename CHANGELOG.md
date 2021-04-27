@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED] - YYYY-MM-DD
 
 ### Added
+- [#419](https://github.com/equinor/webviz-config/pull/419) - Plugins and their
+arguments can now be marked as deprecated by using the newly implemented 
+deprecation framework that, in addition to console FutureWarnings,
+automatically shows deprecation messages to the end user in the app and in the documentation.
+Adjusted contributing guide accordingly.
 - [#318](https://github.com/equinor/webviz-config/pull/318) - `webviz-config`
 now facilitates automatically including necessary plugin projects as dependencies
 in generated Docker setup. Private repositories are also supported, however the
@@ -20,6 +25,8 @@ output, such that Webviz themes can optionally reduce CSS scope to the output fr
 the `Markdown` plugin.
 
 ### Changed
+- [#419](https://github.com/equinor/webviz-config/pull/419) - Changed `plugin_metadata`
+and `plugin_project_metadata` in `webviz_config.plugins` to uppercase.
 - [#409](https://github.com/equinor/webviz-config/pull/409) - Relax Python test
 dependency constraints.
 - [#318](https://github.com/equinor/webviz-config/pull/318) - Ad-hoc plugins not
