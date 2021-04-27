@@ -10,11 +10,7 @@ import yaml
 import webviz_config.plugins
 from .utils import terminal_colors
 from .utils._get_webviz_plugins import _get_webviz_plugins
-from ._deprecation_store import (
-    DEPRECATION_STORE,
-    DeprecatedArgument,
-    DeprecatedArgumentCheck,
-)
+from . import _deprecation_store as _ds
 
 SPECIAL_ARGS = ["self", "app", "webviz_settings", "_call_signature"]
 
@@ -121,13 +117,13 @@ def _call_signature(
     kwargs_including_defaults = kwargs
     deprecation_warnings = []
 
-    deprecated_plugin = DEPRECATION_STORE.get_stored_plugin_deprecation(
+    deprecated_plugin = _ds.DEPRECATION_STORE.get_stored_plugin_deprecation(
         getattr(webviz_config.plugins, plugin_name)
     )
     if deprecated_plugin:
         deprecation_warnings.append(deprecated_plugin.short_message)
 
-    deprecations = DEPRECATION_STORE.get_stored_plugin_argument_deprecations(
+    deprecations = _ds.DEPRECATION_STORE.get_stored_plugin_argument_deprecations(
         getattr(webviz_config.plugins, plugin_name).__init__
     )
 
@@ -137,7 +133,7 @@ def _call_signature(
             kwargs_including_defaults[key] = value.default
 
     for deprecation in deprecations:
-        if isinstance(deprecation, DeprecatedArgument):
+        if isinstance(deprecation, _ds.DeprecatedArgument):
             if deprecation.argument_name in kwargs_including_defaults.keys():
                 deprecation_warnings.append(deprecation.short_message)
                 warnings.warn(
@@ -156,7 +152,7 @@ def _call_signature(
                     ),
                     FutureWarning,
                 )
-        elif isinstance(deprecation, DeprecatedArgumentCheck):
+        elif isinstance(deprecation, _ds.DeprecatedArgumentCheck):
             mapped_args: Dict[str, Any] = {}
             for arg in deprecation.argument_names:
                 for name, value in kwargs_including_defaults.items():
@@ -362,9 +358,7 @@ class ConfigParser:
                     )
 
                 plugin["_call_signature"] = _call_signature(
-                    plugin_name,
-                    kwargs,
-                    self._config_folder,
+                    plugin_name, kwargs, self._config_folder,
                 )
 
                 self._assets.update(getattr(webviz_config.plugins, plugin_name).ASSETS)

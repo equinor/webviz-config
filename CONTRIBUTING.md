@@ -613,7 +613,7 @@ build process (see instructions in `README` created with the portable applicatio
 Plugins can be marked as deprecated by using the `@deprecated_plugin(short_message, long_message)` decorator.
 
 ```python
-from webviz_config.webviz_deprecated import deprecated_plugin
+from webviz_config.deprecation_decorators import deprecated_plugin
 
 
 @deprecated_plugin("This message is shown to the end user in the app.", "This message is shown in the documentation of the plugin.")
@@ -626,7 +626,7 @@ Arguments can either be marked as deprecated in any case (see `MyPluginExample1`
 
 ```python
 from typing import Optional, Tuple
-from webviz_config.webviz_deprecated import deprecated_plugin_arguments
+from webviz_config.deprecation_decorators import deprecated_plugin_arguments
 
 
 class MyPluginExample1(WebvizPluginABC):

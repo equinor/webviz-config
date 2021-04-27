@@ -3,27 +3,16 @@ import inspect
 import warnings
 
 from ._plugin_abc import WebvizPluginABC
-from ._deprecation_store import (
-    DEPRECATION_STORE,
-    DeprecatedPlugin,
-    DeprecatedArgument,
-    DeprecatedArgumentCheck,
-)
+from . import _deprecation_store as _ds
 
 
 def deprecated_plugin(
     short_message: str = "", long_message: str = ""
 ) -> Callable[[WebvizPluginABC], WebvizPluginABC]:
-    def wrapper(
-        original_plugin: WebvizPluginABC,
-    ) -> WebvizPluginABC:
+    def wrapper(original_plugin: WebvizPluginABC,) -> WebvizPluginABC:
 
-        DEPRECATION_STORE.register_deprecated_plugin(
-            DeprecatedPlugin(
-                original_plugin,
-                short_message,
-                long_message,
-            )
+        _ds.DEPRECATION_STORE.register_deprecated_plugin(
+            _ds.DeprecatedPlugin(original_plugin, short_message, long_message,)
         )
 
         warnings.warn(
@@ -55,8 +44,8 @@ def deprecated_plugin_arguments(
                     if check_arg == original_arg:
                         verified_args.append(check_arg)
 
-            DEPRECATION_STORE.register_deprecated_plugin_argument(
-                DeprecatedArgumentCheck(
+            _ds.DEPRECATION_STORE.register_deprecated_plugin_argument(
+                _ds.DeprecatedArgumentCheck(
                     original_init_method,
                     original_init_method.__name__,
                     verified_args,
@@ -70,8 +59,8 @@ def deprecated_plugin_arguments(
                 if original_arg in check.keys():
                     short_message = cast(Tuple[str, str], check[original_arg])[0]
                     long_message = cast(Tuple[str, str], check[original_arg])[1]
-                    DEPRECATION_STORE.register_deprecated_plugin_argument(
-                        DeprecatedArgument(
+                    _ds.DEPRECATION_STORE.register_deprecated_plugin_argument(
+                        _ds.DeprecatedArgument(
                             original_init_method,
                             original_init_method.__name__,
                             original_arg,

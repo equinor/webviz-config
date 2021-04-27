@@ -34,11 +34,7 @@ import webviz_config.plugins
 from webviz_config.plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
 from .._config_parser import SPECIAL_ARGS
 from ..utils._get_webviz_plugins import _get_webviz_plugins
-from .._deprecation_store import (
-    DEPRECATION_STORE,
-    DeprecatedArgument,
-    DeprecatedArgumentCheck,
-)
+from .. import _deprecation_store as _ds
 
 
 class ArgInfo(TypedDict, total=False):
@@ -71,17 +67,17 @@ class ArgumentInfo(TypedDict, total=False):
 
 
 def _find_plugin_deprecated_arguments(plugin: Any) -> Dict[str, Tuple[str, str]]:
-    deprecated_arguments = DEPRECATION_STORE.get_stored_plugin_argument_deprecations(
+    deprecated_arguments = _ds.DEPRECATION_STORE.get_stored_plugin_argument_deprecations(
         plugin.__init__
     )
     result: Dict[str, Tuple[str, str]] = {}
     for deprecated_argument in deprecated_arguments:
-        if isinstance(deprecated_argument, DeprecatedArgumentCheck):
+        if isinstance(deprecated_argument, _ds.DeprecatedArgumentCheck):
             for arg in deprecated_argument.argument_names:
                 result[arg] = ("", deprecated_argument.callback_code)
     # Completely deprecated arguments have priority over deprecation check functions
     for deprecated_argument in deprecated_arguments:
-        if isinstance(deprecated_argument, DeprecatedArgument):
+        if isinstance(deprecated_argument, _ds.DeprecatedArgument):
             result[deprecated_argument.argument_name] = (
                 deprecated_argument.long_message,
                 "",
@@ -162,7 +158,7 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
     ) = _extract_init_arguments_and_check_for_deprecation(
         docstring_parts[1] if len(docstring_parts) > 1 else None, reference
     )
-    deprecated = DEPRECATION_STORE.get_stored_plugin_deprecation(reference)
+    deprecated = _ds.DEPRECATION_STORE.get_stored_plugin_deprecation(reference)
 
     plugin_info: PluginInfo = {
         "arg_info": arguments,
@@ -234,8 +230,7 @@ def build_docs(build_directory: pathlib.Path) -> None:
     # Then the rmtree command can be removed.
     shutil.rmtree(build_directory)
     shutil.copytree(
-        pathlib.Path(__file__).resolve().parent / "static",
-        build_directory,
+        pathlib.Path(__file__).resolve().parent / "static", build_directory,
     )
 
     template_environment = jinja2.Environment(  # nosec
