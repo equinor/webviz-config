@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.3.0] - 2021-04-27
+
 ### Added
 - [#419](https://github.com/equinor/webviz-config/pull/419) - Plugins and their
 arguments can now be marked as deprecated by using the newly implemented 
