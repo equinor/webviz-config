@@ -12,16 +12,6 @@ def deprecated_plugin(
         original_plugin: Type[WebvizPluginABC],
     ) -> Type[WebvizPluginABC]:
 
-        if not issubclass(original_plugin, WebvizPluginABC):
-            warnings.warn(
-                (
-                    "The deprecated_plugin decorator can only be used on"
-                    "plugins inheriting from WebvizPluginABC."
-                ),
-                UserWarning,
-            )
-            return original_plugin
-
         _ds.DEPRECATION_STORE.register_deprecated_plugin(
             _ds.DeprecatedPlugin(
                 original_plugin,
