@@ -1,6 +1,5 @@
 from typing import Dict, Union, Callable, Tuple, cast, Optional, List
 import inspect
-import warnings
 
 from ._plugin_abc import WebvizPluginABC
 from . import _deprecation_store as _ds
@@ -19,16 +18,6 @@ def deprecated_plugin(
                 short_message,
                 long_message,
             )
-        )
-
-        warnings.warn(
-            f"""Plugin {original_plugin} has been deprecated.
-------------------------
-{short_message}
-===
-{long_message}
-""",
-            FutureWarning,
         )
 
         return original_plugin

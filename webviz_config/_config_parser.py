@@ -122,6 +122,15 @@ def _call_signature(
     )
     if deprecated_plugin:
         deprecation_warnings.append(deprecated_plugin.short_message)
+        warnings.warn(
+            f"""Plugin {deprecated_plugin.class_reference} has been deprecated.
+------------------------
+{deprecated_plugin.short_message}
+===
+{deprecated_plugin.long_message}
+""",
+            FutureWarning,
+        )
 
     deprecations = _ds.DEPRECATION_STORE.get_stored_plugin_argument_deprecations(
         getattr(webviz_config.plugins, plugin_name).__init__
