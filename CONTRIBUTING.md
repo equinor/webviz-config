@@ -616,7 +616,7 @@ Plugins can be marked as deprecated by using the `@deprecated_plugin(short_messa
 from webviz_config.deprecation_decorators import deprecated_plugin
 
 
-@deprecated_plugin("This message is shown to the end user in the app.", "This message is shown in the documentation of the plugin.")
+@deprecated_plugin("An optional explanation of why the plugin has been deprecated.")
 class MyPlugin(WebvizPluginABC):
     ...
 ```
