@@ -146,7 +146,7 @@ def _call_signature(
             if deprecation.argument_name in kwargs_including_defaults.keys():
                 deprecation_warnings.append(deprecation.short_message)
                 warnings.warn(
-                    """Deprecated Argument: '{}' with value '{}' in method '{}' in module '{}'
+                    """Deprecated Argument: '{}' with value '{}' in plugin '{}'
 ------------------------
 {}
 ===
@@ -154,8 +154,7 @@ def _call_signature(
 """.format(
                         deprecation.argument_name,
                         kwargs_including_defaults[deprecation.argument_name],
-                        deprecation.method_name,
-                        getattr(deprecation.method_reference, "__module__"),
+                        plugin_name,
                         deprecation.short_message,
                         deprecation.long_message,
                     ),
@@ -173,7 +172,7 @@ def _call_signature(
             if result:
                 deprecation_warnings.append(result[0])
                 warnings.warn(
-                    """Deprecated Argument(s): '{}' with value(s) '{}' in method '{}' in module '{}'
+                    """Deprecated Argument(s): '{}' with value(s) '{}' in plugin '{}'
 ------------------------
 {}
 ===
@@ -185,8 +184,7 @@ def _call_signature(
                             for key, value in kwargs_including_defaults.items()
                             if key in deprecation.argument_names
                         ],
-                        deprecation.method_name,
-                        getattr(deprecation.method_reference, "__module__"),
+                        plugin_name,
                         result[0],
                         result[1],
                     ),
