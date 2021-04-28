@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#429](https://github.com/equinor/webviz-config/pull/429) - Moved `FutureWarnings`
 from `deprecated_decorators.py` to `_config_parser.py`. Simplified deprecation warnings.
 - [#432](https://github.com/equinor/webviz-config/pull/432) - Replaced `WebvizPluginABC` type in
-`deprecated_plugin` decorator with `Any` type and added `issubclass()` check.
+`deprecated_plugin` decorator with `Type[WebvizPluginABC]`.
 
 ## [0.3.0] - 2021-04-27
 
