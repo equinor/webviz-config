@@ -14,6 +14,8 @@ from `deprecated_decorators.py` to `_config_parser.py`. Simplified deprecation w
 - [#433](https://github.com/equinor/webviz-config/pull/433) - Removed short message
 from `deprecated_plugin` decorator.
 
+## [0.3.0] - 2021-04-27
+
 ### Added
 - [#419](https://github.com/equinor/webviz-config/pull/419) - Plugins and their
 arguments can now be marked as deprecated by using the newly implemented 
