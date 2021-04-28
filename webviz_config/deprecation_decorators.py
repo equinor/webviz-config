@@ -17,7 +17,7 @@ def deprecated_plugin(
                 original_plugin,
                 f"Plugin '{original_plugin}'' has been deprecated.",
                 deprecation_info,
-            ),
+            )
         )
 
         return original_plugin
