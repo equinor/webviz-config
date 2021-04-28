@@ -122,6 +122,15 @@ def _call_signature(
     )
     if deprecated_plugin:
         deprecation_warnings.append(deprecated_plugin.short_message)
+        warnings.warn(
+            f"""Plugin '{plugin_name}' has been deprecated.
+------------------------
+{deprecated_plugin.short_message}
+===
+{deprecated_plugin.long_message}
+""",
+            FutureWarning,
+        )
 
     deprecations = _ds.DEPRECATION_STORE.get_stored_plugin_argument_deprecations(
         getattr(webviz_config.plugins, plugin_name).__init__
@@ -137,7 +146,7 @@ def _call_signature(
             if deprecation.argument_name in kwargs_including_defaults.keys():
                 deprecation_warnings.append(deprecation.short_message)
                 warnings.warn(
-                    """Deprecated Argument: {} with value '{}' in method {} in module {}
+                    """Deprecated Argument: '{}' with value '{}' in plugin '{}'
 ------------------------
 {}
 ===
@@ -145,8 +154,7 @@ def _call_signature(
 """.format(
                         deprecation.argument_name,
                         kwargs_including_defaults[deprecation.argument_name],
-                        deprecation.method_name,
-                        getattr(deprecation.method_reference, "__module__"),
+                        plugin_name,
                         deprecation.short_message,
                         deprecation.long_message,
                     ),
@@ -164,7 +172,7 @@ def _call_signature(
             if result:
                 deprecation_warnings.append(result[0])
                 warnings.warn(
-                    """Deprecated Argument(s): {} with value '{}' in method {} in module {}
+                    """Deprecated Argument(s): '{}' with value(s) '{}' in plugin '{}'
 ------------------------
 {}
 ===
@@ -176,8 +184,7 @@ def _call_signature(
                             for key, value in kwargs_including_defaults.items()
                             if key in deprecation.argument_names
                         ],
-                        deprecation.method_name,
-                        getattr(deprecation.method_reference, "__module__"),
+                        plugin_name,
                         result[0],
                         result[1],
                     ),
