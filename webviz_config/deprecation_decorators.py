@@ -1,4 +1,4 @@
-from typing import Dict, Union, Callable, Tuple, cast, Optional, List
+from typing import Dict, Union, Callable, Tuple, cast, Optional, List, Type
 import inspect
 
 from ._plugin_abc import WebvizPluginABC
@@ -7,10 +7,10 @@ from . import _deprecation_store as _ds
 
 def deprecated_plugin(
     short_message: str = "", long_message: str = ""
-) -> Callable[[WebvizPluginABC], WebvizPluginABC]:
+) -> Callable[[Type[WebvizPluginABC]], Type[WebvizPluginABC]]:
     def wrapper(
-        original_plugin: WebvizPluginABC,
-    ) -> WebvizPluginABC:
+        original_plugin: Type[WebvizPluginABC],
+    ) -> Type[WebvizPluginABC]:
 
         _ds.DEPRECATION_STORE.register_deprecated_plugin(
             _ds.DeprecatedPlugin(
