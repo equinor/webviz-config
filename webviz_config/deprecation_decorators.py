@@ -1,4 +1,4 @@
-from typing import Dict, Union, Callable, Tuple, cast, Optional, List, Any
+from typing import Dict, Union, Callable, Tuple, cast, Optional, List, Type
 import inspect
 
 from ._plugin_abc import WebvizPluginABC
@@ -7,10 +7,10 @@ from . import _deprecation_store as _ds
 
 def deprecated_plugin(
     short_message: str = "", long_message: str = ""
-) -> Callable[[Any], Any]:
+) -> Callable[[Type[WebvizPluginABC]], Type[WebvizPluginABC]]:
     def wrapper(
-        original_plugin: Any,
-    ) -> Any:
+        original_plugin: Type[WebvizPluginABC],
+    ) -> Type[WebvizPluginABC]:
 
         if not issubclass(original_plugin, WebvizPluginABC):
             warnings.warn(
