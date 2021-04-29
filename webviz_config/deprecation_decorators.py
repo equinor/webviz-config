@@ -15,7 +15,7 @@ def deprecated_plugin(
         _ds.DEPRECATION_STORE.register_deprecated_plugin(
             _ds.DeprecatedPlugin(
                 original_plugin,
-                f"Plugin '{getattr(original_plugin, '__name__')}'' has been deprecated.",
+                f"Plugin '{original_plugin.__name__}' has been deprecated.",
                 deprecation_info,
             )
         )
