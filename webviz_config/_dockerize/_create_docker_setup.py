@@ -67,7 +67,9 @@ def get_python_requirements(distributions: dict) -> List[str]:
             )
             continue
 
-        if dist["download_url"].startswith(PYPI_URL_ROOT):
+        if dist["download_url"] is not None and dist["download_url"].startswith(
+            PYPI_URL_ROOT
+        ):
             pypi_data = requests.get(f"{PYPI_URL_ROOT}/pypi/{dist_name}/json").json()
             if dist["dist_version"] in pypi_data["releases"]:
                 requirements.append(f"{dist_name}=={dist['dist_version']}")

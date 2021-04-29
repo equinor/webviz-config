@@ -13,6 +13,8 @@ from `deprecated_decorators.py` to `_config_parser.py`. Simplified deprecation w
 `deprecated_plugin` decorator with `Type[WebvizPluginABC]`.
 - [#433](https://github.com/equinor/webviz-config/pull/433) - Removed short message
 from `deprecated_plugin` decorator.
+- [#435](https://github.com/equinor/webviz-config/pull/435) - Support only specifying
+`source_url` in `setup.py` when building Dockerfile.
 
 ## [0.3.0] - 2021-04-27
 
