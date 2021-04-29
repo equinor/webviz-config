@@ -6,7 +6,7 @@ from . import _deprecation_store as _ds
 
 
 def deprecated_plugin(
-    short_message: str = "", long_message: str = ""
+    deprecation_info: str = "",
 ) -> Callable[[Type[WebvizPluginABC]], Type[WebvizPluginABC]]:
     def wrapper(
         original_plugin: Type[WebvizPluginABC],
@@ -15,8 +15,8 @@ def deprecated_plugin(
         _ds.DEPRECATION_STORE.register_deprecated_plugin(
             _ds.DeprecatedPlugin(
                 original_plugin,
-                short_message,
-                long_message,
+                f"Plugin '{original_plugin.__name__}' has been deprecated.",
+                deprecation_info,
             )
         )
 
