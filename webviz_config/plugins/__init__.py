@@ -14,6 +14,6 @@ except ModuleNotFoundError:
 from ._utils import load_webviz_plugins_with_metadata, PluginProjectMetaData
 
 
-plugin_metadata, plugin_project_metadata = load_webviz_plugins_with_metadata(
+PLUGIN_METADATA, PLUGIN_PROJECT_METADATA = load_webviz_plugins_with_metadata(
     distributions(), globals()
 )

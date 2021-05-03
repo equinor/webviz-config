@@ -7,7 +7,7 @@ from typing import Dict, List
 import jinja2
 import requests
 
-from ..plugins import plugin_project_metadata
+from ..plugins import PLUGIN_PROJECT_METADATA
 from ._pip_git_url import pip_git_url
 
 
@@ -31,13 +31,13 @@ def create_docker_setup(
     template = template_environment.get_template("Dockerfile.jinja2")
 
     distributions = {
-        metadata["dist_name"]: plugin_project_metadata[metadata["dist_name"]]
+        metadata["dist_name"]: PLUGIN_PROJECT_METADATA[metadata["dist_name"]]
         for metadata in plugin_metadata.values()
     }
 
     # Regardless of a standard webviz-config plugin is included in user's
     # configuration file, we still need to install the plugin framework webviz-config:
-    distributions["webviz-config"] = plugin_project_metadata["webviz-config"]
+    distributions["webviz-config"] = PLUGIN_PROJECT_METADATA["webviz-config"]
 
     requirements = get_python_requirements(distributions)
     requirements.append("gunicorn")
@@ -67,7 +67,9 @@ def get_python_requirements(distributions: dict) -> List[str]:
             )
             continue
 
-        if dist["download_url"].startswith(PYPI_URL_ROOT):
+        if dist["download_url"] is not None and dist["download_url"].startswith(
+            PYPI_URL_ROOT
+        ):
             pypi_data = requests.get(f"{PYPI_URL_ROOT}/pypi/{dist_name}/json").json()
             if dist["dist_version"] in pypi_data["releases"]:
                 requirements.append(f"{dist_name}=={dist['dist_version']}")

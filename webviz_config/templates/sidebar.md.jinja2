@@ -2,3 +2,6 @@
 {%- for package in packages %}
 * [{{package}} package]({{package}}.md)
 {%- endfor %}
+{% if deprecated_plugins %}
+* [Deprecated plugins](deprecations.md)
+{% endif %}

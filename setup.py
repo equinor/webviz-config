@@ -87,9 +87,10 @@ setup(
         "pyyaml>=5.1",
         "requests>=2.20",
         "tqdm>=4.8",
+        "dataclasses>=0.8; python_version<'3.7'",
         "importlib-metadata>=1.7; python_version<'3.8'",
         "typing-extensions>=3.7; python_version<'3.8'",
-        "webviz-core-components>=0.1.0",
+        "webviz-core-components>=0.4.0",
     ],
     extras_require={
         "tests": TESTS_REQUIRES,

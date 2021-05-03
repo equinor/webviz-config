@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [#426](https://github.com/equinor/webviz-config/pull/426) - Added centralized factory
 registry exposed through `WEBVIZ_FACTORY_REGISTRY` for sharing factories between plugins.
+
+### Fixed
+- [#429](https://github.com/equinor/webviz-config/pull/429) - Moved `FutureWarnings`
+from `deprecated_decorators.py` to `_config_parser.py`. Simplified deprecation warnings.
+- [#432](https://github.com/equinor/webviz-config/pull/432) - Replaced `WebvizPluginABC` type in
+`deprecated_plugin` decorator with `Type[WebvizPluginABC]`.
+- [#433](https://github.com/equinor/webviz-config/pull/433) - Removed short message
+from `deprecated_plugin` decorator.
+- [#435](https://github.com/equinor/webviz-config/pull/435) - Support only specifying
+`source_url` in `setup.py` when building Dockerfile.
+
+## [0.3.0] - 2021-04-27
+
+### Added
+- [#419](https://github.com/equinor/webviz-config/pull/419) - Plugins and their
+arguments can now be marked as deprecated by using the newly implemented 
+deprecation framework that, in addition to console FutureWarnings,
+automatically shows deprecation messages to the end user in the app and in the documentation.
+Adjusted contributing guide accordingly.
 - [#318](https://github.com/equinor/webviz-config/pull/318) - `webviz-config`
 now facilitates automatically including necessary plugin projects as dependencies
 in generated Docker setup. Private repositories are also supported, however the
@@ -22,6 +41,8 @@ output, such that Webviz themes can optionally reduce CSS scope to the output fr
 the `Markdown` plugin.
 
 ### Changed
+- [#419](https://github.com/equinor/webviz-config/pull/419) - Changed `plugin_metadata`
+and `plugin_project_metadata` in `webviz_config.plugins` to uppercase.
 - [#409](https://github.com/equinor/webviz-config/pull/409) - Relax Python test
 dependency constraints.
 - [#318](https://github.com/equinor/webviz-config/pull/318) - Ad-hoc plugins not

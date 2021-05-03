@@ -5,7 +5,7 @@ import zipfile
 import warnings
 import sys
 from uuid import uuid4
-from typing import List, Optional, Type, Union
+from typing import List, Optional, Type, Union, Dict
 
 # pylint: disable=wrong-import-position
 if sys.version_info >= (3, 8):
@@ -151,7 +151,9 @@ class WebvizPluginABC(abc.ABC):
         return WebvizPluginABC.plugin_compressed_data("webviz-data.zip", content)
 
     def plugin_layout(
-        self, contact_person: Optional[dict] = None
+        self,
+        contact_person: Optional[dict] = None,
+        deprecation_warnings: Optional[List[str]] = None,
     ) -> Union[str, Type[Component]]:
         """This function returns (if the class constant SHOW_TOOLBAR is True,
         the plugin layout wrapped into a common webviz config plugin
@@ -177,7 +179,29 @@ class WebvizPluginABC(abc.ABC):
         if self._add_download_button:
             buttons.append("download")
 
-        if buttons:
+        extended_deprecation_warnings: List[Dict[str, str]] = []
+
+        if deprecation_warnings:
+            # pylint: disable=import-outside-toplevel
+            from .plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
+
+            plugin_name = getattr(getattr(self, "__class__"), "__name__")
+            dist_name = PLUGIN_METADATA[plugin_name]["dist_name"]
+            metadata = PLUGIN_PROJECT_METADATA[dist_name]
+            if metadata and "documentation_url" in metadata:
+                url = (
+                    f"{metadata['documentation_url']}"
+                    f"/#/deprecations?id={plugin_name.lower()}"
+                )
+            else:
+                url = ""
+
+            for deprecation_warning in deprecation_warnings:
+                extended_deprecation_warnings.append(
+                    {"message": deprecation_warning, "url": url}
+                )
+
+        if buttons or deprecation_warnings:
             # pylint: disable=no-member
             return wcc.WebvizPluginPlaceholder(
                 id=self._plugin_wrapper_id,
@@ -190,5 +214,7 @@ class WebvizPluginABC(abc.ABC):
                 )
                 if "guided_tour" in buttons and hasattr(self, "tour_steps")
                 else [],
+                deprecation_warnings=extended_deprecation_warnings,
             )
+
         return self.layout

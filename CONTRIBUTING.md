@@ -607,3 +607,52 @@ explicitly state git pointer/reference (thereby not use the one derived from
 
 For private repositories, a GitHub SSH deploy key will need to be provided to the Docker
 build process (see instructions in `README` created with the portable application).
+
+## Deprecate plugins or arguments
+
+Plugins can be marked as deprecated by using the `@deprecated_plugin(deprecation_info)` decorator.
+
+```python
+from webviz_config.deprecation_decorators import deprecated_plugin
+
+
+@deprecated_plugin("An optional explanation of why the plugin has been deprecated.")
+class MyPlugin(WebvizPluginABC):
+    ...
+```
+
+Plugin arguments can be marked as deprecated by using the `@deprecated_plugin_arguments(check={})` decorator in front of the `__init__` function.
+Arguments can either be marked as deprecated in any case (see `MyPluginExample1`) or their values can be checked within a function (see `MyPluginExample2`) which returns a tuple containing a short string shown to the end user in the app and a long string shown in the plugin's documentation.
+
+```python
+from typing import Optional, Tuple
+from webviz_config.deprecation_decorators import deprecated_plugin_arguments
+
+
+class MyPluginExample1(WebvizPluginABC):
+    ...
+    @deprecated_plugin_arguments(
+        {
+            "arg3": (
+                "Short message shown to the end user both in the app and documentation.", 
+                (
+                    "This can be a long message, which is shown only in the documentation, explaining "
+                    "e.g. why it is deprecated and which plugin should be used instead."
+                )
+            )
+        }
+    )
+    def __init__(self, arg1: str, arg2: int, arg3: Optional[int] = None):
+        ...
+
+class MyPluginExample2(WebvizPluginABC):
+    ...
+    @deprecated_plugin_arguments(check_deprecation)
+    def __init__(self, arg1: str, arg2: int, arg3: Optional[int] = None):
+        ...
+
+def check_deprecation(arg1: int, arg3: int) -> Optional[Tuple[str, str]]:
+    if arg3 == arg1:
+        return ("This message is shown to the end user in the app.", "This message is shown in the documentation of the plugin.")
+    return None
+```
