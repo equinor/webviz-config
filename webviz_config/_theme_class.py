@@ -12,19 +12,19 @@ class WebvizConfigTheme:
 
         self._csp = {
             "default-src": "'none'",
-            "connect-src": "'self'",
+            "connect-src": ["'self'", "data:"],  # [3]
             "prefetch-src": "'self'",
             "style-src": ["'self'", "'unsafe-inline'"],  # [1]
             "script-src": [
                 "'self'",
                 "'unsafe-eval'",  # [2]
             ],
-            "img-src": ["'self'", "data:", "blob:"],  # [3]
+            "img-src": ["'self'", "data:", "blob:"],  # [4]
             "navigate-to": "'self'",
             "base-uri": "'self'",
             "form-action": "'self'",
-            "frame-ancestors": "'self'",  # [4]
-            "frame-src": "'self'",  # [4]
+            "frame-ancestors": "'self'",  # [5]
+            "frame-src": "'self'",  # [5]
             "object-src": "'self'",
         }
 
@@ -34,10 +34,12 @@ class WebvizConfigTheme:
                 (https://github.com/plotly/plotly.js/issues/2355)
             [2] unsafe-eval still needed for plotly.js bundle
                 (https://github.com/plotly/plotly.js/issues/897)
-            [3] html2canvas in webviz-core-components needs "data:" in img-src to create
+            [3] DeckGLMap in webviz-subsurface-components needs "data:" in connect-src to get
+                images.
+            [4] html2canvas in webviz-core-components needs "data:" in img-src to create
                 screenshots, while plotly.js "Download screenshot to png" requires
                 "blob:" in img-src.
-            [4] We use 'self' instead of 'none' due to what looks like a Chromium bug,
+            [5] We use 'self' instead of 'none' due to what looks like a Chromium bug,
                 where e.g. pdf's included using <embed> is not rendered. Might be
                 related to https://bugs.chromium.org/p/chromium/issues/detail?id=1002610
         """
