@@ -33,7 +33,7 @@ class WebvizFactoryRegistry:
         This function will be called as part of the webviz_app.py / jinja2 template.
         """
         if self._is_initialized:
-            raise ValueError("Registry already initialized")
+            raise RuntimeError("Registry already initialized")
 
         if not isinstance(app_instance_info, WebvizInstanceInfo):
             raise TypeError("app_instance_info must be of type WebvizInstanceInfo")
@@ -48,7 +48,7 @@ class WebvizFactoryRegistry:
 
     def set_factory(self, factory_class: Type[T], factory_obj: T) -> None:
         if not self._is_initialized:
-            raise ValueError("Illegal access, factory registry is not initialized")
+            raise RuntimeError("Illegal access, factory registry is not initialized")
 
         if not isinstance(factory_obj, factory_class):
             raise TypeError("The type of the factory does not match factory_class")
@@ -57,7 +57,7 @@ class WebvizFactoryRegistry:
 
     def get_factory(self, factory_class: Type[T]) -> Optional[T]:
         if not self._is_initialized:
-            raise ValueError("Illegal access, factory registry is not initialized")
+            raise RuntimeError("Illegal access, factory registry is not initialized")
 
         if not factory_class in self._factories:
             return None
@@ -70,7 +70,7 @@ class WebvizFactoryRegistry:
 
     def cleanup_resources_after_plugin_init(self):
         if not self._is_initialized:
-            raise ValueError("Illegal access, factory registry is not initialized")
+            raise RuntimeError("Illegal access, factory registry is not initialized")
 
         for factory in self._factories.values():
             factory.cleanup_resources_after_plugin_init()
@@ -78,14 +78,14 @@ class WebvizFactoryRegistry:
     @property
     def all_factory_settings(self) -> Dict[str, Any]:
         if not self._is_initialized:
-            raise ValueError("Illegal access, factory registry is not initialized")
+            raise RuntimeError("Illegal access, factory registry is not initialized")
 
         return self._factory_settings_dict
 
     @property
     def app_instance_info(self) -> WebvizInstanceInfo:
         if not self._is_initialized or self._app_instance_info is None:
-            raise ValueError("Illegal access, factory registry is not initialized")
+            raise RuntimeError("Illegal access, factory registry is not initialized")
 
         return self._app_instance_info
 
