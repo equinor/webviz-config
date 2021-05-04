@@ -38,10 +38,10 @@ def create_initialized_registry() -> WebvizFactoryRegistry:
 def test_uninitialized_access() -> None:
     registry = WebvizFactoryRegistry()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         _inst_info = registry.app_instance_info
 
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         _settings = registry.all_factory_settings
 
 
@@ -63,7 +63,7 @@ def test_multiple_initializations() -> None:
     registry = WebvizFactoryRegistry()
     registry.initialize(instance_info, {"MyFactory": "someValue"})
 
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         registry.initialize(instance_info, {"MyFactory": "someValue"})
 
 
