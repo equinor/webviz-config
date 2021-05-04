@@ -145,6 +145,8 @@ else:
             ])]),
         html.Div(className="pageContent", id="page-content")])
 
+WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
+
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
 @app.callback(dash.dependencies.Output("page-content", "children"),

@@ -2,17 +2,18 @@ from typing import Optional
 from pathlib import Path
 import pytest
 
+from webviz_config.webviz_factory import WebvizFactory
 from webviz_config.webviz_factory_registry import WebvizFactoryRegistry
 from webviz_config.webviz_instance_info import WebvizInstanceInfo
 from webviz_config.webviz_instance_info import WebvizRunMode
 
 # pylint: disable=no-self-use
-class FactoryA:
+class FactoryA(WebvizFactory):
     def create_obj_a(self) -> str:
         return "A"
 
 
-class FactoryB:
+class FactoryB(WebvizFactory):
     def create_obj_b(self) -> str:
         return "B"
 
@@ -20,6 +21,11 @@ class FactoryB:
 class FactoryBSub(FactoryB):
     def create_obj_b_sub(self) -> str:
         return "B_sub"
+
+
+# pylint: disable=too-few-public-methods
+class UnrelatedFactory:
+    pass
 
 
 def create_initialized_registry() -> WebvizFactoryRegistry:
@@ -111,11 +117,14 @@ def test_set_mismatched_factory_types() -> None:
     registry.set_factory(FactoryB, factory_b_sub)
     registry.set_factory(FactoryBSub, factory_b_sub)
 
+    # These are rightly caught as errors by type checking since they don't derive from WebvizFactory
+    # registry.set_factory(UnrelatedFactory, UnrelatedFactory())
+    # registry.set_factory(FactoryA, UnrelatedFactory())
+    # registry.set_factory(FactoryA, 123)
+
     # The following setter calls are illegal, but can't figure out how
     # to get type hinting to disallow them
     # For now, we rely on exceptions
-    with pytest.raises(TypeError):
-        registry.set_factory(FactoryA, 123)
     with pytest.raises(TypeError):
         registry.set_factory(FactoryA, factory_b)
     with pytest.raises(TypeError):

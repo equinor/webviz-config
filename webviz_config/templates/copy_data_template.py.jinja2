@@ -71,6 +71,8 @@ plugins.append(webviz_config.plugins.{{ content._call_signature[0] }})
 {% endfor %}
 {% endfor %}
 
+WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
+
 for plugin in plugins:
     if hasattr(plugin, "add_webvizstore"):
         WEBVIZ_STORAGE.register_function_arguments(plugin.add_webvizstore())

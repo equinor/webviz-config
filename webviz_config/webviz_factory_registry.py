@@ -1,9 +1,11 @@
 from typing import Dict, TypeVar, Type, Optional, Any
 
+from .webviz_factory import WebvizFactory
 from .webviz_instance_info import WebvizInstanceInfo
 
+
 # pylint: disable=invalid-name
-T = TypeVar("T")
+T = TypeVar("T", bound=WebvizFactory)
 
 
 class WebvizFactoryRegistry:
@@ -20,7 +22,7 @@ class WebvizFactoryRegistry:
         self._is_initialized: bool = False
         self._app_instance_info: Optional[WebvizInstanceInfo] = None
         self._factory_settings_dict: Dict[str, Any] = {}
-        self._factories: Dict[Type, Any] = {}
+        self._factories: Dict[Type, WebvizFactory] = {}
 
     def initialize(
         self,
@@ -65,6 +67,13 @@ class WebvizFactoryRegistry:
             raise TypeError("The stored factory object has wrong type")
 
         return factory_obj
+
+    def cleanup_resources_after_plugin_init(self):
+        if not self._is_initialized:
+            raise ValueError("Illegal access, factory registry is not initialized")
+
+        for factory in self._factories.values():
+            factory.cleanup_resources_after_plugin_init()
 
     @property
     def all_factory_settings(self) -> Dict[str, Any]:
