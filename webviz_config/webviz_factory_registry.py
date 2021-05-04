@@ -68,7 +68,7 @@ class WebvizFactoryRegistry:
 
         return factory_obj
 
-    def cleanup_resources_after_plugin_init(self):
+    def cleanup_resources_after_plugin_init(self) -> None:
         if not self._is_initialized:
             raise RuntimeError("Illegal access, factory registry is not initialized")
 

@@ -3,7 +3,7 @@ class WebvizFactory:
     WebvizFactoryRegistry.
     """
 
-    def cleanup_resources_after_plugin_init(self):
+    def cleanup_resources_after_plugin_init(self) -> None:
         """Will be called after all plugins have been initialized to allow the factory
         to do clean-up of any temporary resources allocated during the initialization
         phase. The base implementation does nothing, override this function to
