@@ -84,12 +84,7 @@ WEBVIZ_ASSETS.portable = {{ portable }}
 
 run_mode = WebvizRunMode.PORTABLE if {{portable}} else WebvizRunMode.NON_PORTABLE
 app_instance_info = WebvizInstanceInfo(run_mode, storage_folder)
-{% if internal_factory_settings is defined %}
-factory_settings_dict = {{ internal_factory_settings }}
-{% else %}
-factory_settings_dict = None
-{% endif %}
-WEBVIZ_FACTORY_REGISTRY.initialize(app_instance_info, factory_settings_dict)
+WEBVIZ_FACTORY_REGISTRY.initialize(app_instance_info, {{ internal_factory_settings if internal_factory_settings is defined else None }})
 
 use_oauth2 = False
 
