@@ -17,7 +17,7 @@ from webviz_config.webviz_instance_info import WebvizRunMode, WebvizInstanceInfo
 from webviz_config.webviz_factory_registry import WEBVIZ_FACTORY_REGISTRY
 from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 
-logging.getLogger().setLevel(logging.{{ loglevel }})
+logging.basicConfig(level=logging.{{ loglevel }})
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())

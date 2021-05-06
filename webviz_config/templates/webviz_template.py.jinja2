@@ -27,8 +27,8 @@ from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 # We do not want to show INFO regarding werkzeug routing as that is too verbose,
 # however we want other log handlers (typically coming from webviz plugin dependencies)
 # to be set to user specified log level.
+logging.basicConfig(level=logging.{{ loglevel }})
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
-logging.getLogger().setLevel(logging.{{ loglevel }})
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
