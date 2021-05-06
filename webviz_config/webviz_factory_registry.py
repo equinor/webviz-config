@@ -85,7 +85,7 @@ class WebvizFactoryRegistry:
     @property
     def app_instance_info(self) -> WebvizInstanceInfo:
         if not self._is_initialized or self._app_instance_info is None:
-            raise RuntimeError("Illegal access, factory registry is not initialized")
+            raise RuntimeError("Factory registry is not initialized")
 
         return self._app_instance_info
 
