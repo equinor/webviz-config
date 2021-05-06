@@ -1,9 +1,10 @@
 try:
     # Python 3.8+
-    from importlib.metadata import version, PackageNotFoundError  # type: ignore
+    from importlib.metadata import version, PackageNotFoundError, entry_points  # type: ignore
 except ModuleNotFoundError:
     # Python < 3.8
-    from importlib_metadata import version, PackageNotFoundError  # type: ignore
+    from importlib_metadata import version, PackageNotFoundError, entry_points  # type: ignore
+
 
 from ._theme_class import WebvizConfigTheme
 from ._webviz_settings_class import WebvizSettings
@@ -12,7 +13,11 @@ from ._is_reload_process import is_reload_process
 from ._plugin_abc import WebvizPluginABC, EncodedFile, ZipFileMember
 from ._shared_settings_subscriptions import SHARED_SETTINGS_SUBSCRIPTIONS
 from ._oauth2 import Oauth2
+from .webviz_storage import WebvizStorageTypeRegistry, WebvizStorageType
 
+for entry_point in entry_points().get("webviz_config_return_types", []):
+    theme = entry_point.load()
+    globals()[entry_point.name] = theme
 try:
     __version__ = version("webviz-config")
 except PackageNotFoundError:

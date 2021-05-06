@@ -1,21 +1,20 @@
-import io
-import glob
-import shutil
 import functools
 import hashlib
 import inspect
 import pathlib
 import warnings
 from collections import defaultdict
-from typing import Callable, List, Union, Any
+from typing import Callable, List, Any
 
 import pandas as pd
 from tqdm import tqdm
 
+from .webviz_storage import WebvizStorageTypeRegistry, WebvizStorageType
+
 
 class WebvizStorage:
-
-    RETURN_TYPES = [pd.DataFrame, pathlib.Path, io.BytesIO]
+    # pylint: disable=unsupported-membership-test
+    RETURN_TYPES = WebvizStorageTypeRegistry.return_types
 
     def __init__(self) -> None:
         self._use_storage = False
@@ -27,7 +26,6 @@ class WebvizStorage:
         decorator @webvizstore, registering the function it decorates.
         """
         return_type = inspect.getfullargspec(func).annotations["return"]
-
         if return_type not in WebvizStorage.RETURN_TYPES:
             raise NotImplementedError(
                 f"Webviz storage type must be one of {WebvizStorage.RETURN_TYPES}"
@@ -145,26 +143,21 @@ class WebvizStorage:
         return kwargs
 
     def get_stored_data(
-        self, func: Callable, *args: Any, **kwargs: Any
-    ) -> Union[pd.DataFrame, pathlib.Path, io.BytesIO]:
-
+        self, func: Callable, *args: Any, webviz_load=None, **kwargs: Any
+    ) -> WebvizStorageType:
+        load_args = webviz_load if webviz_load is not None else {}
         argspec = inspect.getfullargspec(func)
         for arg_name, arg in zip(argspec.args, args):
             kwargs[arg_name] = arg
 
         WebvizStorage.complete_kwargs(func, kwargs)
         return_type = inspect.getfullargspec(func).annotations["return"]
-
         path = self._unique_path(func, WebvizStorage._dict_to_tuples(kwargs))
+        storagetype = WebvizStorageTypeRegistry.create_storage_type(return_type)
 
         try:
-            if return_type == pd.DataFrame:
-                return pd.read_parquet(f"{path}.parquet")
-            if return_type == pathlib.Path:
-                return pathlib.Path(glob.glob(f"{path}*")[0])
-            if return_type == io.BytesIO:
-                return io.BytesIO(pathlib.Path(path).read_bytes())
-            raise ValueError(f"Unknown return type {return_type}")
+            return storagetype.get_data(path=path, load_args=load_args)
+            # raise ValueError(f"Unknown return type {return_type}")
 
         except OSError as exc:
             raise OSError(
@@ -190,15 +183,10 @@ class WebvizStorage:
                 for argtuples in self.storage_function_argvalues[func].values():
                     output = func(**dict(argtuples))
                     path = self._unique_path(func, argtuples)
-
-                    if isinstance(output, pd.DataFrame):
-                        output.to_parquet(f"{path}.parquet")
-                    elif isinstance(output, pathlib.Path):
-                        shutil.copy(output, f"{path}{output.suffix}")
-                    elif isinstance(output, io.BytesIO):
-                        pathlib.Path(path).write_bytes(output.getvalue())
-                    else:
-                        raise ValueError(f"Unknown return type {type(output)}")
+                    storagetype = WebvizStorageTypeRegistry.create_storage_type(
+                        type(output)
+                    )
+                    storagetype.save_data(data=output, path=path)
 
                     progress_bar.update()
 
