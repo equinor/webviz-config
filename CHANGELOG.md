@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - [#440](https://github.com/equinor/webviz-config/pull/440) - Fixed setting of global 
 log level for webviz application.
+
+## [0.3.1] - 2021-04-29
+
+### Fixed
 - [#429](https://github.com/equinor/webviz-config/pull/429) - Moved `FutureWarnings`
 from `deprecated_decorators.py` to `_config_parser.py`. Simplified deprecation warnings.
 - [#432](https://github.com/equinor/webviz-config/pull/432) - Replaced `WebvizPluginABC` type in
