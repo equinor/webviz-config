@@ -6,6 +6,8 @@
 # {{ sys_executable }}
 
 import logging
+import logging.config
+
 import threading
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
@@ -22,11 +24,12 @@ from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 
-# We do not want to show INFO regarding werkzeug routing as that is too verbose,
-# however we want other log handlers (typically coming from webviz plugin dependencies)
-# to be set to user specified log level.
+
+# Start out by setting a sensible configuration for the root logger and setting a global 
+# loglevel. The (global) loglevel defaults to WARNING, but can be set by the user via 
+# the --loglevel argument. The call to basicConfig() should happen before any other logging 
+# related calls, see https://docs.python.org/3/library/logging.html#logging.basicConfig
 logging.basicConfig(level=logging.{{ loglevel }})
-logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
@@ -39,7 +42,6 @@ app = dash.Dash(
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ],
 )
-app.logger.setLevel(logging.WARNING)
 
 # For signing session cookies
 app.server.secret_key = webviz_config.LocalhostToken.generate_token()
@@ -48,6 +50,22 @@ server = app.server
 
 app.title = "{{ title }}"
 app.config.suppress_callback_exceptions = True
+
+# Force log level of some well known modules back to WARNING.
+# We do not want to show INFO regarding werkzeug routing as that is too verbose.
+# Also, Dash seems eager to configure its own logger and hardcodes its loglevel to INFO.
+app.logger.setLevel(logging.WARNING)
+logging.getLogger("werkzeug").setLevel(logging.WARNING)
+
+{% if logging_config_dict is defined %}
+# Apply a logging config dict (either full or incremental) as specified via the --logconfig
+# command line argument. Note that unless the config dict contains 'incremental: True', the
+# config in the dict will replace the existing logging configuration.
+logging_config_dict = {{ logging_config_dict }}
+print("DBG: Configuring logging from dict")
+print("DBG: logging_config_dict", logging_config_dict)
+logging.config.dictConfig(logging_config_dict)
+{% endif %}
 
 # Create the common webviz_setting object that will get passed as an
 # argument to all plugins that request it.

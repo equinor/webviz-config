@@ -5,6 +5,7 @@ import pathlib
 import argparse
 from typing import Dict, Tuple
 
+import yaml
 import jinja2
 
 from ._config_parser import ConfigParser
@@ -25,7 +26,14 @@ def write_script(
 
     configuration["shared_settings"] = config_parser.shared_settings
     configuration["portable"] = args.portable is not None
+
     configuration["loglevel"] = args.loglevel
+
+    if args.logconfig is not None:
+        configuration["logging_config_dict"] = yaml.safe_load(
+            args.logconfig.read_text()
+        )
+
     configuration["config_folder"] = repr(args.yaml_file.resolve().parent)
 
     configuration["theme_name"] = args.theme

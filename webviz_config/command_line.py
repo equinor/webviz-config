@@ -60,6 +60,14 @@ def main() -> None:
         "(WARNING, ERROR and CRITICAL). Default level is WARNING.",
     )
 
+    parser_build.add_argument(
+        "--logconfig",
+        type=pathlib.Path,
+        default=None,
+        metavar="CONFIGFILE",
+        help="Path to YAML file with logging configuration.",
+    )
+
     parser_build.set_defaults(func=build_webviz)
 
     # Add "certificate" parser:
