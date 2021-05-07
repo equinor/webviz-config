@@ -16,6 +16,9 @@ class WebvizFactoryRegistry:
     The registry is exposed globally through WEBVIZ_FACTORY_REGISTRY below.
     This is also the reason for the two-stage initialization approach. Note that
     the registry instance is useless until the initialize() method has been called.
+
+    Note that this functionality is provisional/experimental, and will not necessarily
+    see a deprecation phase and "may deviate from the usual version semantics."
     """
 
     def __init__(self) -> None:
