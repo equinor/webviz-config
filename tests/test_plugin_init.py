@@ -1,8 +1,17 @@
 import warnings
+import importlib
+
+try:
+    # Python 3.8+
+    # pylint: disable=ungrouped-imports
+    import importlib.metadata as importlib_metadata
+except ImportError:
+    # Python < 3.8
+    import importlib_metadata
 
 import mock
 
-from webviz_config.plugins._utils import load_webviz_plugins_with_metadata
+import webviz_config.plugins._utils
 
 
 class DistMock:
@@ -27,10 +36,14 @@ dist_mock2 = DistMock([plugin_entrypoint_mock1], "dist_mock2")
 dist_mock3 = DistMock([plugin_entrypoint_mock2], "dist_mock3")
 
 
-def test_no_warning():
+def test_no_warning(monkeypatch):
+    # pylint: disable=protected-access
+    monkeypatch.setattr(importlib_metadata, "requires", lambda x: [])
+    importlib.reload(webviz_config.plugins._utils)
+
     globals_mock = {}
     with warnings.catch_warnings(record=True) as warn:
-        metadata, _ = load_webviz_plugins_with_metadata(
+        metadata, _ = webviz_config.plugins._utils.load_webviz_plugins_with_metadata(
             [dist_mock1, dist_mock3], globals_mock
         )
         assert len(warn) == 0, "Too many warnings"
@@ -40,10 +53,14 @@ def test_no_warning():
     assert "SomePlugin2" in globals_mock
 
 
-def test_warning_multiple():
+def test_warning_multiple(monkeypatch):
+    # pylint: disable=protected-access
+    monkeypatch.setattr(importlib_metadata, "requires", lambda x: [])
+    importlib.reload(webviz_config.plugins._utils)
+
     globals_mock = {}
     with warnings.catch_warnings(record=True) as warn:
-        metadata, _ = load_webviz_plugins_with_metadata(
+        metadata, _ = webviz_config.plugins._utils.load_webviz_plugins_with_metadata(
             [dist_mock1, dist_mock2], globals_mock
         )
 
