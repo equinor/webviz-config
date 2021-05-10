@@ -15,6 +15,8 @@ line argument to allow detailed control of logging output in webviz.
 (indirect and direct) are now included in `PLUGIN_PROJECT_METADATA`. This enables
 the generated Docker setup, when portable apps are built, to have the same dependency
 versions compared to what the user had installed when creating the portable app.
+- [#445](https://github.com/equinor/webviz-config/pull/445) - Added report feedback
+button to `WebvizPluginABC`.
 
 ### Fixed
 - [#440](https://github.com/equinor/webviz-config/pull/440) - Fixed setting of global 

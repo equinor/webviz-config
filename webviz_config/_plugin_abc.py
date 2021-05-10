@@ -4,6 +4,7 @@ import base64
 import zipfile
 import warnings
 import sys
+import urllib
 from uuid import uuid4
 from typing import List, Optional, Type, Union, Dict
 
@@ -16,6 +17,8 @@ else:
 import bleach
 from dash.development.base_component import Component
 from dash.dependencies import Input, Output
+import jinja2
+
 import webviz_core_components as wcc
 
 
@@ -30,6 +33,25 @@ class EncodedFile(ZipFileMember):
     # - content is now a base64 encoded ASCII string.
     # - mime_type needs to be added as well.
     mime_type: str
+
+
+def _create_feedback_text(
+    plugin_name: str, dist_name: str, dist_version: str, dependencies: Dict[str, str]
+) -> str:
+    template_environment = jinja2.Environment(  # nosec
+        loader=jinja2.PackageLoader("webviz_config", "templates"),
+        undefined=jinja2.StrictUndefined,
+        autoescape=False,
+    )
+    template = template_environment.get_template("feedback.md.jinja2")
+    return template.render(
+        {
+            "plugin_name": plugin_name,
+            "dist_name": dist_name,
+            "dist_version": dist_version,
+            "dependencies": dependencies,
+        }
+    )
 
 
 class WebvizPluginABC(abc.ABC):
@@ -63,6 +85,7 @@ class WebvizPluginABC(abc.ABC):
         "expand",
         "contact_person",
         "guided_tour",
+        "feedback",
     ]
 
     # List of plugin specific assets which should be copied
@@ -150,6 +173,60 @@ class WebvizPluginABC(abc.ABC):
         )
         return WebvizPluginABC.plugin_compressed_data("webviz-data.zip", content)
 
+    def _make_extended_deprecation_warnings(
+        self,
+        deprecation_warnings: Optional[List[str]] = None,
+    ) -> List[Dict[str, str]]:
+        # pylint: disable=import-outside-toplevel
+        from .plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
+
+        extended_deprecation_warnings: List[Dict[str, str]] = []
+
+        plugin_name = self.__class__.__name__
+        dist_name = PLUGIN_METADATA[plugin_name]["dist_name"]
+        metadata = PLUGIN_PROJECT_METADATA[dist_name]
+
+        if deprecation_warnings:
+            url = (
+                f"{metadata['documentation_url']}/#/deprecations?id={plugin_name.lower()}"
+                if metadata["documentation_url"] is not None
+                else ""
+            )
+
+            for deprecation_warning in deprecation_warnings:
+                extended_deprecation_warnings.append(
+                    {"message": deprecation_warning, "url": url}
+                )
+        return extended_deprecation_warnings
+
+    def _make_feedback_url(self) -> str:
+        # pylint: disable=import-outside-toplevel
+        from .plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
+
+        plugin_name = self.__class__.__name__
+        dist_name = PLUGIN_METADATA[plugin_name]["dist_name"]
+        metadata = PLUGIN_PROJECT_METADATA[dist_name]
+
+        feedback_url = ""
+        if metadata["tracker_url"] is not None:
+            queries = {
+                "title": "",
+                "body": _create_feedback_text(
+                    plugin_name,
+                    dist_name,
+                    metadata["dist_version"],
+                    metadata["dependencies"],
+                ),
+            }
+
+            feedback_url = (
+                f"{metadata['tracker_url']}/new?{urllib.parse.urlencode(queries)}"
+                if "github.com" in metadata["tracker_url"]
+                else metadata["tracker_url"]
+            )
+
+        return feedback_url
+
     def plugin_layout(
         self,
         contact_person: Optional[dict] = None,
@@ -179,28 +256,6 @@ class WebvizPluginABC(abc.ABC):
         if self._add_download_button:
             buttons.append("download")
 
-        extended_deprecation_warnings: List[Dict[str, str]] = []
-
-        if deprecation_warnings:
-            # pylint: disable=import-outside-toplevel
-            from .plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
-
-            plugin_name = getattr(getattr(self, "__class__"), "__name__")
-            dist_name = PLUGIN_METADATA[plugin_name]["dist_name"]
-            metadata = PLUGIN_PROJECT_METADATA[dist_name]
-            if metadata and "documentation_url" in metadata:
-                url = (
-                    f"{metadata['documentation_url']}"
-                    f"/#/deprecations?id={plugin_name.lower()}"
-                )
-            else:
-                url = ""
-
-            for deprecation_warning in deprecation_warnings:
-                extended_deprecation_warnings.append(
-                    {"message": deprecation_warning, "url": url}
-                )
-
         if buttons or deprecation_warnings:
             # pylint: disable=no-member
             return wcc.WebvizPluginPlaceholder(
@@ -214,7 +269,10 @@ class WebvizPluginABC(abc.ABC):
                 )
                 if "guided_tour" in buttons and hasattr(self, "tour_steps")
                 else [],
-                deprecation_warnings=extended_deprecation_warnings,
+                deprecation_warnings=self._make_extended_deprecation_warnings(
+                    deprecation_warnings
+                ),
+                feedback_url=self._make_feedback_url(),
             )
 
         return self.layout
