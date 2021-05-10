@@ -44,7 +44,7 @@ jobs:
 
       - name: 📦 Install webviz-config with dependencies
         run: |
-          pip install --upgrade pip==20.2.4 # Pinned to 20.2.4 for black install compatibility: https://github.com/psf/black/issues/1847
+          pip install --upgrade pip
           pip install . .[deployment]
 
       - name: 📦 Install test dependencies
