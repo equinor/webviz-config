@@ -148,7 +148,7 @@ webviz build ./examples/basic_example.yaml --logconfig my_log_config.yml
 ```
 
 The YAML file is expected to contain a dictionary with logging configuration adhering to the [schema described 
-here.](https://docs.python.org/3/library/logging.config.html#logging-config-dictschema) This allows for full 
+here](https://docs.python.org/3/library/logging.config.html#logging-config-dictschema). This allows for full 
 flexibility with regards to configuring logging in the Webviz application, including setting multiple handlers, 
 filtering and customized log message formatting.
 
