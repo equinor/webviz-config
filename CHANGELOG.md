@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Added
+- [#447](https://github.com/equinor/webviz-config/pull/447) - Plugin project dependencies
+(indirect and direct) are now included in `PLUGIN_PROJECT_METADATA`. This enables
+the generated Docker setup, when portable apps are built, to have the same dependency
+versions compared to what the user had installed when creating the portable app.
+
 ### Fixed
 - [#440](https://github.com/equinor/webviz-config/pull/440) - Fixed setting of global 
 log level for webviz application.

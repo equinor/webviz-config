@@ -11,3 +11,6 @@ def test_webviz_config_metadata():
     assert metadata["download_url"] == "https://pypi.org/project/webviz-config"
     assert metadata["source_url"] == "https://github.com/equinor/webviz-config"
     assert metadata["tracker_url"] == "https://github.com/equinor/webviz-config/issues"
+
+    assert "dash" in metadata["dependencies"]  # dash is a direct dependency
+    assert "flask" in metadata["dependencies"]  # flask is an indirect dependency
