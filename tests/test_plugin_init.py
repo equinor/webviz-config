@@ -1,5 +1,6 @@
 import warnings
 import importlib
+from unittest import mock
 
 try:
     # Python 3.8+
@@ -8,8 +9,6 @@ try:
 except ImportError:
     # Python < 3.8
     import importlib_metadata
-
-import mock
 
 import webviz_config.plugins._utils
 

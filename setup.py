@@ -27,7 +27,6 @@ TESTS_REQUIRES = [
     "black>=20.8b1",
     "dash[testing]",
     "jsonschema",
-    "mock",
     "mypy",
     "pylint",
     "pytest-xdist",
