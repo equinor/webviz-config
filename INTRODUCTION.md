@@ -152,11 +152,14 @@ here](https://docs.python.org/3/library/logging.config.html#logging-config-dicts
 flexibility with regards to configuring logging in the Webviz application, including setting multiple handlers, 
 filtering and customized log message formatting.
 
-Included below is a simple YAML dictionary showing an *incremental* configuration suitable for controlling the level of
-the root logger and a few named loggers. Please note the mandatory `version` key and the inclusion of the `incremental` key:
+Included below is a simple YAML dictionary showing an *incremental* configuration suitable for controlling the level of the 
+root logger and a few named loggers. Please note the mandatory `version` key and the inclusion of the `incremental` key 
+(see Python docs for more information on [incremental configurations](https://docs.python.org/3/library/logging.config.html#incremental-configuration)).
+If you need more flexibility than incremental configurations allow, you are free to specify a full configuration, but be
+aware that this quickly becomes quite involved and requires a good understanding of the schema mentioned above.
 
 ```yaml
-# This is skeleton for a simple, incremental logging configuration.
+# This is a skeleton for a simple, incremental logging configuration.
 # See https://docs.python.org/3/library/logging.config.html#logging-config-dictschema for schema.
 
 version: 1
