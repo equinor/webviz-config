@@ -34,7 +34,7 @@ theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
 
 app = dash.Dash(
-    __name__,
+    name="webviz_app",
     external_stylesheets=theme.external_stylesheets,
     assets_folder=Path("resources") / "assets",
     meta_tags=[
@@ -50,10 +50,11 @@ server = app.server
 app.title = "{{ title }}"
 app.config.suppress_callback_exceptions = True
 
-# Force log level of some well known modules back to WARNING.
+# Dash is very eager to configure its own logger by both adding a handler and hardcoding
+# the loglevel to INFO. Below we counteract both of these.
 # We do not want to show INFO regarding werkzeug routing as that is too verbose.
-# Also, Dash seems eager to configure its own logger and hardcodes its loglevel to INFO.
-app.logger.setLevel(logging.WARNING)
+app.logger.setLevel(logging.{{ loglevel }})
+app.logger.handlers.clear()
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 {% if logging_config_dict is defined %}

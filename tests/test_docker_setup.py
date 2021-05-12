@@ -40,7 +40,7 @@ from webviz_config._dockerize._create_docker_setup import get_python_requirement
 )
 def test_derived_requirements(distributions, requirements):
     with pytest.warns(None) as record:
-        assert requirements == get_python_requirements(distributions)
+        assert set(requirements).issubset(get_python_requirements(distributions))
         assert len(record) == len(
             [
                 metadata
