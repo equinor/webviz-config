@@ -44,9 +44,7 @@ app._deprecated_webviz_settings = {
 
 {% if logging_config_dict is defined %}
 # Apply a logging config dict as specified via the --logconfig command line argument. 
-logging_config_dict = {{ logging_config_dict }}
-print("Configuring logging from dictionary:", logging_config_dict)
-logging.config.dictConfig(logging_config_dict)
+logging.config.dictConfig({{ logging_config_dict }})
 {% endif %}
 
 CACHE.init_app(app.server)
