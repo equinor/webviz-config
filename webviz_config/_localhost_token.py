@@ -68,7 +68,7 @@ class LocalhostToken:
 
             if not self._ott_validated and self._ott == flask.request.args.get("ott"):
                 self._ott_validated = True
-                flask.g.set_cookie_token = True
+                flask.g.set_cookie_token = True  # pylint: disable=assigning-non-slot
                 return flask.redirect(flask.request.base_url)
 
             if self._cookie_token == flask.request.cookies.get(
@@ -92,7 +92,7 @@ class LocalhostToken:
         def _set_cookie_token_in_response(
             response: flask.wrappers.Response,
         ) -> flask.wrappers.Response:
-            if "set_cookie_token" in flask.g and flask.g.set_cookie_token:
+            if flask.g.get("set_cookie_token", False):  # type: ignore[attr-defined]
                 response.set_cookie(
                     key=f"cookie_token_{self._port}", value=self._cookie_token
                 )

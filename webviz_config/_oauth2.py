@@ -126,7 +126,7 @@ class Oauth2:
 
     def check_and_set_token_expiry(self) -> None:
         if flask.session.get("access_token"):
-            expiration_date = flask.session.get("expiration_date")
+            expiration_date = flask.session["expiration_date"]
             current_date = datetime.datetime.now()
             if current_date > expiration_date:
                 # Access token has expired
