@@ -6,6 +6,7 @@
 # {{ sys_executable }}
 
 import logging
+import logging.config
 import threading
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
@@ -21,6 +22,7 @@ from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
+
 
 # Start out by setting a sensible configuration for the root logger and setting a global 
 # loglevel. The (global) loglevel defaults to WARNING, but can be set by the user via 
@@ -54,6 +56,15 @@ app.config.suppress_callback_exceptions = True
 app.logger.setLevel(logging.{{ loglevel }})
 app.logger.handlers.clear()
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
+
+{% if logging_config_dict is defined %}
+# Apply a logging config dict (either full or incremental) as specified via the --logconfig
+# command line argument. Note that unless the config dict contains 'incremental: True', the
+# config in the dict will replace the existing logging configuration.
+logging_config_dict = {{ logging_config_dict }}
+print("Configuring logging from dictionary:", logging_config_dict)
+logging.config.dictConfig(logging_config_dict)
+{% endif %}
 
 # Create the common webviz_setting object that will get passed as an
 # argument to all plugins that request it.
