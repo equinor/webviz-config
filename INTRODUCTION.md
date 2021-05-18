@@ -144,7 +144,7 @@ In practice, setting the global logging level to `INFO` or `DEBUG` will likely f
 sub-modules, possibly obscuring messages from the module(s) of interest. To allow finer grain control over logging, 
 Webviz accepts the `--logconfig` command line argument which allows detailed logging configuration through a YAML file:
 ```bash
-webviz build ./examples/basic_example.yaml --logconfig my_log_config.yml
+webviz build ./examples/basic_example.yaml --logconfig my_log_config.yaml
 ```
 
 The YAML file is expected to contain a dictionary with logging configuration adhering to the [schema described 
