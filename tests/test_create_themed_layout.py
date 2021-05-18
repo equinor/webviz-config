@@ -1,6 +1,6 @@
 from pathlib import Path
+from unittest import mock
 
-import mock
 import dash
 
 from webviz_config import WebvizConfigTheme

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [#426](https://github.com/equinor/webviz-config/pull/426) - Added centralized factory
 registry exposed through `WEBVIZ_FACTORY_REGISTRY` for sharing factories between plugins.
+- [#443](https://github.com/equinor/webviz-config/pull/443) - Added `--logconfig` command
+line argument to allow detailed control of logging output in webviz.
+- [#447](https://github.com/equinor/webviz-config/pull/447) - Plugin project dependencies
+(indirect and direct) are now included in `PLUGIN_PROJECT_METADATA`. This enables
+the generated Docker setup, when portable apps are built, to have the same dependency
+versions compared to what the user had installed when creating the portable app.
 
 ### Fixed
 - [#440](https://github.com/equinor/webviz-config/pull/440) - Fixed setting of global 

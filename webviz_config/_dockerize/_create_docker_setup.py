@@ -2,7 +2,7 @@ import os
 import sys
 import warnings
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Set
 
 import jinja2
 import requests
@@ -40,9 +40,11 @@ def create_docker_setup(
     distributions["webviz-config"] = PLUGIN_PROJECT_METADATA["webviz-config"]
 
     requirements = get_python_requirements(distributions)
-    requirements.append("gunicorn")
+    requirements.add("gunicorn")
 
-    (build_directory / "requirements.txt").write_text("\n".join(requirements))
+    (build_directory / "requirements.txt").write_text(
+        "\n".join(sorted(list(requirements)))
+    )
 
     (build_directory / "Dockerfile").write_text(
         template.render(
@@ -55,11 +57,22 @@ def create_docker_setup(
     )
 
 
-def get_python_requirements(distributions: dict) -> List[str]:
+def get_python_requirements(distributions: dict) -> Set[str]:
 
-    requirements = []
+    requirements = set()
 
     for dist_name, dist in distributions.items():
+
+        requirements.update(
+            [
+                f"{dep}=={version}"
+                for dep, version in PLUGIN_PROJECT_METADATA[dist_name][
+                    "dependencies"
+                ].items()
+                if dep not in distributions
+            ]
+        )
+
         if dist["download_url"] is None and dist["source_url"] is None:
             warnings.warn(
                 f"Plugin distribution {dist_name} has no download/source URL specified. "
@@ -72,7 +85,7 @@ def get_python_requirements(distributions: dict) -> List[str]:
         ):
             pypi_data = requests.get(f"{PYPI_URL_ROOT}/pypi/{dist_name}/json").json()
             if dist["dist_version"] in pypi_data["releases"]:
-                requirements.append(f"{dist_name}=={dist['dist_version']}")
+                requirements.add(f"{dist_name}=={dist['dist_version']}")
                 continue
 
             if dist["source_url"] is None:
@@ -82,7 +95,7 @@ def get_python_requirements(distributions: dict) -> List[str]:
                     "project_urls['Source'] is not defined in setup.py."
                 )
 
-        requirements.append(
+        requirements.add(
             pip_git_url(
                 dist["dist_version"],
                 source_url=os.environ.get(

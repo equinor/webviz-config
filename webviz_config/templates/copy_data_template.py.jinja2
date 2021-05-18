@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import logging.config
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
 
@@ -42,6 +43,11 @@ app._deprecated_webviz_settings = {
     "shared_settings" : webviz_settings.shared_settings,
     "theme" : webviz_settings.theme
 }
+
+{% if logging_config_dict is defined %}
+# Apply a logging config dict as specified via the --logconfig command line argument. 
+logging.config.dictConfig({{ logging_config_dict }})
+{% endif %}
 
 CACHE.init_app(app.server)
 

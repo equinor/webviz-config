@@ -47,12 +47,8 @@ The recommended and simplest way of installing `webviz-config` is to run
 pip install webviz-config
 ```
 
-> :warning: Unless you are using `pip` version `>=20.3` you should enable the new `pip`
-resolver when installing, i.e. `pip install --use-feature=2020-resolver webviz-config`.
-
 If you want to develop `webviz-config` and install the latest source code manually you
 can do something along the lines of:
-can run
 ```bash
 git clone git@github.com:equinor/webviz-config.git
 cd ./webviz-config
@@ -60,8 +56,8 @@ npm ci --ignore-scripts && npm run postinstall
 pip install -e .
 ```
 
-After installation, there is a console script named `webviz` available. You can test the installation by using the provided test
-configuration file,
+After installation, there is a console script named `webviz` available. You can test the
+installation by using the provided example configuration file,
 ```bash
 webviz build ./examples/basic_example.yaml
 ```

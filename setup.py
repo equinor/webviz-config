@@ -25,8 +25,8 @@ def get_long_description() -> str:
 TESTS_REQUIRES = [
     "bandit",
     "black>=20.8b1",
+    "dash[testing]",
     "jsonschema",
-    "mock",
     "mypy",
     "pylint",
     "pytest-xdist",
