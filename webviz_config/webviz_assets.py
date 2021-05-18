@@ -88,7 +88,7 @@ class WebvizAssets:
         def _send_file(asset_id: str) -> Optional[flask.wrappers.Response]:
             if asset_id in self._assets:  # Only serve white listed resources
                 path = pathlib.Path(self._assets[asset_id])
-                return flask.send_from_directory(path.parent, path.name)
+                return flask.send_from_directory(str(path.parent), path.name)
             return None
 
         # Add .css and .js files to auto-loaded Dash assets
