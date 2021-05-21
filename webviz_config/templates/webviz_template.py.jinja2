@@ -34,7 +34,7 @@ theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
 
 app = dash.Dash(
-    name="webviz_app",
+    name=__name__,
     external_stylesheets=theme.external_stylesheets,
     assets_folder=Path("resources") / "assets",
     meta_tags=[
