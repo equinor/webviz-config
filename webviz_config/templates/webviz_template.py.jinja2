@@ -21,6 +21,8 @@ from webviz_config.themes import installed_themes
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
+from webviz_config.webviz_instance_info import WebvizRunMode, WebvizInstanceInfo
+from webviz_config.webviz_factory_registry import WEBVIZ_FACTORY_REGISTRY
 from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 
 
@@ -90,10 +92,16 @@ CACHE.init_app(server)
 theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
 Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy, force_https=False, session_cookie_secure=False)
 
+storage_folder = Path(__file__).resolve().parent / "resources" / "webviz_storage"
+
 WEBVIZ_STORAGE.use_storage = {{portable}}
-WEBVIZ_STORAGE.storage_folder = Path(__file__).resolve().parent / "resources" / "webviz_storage"
+WEBVIZ_STORAGE.storage_folder = storage_folder
 
 WEBVIZ_ASSETS.portable = {{ portable }}
+
+run_mode = WebvizRunMode.PORTABLE if {{portable}} else WebvizRunMode.NON_PORTABLE
+app_instance_info = WebvizInstanceInfo(run_mode, storage_folder)
+WEBVIZ_FACTORY_REGISTRY.initialize(app_instance_info, {{ internal_factory_settings if internal_factory_settings is defined else None }})
 
 use_oauth2 = False
 
@@ -148,6 +156,8 @@ else:
             {% endfor %}
             ])]),
         html.Div(className="pageContent", id="page-content")])
+
+WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
 
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
