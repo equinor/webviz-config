@@ -37,7 +37,7 @@ spec:
             OAUTH2_PROXY_UPSTREAMS: "http://main:5000" # Where authenticated requests are routed to: the web application
 
     - name: auth-state
-      image: redis:5-alpine
+      dockerfileName: auth-state.Dockerfile
       ports:
         - name: redis
           port: 6379

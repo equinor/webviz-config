@@ -30,6 +30,9 @@ def create_radix_config(
     template = template_environment.get_template("radixconfig.yaml.jinja2")
 
     (build_directory / "radixconfig.yaml").write_text(template.render(settings))
+    (build_directory / "auth-state.Dockerfile").write_text(
+        "FROM redis:alpine\nUSER 999"
+    )
 
 
 def website_online(url: str) -> bool:
