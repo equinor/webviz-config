@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED] - YYYY-MM-DD
 
 ### Added
+- [#456](https://github.com/equinor/webviz-config/pull/456) - Extended error message
+when configuration file is invalid with suggestion to run `webviz docs`.
 - [#426](https://github.com/equinor/webviz-config/pull/426) - Added centralized factory
 registry exposed through `WEBVIZ_FACTORY_REGISTRY` for sharing factories between plugins.
 - [#443](https://github.com/equinor/webviz-config/pull/443) - Added `--logconfig` command

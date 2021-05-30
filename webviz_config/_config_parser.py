@@ -46,8 +46,10 @@ def _call_signature(
         if arg not in SPECIAL_ARGS and arg not in kwargs:
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                f"`{plugin_name}` requires the argument "
-                f"`{arg}` in your configuration file."
+                f"The plugin `{plugin_name}` requires the argument "
+                f"`{arg}` in your configuration file. "
+                "Run the command `webviz docs` if you want "
+                "to see documentation of the plugin."
                 f"{terminal_colors.END}"
             )
 
@@ -85,7 +87,9 @@ def _call_signature(
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 f"Unrecognized argument. `{plugin_name}` "
-                f"does not take an argument `{arg}`."
+                f"does not take an argument `{arg}`. "
+                "Run the command `webviz docs` if you want "
+                "to see documentation of the plugin."
                 f"{terminal_colors.END}"
             )
 
@@ -107,7 +111,9 @@ def _call_signature(
                         f"given to `{plugin_name}` is "
                         f"of type `{type(kwargs[arg]).__name__}`. "
                         f"Expected type "
-                        f"`{argspec.annotations[arg].__name__}`."
+                        f"`{argspec.annotations[arg].__name__}`. "
+                        "Run the command `webviz docs` if you want "
+                        "to see documentation of the plugin."
                         f"{terminal_colors.END}"
                     )
             # Typechecking typing classes does not work in python 3.7
