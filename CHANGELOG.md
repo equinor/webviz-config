@@ -23,6 +23,8 @@ button to `WebvizPluginABC`.
 ### Fixed
 - [#440](https://github.com/equinor/webviz-config/pull/440) - Fixed setting of global 
 log level for webviz application.
+- [#457](https://github.com/equinor/webviz-config/pull/457) - Use non-root `redis`
+Docker image in generated Radix setup.
 
 ## [0.3.1] - 2021-04-29
 
