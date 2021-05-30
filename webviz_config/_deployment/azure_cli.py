@@ -1,3 +1,5 @@
+# pylint: disable=invalid-sequence-index
+
 import logging
 import os
 import time
