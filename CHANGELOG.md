@@ -21,6 +21,9 @@ versions compared to what the user had installed when creating the portable app.
 button to `WebvizPluginABC`.
 
 ### Fixed
+- [#463](https://github.com/equinor/webviz-config/pull/463) - Reflect external change.
+Repository name for standard `OAuth2` Docker containers is changed from
+`quay.io/pusher/oauth2_proxy` to `quay.io/oauth2-proxy/oauth2-proxy`.
 - [#440](https://github.com/equinor/webviz-config/pull/440) - Fixed setting of global 
 log level for webviz application.
 - [#457](https://github.com/equinor/webviz-config/pull/457) - Use non-root `redis`
