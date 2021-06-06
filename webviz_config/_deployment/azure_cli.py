@@ -69,7 +69,7 @@ def logged_in() -> bool:
         raise RuntimeError(
             "In order to use webviz deploy features, you need to first install "
             "the optional deploy dependencies. You can do this by e.g. running "
-            "'pip install webviz-config[deploy]'"
+            "'pip install webviz-config[deployment]'"
         )
 
     try:
