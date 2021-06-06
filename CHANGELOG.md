@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.3.2] - 2021-06-06
+
 ### Added
 - [#456](https://github.com/equinor/webviz-config/pull/456) - Extended error message
 when configuration file is invalid with suggestion to run `webviz docs`.
