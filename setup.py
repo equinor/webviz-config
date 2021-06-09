@@ -31,6 +31,10 @@ TESTS_REQUIRES = [
     "pylint",
     "pytest-xdist",
     "selenium",
+    "types-bleach",
+    "types-markdown",
+    "types-pyyaml",
+    "types-requests",
 ]
 
 # pylint: disable=line-too-long

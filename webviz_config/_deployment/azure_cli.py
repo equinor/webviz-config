@@ -36,7 +36,7 @@ def _azure_cli(args: List[str], devnull_stderr: bool = True) -> Any:
     # Therefore cleaning the root logger as suggested in
     # https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
     loggers = [logging.getLogger()] + list(
-        logging.Logger.manager.loggerDict.values()  # type: ignore[attr-defined]
+        logging.Logger.manager.loggerDict.values()  # type: ignore[attr-defined, arg-type]
     )
     for logger in loggers:
         handlers = getattr(logger, "handlers", [])
