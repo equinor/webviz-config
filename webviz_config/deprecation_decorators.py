@@ -26,7 +26,7 @@ def deprecated_plugin(
 
 
 def deprecated_plugin_arguments(
-    check: Union[Dict[str, str], Callable[[], Optional[Tuple[str, str]]]]
+    check: Union[Dict[str, str], Callable[..., Optional[Tuple[str, str]]]]
 ) -> Callable:
     def decorator(original_init_method: Callable) -> Callable:
         original_method_args = inspect.getfullargspec(original_init_method).args
