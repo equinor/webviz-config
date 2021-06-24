@@ -48,7 +48,7 @@
     overflow-x: hidden;
     overflow-y: scroll;
     height: 98vh;
-    min-width: 30rem;
+    min-width: 300px;
     scrollbar-width: thin;
     scrollbar-color: var(--menuBackground) var(--menuBackground); /* thumb and track color */    
 }
@@ -65,7 +65,7 @@
 
 @media (min-width: 800px) {
     .sideWrapper {
-        width: 30rem;
+        width: 300px;
     }
 }
 
