@@ -73,8 +73,8 @@ class LocalhostOpenBrowser:
         os.environ["NO_PROXY"] = "localhost"
 
         try:
-            urllib.request.urlopen(self._url())  # nosec
-            app_ready = True
+            with urllib.request.urlopen(self._url()):  # nosec
+                app_ready = True
         except urllib.error.HTTPError:  # type: ignore[attr-defined]
             # The flask instance responded with some HTTP error (likely 401),
             # but is otherwise ready to accept connections
