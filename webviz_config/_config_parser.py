@@ -121,13 +121,14 @@ def _call_signature(
                 pass
 
     kwargs_including_defaults = kwargs
-    deprecation_warnings = []
+    plugin_deprecation_warnings = []
+    argument_deprecation_warnings = []
 
     deprecated_plugin = _ds.DEPRECATION_STORE.get_stored_plugin_deprecation(
         getattr(webviz_config.plugins, plugin_name)
     )
     if deprecated_plugin:
-        deprecation_warnings.append(deprecated_plugin.short_message)
+        plugin_deprecation_warnings.append(deprecated_plugin.short_message)
         warnings.warn(
             f"""Plugin '{plugin_name}' has been deprecated.
 ------------------------
@@ -150,7 +151,7 @@ def _call_signature(
     for deprecation in deprecations:
         if isinstance(deprecation, _ds.DeprecatedArgument):
             if deprecation.argument_name in kwargs_including_defaults.keys():
-                deprecation_warnings.append(deprecation.short_message)
+                argument_deprecation_warnings.append(deprecation.short_message)
                 warnings.warn(
                     """Deprecated Argument: '{}' with value '{}' in plugin '{}'
 ------------------------
@@ -176,7 +177,7 @@ def _call_signature(
 
             result = deprecation.callback(**mapped_args)  # type: ignore
             if result:
-                deprecation_warnings.append(result[0])
+                argument_deprecation_warnings.append(result[0])
                 warnings.warn(
                     """Deprecated Argument(s): '{}' with value(s) '{}' in plugin '{}'
 ------------------------
@@ -207,7 +208,8 @@ def _call_signature(
         f"{plugin_name}({special_args}**{kwargs})",
         (
             f"plugin_layout(contact_person={contact_person}"
-            f", deprecation_warnings={deprecation_warnings})"
+            f", plugin_deprecation_warnings={plugin_deprecation_warnings}"
+            f", argument_deprecation_warnings={argument_deprecation_warnings})"
         ),
     )
 

@@ -1,0 +1,61 @@
+<div class="plugin-doc">
+
+#### {{ plugin["name"] }}
+{% if plugin["deprecated"] %}
+<details>
+  <summary markdown="span"> :warning: {{ plugin["deprecation_text_short"] }}</summary>
+
+  {{ plugin["deprecation_text_long"] }}
+</details>
+{% elif plugin["has_deprecated_arguments"] %}
+> :warning: At least one argument has a deprecation warning.</summary>
+{% endif %}
+
+<!-- tabs:start -->
+{% if plugin["description"] is not none %}
+
+<!-- tab:Description -->
+
+{{ plugin["description"] }}
+
+{% endif %}
+
+<!-- tab:Arguments -->
+
+{% for arg, arg_info in plugin["arg_info"].items() %}
+{% if arg_info["deprecated"] %}>:warning: **`{{ arg }}`:** {% if arg_info["deprecation_message"] == "" %}Certain values for the argument have been deprecated and might soon not be accepted anymore. See function below for details.{% else %}{{ arg_info["deprecation_message"] }}{% endif %}
+{% endif %}
+{% endfor %}
+{% if plugin["has_deprecated_arguments"] %}
+---
+{% endif %}
+{% if plugin["argument_description"] is not none %}
+{{ plugin["argument_description"] }}
+{% endif %}
+{% if plugin["deprecation_check_code"] != "" %}
+Function checking for deprecations:
+```python
+{{ plugin["deprecation_check_code"] }}
+```
+---
+{% endif %}
+---
+How to use in YAML config file:
+```yaml
+    - {{ plugin["name"] }}:
+    {%- for arg, arg_info in plugin["arg_info"].items() %}
+        {{ arg }}: {{ arg_info["default"] | tojson if "default" in arg_info else "" }} # {{ "Deprecated" if arg_info["deprecated"] else "Required" if arg_info["required"] else "Optional" }}{{ ", type " + arg_info["typehint_string"] | string if "typehint_string" in arg_info }}.
+    {%- endfor %}
+```
+
+{% if plugin["data_input"] is not none %}
+
+<!-- tab:Data input -->
+
+{{ plugin["data_input"] }}
+
+{% endif %}
+
+<!-- tabs:end -->
+
+</div>

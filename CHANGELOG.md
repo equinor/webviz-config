@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED] - YYYY-MM-DD
+### Fixed
+- [#482](https://github.com/equinor/webviz-config/pull/482) -  Reverted the assumption
+made in [#419](https://github.com/equinor/webviz-config/pull/419) that all argument
+section in init-docstrings are lists of argument descriptions, and separated deprecated
+plugins and arguments in doc sidebar.
 
 ## [0.3.3] - 2021-07-13
 
@@ -32,7 +37,7 @@ button to `WebvizPluginABC`.
 - [#463](https://github.com/equinor/webviz-config/pull/463) - Reflect external change.
 Repository name for standard `OAuth2` Docker containers is changed from
 `quay.io/pusher/oauth2_proxy` to `quay.io/oauth2-proxy/oauth2-proxy`.
-- [#440](https://github.com/equinor/webviz-config/pull/440) - Fixed setting of global 
+- [#440](https://github.com/equinor/webviz-config/pull/440) - Fixed setting of global
 log level for webviz application.
 - [#457](https://github.com/equinor/webviz-config/pull/457) - Use non-root `redis`
 Docker image in generated Radix setup.
@@ -53,7 +58,7 @@ from `deprecated_plugin` decorator.
 
 ### Added
 - [#419](https://github.com/equinor/webviz-config/pull/419) - Plugins and their
-arguments can now be marked as deprecated by using the newly implemented 
+arguments can now be marked as deprecated by using the newly implemented
 deprecation framework that, in addition to console FutureWarnings,
 automatically shows deprecation messages to the end user in the app and in the documentation.
 Adjusted contributing guide accordingly.
@@ -96,7 +101,7 @@ See also [#392](https://github.com/equinor/webviz-config/pull/392)
 ## [0.2.8] - 2021-01-26
 
 ### Added
-- [#345](https://github.com/equinor/webviz-config/pull/345) - Added Oauth2 
+- [#345](https://github.com/equinor/webviz-config/pull/345) - Added Oauth2
 Authorization Code flow support for Azure AD applications.
 
 ### Changed
@@ -115,7 +120,7 @@ for multiple versions of same plugin if the metadata is equal.
 
 ### Changed
 - [#368](https://github.com/equinor/webviz-config/pull/368) - Made Webviz global
-settings available to plugin implementations through special `webviz_settings` 
+settings available to plugin implementations through special `webviz_settings`
 argument. This argument is an instance of the `WebvizSettings` class and currently
 contains both the `shared_settings` and `theme` properties.
 
@@ -127,14 +132,14 @@ plugins as the special `app` argument) has been deprecated.
 ## [0.2.6] - 2021-01-07
 
 ### Fixed
-- [#373](https://github.com/equinor/webviz-config/pull/373) - Fix for import of TypedDict 
+- [#373](https://github.com/equinor/webviz-config/pull/373) - Fix for import of TypedDict
 in Python versions older than 3.8. Check against Python version instead of using try-except.
 
 ## [0.2.5] - 2020-12-19
 
 ### Changed
 - [#367](https://github.com/equinor/webviz-config/pull/367) - Made type information
-available to package consumers by indicating support for typing as specified in 
+available to package consumers by indicating support for typing as specified in
 [PEP 561](https://www.python.org/dev/peps/pep-0561/).
 
 ## [0.2.4] - 2020-12-08
