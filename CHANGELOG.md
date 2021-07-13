@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.3.3] - 2021-07-13
+
+### Changed
+- [#474](https://github.com/equinor/webviz-config/pull/474) - Remove 62.5% CSS IE workaround.
+- [#470](https://github.com/equinor/webviz-config/pull/470) - Improve VSCode YAML schema installation documentation.
+
 ## [0.3.2] - 2021-06-06
 
 ### Added
