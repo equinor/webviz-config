@@ -442,13 +442,13 @@ instance representing the absolute path to the configuration file that was used,
 a boolean value stating if the Webviz application running is a portable one.
 
 The (optionally transformed) `shared_settings` can be retrieved in a plugin by adding
-a specially named `webviz_settings` argument to the plugin's `__init__` function. The 
-`webviz_settings` argument works similar to the `app` argument in that it is a special 
-argument name that will not be originating from the configuration file, but will be 
-automatically given to the plugin by the core functionality of webviz-config. 
+a specially named `webviz_settings` argument to the plugin's `__init__` function. The
+`webviz_settings` argument works similar to the `app` argument in that it is a special
+argument name that will not be originating from the configuration file, but will be
+automatically given to the plugin by the core functionality of webviz-config.
 
-Shared settings can then be accessed through `webviz_settings`. E.g., in the case 
-above, the wanted settings are found as `webviz_settings.shared_settings["some_key"]` 
+Shared settings can then be accessed through `webviz_settings`. E.g., in the case
+above, the wanted settings are found as `webviz_settings.shared_settings["some_key"]`
 as shown in the example below:
 
 ```python
@@ -469,8 +469,8 @@ class ExamplePlugin(WebvizPluginABC):
 
 ### OAuth 2.0 Authorization Code flow
 
-It is possible to use OAuth 2.0 Authorization Code flow to secure a `webviz` application. 
-In order to do so, add `oauth2` attribute in a custom plugin with a boolean `True` value. 
+It is possible to use OAuth 2.0 Authorization Code flow to secure a `webviz` application.
+In order to do so, add `oauth2` attribute in a custom plugin with a boolean `True` value.
 The following is an example.
 
 ```python
@@ -485,8 +485,8 @@ class OurCustomPlugin(WebvizPluginABC):
         return self.use_oauth2
 ```
 
-Information related to the application for OAuth 2.0 has to be provided in environment 
-variables. These environment variables are `WEBVIZ_TENANT_ID`, `WEBVIZ_CLIENT_ID`, 
+Information related to the application for OAuth 2.0 has to be provided in environment
+variables. These environment variables are `WEBVIZ_TENANT_ID`, `WEBVIZ_CLIENT_ID`,
 `WEBVIZ_CLIENT_SECRET`, `WEBVIZ_SCOPE`.
 
 The values can be found in the Azure AD configuration page. Short explanation of these environment variables:
@@ -631,7 +631,7 @@ class MyPluginExample1(WebvizPluginABC):
     @deprecated_plugin_arguments(
         {
             "arg3": (
-                "Short message shown to the end user both in the app and documentation.", 
+                "Short message shown to the end user both in the app and documentation.",
                 (
                     "This can be a long message, which is shown only in the documentation, explaining "
                     "e.g. why it is deprecated and which plugin should be used instead."
@@ -642,14 +642,14 @@ class MyPluginExample1(WebvizPluginABC):
     def __init__(self, arg1: str, arg2: int, arg3: Optional[int] = None):
         ...
 
-class MyPluginExample2(WebvizPluginABC):
-    ...
-    @deprecated_plugin_arguments(check_deprecation)
-    def __init__(self, arg1: str, arg2: int, arg3: Optional[int] = None):
-        ...
-
-def check_deprecation(arg1: int, arg3: int) -> Optional[Tuple[str, str]]:
+def check_deprecation_example2(arg1: int, arg3: int) -> Optional[Tuple[str, str]]:
     if arg3 == arg1:
         return ("This message is shown to the end user in the app.", "This message is shown in the documentation of the plugin.")
     return None
+
+class MyPluginExample2(WebvizPluginABC):
+    ...
+    @deprecated_plugin_arguments(check_deprecation_example2)
+    def __init__(self, arg1: int, arg2: int, arg3: int):
+        ...
 ```

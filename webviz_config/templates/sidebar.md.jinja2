@@ -3,5 +3,8 @@
 * [{{package}} package]({{package}}.md)
 {%- endfor %}
 {% if deprecated_plugins %}
-* [Deprecated plugins](deprecations.md)
+* [Deprecated plugins](plugin_deprecations.md)
+{% endif %}
+{% if deprecated_arguments %}
+* [Deprecated arguments](argument_deprecations.md)
 {% endif %}

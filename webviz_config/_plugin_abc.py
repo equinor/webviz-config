@@ -175,7 +175,8 @@ class WebvizPluginABC(abc.ABC):
 
     def _make_extended_deprecation_warnings(
         self,
-        deprecation_warnings: Optional[List[str]] = None,
+        plugin_deprecation_warnings: Optional[List[str]] = None,
+        argument_deprecation_warnings: Optional[List[str]] = None,
     ) -> List[Dict[str, str]]:
         # pylint: disable=import-outside-toplevel
         from .plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
@@ -186,16 +187,27 @@ class WebvizPluginABC(abc.ABC):
         dist_name = PLUGIN_METADATA[plugin_name]["dist_name"]
         metadata = PLUGIN_PROJECT_METADATA[dist_name]
 
-        if deprecation_warnings:
+        if plugin_deprecation_warnings:
             url = (
-                f"{metadata['documentation_url']}/#/deprecations?id={plugin_name.lower()}"
+                f"{metadata['documentation_url']}/#/plugin_deprecations?id={plugin_name.lower()}"
                 if metadata["documentation_url"] is not None
                 else ""
             )
 
-            for deprecation_warning in deprecation_warnings:
+            for plugin_deprecation_warning in plugin_deprecation_warnings:
                 extended_deprecation_warnings.append(
-                    {"message": deprecation_warning, "url": url}
+                    {"message": plugin_deprecation_warning, "url": url}
+                )
+        if argument_deprecation_warnings:
+            url = (
+                f"{metadata['documentation_url']}/#/argument_deprecations?id={plugin_name.lower()}"
+                if metadata["documentation_url"] is not None
+                else ""
+            )
+
+            for argument_deprecation_warning in argument_deprecation_warnings:
+                extended_deprecation_warnings.append(
+                    {"message": argument_deprecation_warning, "url": url}
                 )
         return extended_deprecation_warnings
 
@@ -230,7 +242,8 @@ class WebvizPluginABC(abc.ABC):
     def plugin_layout(
         self,
         contact_person: Optional[dict] = None,
-        deprecation_warnings: Optional[List[str]] = None,
+        plugin_deprecation_warnings: Optional[List[str]] = None,
+        argument_deprecation_warnings: Optional[List[str]] = None,
     ) -> Union[str, Type[Component]]:
         """This function returns (if the class constant SHOW_TOOLBAR is True,
         the plugin layout wrapped into a common webviz config plugin
@@ -256,7 +269,7 @@ class WebvizPluginABC(abc.ABC):
         if self._add_download_button:
             buttons.append("download")
 
-        if buttons or deprecation_warnings:
+        if buttons or plugin_deprecation_warnings or argument_deprecation_warnings:
             # pylint: disable=no-member
             return wcc.WebvizPluginPlaceholder(
                 id=self._plugin_wrapper_id,
@@ -270,7 +283,7 @@ class WebvizPluginABC(abc.ABC):
                 if "guided_tour" in buttons and hasattr(self, "tour_steps")
                 else [],
                 deprecation_warnings=self._make_extended_deprecation_warnings(
-                    deprecation_warnings
+                    plugin_deprecation_warnings, argument_deprecation_warnings
                 ),
                 feedback_url=self._make_feedback_url(),
             )

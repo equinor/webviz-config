@@ -17,7 +17,6 @@ import pathlib
 from importlib import import_module
 from collections import defaultdict
 from typing import Any, Dict, Optional, Tuple, List
-import re
 
 
 try:
@@ -86,23 +85,14 @@ def _find_plugin_deprecated_arguments(plugin: Any) -> Dict[str, Tuple[str, str]]
 
 
 def _extract_init_arguments_and_check_for_deprecation(
-    docstring: Optional[str], reference: Any
+    reference: Any,
 ) -> Tuple[bool, Dict[str, ArgumentInfo], str]:
     """Returns all arguments of the given class' __init__ function including
     related documentation strings, typehints and deprecation information.
     """
     result: Dict[str, ArgumentInfo] = {}
     deprecated_arguments = _find_plugin_deprecated_arguments(reference)
-    regex = (
-        "(\\* \\*\\*`([a-zA-Z0-9_]+)`:\\*\\*)((.|\\n|\\r)+?)"
-        "((?=\\* \\*\\*`([a-zA-Z0-9_]+)`:\\*\\*)|$)"
-    )
-    documented_args: Dict[str, str] = {}
     deprecation_check_code = ""
-
-    if docstring:
-        for match in re.finditer(regex, docstring):
-            documented_args[match.group(2)] = match.group(3)
 
     argspec = inspect.getfullargspec(reference.__init__)
     result = {arg: ArgumentInfo() for arg in argspec.args if arg not in SPECIAL_ARGS}
@@ -126,8 +116,6 @@ def _extract_init_arguments_and_check_for_deprecation(
             result[arg]["typehint_string"] = _annotation_to_string(annotation)
 
     for arg, arg_info in result.items():
-        arg_info["description"] = " ".join(documented_args.get(arg, "").split())
-
         if arg in deprecated_arguments:
             arg_info["deprecated"] = True
             arg_info["deprecation_message"] = deprecated_arguments[arg][0]
@@ -155,9 +143,7 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         has_deprecated_arguments,
         arguments,
         deprecation_check_code,
-    ) = _extract_init_arguments_and_check_for_deprecation(
-        docstring_parts[1] if len(docstring_parts) > 1 else None, reference
-    )
+    ) = _extract_init_arguments_and_check_for_deprecation(reference)
     deprecated = _ds.DEPRECATION_STORE.get_stored_plugin_deprecation(reference)
 
     plugin_info: PluginInfo = {
@@ -242,14 +228,13 @@ def build_docs(build_directory: pathlib.Path) -> None:
 
     plugin_documentation = get_plugin_documentation()
 
-    deprecated_packages = {}
+    has_deprecated_plugins = {}
+    has_deprecated_arguments = {}
     for dist_name, package_doc in plugin_documentation.items():
-        if any(
-            plugin["deprecated"] or plugin["has_deprecated_arguments"]
-            for plugin in package_doc["plugins"]
-        ):
-            deprecated_packages[dist_name] = package_doc
-
+        if any(plugin["deprecated"] for plugin in package_doc["plugins"]):
+            has_deprecated_plugins[dist_name] = package_doc
+        if any(plugin["has_deprecated_arguments"] for plugin in package_doc["plugins"]):
+            has_deprecated_arguments[dist_name] = package_doc
     template = template_environment.get_template("README.md.jinja2")
     for dist_name, package_doc in plugin_documentation.items():
         (build_directory / f"{dist_name}.md").write_text(
@@ -261,7 +246,8 @@ def build_docs(build_directory: pathlib.Path) -> None:
         template.render(
             {
                 "packages": plugin_documentation.keys(),
-                "deprecated_plugins": bool(deprecated_packages),
+                "deprecated_plugins": bool(has_deprecated_plugins),
+                "deprecated_arguments": bool(has_deprecated_arguments),
             }
         )
     )
@@ -273,9 +259,13 @@ def build_docs(build_directory: pathlib.Path) -> None:
         )
     )
 
-    template = template_environment.get_template("deprecations.md.jinja2")
-    (build_directory / "deprecations.md").write_text(
-        template.render({"packages": deprecated_packages})
+    template = template_environment.get_template("plugin_deprecations.md.jinja2")
+    (build_directory / "plugin_deprecations.md").write_text(
+        template.render({"packages": has_deprecated_plugins})
+    )
+    template = template_environment.get_template("argument_deprecations.md.jinja2")
+    (build_directory / "argument_deprecations.md").write_text(
+        template.render({"packages": has_deprecated_arguments})
     )
 
 

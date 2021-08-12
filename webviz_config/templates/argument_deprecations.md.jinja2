@@ -1,4 +1,5 @@
-# Plugin project {{ dist_name }}
+{%- for dist_name, package_doc in packages.items() %}
+### {{ dist_name }} package
 
 ?> :bookmark: This documentation is valid for version `{{ package_doc["dist_version"] }}` of `{{ dist_name}}`.
 
@@ -7,6 +8,8 @@
 {% endif %}
 
 ---
-{% for plugin in package_doc["plugins"] %}
+{% for plugin in package_doc["plugins"] if plugin["has_deprecated_arguments"]%}
 {% include "plugin_docs.md.jinja2" %}
+{% endfor %}
+
 {% endfor %}
