@@ -47,16 +47,16 @@ Useful on e.g. the front page for introducing a field or project.
 
         style = {
             "color": self.color,
-            "background-image": f"url({self.image_url})",
+            "backgroundImage": f"url({self.image_url})",
             "height": f"{self.height}px",
         }
 
         if self.shadow:
-            style["text-shadow"] = "0.05em 0.05em 0"
+            style["textShadow"] = "0.05em 0.05em 0"
 
             if self.color == "white":
-                style["text-shadow"] += " rgba(0, 0, 0, 0.7)"
+                style["textShadow"] += " rgba(0, 0, 0, 0.7)"
             else:
-                style["text-shadow"] += " rgba(255, 255, 255, 0.7)"
+                style["textShadow"] += " rgba(255, 255, 255, 0.7)"
 
         return html.Div(self.title, className="_banner_image", style=style)
