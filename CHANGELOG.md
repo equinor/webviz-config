@@ -5,11 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED] - YYYY-MM-DD
+
 ### Fixed
-- [#482](https://github.com/equinor/webviz-config/pull/482) -  Reverted the assumption
+- [#482](https://github.com/equinor/webviz-config/pull/482) - Reverted the assumption
 made in [#419](https://github.com/equinor/webviz-config/pull/419) that all argument
 section in init-docstrings are lists of argument descriptions, and separated deprecated
 plugins and arguments in doc sidebar.
+- [#489](https://github.com/equinor/webviz-config/pull/489) - Use Docker user on
+numerical format (in order for Radix/Kubernetes to correctly infer non-root user).
+Also changed to use new Radix supported blob mount driver.
 
 ## [0.3.3] - 2021-07-13
 
