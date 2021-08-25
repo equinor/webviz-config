@@ -218,10 +218,10 @@ def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) ->
         progress_bar.update()
 
     for key, value in {
-        "main-storage1-blobfusecreds-accountkey": azure_configuration_values[
+        "main-appstorage-csiazurecreds-accountkey": azure_configuration_values[
             "storage_account_key_secret"
         ],
-        "main-storage1-blobfusecreds-accountname": azure_configuration_values[
+        "main-appstorage-csiazurecreds-accountname": azure_configuration_values[
             "storage_account_name"
         ],
     }.items():

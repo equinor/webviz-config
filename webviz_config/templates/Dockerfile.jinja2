@@ -48,16 +48,17 @@ RUN pip install -r requirements.txt
 FROM python:{{python_version_major}}.{{python_version_minor}}-slim
 
 # Changing to non-root user early
-RUN useradd --create-home appuser
+RUN addgroup --gid 1234 appuser-group
+RUN useradd --create-home --uid 1234 --groups appuser-group appuser
+USER 1234
 WORKDIR /home/appuser
-USER appuser
 
 # Set environment variables
 ENV PATH="${PATH}:/home/appuser/.local/bin" \
     PYTHONFAULTHANDLER=1
 
 # Copy over appuser installed Python packages
-COPY --from=builder /home/appuser/.local /home/appuser/.local
+COPY --chown=appuser --from=builder /home/appuser/.local /home/appuser/.local
 
 # Copy over the created Webviz application
 COPY --chown=appuser . dash_app
