@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.3.4] - 2021-08-30
+
 ### Fixed
 - [#482](https://github.com/equinor/webviz-config/pull/482) - Reverted the assumption
 made in [#419](https://github.com/equinor/webviz-config/pull/419) that all argument
