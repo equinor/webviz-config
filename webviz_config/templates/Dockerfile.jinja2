@@ -48,8 +48,7 @@ RUN pip install -r requirements.txt
 FROM python:{{python_version_major}}.{{python_version_minor}}-slim
 
 # Changing to non-root user early
-RUN addgroup --gid 1234 appuser-group
-RUN useradd --create-home --uid 1234 --groups appuser-group appuser
+RUN useradd --create-home --uid 1234 appuser
 USER 1234
 WORKDIR /home/appuser
 
