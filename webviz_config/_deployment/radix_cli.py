@@ -143,7 +143,7 @@ def set_radix_secret(
     context: str,
 ) -> None:
 
-    max_radix_build_time = 10 * 60
+    max_radix_build_time = 60 * 60
     sleep_per_attempt = 10
 
     for _ in range(max_radix_build_time // sleep_per_attempt):
