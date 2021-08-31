@@ -496,6 +496,10 @@ The values can be found in the Azure AD configuration page. Short explanation of
 - `WEBVIZ_CLIENT_SECRET`: Webviz Azure AD app's client secret.
 - `WEBVIZ_SCOPE`: The API permission for this Webviz Azure AD app.
 
+To get the access token of the authenticated user in the flask session, use `flask.session.get("access_token")`.
+
+To get the expiration date of the token, use `flask.session.get("expiration_date")`.
+
 ## Run tests
 
 To run tests it is necessary to first install the [selenium chrome driver](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver).
