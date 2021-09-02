@@ -315,65 +315,10 @@ class ConfigParser:
                 f"{terminal_colors.END}"
             )
 
-        for page_number, page in enumerate(self.configuration["pages"]):
+        if "pageContents" not in self.configuration:
+            self.configuration["pageContents"] = []
 
-            if "title" not in page:
-                raise ParserError(
-                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    f"Page number {page_number + 1} does "
-                    "not have the title specified."
-                    f"{terminal_colors.END}"
-                )
-
-            if "id" not in page:
-                page["id"] = self._generate_page_id(page["title"])
-            elif page["id"] in self._page_ids:
-                raise ParserError(
-                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    "You have more than one page "
-                    "with the same `id`."
-                    f"{terminal_colors.END}"
-                )
-
-            self._page_ids.append(page["id"])
-
-            if "content" not in page:
-                page["content"] = []
-            elif not isinstance(page["content"], list):
-                raise ParserError(
-                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    "The content of page number "
-                    f"{page_number + 1} should be a list."
-                    f"{terminal_colors.END}"
-                )
-
-            plugins = [e for e in page["content"] if isinstance(e, dict)]
-
-            for plugin in plugins:
-                plugin_name = next(iter(plugin))
-                plugin_variables = next(iter(plugin.values()))
-                kwargs = {} if plugin_variables is None else {**plugin_variables}
-
-                if plugin_name not in ConfigParser.STANDARD_PLUGINS:
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "You have included a plugin with "
-                        f"name `{plugin_name}` in your "
-                        "configuration file. This is not a "
-                        "standard plugin."
-                        f"{terminal_colors.END}"
-                    )
-
-                plugin["_call_signature"] = _call_signature(
-                    plugin_name,
-                    kwargs,
-                    self._config_folder,
-                )
-
-                self._assets.update(getattr(webviz_config.plugins, plugin_name).ASSETS)
-                self._plugin_metadata[
-                    plugin_name
-                ] = webviz_config.plugins.PLUGIN_METADATA[plugin_name]
+        self._parseNavigation()
 
     @property
     def configuration(self) -> dict:
@@ -393,3 +338,149 @@ class ConfigParser:
         plugins included in the configuration file.
         """
         return self._plugin_metadata
+
+    def _recursivelyParseNavigationItem(self, items: dict, level: int) -> list:
+        navigation_items: list = []
+        for item_number, item in enumerate(items):
+            if "type" in item:
+                if item["type"] == "section":
+                    if level > 0:
+                        raise ParserError(
+                            f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                            "Sections can only be defined on the first level"
+                            f"{terminal_colors.END}"
+                        )
+                    navigation_items.append({
+                        "type": "section",
+                        "title": item["title"],
+                        "icon": item["icon"] if "icon" in item.keys() else None,
+                        "content": self._recursivelyParseNavigationItem(item["content"], level + 1) if "content" in item.keys() else [],
+                    })
+                elif item["type"] == "group":
+                    navigation_items.append({
+                        "type": "group",
+                        "title": item["title"],
+                        "icon": item["icon"] if "icon" in item.keys() else None,
+                        "content": self._recursivelyParseNavigationItem(item["content"], level + 1) if "content" in item.keys() else [],
+                    })
+            else:
+                if "title" not in item:
+                    raise ParserError(
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                        f"Page number {item_number + 1} does "
+                        "not have the title specified."
+                        f"{terminal_colors.END}"
+                    )
+
+                if "id" not in item:
+                    item["id"] = self._generate_page_id(item["title"])
+                elif item["id"] in self._page_ids:
+                    raise ParserError(
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                        "You have more than one page "
+                        "with the same `id`."
+                        f"{terminal_colors.END}"
+                    )
+
+                self._page_ids.append(item["id"])
+
+                if "content" not in item:
+                    item["content"] = []
+                elif not isinstance(item["content"], list):
+                    raise ParserError(
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                        "The content of page number "
+                        f"{item_number + 1} should be a list."
+                        f"{terminal_colors.END}"
+                    )
+
+                self.configuration["pageContents"].append(item)
+
+                navigation_items.append({
+                    "type": "page",
+                    "title": item["title"],
+                    "href": "/" + item["id"],
+                    "icon": item["icon"] if "icon" in item.keys() else None,
+                })
+
+                plugins = [e for e in item["content"] if isinstance(e, dict)]
+                for plugin in plugins:
+                    plugin_name = next(iter(plugin))
+                    plugin_variables = next(iter(plugin.values()))
+                    kwargs = {} if plugin_variables is None else {**plugin_variables}
+
+                    if plugin_name not in ConfigParser.STANDARD_PLUGINS:
+                        raise ParserError(
+                            f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                            "You have included a plugin with "
+                            f"name `{plugin_name}` in your "
+                            "configuration file. This is not a "
+                            "standard plugin."
+                            f"{terminal_colors.END}"
+                        )
+
+                    plugin["_call_signature"] = _call_signature(
+                        plugin_name,
+                        kwargs,
+                        self._config_folder,
+                    )
+
+                    self._assets.update(getattr(webviz_config.plugins, plugin_name).ASSETS)
+                    self._plugin_metadata[
+                        plugin_name
+                    ] = webviz_config.plugins.PLUGIN_METADATA[plugin_name]
+        return navigation_items
+
+    def _parseNavigation(self) -> None:
+        """Returns a list of navigation items"""
+        if "menu" not in self.configuration:
+            self.configuration["menu"] = {}
+
+        self.configuration["navigationItems"] = self._recursivelyParseNavigationItem(self.configuration["pages"], 0)
+        if "menuOptions" in self.configuration:
+
+            if "barPosition" not in self.configuration["menuOptions"]:
+                self.configuration["menuOptions"]["barPosition"] = "left"
+            elif self.configuration["menuOptions"]["barPosition"] not in ["left", "top", "right", "bottom"]:
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    f"Invalid option for menuOptions > barPosition: {self.configuration['menuOptions']['barPosition']}. "
+                    "Please select one of the following options: left, top, right, bottom."
+                    f"{terminal_colors.END}"
+                )
+            
+            if "drawerPosition" not in self.configuration["menuOptions"]:
+                self.configuration["menuOptions"]["drawerPosition"] = "left"
+            elif self.configuration["menuOptions"]["drawerPosition"] not in ["left", "right"]:
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    f"Invalid option for menuOptions > drawerPosition: {self.configuration['menuOptions']['drawerPosition']}. "
+                    "Please select one of the following options: left, right."
+                    f"{terminal_colors.END}"
+                )
+            
+            if "initiallyPinned" not in self.configuration["menuOptions"]:
+                self.configuration["menuOptions"]["initiallyPinned"] = False
+            elif not isinstance(self.configuration["menuOptions"]["initiallyPinned"], bool):
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    f"Invalid option for menuOptions > initiallyPinned: {self.configuration['menuOptions']['initiallyPinned']}. "
+                    "Please select a boolean value: True, False"
+                    f"{terminal_colors.END}"
+                )
+
+            if "showLogo" not in self.configuration["menuOptions"]:
+                self.configuration["menuOptions"]["showLogo"] = True
+            elif not isinstance(self.configuration["menuOptions"]["showLogo"], bool):
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    f"Invalid option for menuOptions > initiallyPinned: {self.configuration['menuOptions']['showLogo']}. "
+                    "Please select a boolean value: True, False"
+                    f"{terminal_colors.END}"
+                )
+        else:
+            self.configuration["menuOptions"] = {}
+            self.configuration["menuOptions"]["barPosition"] = "left"
+            self.configuration["menuOptions"]["drawerPosition"] = "left"
+            self.configuration["menuOptions"]["initiallyPinned"] = False
+            self.configuration["menuOptions"]["showLogo"] = True

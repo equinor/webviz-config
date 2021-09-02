@@ -1,0 +1,112 @@
+# This file demonstrates the most basic usage of webviz in a FMU setting
+# The configuration files uses YAML (https://en.wikipedia.org/wiki/YAML).
+
+title: Reek Webviz Demonstration
+
+menuOptions:
+  logo: ./webviz-logo.svg
+  logoSmall: ./webviz-logo.svg
+  barPosition: left
+  drawerPosition: left
+  initiallyPinned: False
+
+pages:
+ - type: section
+   title: Section
+   content:
+    - title: Front page
+      icon: home
+      content:
+       - BannerImage:
+           image: ./example_banner.png
+           title: My banner image
+       - Webviz created from configuration file.
+       - Some other text, potentially with strange letters like Åre, Smørbukk Sør.
+
+    - type: group
+      title: Other
+      icon: label
+      content:
+      - title: Markdown example
+        content:
+         - Markdown:
+             markdown_file: ./example-markdown.md
+      
+      - title: PDF example
+        content:
+         - EmbedPdf:
+             pdf_file: ./example.pdf
+      
+      - title: Syntax highlighting example
+        content:
+         - SyntaxHighlighter:
+             filename: ./basic_example.yaml
+
+    - type: group
+      title: Tables
+      icon: table_chart
+      content:
+      - title: Table example
+        content:
+         - DataTable:
+             csv_file: ./example_data.csv
+      
+      - title: Plot a table
+        content:
+         - TablePlotter:
+             csv_file: ./example_data.csv
+             # Everything below are examples of optional settings
+             filter_cols:
+               - Well
+               - Segment
+               - Average permeability (D)
+             plot_options:        
+               type: bar
+               facet_col: Well
+               color: Segment
+               barmode: group
+             filter_defaults:
+               Well:
+                 - A-1H
+                 - A-2H
+                 - C-1H
+             column_color_discrete_maps:
+             # Supports css color codes, rgb and hex code.
+             # Note that hex code needs quotes '' to not be read as a comment
+               Segment:
+                 A: '#ff0000'
+                 B: rgb(0,255,0)
+                 C: blue
+             contact_person:
+               name: Ola Nordmann
+               phone: +47 12345678
+               email: some@email.com
+      
+      - title: Plot a table (locked)
+        content:
+         - TablePlotter:
+             csv_file: ./example_data.csv
+             lock: true
+             plot_options:
+               x: Well
+               y: Initial reservoir pressure (bar)
+               size: Average permeability (D)
+               facet_col: Segment
+             contact_person:
+               name: Kari Nordmann
+               phone: 12345678
+               email: someother@email.com
+      
+      - title: Pivot Table
+        content:
+         - PivotTable:
+             csv_file: ./example_data.csv
+             options:
+               cols:
+                 - Well
+               rows:
+                 - Segment
+               vals:
+                 - Average permeability (D)
+               aggregatorName: Average
+               rendererName: Table Heatmap

@@ -12,6 +12,7 @@ import datetime
 from pathlib import Path, PosixPath, WindowsPath
 
 from dash import html, dcc, Dash, Input, Output
+import webviz_core_components as wcc
 from flask_talisman import Talisman
 import webviz_config
 import webviz_config.plugins
@@ -111,7 +112,7 @@ if {{ not portable }} and not webviz_config.is_reload_process():
     app.layout = html.Div()
 else:
     page_content = {}
-    {% for page in pages %}
+    {% for page in pageContents %}
     page_content["{{page.id}}"] = []
     {% for content in page.content -%}
     {% if content is string %}
@@ -126,34 +127,24 @@ else:
     {% endfor %}
     app.layout = html.Div(
         className="layoutWrapper", 
-        children=[html.Div(
-            children=[dcc.Location(
-                id='url', refresh=True),
-        html.Div(
-            className="sideWrapper",
-            children=[
-            {% for page in pages %}
-                dcc.Link(
-                    {%- if loop.first -%}
-                    "",
-                    id="logo",
-                    className="styledLogo",
-                    href="/",
-                    {%- else -%}
-                    "{{page.title}}",
-                    # We will create a webviz-core-components
-                    # component instead of styling dcc.Link's,
-                    # then we can more easily change className to
-                    # selectedButton for current page.
-                    className="styledButton",
-                    id="{{page.id}}",
-                    href="/{{page.id}}",
-                    {%- endif -%}
+        children=[
+            html.Div(
+                children=[
+                    dcc.Location(
+                        id='url', refresh=True),
+                    wcc.Menu(
+                        id="main-menu",
+                        showLogo={{menuOptions.showLogo}},
+                        menuBarPosition="{{menuOptions.barPosition}}",
+                        menuDrawerPosition="{{menuOptions.drawerPosition}}",
+                        initiallyPinned={{menuOptions.initiallyPinned}},
+                        navigationItems={{navigationItems}},
                     )
-                 {{- "" if loop.last else "," -}}
-            {% endfor %}
-            ])]),
-        html.Div(className="pageContent", id="page-content")])
+                ]
+            ),
+            html.Div(className="pageContent", id="page-content")
+        ]
+    )
 
 WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
 
@@ -163,8 +154,28 @@ oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
               Input("url", "pathname"))
 def update_page(pathname):
     pathname = pathname.replace("/", "")
+"""
+@app.callback(dash.dependencies.Output("page-content", "children"),
+              dash.dependencies.Input("main-menu", "url"))
+def update_page(url):
+    pathname = url.replace("/", "")
     if not pathname:
         pathname = list(page_content.keys())[0] 
+    return page_content.get(pathname, "Oooppss... Page not found.")
+"""
+
+@app.callback(dash.dependencies.Output("page-content", "children"),
+              [dash.dependencies.Input("main-menu", "url"), dash.dependencies.Input("url", "pathname")])
+def update_page(url, pathname):
+    ctx = dash.callback_context
+    if ctx.triggered:
+        if ctx.triggered[0]["prop_id"].split('.')[0] == "main-menu":
+            pathname = url.replace("/", "")
+        else:
+            pathname = pathname.replace("/", "")
+        print(pathname)
+        if not pathname:
+            pathname = list(page_content.keys())[0] 
     return page_content.get(pathname, "Oooppss... Page not found.")
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
