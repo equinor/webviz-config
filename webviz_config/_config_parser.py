@@ -350,19 +350,31 @@ class ConfigParser:
                             "Sections can only be defined on the first level"
                             f"{terminal_colors.END}"
                         )
-                    navigation_items.append({
-                        "type": "section",
-                        "title": item["title"],
-                        "icon": item["icon"] if "icon" in item.keys() else None,
-                        "content": self._recursivelyParseNavigationItem(item["content"], level + 1) if "content" in item.keys() else [],
-                    })
+                    navigation_items.append(
+                        {
+                            "type": "section",
+                            "title": item["title"],
+                            "icon": item["icon"] if "icon" in item.keys() else None,
+                            "content": self._recursivelyParseNavigationItem(
+                                item["content"], level + 1
+                            )
+                            if "content" in item.keys()
+                            else [],
+                        }
+                    )
                 elif item["type"] == "group":
-                    navigation_items.append({
-                        "type": "group",
-                        "title": item["title"],
-                        "icon": item["icon"] if "icon" in item.keys() else None,
-                        "content": self._recursivelyParseNavigationItem(item["content"], level + 1) if "content" in item.keys() else [],
-                    })
+                    navigation_items.append(
+                        {
+                            "type": "group",
+                            "title": item["title"],
+                            "icon": item["icon"] if "icon" in item.keys() else None,
+                            "content": self._recursivelyParseNavigationItem(
+                                item["content"], level + 1
+                            )
+                            if "content" in item.keys()
+                            else [],
+                        }
+                    )
             else:
                 if "title" not in item:
                     raise ParserError(
@@ -396,12 +408,14 @@ class ConfigParser:
 
                 self.configuration["pageContents"].append(item)
 
-                navigation_items.append({
-                    "type": "page",
-                    "title": item["title"],
-                    "href": "/" + item["id"],
-                    "icon": item["icon"] if "icon" in item.keys() else None,
-                })
+                navigation_items.append(
+                    {
+                        "type": "page",
+                        "title": item["title"],
+                        "href": "/" + item["id"],
+                        "icon": item["icon"] if "icon" in item.keys() else None,
+                    }
+                )
 
                 plugins = [e for e in item["content"] if isinstance(e, dict)]
                 for plugin in plugins:
@@ -420,12 +434,12 @@ class ConfigParser:
                         )
 
                     plugin["_call_signature"] = _call_signature(
-                        plugin_name,
-                        kwargs,
-                        self._config_folder,
+                        plugin_name, kwargs, self._config_folder,
                     )
 
-                    self._assets.update(getattr(webviz_config.plugins, plugin_name).ASSETS)
+                    self._assets.update(
+                        getattr(webviz_config.plugins, plugin_name).ASSETS
+                    )
                     self._plugin_metadata[
                         plugin_name
                     ] = webviz_config.plugins.PLUGIN_METADATA[plugin_name]
@@ -436,32 +450,44 @@ class ConfigParser:
         if "menu" not in self.configuration:
             self.configuration["menu"] = {}
 
-        self.configuration["navigationItems"] = self._recursivelyParseNavigationItem(self.configuration["pages"], 0)
+        self.configuration["navigationItems"] = self._recursivelyParseNavigationItem(
+            self.configuration["pages"], 0
+        )
         if "menuOptions" in self.configuration:
 
             if "barPosition" not in self.configuration["menuOptions"]:
                 self.configuration["menuOptions"]["barPosition"] = "left"
-            elif self.configuration["menuOptions"]["barPosition"] not in ["left", "top", "right", "bottom"]:
+            elif self.configuration["menuOptions"]["barPosition"] not in [
+                "left",
+                "top",
+                "right",
+                "bottom",
+            ]:
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     f"Invalid option for menuOptions > barPosition: {self.configuration['menuOptions']['barPosition']}. "
                     "Please select one of the following options: left, top, right, bottom."
                     f"{terminal_colors.END}"
                 )
-            
+
             if "drawerPosition" not in self.configuration["menuOptions"]:
                 self.configuration["menuOptions"]["drawerPosition"] = "left"
-            elif self.configuration["menuOptions"]["drawerPosition"] not in ["left", "right"]:
+            elif self.configuration["menuOptions"]["drawerPosition"] not in [
+                "left",
+                "right",
+            ]:
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     f"Invalid option for menuOptions > drawerPosition: {self.configuration['menuOptions']['drawerPosition']}. "
                     "Please select one of the following options: left, right."
                     f"{terminal_colors.END}"
                 )
-            
+
             if "initiallyPinned" not in self.configuration["menuOptions"]:
                 self.configuration["menuOptions"]["initiallyPinned"] = False
-            elif not isinstance(self.configuration["menuOptions"]["initiallyPinned"], bool):
+            elif not isinstance(
+                self.configuration["menuOptions"]["initiallyPinned"], bool
+            ):
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
                     f"Invalid option for menuOptions > initiallyPinned: {self.configuration['menuOptions']['initiallyPinned']}. "

@@ -150,20 +150,6 @@ WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
 
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
-@app.callback(Output("page-content", "children"),
-              Input("url", "pathname"))
-def update_page(pathname):
-    pathname = pathname.replace("/", "")
-"""
-@app.callback(dash.dependencies.Output("page-content", "children"),
-              dash.dependencies.Input("main-menu", "url"))
-def update_page(url):
-    pathname = url.replace("/", "")
-    if not pathname:
-        pathname = list(page_content.keys())[0] 
-    return page_content.get(pathname, "Oooppss... Page not found.")
-"""
-
 @app.callback(dash.dependencies.Output("page-content", "children"),
               [dash.dependencies.Input("main-menu", "url"), dash.dependencies.Input("url", "pathname")])
 def update_page(url, pathname):
