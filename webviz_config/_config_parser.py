@@ -318,7 +318,7 @@ class ConfigParser:
         if "pageContents" not in self.configuration:
             self.configuration["pageContents"] = []
 
-        self._parseNavigation()
+        self._parse_navigation()
 
     @property
     def configuration(self) -> dict:
@@ -339,7 +339,8 @@ class ConfigParser:
         """
         return self._plugin_metadata
 
-    def _recursivelyParseNavigationItem(self, items: dict, level: int) -> list:
+    def _recursively_parse_navigation_item(self, items: dict, level: int) -> list:
+        # pylint: disable=too-many-branches,too-many-statements
         navigation_items: list = []
         for item_number, item in enumerate(items):
             if "type" in item:
@@ -355,7 +356,7 @@ class ConfigParser:
                             "type": "section",
                             "title": item["title"],
                             "icon": item["icon"] if "icon" in item.keys() else None,
-                            "content": self._recursivelyParseNavigationItem(
+                            "content": self._recursively_parse_navigation_item(
                                 item["content"], level + 1
                             )
                             if "content" in item.keys()
@@ -368,7 +369,7 @@ class ConfigParser:
                             "type": "group",
                             "title": item["title"],
                             "icon": item["icon"] if "icon" in item.keys() else None,
-                            "content": self._recursivelyParseNavigationItem(
+                            "content": self._recursively_parse_navigation_item(
                                 item["content"], level + 1
                             )
                             if "content" in item.keys()
@@ -447,12 +448,12 @@ class ConfigParser:
                     ] = webviz_config.plugins.PLUGIN_METADATA[plugin_name]
         return navigation_items
 
-    def _parseNavigation(self) -> None:
+    def _parse_navigation(self) -> None:
         """Returns a list of navigation items"""
         if "menu" not in self.configuration:
             self.configuration["menu"] = {}
 
-        self.configuration["navigationItems"] = self._recursivelyParseNavigationItem(
+        self.configuration["navigationItems"] = self._recursively_parse_navigation_item(
             self.configuration["pages"], 0
         )
         if "menuOptions" in self.configuration:
@@ -467,7 +468,8 @@ class ConfigParser:
             ]:
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    f"Invalid option for menuOptions > barPosition: {self.configuration['menuOptions']['barPosition']}. "
+                    "Invalid option for menuOptions > barPosition: "
+                    f"{self.configuration['menuOptions']['barPosition']}. "
                     "Please select one of the following options: left, top, right, bottom."
                     f"{terminal_colors.END}"
                 )
@@ -480,7 +482,8 @@ class ConfigParser:
             ]:
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    f"Invalid option for menuOptions > drawerPosition: {self.configuration['menuOptions']['drawerPosition']}. "
+                    "Invalid option for menuOptions > drawerPosition: "
+                    f"{self.configuration['menuOptions']['drawerPosition']}. "
                     "Please select one of the following options: left, right."
                     f"{terminal_colors.END}"
                 )
@@ -492,7 +495,8 @@ class ConfigParser:
             ):
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    f"Invalid option for menuOptions > initiallyPinned: {self.configuration['menuOptions']['initiallyPinned']}. "
+                    "Invalid option for menuOptions > initiallyPinned: "
+                    f"{self.configuration['menuOptions']['initiallyPinned']}. "
                     "Please select a boolean value: True, False"
                     f"{terminal_colors.END}"
                 )
@@ -502,7 +506,8 @@ class ConfigParser:
             elif not isinstance(self.configuration["menuOptions"]["showLogo"], bool):
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    f"Invalid option for menuOptions > initiallyPinned: {self.configuration['menuOptions']['showLogo']}. "
+                    "Invalid option for menuOptions > initiallyPinned: "
+                    f"{self.configuration['menuOptions']['showLogo']}. "
                     "Please select a boolean value: True, False"
                     f"{terminal_colors.END}"
                 )
