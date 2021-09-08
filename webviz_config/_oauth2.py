@@ -74,9 +74,9 @@ class Oauth2:
                 code=code, scopes=[self._scope], redirect_uri=redirect_uri
             )
             expires_in = tokens_result.get("expires_in")
-            expiration_date = datetime.datetime.now() + datetime.timedelta(
-                seconds=expires_in - 60
-            )
+            expiration_date = datetime.datetime.now(
+                datetime.timezone.utc
+            ) + datetime.timedelta(seconds=expires_in - 60)
             print("Access token expiration date:", expiration_date)
 
             # Set expiration date in the session
@@ -127,7 +127,7 @@ class Oauth2:
     def check_and_set_token_expiry(self) -> None:
         if flask.session.get("access_token"):
             expiration_date = flask.session["expiration_date"]
-            current_date = datetime.datetime.now()
+            current_date = datetime.datetime.now(datetime.timezone.utc)
             if current_date > expiration_date:
                 # Access token has expired
                 print("Access token has expired.")
@@ -137,9 +137,9 @@ class Oauth2:
                     scopes=[self._scope], account=self._accounts[0]
                 )
                 expires_in = renewed_tokens_result.get("expires_in")
-                new_expiration_date = datetime.datetime.now() + datetime.timedelta(
-                    seconds=expires_in - 60
-                )
+                new_expiration_date = datetime.datetime.now(
+                    datetime.timezone.utc
+                ) + datetime.timedelta(seconds=expires_in - 60)
                 print("New access token expiration date:", new_expiration_date)
 
                 # Set new expiration date in the session
