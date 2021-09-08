@@ -453,14 +453,14 @@ class ConfigParser:
         if "menu" not in self.configuration:
             self.configuration["menu"] = {}
 
-        self.configuration["navigationItems"] = self._recursively_parse_navigation_item(
+        self.configuration["navigation_items"] = self._recursively_parse_navigation_item(
             self.configuration["pages"], 0
         )
-        if "menuOptions" in self.configuration:
+        if "menu_options" in self.configuration:
 
-            if "barPosition" not in self.configuration["menuOptions"]:
-                self.configuration["menuOptions"]["barPosition"] = "left"
-            elif self.configuration["menuOptions"]["barPosition"] not in [
+            if "bar_position" not in self.configuration["menu_options"]:
+                self.configuration["menu_options"]["bar_position"] = "left"
+            elif self.configuration["menu_options"]["bar_position"] not in [
                 "left",
                 "top",
                 "right",
@@ -468,52 +468,52 @@ class ConfigParser:
             ]:
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    "Invalid option for menuOptions > barPosition: "
-                    f"{self.configuration['menuOptions']['barPosition']}. "
+                    "Invalid option for menu_options > bar_position: "
+                    f"{self.configuration['menu_options']['bar_position']}. "
                     "Please select one of the following options: left, top, right, bottom."
                     f"{terminal_colors.END}"
                 )
 
-            if "drawerPosition" not in self.configuration["menuOptions"]:
-                self.configuration["menuOptions"]["drawerPosition"] = "left"
-            elif self.configuration["menuOptions"]["drawerPosition"] not in [
+            if "drawer_position" not in self.configuration["menu_options"]:
+                self.configuration["menu_options"]["drawer_position"] = "left"
+            elif self.configuration["menu_options"]["drawer_position"] not in [
                 "left",
                 "right",
             ]:
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    "Invalid option for menuOptions > drawerPosition: "
-                    f"{self.configuration['menuOptions']['drawerPosition']}. "
+                    "Invalid option for menu_options > drawer_position: "
+                    f"{self.configuration['menu_options']['drawer_position']}. "
                     "Please select one of the following options: left, right."
                     f"{terminal_colors.END}"
                 )
 
-            if "initiallyPinned" not in self.configuration["menuOptions"]:
-                self.configuration["menuOptions"]["initiallyPinned"] = False
+            if "initially_pinned" not in self.configuration["menu_options"]:
+                self.configuration["menu_options"]["initially_pinned"] = False
             elif not isinstance(
-                self.configuration["menuOptions"]["initiallyPinned"], bool
+                self.configuration["menu_options"]["initially_pinned"], bool
             ):
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    "Invalid option for menuOptions > initiallyPinned: "
-                    f"{self.configuration['menuOptions']['initiallyPinned']}. "
+                    "Invalid option for menu_options > initially_pinned: "
+                    f"{self.configuration['menu_options']['initially_pinned']}. "
                     "Please select a boolean value: True, False"
                     f"{terminal_colors.END}"
                 )
 
-            if "showLogo" not in self.configuration["menuOptions"]:
-                self.configuration["menuOptions"]["showLogo"] = True
-            elif not isinstance(self.configuration["menuOptions"]["showLogo"], bool):
+            if "show_logo" not in self.configuration["menu_options"]:
+                self.configuration["menu_options"]["show_logo"] = True
+            elif not isinstance(self.configuration["menu_options"]["show_logo"], bool):
                 raise ParserError(
                     f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    "Invalid option for menuOptions > initiallyPinned: "
-                    f"{self.configuration['menuOptions']['showLogo']}. "
+                    "Invalid option for menu_options > initially_pinned: "
+                    f"{self.configuration['menu_options']['show_logo']}. "
                     "Please select a boolean value: True, False"
                     f"{terminal_colors.END}"
                 )
         else:
-            self.configuration["menuOptions"] = {}
-            self.configuration["menuOptions"]["barPosition"] = "left"
-            self.configuration["menuOptions"]["drawerPosition"] = "left"
-            self.configuration["menuOptions"]["initiallyPinned"] = False
-            self.configuration["menuOptions"]["showLogo"] = True
+            self.configuration["menu_options"] = {}
+            self.configuration["menu_options"]["bar_position"] = "left"
+            self.configuration["menu_options"]["drawer_position"] = "left"
+            self.configuration["menu_options"]["initially_pinned"] = False
+            self.configuration["menu_options"]["show_logo"] = True

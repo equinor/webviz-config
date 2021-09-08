@@ -13,26 +13,58 @@ JSON_SCHEMA = {
     "properties": {
         "title": {"description": "Title of your Webviz application.", "type": "string"},
         "shared_settings": {"type": "object"},
+        "menu_options": {
+            "description": "Define the menu options.",
+            "type": "object", 
+            "properties": {
+                "show_logo": {"description": "State if a logo shall be shown in the menu.", "type": "boolean"}, 
+                "bar_position": {"description": "Define where the menu bar shall be positioned: left, top, right, bottom.", "type": "string"}, 
+                "drawer_position": {"description": "Define where the menu drawer shall be positioned: left or right.", "type": "string"}, 
+                "initially_pinned": {"description": "State if the menu shall be pinned when initially showing.", "type": "boolean"}
+            },
+            "additionalProperties": False,
+        },
         "pages": {
-            "description": "Define the pages in your Webviz application.",
+            "description": "Define the pages (and potential sections and groups) in your Webviz application.",
             "type": "array",
             "minLength": 1,
             "items": {
+                "$id": "pagesItem",
                 "type": "object",
-                "properties": {
-                    "title": {"description": "Title of the page", "type": "string"},
-                    "content": {
-                        "description": "Content on the page",
-                        "type": "array",
-                        "items": {
-                            "oneOf": [
-                                {"type": "string"},
-                            ]
+                "oneOf": [
+                    {
+                        "properties": {
+                            "^type$": {"description": "Defines if this is a section or group (valid values: 'section' or 'group'). If not given, this is a normal page.", "type": "string"},
+                            "title": {"description": "Title of the section or group", "type": "string"},
+                            "content": {
+                                "description": "Define the pages (and potential subgroups) of this group or section.",
+                                "type": "array",
+                                "minLength": 1,
+                                "items": {
+                                    "$ref": "pagesItems",
+                                },
+                            },
                         },
+                        "required": ["title", "content", "type"],
+                        "additionalProperties": False,
                     },
-                },
-                "required": ["title", "content"],
-                "additionalProperties": False,
+                    {
+                        "properties": {
+                            "title": {"description": "Title of the page", "type": "string"},
+                            "content": {
+                                "description": "Content on the page",
+                                "type": "array",
+                                "items": {
+                                    "oneOf": [
+                                        {"type": "string"},
+                                    ]
+                                },
+                            },
+                        },
+                        "required": ["title", "content"],
+                        "additionalProperties": False,
+                    },
+                ],
             },
         },
     },
@@ -74,7 +106,7 @@ def create_schema() -> dict:
 
     # fmt: off
     content_schemas = json_schema["properties"]["pages"][  # type: ignore
-        "items"]["properties"]["content"]["items"]["oneOf"]
+        "items"]["oneOf"][1]["properties"]["content"]["items"]["oneOf"]
     # fmt: on
 
     for package_doc in get_plugin_documentation().values():

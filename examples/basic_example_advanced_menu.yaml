@@ -3,12 +3,11 @@
 
 title: Reek Webviz Demonstration
 
-menuOptions:
-  logo: ./webviz-logo.svg
-  logoSmall: ./webviz-logo.svg
-  barPosition: left
-  drawerPosition: left
-  initiallyPinned: False
+menu_options:
+  show_logo: True
+  bar_position: left
+  drawer_position: left
+  initially_pinned: True
 
 pages:
  - type: section
