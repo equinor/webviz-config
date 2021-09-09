@@ -15,12 +15,24 @@ JSON_SCHEMA = {
         "shared_settings": {"type": "object"},
         "menu_options": {
             "description": "Define the menu options.",
-            "type": "object", 
+            "type": "object",
             "properties": {
-                "show_logo": {"description": "State if a logo shall be shown in the menu.", "type": "boolean"}, 
-                "bar_position": {"description": "Define where the menu bar shall be positioned: left, top, right, bottom.", "type": "string"}, 
-                "drawer_position": {"description": "Define where the menu drawer shall be positioned: left or right.", "type": "string"}, 
-                "initially_pinned": {"description": "State if the menu shall be pinned when initially showing.", "type": "boolean"}
+                "show_logo": {
+                    "description": "State if a logo shall be shown in the menu.",
+                    "type": "boolean",
+                },
+                "bar_position": {
+                    "description": "Define where the menu bar shall be positioned: left, top, right, bottom.",
+                    "type": "string",
+                },
+                "drawer_position": {
+                    "description": "Define where the menu drawer shall be positioned: left or right.",
+                    "type": "string",
+                },
+                "initially_pinned": {
+                    "description": "State if the menu shall be pinned when initially showing.",
+                    "type": "boolean",
+                },
             },
             "additionalProperties": False,
         },
@@ -34,8 +46,14 @@ JSON_SCHEMA = {
                 "oneOf": [
                     {
                         "properties": {
-                            "^type$": {"description": "Defines if this is a section or group (valid values: 'section' or 'group'). If not given, this is a normal page.", "type": "string"},
-                            "title": {"description": "Title of the section or group", "type": "string"},
+                            "^type$": {
+                                "description": "Defines if this is a section or group (valid values: 'section' or 'group'). If not given, this is a normal page.",
+                                "type": "string",
+                            },
+                            "title": {
+                                "description": "Title of the section or group",
+                                "type": "string",
+                            },
                             "content": {
                                 "description": "Define the pages (and potential subgroups) of this group or section.",
                                 "type": "array",
@@ -50,7 +68,10 @@ JSON_SCHEMA = {
                     },
                     {
                         "properties": {
-                            "title": {"description": "Title of the page", "type": "string"},
+                            "title": {
+                                "description": "Title of the page",
+                                "type": "string",
+                            },
                             "content": {
                                 "description": "Content on the page",
                                 "type": "array",

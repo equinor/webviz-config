@@ -453,9 +453,9 @@ class ConfigParser:
         if "menu" not in self.configuration:
             self.configuration["menu"] = {}
 
-        self.configuration["navigation_items"] = self._recursively_parse_navigation_item(
-            self.configuration["pages"], 0
-        )
+        self.configuration[
+            "navigation_items"
+        ] = self._recursively_parse_navigation_item(self.configuration["pages"], 0)
         if "menu_options" in self.configuration:
 
             if "bar_position" not in self.configuration["menu_options"]:
