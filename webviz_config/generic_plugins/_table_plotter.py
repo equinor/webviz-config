@@ -18,7 +18,7 @@ from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
 
-# pylint: disable=too-many-instance-attributes, too-many-arguments
+# pylint: disable=too-many-arguments
 class TablePlotter(WebvizPluginABC):
     """Adds a plotter to the webviz instance, using tabular data from a provided csv file.
 If feature is requested, the data could also come from a database.
@@ -62,9 +62,7 @@ If feature is requested, the data could also come from a database.
         self.set_filters(filter_cols)
         self.columns = list(self.data.columns)
         self.numeric_columns = list(
-            self.data.select_dtypes(  # PyCQA/pylint#4577 # pylint: disable=no-member
-                include=[np.number]
-            ).columns
+            self.data.select_dtypes(include=[np.number]).columns
         )
         self.filter_defaults = filter_defaults
         self.column_color_discrete_maps = column_color_discrete_maps

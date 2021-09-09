@@ -294,7 +294,7 @@ class ConfigParser:
         return page_id
 
     def clean_configuration(self) -> None:
-        # pylint: disable=too-many-branches,too-many-statements
+        # pylint: disable=too-many-branches
         """Various cleaning and checks of the raw configuration read
         from the user provided yaml configuration file.
         """

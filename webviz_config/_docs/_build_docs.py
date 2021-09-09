@@ -21,7 +21,6 @@ from typing import Any, Dict, Optional, Tuple, List
 
 try:
     # Python 3.8+
-    # pylint: disable=ungrouped-imports
     from typing import TypedDict  # type: ignore
 except (ImportError, ModuleNotFoundError):
     # Python < 3.8

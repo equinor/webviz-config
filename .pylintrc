@@ -1,6 +1,7 @@
 [MESSAGES CONTROL]
 
 disable = bad-continuation, missing-docstring, duplicate-code, unspecified-encoding
+enable = useless-suppression
 
 [DESIGN]
 
