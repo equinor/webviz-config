@@ -41,6 +41,7 @@
 body {
   line-height: 1.6;
   font-weight: 400;
+  font-size: 16px;
   font-family: var(--menuLinkFont);
   color: #323232;
 }
