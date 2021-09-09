@@ -22,11 +22,13 @@ JSON_SCHEMA = {
                     "type": "boolean",
                 },
                 "bar_position": {
-                    "description": "Define where the menu bar shall be positioned: left, top, right, bottom.",
+                    "description": "Define where the menu bar shall be positioned:"
+                    " left, top, right, bottom.",
                     "type": "string",
                 },
                 "drawer_position": {
-                    "description": "Define where the menu drawer shall be positioned: left or right.",
+                    "description": "Define where the menu drawer shall be positioned:"
+                    " left or right.",
                     "type": "string",
                 },
                 "initially_pinned": {
@@ -37,7 +39,8 @@ JSON_SCHEMA = {
             "additionalProperties": False,
         },
         "pages": {
-            "description": "Define the pages (and potential sections and groups) in your Webviz application.",
+            "description": "Define the pages (and potential sections and groups)"
+            " in your Webviz application.",
             "type": "array",
             "minLength": 1,
             "items": {
@@ -47,7 +50,8 @@ JSON_SCHEMA = {
                     {
                         "properties": {
                             "^type$": {
-                                "description": "Defines if this is a section or group (valid values: 'section' or 'group'). If not given, this is a normal page.",
+                                "description": "Defines if this is a section or group (valid values"
+                                ": 'section' or 'group'). If not given, this is a normal page.",
                                 "type": "string",
                             },
                             "title": {
@@ -55,7 +59,8 @@ JSON_SCHEMA = {
                                 "type": "string",
                             },
                             "content": {
-                                "description": "Define the pages (and potential subgroups) of this group or section.",
+                                "description": "Define the pages (and potential subgroups)"
+                                " of this group or section.",
                                 "type": "array",
                                 "minLength": 1,
                                 "items": {
