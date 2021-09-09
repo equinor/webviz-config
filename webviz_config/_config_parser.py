@@ -512,8 +512,9 @@ class ConfigParser:
                     f"{terminal_colors.END}"
                 )
         else:
-            self.configuration["menu_options"] = {}
-            self.configuration["menu_options"]["bar_position"] = "left"
-            self.configuration["menu_options"]["drawer_position"] = "left"
-            self.configuration["menu_options"]["initially_pinned"] = False
-            self.configuration["menu_options"]["show_logo"] = True
+            self.configuration["menu_options"] = {
+                "bar_position": "left",
+                "drawer_position": "left",
+                "initially_pinned": False,
+                "show_logo": True,
+            }

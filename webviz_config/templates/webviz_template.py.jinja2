@@ -159,9 +159,8 @@ def update_page(url, pathname):
             pathname = url.replace("/", "")
         else:
             pathname = pathname.replace("/", "")
-        print(pathname)
         if not pathname:
-            pathname = list(page_content.keys())[0] 
+            pathname = next(iter(page_content)) 
     return page_content.get(pathname, "Oooppss... Page not found.")
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
