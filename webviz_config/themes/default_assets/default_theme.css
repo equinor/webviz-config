@@ -17,18 +17,6 @@
 - Clearing
 - Media Queries
 */
-h1, h2, h3, h4, h5, h6, p, a, div, button {
-  font-family: helvetica;
-}
-
-#logo {
-  height: 100px;
-  width: 200px;
-  margin: 20px 0px;
-  background-size: contain;
-  background-image: url("default_logo.svg");
-  background-repeat: no-repeat;
-}
 
 
 /* Style Variables
@@ -49,6 +37,29 @@ h1, h2, h3, h4, h5, h6, p, a, div, button {
   --bannerFontWeight: 700;
 }
 /* csslint ignore:end */
+
+body {
+  line-height: 1.6;
+  font-weight: 400;
+  font-family: var(--menuLinkFont);
+  color: #323232;
+}
+
+#LogoLarge {
+  height: 100px;
+  width: 200px;
+  background-size: contain;
+  background-image: url("default_logo.svg");
+  background-repeat: no-repeat;
+}
+
+#LogoSmall {
+  height: 64px;
+  width: 64px;
+  background-size: contain;
+  background-image: url("default_logo.svg");
+  background-repeat: no-repeat;
+}
 
 /* Plotly.js
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
