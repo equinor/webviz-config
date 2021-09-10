@@ -1,10 +1,9 @@
 import warnings
-import importlib
 from unittest import mock
+import importlib
 
 try:
     # Python 3.8+
-    # pylint: disable=ungrouped-imports
     import importlib.metadata as importlib_metadata
 except ImportError:
     # Python < 3.8

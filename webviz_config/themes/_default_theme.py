@@ -5,7 +5,7 @@ from plotly.io import templates
 
 from webviz_config import WebvizConfigTheme
 
-default_theme = WebvizConfigTheme(theme_name="default")  # pylint: disable=invalid-name
+default_theme = WebvizConfigTheme(theme_name="default")
 
 default_theme.assets = glob.glob(
     str(pathlib.Path(__file__).resolve().parent / "default_assets" / "*")

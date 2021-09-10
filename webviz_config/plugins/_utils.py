@@ -4,7 +4,6 @@ from typing import Any, Dict, Iterable, Optional, Tuple
 
 try:
     # Python 3.8+
-    # pylint: disable=ungrouped-imports
     from typing import TypedDict  # type: ignore
     from importlib.metadata import requires, version, PackageNotFoundError  # type: ignore
 except ImportError:

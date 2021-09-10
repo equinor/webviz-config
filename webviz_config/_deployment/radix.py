@@ -45,7 +45,7 @@ def website_online(url: str) -> bool:
 
 def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) -> None:
     """Creates a Radix configuration file."""
-    # pylint: disable=too-many-statements,too-many-locals
+    # pylint: disable=too-many-statements
 
     if not radix_cli.binary_available():
         raise RuntimeError(
