@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Fixed
+- [#498](https://github.com/equinor/webviz-config/pull/498) - Explicitly use UTC when comparing time zones in the `OAuth` implementation.
+
 ## [0.3.4] - 2021-08-30
 
 ### Fixed
