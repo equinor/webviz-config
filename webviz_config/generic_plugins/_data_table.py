@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
-import dash_table
+from dash import dash_table
 
 from .. import WebvizPluginABC
 from ..webviz_store import webvizstore

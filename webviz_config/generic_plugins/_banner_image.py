@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-import dash_html_components as html
+from dash import html
 
 from .. import WebvizPluginABC
 from ..webviz_assets import WEBVIZ_ASSETS

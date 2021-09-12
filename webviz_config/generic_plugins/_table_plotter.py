@@ -7,10 +7,7 @@ from typing import Optional, List, Dict, Any
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import dash_html_components as html
-import dash_core_components as dcc
-from dash.dependencies import Input, Output
-from dash import Dash
+from dash import html, dcc, Input, Output, Dash
 import webviz_core_components as wcc
 
 from .. import WebvizPluginABC, WebvizSettings, EncodedFile

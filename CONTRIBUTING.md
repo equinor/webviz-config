@@ -20,7 +20,7 @@ Of the three things mentioned above, it is only the `layout` proprety that is
 mandatory to provide. A minimal plugin could look like:
 
 ```python
-import dash_html_components as html
+from dash import html
 
 from webviz_config import WebvizPluginABC
 
@@ -81,8 +81,7 @@ backend, you can add callbacks. A simple example of this is given below.
 ```python
 from uuid import uuid4
 
-import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash import html, Input, Output
 from webviz_config import WebvizPluginABC
 
 
@@ -191,7 +190,7 @@ Since the plugins are reusable and generic, they usually take in some
 user provided arguments. A minimal example could look like:
 
 ```python
-import dash_html_components as html
+from dash import html
 from webviz_config import WebvizPluginABC
 
 
