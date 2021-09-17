@@ -59,7 +59,9 @@ If feature is requested, the data could also come from a database.
         self.set_filters(filter_cols)
         self.columns = list(self.data.columns)
         self.numeric_columns = list(
-            self.data.select_dtypes(include=[np.number]).columns
+            self.data.select_dtypes(  # pylint: disable=no-member
+                include=[np.number]
+            ).columns
         )
         self.filter_defaults = filter_defaults
         self.column_color_discrete_maps = column_color_discrete_maps
@@ -210,7 +212,7 @@ If feature is requested, the data could also come from a database.
         df = self.data
         dropdowns = [html.H4("Set filters")]
         for col in self.filter_cols:
-            if df[col].dtype == np.float64 or df[col].dtype == np.int64:
+            if df[col].dtype in [np.float64, np.int64]:
                 min_val = df[col].min()
                 max_val = df[col].max()
                 mean_val = df[col].mean()
@@ -436,7 +438,7 @@ def filter_dataframe(
         columns = [columns]
     for filt, col in zip(column_values, columns):
         if isinstance(filt, list):
-            if df[col].dtype == np.float64 or df[col].dtype == np.int64:
+            if df[col].dtype in [np.float64, np.int64]:
                 df = df.loc[df[col].between(filt[0], filt[1])]
             else:
                 df = df.loc[df[col].isin(filt)]
