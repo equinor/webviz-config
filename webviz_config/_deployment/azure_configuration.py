@@ -56,6 +56,7 @@ def azure_configuration() -> Dict[str, str]:
         azure_cli.storage_container_exists,
         account_name=storage_account_name,
         subscription=subscription,
+        resource_group=resource_group,
     )
 
     interactive_terminal.terminal_title("Azure storage container")
@@ -68,17 +69,21 @@ def azure_configuration() -> Dict[str, str]:
 
     if not storage_container_exists(storage_container_name):
         azure_cli.create_storage_container(
-            subscription,
-            storage_account_name,
-            storage_container_name,
+            subscription=subscription,
+            resource_group=resource_group,
+            storage_account=storage_account_name,
+            container=storage_container_name,
         )
         print(f"✓ Created storage container '{storage_container_name}'.")
 
     return {
         "subscription": subscription,
+        "resource_group": resource_group,
         "storage_account_name": storage_account_name,
         "storage_account_key_secret": azure_cli.get_storage_account_access_key(
-            subscription, storage_account_name
+            subscription=subscription,
+            resource_group=resource_group,
+            account_name=storage_account_name,
         ),
         "storage_container_name": storage_container_name,
         "display_name": display_name,
