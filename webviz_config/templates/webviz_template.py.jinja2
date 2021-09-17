@@ -11,9 +11,7 @@ import threading
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
 
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import html, dcc, Dash, Input, Output
 from flask_talisman import Talisman
 import webviz_config
 import webviz_config.plugins
@@ -35,7 +33,7 @@ logging.basicConfig(level=logging.{{ loglevel }})
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
 
-app = dash.Dash(
+app = Dash(
     name=__name__,
     external_stylesheets=theme.external_stylesheets,
     assets_folder=Path("resources") / "assets",
@@ -161,8 +159,8 @@ WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
 
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
-@app.callback(dash.dependencies.Output("page-content", "children"),
-              dash.dependencies.Input("url", "pathname"))
+@app.callback(Output("page-content", "children"),
+              Input("url", "pathname"))
 def update_page(pathname):
     pathname = pathname.replace("/", "")
     if not pathname:

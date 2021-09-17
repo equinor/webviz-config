@@ -10,7 +10,7 @@ from typing import List, Optional, Type, Union, Dict
 
 import bleach
 from dash.development.base_component import Component
-from dash.dependencies import Input, Output
+from dash import Input, Output
 import jinja2
 import webviz_core_components as wcc
 
