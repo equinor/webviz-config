@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - [#503](https://github.com/equinor/webviz-config/pull/503) - Added `__main__.py`. This will allow users to do `python -m webviz_config [...]` in addition to `webviz [...]`.
+- [#510](https://github.com/equinor/webviz-config/pull/510) - Added command line option `--debug` which enables selected underlying Dash development features.
 
 ## [0.3.4] - 2021-08-30
 

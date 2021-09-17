@@ -59,7 +59,13 @@ def main() -> None:
         "Selecting e.g. INFO will show all log events of level INFO or higher "
         "(WARNING, ERROR and CRITICAL). Default level is WARNING.",
     )
-
+    parser_build.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable underlying Dash debug tools "
+        "(UI with callback graph and errors, use development JavaScript "
+        "bundles, validate types/values given to Dash component props).",
+    )
     parser_build.add_argument(
         "--logconfig",
         type=pathlib.Path,

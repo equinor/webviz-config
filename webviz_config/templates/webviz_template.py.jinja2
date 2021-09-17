@@ -194,6 +194,11 @@ if __name__ == "__main__":
         dev_tools_hot_reload_interval=1.0,
         dev_tools_silence_routes_logging=False,
       {% endif %}
+      {% if debug %}
+        dev_tools_ui=True,
+        dev_tools_props_check=True,
+        dev_tools_serve_dev_bundles=True,
+      {% endif %}        
     )
 else:
     # This will be applied if not running on localhost
