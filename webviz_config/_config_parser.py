@@ -153,18 +153,13 @@ def _call_signature(
             if deprecation.argument_name in kwargs_including_defaults.keys():
                 argument_deprecation_warnings.append(deprecation.short_message)
                 warnings.warn(
-                    """Deprecated Argument: '{}' with value '{}' in plugin '{}'
-------------------------
-{}
-===
-{}
-""".format(
-                        deprecation.argument_name,
-                        kwargs_including_defaults[deprecation.argument_name],
-                        plugin_name,
-                        deprecation.short_message,
-                        deprecation.long_message,
-                    ),
+                    f"Deprecated Argument: '{deprecation.argument_name}' with value "
+                    f"'{kwargs_including_defaults[deprecation.argument_name]}' "
+                    f"in plugin '{plugin_name}\n'"
+                    "------------------------\n"
+                    f"{deprecation.short_message}\n"
+                    "===\n"
+                    f"{deprecation.long_message}",
                     FutureWarning,
                 )
         elif isinstance(deprecation, _ds.DeprecatedArgumentCheck):
@@ -178,23 +173,18 @@ def _call_signature(
             result = deprecation.callback(**mapped_args)  # type: ignore
             if result:
                 argument_deprecation_warnings.append(result[0])
+                _values = [
+                    value
+                    for key, value in kwargs_including_defaults.items()
+                    if key in deprecation.argument_names
+                ]
                 warnings.warn(
-                    """Deprecated Argument(s): '{}' with value(s) '{}' in plugin '{}'
-------------------------
-{}
-===
-{}
-""".format(
-                        deprecation.argument_names,
-                        [
-                            value
-                            for key, value in kwargs_including_defaults.items()
-                            if key in deprecation.argument_names
-                        ],
-                        plugin_name,
-                        result[0],
-                        result[1],
-                    ),
+                    f"Deprecated Argument(s): '{deprecation.argument_names}' "
+                    f"with value(s) '{_values}' in plugin '{plugin_name}'\n"
+                    "------------------------\n"
+                    f"{result[0]}\n"
+                    "===\n"
+                    f"{result[1]}",
                     FutureWarning,
                 )
 
