@@ -3,15 +3,15 @@
 
 title: Reek Webviz Demonstration
 
-menu_options:
-  show_logo: True
-  bar_position: left
-  drawer_position: left
-  initially_pinned: True
+options:
+  menu:
+    show_logo: True
+    bar_position: left
+    drawer_position: left
+    initially_pinned: True
 
-pages:
- - type: section
-   title: Section
+layout:
+ - section: Section
    content:
     - title: Front page
       icon: home
@@ -22,8 +22,7 @@ pages:
        - Webviz created from configuration file.
        - Some other text, potentially with strange letters like Åre, Smørbukk Sør.
 
-    - type: group
-      title: Other
+    - group: Other
       icon: label
       content:
       - title: Markdown example
@@ -31,7 +30,7 @@ pages:
          - Markdown:
              markdown_file: ./example-markdown.md
       
-      - title: PDF example
+      - page: PDF example
         content:
          - EmbedPdf:
              pdf_file: ./example.pdf
@@ -41,8 +40,7 @@ pages:
          - SyntaxHighlighter:
              filename: ./basic_example.yaml
 
-    - type: group
-      title: Tables
+    - group: Tables
       icon: table_chart
       content:
       - title: Table example
@@ -50,7 +48,7 @@ pages:
          - DataTable:
              csv_file: ./example_data.csv
       
-      - title: Plot a table
+      - page: Plot a table
         content:
          - TablePlotter:
              csv_file: ./example_data.csv
@@ -81,7 +79,7 @@ pages:
                phone: +47 12345678
                email: some@email.com
       
-      - title: Plot a table (locked)
+      - page: Plot a table (locked)
         content:
          - TablePlotter:
              csv_file: ./example_data.csv
@@ -96,7 +94,7 @@ pages:
                phone: 12345678
                email: someother@email.com
       
-      - title: Pivot Table
+      - page: Pivot Table
         content:
          - PivotTable:
              csv_file: ./example_data.csv

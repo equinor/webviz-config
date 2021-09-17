@@ -44,7 +44,6 @@ JSON_SCHEMA = {
             "type": "array",
             "minLength": 1,
             "items": {
-                "$id": "pagesItem",
                 "type": "object",
                 "oneOf": [
                     {
@@ -63,9 +62,7 @@ JSON_SCHEMA = {
                                 " of this group or section.",
                                 "type": "array",
                                 "minLength": 1,
-                                "items": {
-                                    "$ref": "pagesItems",
-                                },
+                                "items": {"$ref": "#/properties/pages/items",},
                             },
                         },
                         "required": ["title", "content", "type"],
@@ -80,11 +77,7 @@ JSON_SCHEMA = {
                             "content": {
                                 "description": "Content on the page",
                                 "type": "array",
-                                "items": {
-                                    "oneOf": [
-                                        {"type": "string"},
-                                    ]
-                                },
+                                "items": {"oneOf": [{"type": "string"},]},
                             },
                         },
                         "required": ["title", "content"],
