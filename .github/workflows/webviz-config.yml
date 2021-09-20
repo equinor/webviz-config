@@ -45,8 +45,13 @@ jobs:
       - name: 📦 Install webviz-config with dependencies
         run: |
           pip install --upgrade pip
-          pip install . .[deployment]
+          pip install .
           pip install --pre --upgrade webviz-core-components  # Testing against our latest release (including pre-releases)
+
+      - name: 📦 Install extra deployment dependencies
+        if: matrix.python-version != '3.6' # Check tests pass also without optional dependencies
+        run: |
+          pip install .[deployment]
 
       - name: 📦 Install test dependencies
         run: |
