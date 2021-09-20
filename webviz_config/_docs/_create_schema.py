@@ -1,6 +1,5 @@
 import copy
 import pathlib
-import json
 from typing import Any
 
 from ._build_docs import get_plugin_documentation
