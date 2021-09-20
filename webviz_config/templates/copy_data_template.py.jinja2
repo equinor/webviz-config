@@ -69,7 +69,7 @@ WEBVIZ_FACTORY_REGISTRY.initialize(app_instance_info, factory_settings_dict)
 
 plugins = []
 
-{% for page in pages %}
+{% for page in pageContents %}
 {% for content in page.content %}
 {% if content is not string %}
 plugins.append(webviz_config.plugins.{{ content._call_signature[0] }})
