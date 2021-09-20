@@ -23,5 +23,5 @@ def test_portable(dash_duo, tmp_path):
         "plot-a-table",
         "pivot-table",
     ]:
-        dash_duo.wait_for_element(f"#{page}").click()
+        dash_duo.wait_for_element(f"a[href='/{page}']").click()
     assert dash_duo.get_logs() == [], "browser console should contain no error"
