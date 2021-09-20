@@ -6,7 +6,8 @@ def test_portable(dash_duo, tmp_path):
     # Build a portable webviz from config file
     appdir = tmp_path / "app"
     subprocess.call(  # nosec
-        ["webviz", "build", "basic_example.yaml", "--portable", appdir], cwd="examples"
+        ["webviz", "build", "basic_example_open_menu.yaml", "--portable", appdir],
+        cwd="examples",
     )
 
     # Import generated app
@@ -23,5 +24,5 @@ def test_portable(dash_duo, tmp_path):
         "plot-a-table",
         "pivot-table",
     ]:
-        dash_duo.wait_for_element(f"a[href=$'/{page}']").click()
+        dash_duo.wait_for_element(f".Menu__Page[href='/{page}']").click()
     assert dash_duo.get_logs() == [], "browser console should contain no error"

@@ -11,7 +11,7 @@ import threading
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
 
-from dash import html, dcc, Dash, Input, Output
+from dash import html, dcc, Dash, Input, Output, callback_context
 import webviz_core_components as wcc
 from flask_talisman import Talisman
 import webviz_config
@@ -131,7 +131,7 @@ else:
             html.Div(
                 children=[
                     dcc.Location(
-                        id='url', refresh=True),
+                        id='location', refresh=True),
                     wcc.Menu(
                         id="main-menu",
                         showLogo={{options.menu.show_logo}},
@@ -151,9 +151,9 @@ WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
 @app.callback(Output("page-content", "children"),
-              [Input("main-menu", "url"), Input("url", "pathname")])
+              [Input("main-menu", "url"), Input("location", "pathname")])
 def update_page(url, pathname):
-    ctx = dash.callback_context
+    ctx = callback_context
     if ctx.triggered:
         if ctx.triggered[0]["prop_id"].split('.')[0] == "main-menu":
             pathname = url.replace("/", "")
