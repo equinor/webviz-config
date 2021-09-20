@@ -299,7 +299,6 @@ class ConfigParser:
         if "title" not in self.configuration:
             self.configuration["title"] = "Webviz - Powered by Dash"
 
-
         if "pages" not in self.configuration and "layout" not in self.configuration:
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
@@ -308,7 +307,9 @@ class ConfigParser:
                 f"{terminal_colors.END}"
             )
 
-        if "pages" in self.configuration and not isinstance(self.configuration["pages"], list):
+        if "pages" in self.configuration and not isinstance(
+            self.configuration["pages"], list
+        ):
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 "The configuration input belonging to the "
@@ -316,7 +317,9 @@ class ConfigParser:
                 f"{terminal_colors.END}"
             )
 
-        if "layout" in self.configuration and not isinstance(self.configuration["layout"], list):
+        if "layout" in self.configuration and not isinstance(
+            self.configuration["layout"], list
+        ):
             raise ParserError(
                 f"{terminal_colors.RED}{terminal_colors.BOLD}"
                 "The configuration input belonging to the "
@@ -437,7 +440,9 @@ class ConfigParser:
                         )
 
                     plugin["_call_signature"] = _call_signature(
-                        plugin_name, kwargs, self._config_folder,
+                        plugin_name,
+                        kwargs,
+                        self._config_folder,
                     )
 
                     self._assets.update(
