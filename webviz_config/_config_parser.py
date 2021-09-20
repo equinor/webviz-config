@@ -284,7 +284,6 @@ class ConfigParser:
         return page_id
 
     def clean_configuration(self) -> None:
-        # pylint: disable=too-many-branches
         """Various cleaning and checks of the raw configuration read
         from the user provided yaml configuration file.
         """
@@ -352,7 +351,6 @@ class ConfigParser:
         return self._plugin_metadata
 
     def _recursively_parse_navigation_item(self, items: dict, level: int) -> list:
-        # pylint: disable=too-many-branches,too-many-statements
         navigation_items: list = []
         for item_number, item in enumerate(items):
             if "section" in item:
@@ -454,6 +452,7 @@ class ConfigParser:
         return navigation_items
 
     def _parse_navigation(self) -> None:
+        # pylint: disable=too-many-branches
         """Returns a list of navigation items"""
 
         if "layout" in self.configuration:
