@@ -3,9 +3,9 @@
 
 title: Reek Webviz Demonstration
 
-pages:
+layout:
 
- - title: Front page
+ - page: Front page
    content:
     - BannerImage:
         image: ./example_banner.png
@@ -13,27 +13,27 @@ pages:
     - Webviz created from configuration file.
     - Some other text, potentially with strange letters like Åre, Smørbukk Sør.
 
- - title: Markdown example
+ - page: Markdown example
    content:
     - Markdown:
         markdown_file: ./example-markdown.md
 
- - title: Table example
+ - page: Table example
    content:
     - DataTable:
         csv_file: ./example_data.csv
 
- - title: PDF example
+ - page: PDF example
    content:
     - EmbedPdf:
         pdf_file: ./example.pdf
 
- - title: Syntax highlighting example
+ - page: Syntax highlighting example
    content:
     - SyntaxHighlighter:
         filename: ./basic_example.yaml
 
- - title: Plot a table
+ - page: Plot a table
    content:
     - TablePlotter:
         csv_file: ./example_data.csv
@@ -64,7 +64,7 @@ pages:
           phone: +47 12345678
           email: some@email.com
 
- - title: Plot a table (locked)
+ - page: Plot a table (locked)
    content:
     - TablePlotter:
         csv_file: ./example_data.csv
@@ -79,7 +79,7 @@ pages:
           phone: 12345678
           email: someother@email.com
 
- - title: Pivot Table
+ - page: Pivot Table
    content:
     - PivotTable:
         csv_file: ./example_data.csv

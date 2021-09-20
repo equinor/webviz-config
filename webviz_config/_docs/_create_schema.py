@@ -1,5 +1,6 @@
 import copy
 import pathlib
+import json
 from typing import Any
 
 from ._build_docs import get_plugin_documentation
@@ -8,86 +9,126 @@ from ._build_docs import get_plugin_documentation
 JSON_SCHEMA = {
     "$id": "https://github.com/equinor/webviz-config",
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Person",
+    "title": "Webviz",
     "type": "object",
     "properties": {
         "title": {"description": "Title of your Webviz application.", "type": "string"},
         "shared_settings": {"type": "object"},
-        "menu_options": {
-            "description": "Define the menu options.",
+        "options": {
             "type": "object",
-            "properties": {
-                "show_logo": {
-                    "description": "State if a logo shall be shown in the menu.",
-                    "type": "boolean",
+            "menu": {
+                "description": "Define the menu options.",
+                "type": "object",
+                "properties": {
+                    "show_logo": {
+                        "description": "State if a logo shall be shown in the menu.",
+                        "type": "boolean",
+                    },
+                    "bar_position": {
+                        "description": "Define where the menu bar shall be positioned:"
+                        " left, top, right, bottom.",
+                        "type": "string",
+                    },
+                    "drawer_position": {
+                        "description": "Define where the menu drawer shall be positioned:"
+                        " left or right.",
+                        "type": "string",
+                    },
+                    "initially_pinned": {
+                        "description": "State if the menu shall be pinned when initially showing.",
+                        "type": "boolean",
+                    },
                 },
-                "bar_position": {
-                    "description": "Define where the menu bar shall be positioned:"
-                    " left, top, right, bottom.",
-                    "type": "string",
-                },
-                "drawer_position": {
-                    "description": "Define where the menu drawer shall be positioned:"
-                    " left or right.",
-                    "type": "string",
-                },
-                "initially_pinned": {
-                    "description": "State if the menu shall be pinned when initially showing.",
-                    "type": "boolean",
-                },
+                "additionalProperties": False,
             },
-            "additionalProperties": False,
         },
-        "pages": {
+        "layout": {
             "description": "Define the pages (and potential sections and groups)"
             " in your Webviz application.",
             "type": "array",
             "minLength": 1,
             "items": {
-                "type": "object",
                 "oneOf": [
                     {
+                        "type": "object",
                         "properties": {
-                            "^type$": {
-                                "description": "Defines if this is a section or group (valid values"
-                                ": 'section' or 'group'). If not given, this is a normal page.",
+                            "section": {
+                                "description": "Title of the section.",
                                 "type": "string",
                             },
-                            "title": {
-                                "description": "Title of the section or group",
+                            "icon": {
+                                "description": "Optionally set an icon for the section.",
                                 "type": "string",
                             },
                             "content": {
                                 "description": "Define the pages (and potential subgroups)"
-                                " of this group or section.",
+                                " of this section.",
                                 "type": "array",
                                 "minLength": 1,
-                                "items": {"$ref": "#/properties/pages/items",},
+                                "items": {
+                                    "type": "object",
+                                    "oneOf": [
+                                        {"$ref": "#/properties/layout/items/oneOf/1"},
+                                        {"$ref": "#/properties/layout/items/oneOf/2"},
+                                    ],
+                                },
                             },
                         },
-                        "required": ["title", "content", "type"],
+                        "required": ["section", "content"],
                         "additionalProperties": False,
                     },
                     {
+                        "type": "object",
                         "properties": {
-                            "title": {
-                                "description": "Title of the page",
+                            "group": {
+                                "description": "Title of the group.",
+                                "type": "string",
+                            },
+                            "icon": {
+                                "description": "Optionally define an icon for the group.",
                                 "type": "string",
                             },
                             "content": {
-                                "description": "Content on the page",
+                                "description": "Content of the group.",
                                 "type": "array",
-                                "items": {"oneOf": [{"type": "string"},]},
+                                "minLength": 1,
+                                "items": {
+                                    "oneOf": [
+                                        {"$ref": "#/properties/layout/items/oneOf/1"},
+                                        {"$ref": "#/properties/layout/items/oneOf/2"},
+                                    ]
+                                },
                             },
                         },
-                        "required": ["title", "content"],
+                        "required": ["group", "content"],
+                        "additionalProperties": False,
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "page": {
+                                "description": "Title of the page.",
+                                "type": "string",
+                            },
+                            "icon": {
+                                "description": "Optionally define an icon for the page.",
+                                "type": "string",
+                            },
+                            "content": {
+                                "description": "Content of the page.",
+                                "type": "array",
+                                "minLength": 1,
+                                "items": {"oneOf": [{"type": "string"}]},
+                            },
+                        },
+                        "required": ["page", "content"],
                         "additionalProperties": False,
                     },
                 ],
             },
         },
     },
-    "required": ["title", "pages"],
+    "required": ["title", "layout"],
     "additionalProperties": False,
 }
 
@@ -124,8 +165,8 @@ def create_schema() -> dict:
     json_schema = copy.deepcopy(JSON_SCHEMA)
 
     # fmt: off
-    content_schemas = json_schema["properties"]["pages"][  # type: ignore
-        "items"]["oneOf"][1]["properties"]["content"]["items"]["oneOf"]
+    content_schemas = json_schema["properties"]["layout"][  # type: ignore
+        "items"]["oneOf"][2]["properties"]["content"]["items"]["oneOf"]
     # fmt: on
 
     for package_doc in get_plugin_documentation().values():
