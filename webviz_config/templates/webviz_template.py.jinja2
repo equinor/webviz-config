@@ -150,8 +150,8 @@ WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
 
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
-@app.callback(dash.dependencies.Output("page-content", "children"),
-              [dash.dependencies.Input("main-menu", "url"), dash.dependencies.Input("url", "pathname")])
+@app.callback(Output("page-content", "children"),
+              [Input("main-menu", "url"), Input("url", "pathname")])
 def update_page(url, pathname):
     ctx = dash.callback_context
     if ctx.triggered:
