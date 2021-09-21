@@ -170,7 +170,7 @@ def _call_signature(
                         mapped_args[arg] = value
                         break
 
-            result = deprecation.callback(**mapped_args)  # type: ignore
+            result = deprecation.callback(**mapped_args)
             if result:
                 argument_deprecation_warnings.append(result[0])
                 _values = [

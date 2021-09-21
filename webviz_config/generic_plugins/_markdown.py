@@ -21,7 +21,7 @@ class _WebvizMarkdownExtension(Extension):
         super().__init__()
 
     def extendMarkdown(self, md: markdown.Markdown) -> None:
-        md.inlinePatterns.register(  # type: ignore[attr-defined]
+        md.inlinePatterns.register(
             item=_MarkdownImageProcessor(IMAGE_LINK_RE, md, self.base_path),
             name="image_link",
             priority=50,

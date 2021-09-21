@@ -92,7 +92,7 @@ class LocalhostToken:
         def _set_cookie_token_in_response(
             response: flask.wrappers.Response,
         ) -> flask.wrappers.Response:
-            if flask.g.get("set_cookie_token", False):  # type: ignore[attr-defined]
+            if flask.g.get("set_cookie_token", False):
                 response.set_cookie(
                     key=f"cookie_token_{self._port}", value=self._cookie_token
                 )
