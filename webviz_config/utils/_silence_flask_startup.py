@@ -26,4 +26,4 @@ def silence_flask_startup() -> None:
     def silent_function(*_args: Any, **_kwargs: Any) -> None:
         pass
 
-    flask.cli.show_server_banner = silent_function  # type: ignore[attr-defined]
+    flask.cli.show_server_banner = silent_function

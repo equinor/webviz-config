@@ -241,7 +241,7 @@ def storage_container_upload_folder(
                 )
 
     async def _upload_blob() -> None:
-        async with ContainerClient.from_connection_string(
+        async with ContainerClient.from_connection_string(  # type: ignore[attr-defined]
             _connection_string(subscription, resource_group, storage_name),
             container_name,
         ) as container_client:
