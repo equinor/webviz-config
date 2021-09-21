@@ -11,7 +11,8 @@ import threading
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
 
-from dash import html, dcc, Dash, Input, Output
+from dash import html, dcc, Dash, Input, Output, callback_context
+import webviz_core_components as wcc
 from flask_talisman import Talisman
 import webviz_config
 import webviz_config.plugins
@@ -111,7 +112,7 @@ if {{ not portable }} and not webviz_config.is_reload_process():
     app.layout = html.Div()
 else:
     page_content = {}
-    {% for page in pages %}
+    {% for page in pageContents %}
     page_content["{{page.id}}"] = []
     {% for content in page.content -%}
     {% if content is string %}
@@ -126,45 +127,40 @@ else:
     {% endfor %}
     app.layout = html.Div(
         className="layoutWrapper", 
-        children=[html.Div(
-            children=[dcc.Location(
-                id='url', refresh=True),
-        html.Div(
-            className="sideWrapper",
-            children=[
-            {% for page in pages %}
-                dcc.Link(
-                    {%- if loop.first -%}
-                    "",
-                    id="logo",
-                    className="styledLogo",
-                    href="/",
-                    {%- else -%}
-                    "{{page.title}}",
-                    # We will create a webviz-core-components
-                    # component instead of styling dcc.Link's,
-                    # then we can more easily change className to
-                    # selectedButton for current page.
-                    className="styledButton",
-                    id="{{page.id}}",
-                    href="/{{page.id}}",
-                    {%- endif -%}
+        children=[
+            html.Div(
+                children=[
+                    dcc.Location(
+                        id='location', refresh=True),
+                    wcc.Menu(
+                        id="main-menu",
+                        showLogo={{options.menu.show_logo}},
+                        menuBarPosition="{{options.menu.bar_position}}",
+                        menuDrawerPosition="{{options.menu.drawer_position}}",
+                        initiallyPinned={{options.menu.initially_pinned}},
+                        navigationItems={{navigation_items}},
                     )
-                 {{- "" if loop.last else "," -}}
-            {% endfor %}
-            ])]),
-        html.Div(className="pageContent", id="page-content")])
+                ]
+            ),
+            html.Div(className="pageContent", id="page-content")
+        ]
+    )
 
 WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
 
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
 @app.callback(Output("page-content", "children"),
-              Input("url", "pathname"))
-def update_page(pathname):
-    pathname = pathname.replace("/", "")
-    if not pathname:
-        pathname = list(page_content.keys())[0] 
+              [Input("main-menu", "url"), Input("location", "pathname")])
+def update_page(url, pathname):
+    ctx = callback_context
+    if ctx.triggered:
+        if ctx.triggered[0]["prop_id"].split('.')[0] == "main-menu":
+            pathname = url.replace("/", "")
+        else:
+            pathname = pathname.replace("/", "")
+        if not pathname:
+            pathname = next(iter(page_content)) 
     return page_content.get(pathname, "Oooppss... Page not found.")
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
