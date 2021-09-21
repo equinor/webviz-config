@@ -13,7 +13,7 @@ options:
 layout:
  - section: Section
    content:
-    - title: Front page
+    - page: Front page
       icon: home
       content:
        - BannerImage:
@@ -25,7 +25,7 @@ layout:
     - group: Other
       icon: label
       content:
-      - title: Markdown example
+      - page: Markdown example
         content:
          - Markdown:
              markdown_file: ./example-markdown.md
@@ -35,7 +35,7 @@ layout:
          - EmbedPdf:
              pdf_file: ./example.pdf
       
-      - title: Syntax highlighting example
+      - page: Syntax highlighting example
         content:
          - SyntaxHighlighter:
              filename: ./basic_example.yaml
@@ -43,7 +43,7 @@ layout:
     - group: Tables
       icon: table_chart
       content:
-      - title: Table example
+      - page: Table example
         content:
          - DataTable:
              csv_file: ./example_data.csv
