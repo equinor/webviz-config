@@ -316,6 +316,13 @@ class ConfigParser:
                 f"{terminal_colors.END}"
             )
 
+        if "pages" in self.configuration:
+            warnings.warn(
+                "The configuration keyword `pages` is going to be deprecated. "
+                "Consider using the new `layout` keyword instead.",
+                PendingDeprecationWarning,
+            )
+
         if "layout" in self.configuration and not isinstance(
             self.configuration["layout"], list
         ):

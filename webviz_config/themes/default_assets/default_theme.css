@@ -50,7 +50,7 @@ body {
   height: 100px;
   width: 200px;
   background-size: contain;
-  background-image: url("default_logo.svg");
+  background-image: url("webviz-logo.svg");
   background-repeat: no-repeat;
 }
 
@@ -58,7 +58,7 @@ body {
   height: 64px;
   width: 64px;
   background-size: contain;
-  background-image: url("default_logo.svg");
+  background-image: url("webviz-logo.svg");
   background-repeat: no-repeat;
 }
 
