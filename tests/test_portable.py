@@ -6,8 +6,7 @@ def test_portable(dash_duo, tmp_path):
     # Build a portable webviz from config file
     appdir = tmp_path / "app"
     subprocess.call(  # nosec
-        ["webviz", "build", "basic_example_open_menu.yaml", "--portable", appdir],
-        cwd="examples",
+        ["webviz", "build", "basic_example.yaml", "--portable", appdir], cwd="examples"
     )
 
     # Import generated app

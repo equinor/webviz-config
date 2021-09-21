@@ -3,6 +3,10 @@
 
 title: Reek Webviz Demonstration
 
+options:
+  menu:
+    initially_pinned: True
+
 layout:
 
  - page: Front page
