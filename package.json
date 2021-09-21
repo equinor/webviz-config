@@ -12,6 +12,6 @@
     "docsify-katex": "^1.4.3",
     "docsify-tabs": "^1.4.4",
     "katex": "^0.12.0",
-    "prismjs": "^1.24.0"
+    "prismjs": "^1.25.0"
   }
 }
