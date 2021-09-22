@@ -3,7 +3,6 @@ import shutil
 import tempfile
 import subprocess
 from pathlib import Path
-from distutils.dir_util import copy_tree
 
 
 def binary_available() -> bool:
@@ -143,7 +142,7 @@ def read_file_in_repository(github_slug: str, filename: str) -> str:
         return (clone_path / Path(filename)).read_text()
 
 
-def upload_directory(
+def commit_portable_webviz(
     github_slug: str,
     source_directory: Path,
     commit_message: str = "Initial commit",
@@ -162,13 +161,16 @@ def upload_directory(
 
         clone_path = temp_dir / github_slug.split("/")[1]
 
-        copy_tree(str(source_directory), str(clone_path))
-        # dirs_exist_ok first available in Python 3.8.
-        # shutil.copytree(source_directory, clone_path, dirs_exist_ok=True)
+        shutil.copytree(
+            source_directory,
+            clone_path,
+            dirs_exist_ok=True,
+            ignore=shutil.ignore_patterns("resources"),
+        )
 
         commands = [
             ["git", "add", "."],
-            ["git", "commit", "-m", commit_message],
+            ["git", "commit", "-m", commit_message, "--allow-empty"],
             ["git", "branch", "-M", branch_name],
             ["git", "push", "-u", "origin", branch_name],
         ]
