@@ -142,7 +142,7 @@ def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) ->
                 "tenant_id": azure_configuration_values["tenant_id"],
             },
         )
-        github_cli.upload_directory(
+        github_cli.commit_portable_webviz(
             github_slug=github_slug, source_directory=build_directory
         )
         (build_directory / "deploy_settings.json").unlink()
@@ -257,7 +257,9 @@ def radix_redeploy(github_slug: str, build_directory: pathlib.Path) -> None:
     deploy_settings = json.loads(
         github_cli.read_file_in_repository(github_slug, "deploy_settings.json")
     )
-    github_cli.upload_directory(github_slug, build_directory, commit_message="Update")
+    github_cli.commit_portable_webviz(
+        github_slug, build_directory, commit_message="Update"
+    )
 
     azure_cli.storage_container_upload_folder(
         subscription=deploy_settings["azure"]["subscription"],
