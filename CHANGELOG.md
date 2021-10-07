@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#498](https://github.com/equinor/webviz-config/pull/498) - Explicitly use UTC when comparing time zones in the `OAuth` implementation.
 - [#476](https://github.com/equinor/webviz-config/pull/476) - Use Azure SDK Python packages instead of wrapping Azure CLI.
 - [#521](https://github.com/equinor/webviz-config/pull/521) - Improved performance on deployment workflow for Webviz applications with large data sets. Also allow for empty commits (i.e. redeployment of same application triggering new build).
+- [#532](https://github.com/equinor/webviz-config/pull/532) - Fixed syntax highlighting of code blocks in markdown.
 
 ### Added
 - [#503](https://github.com/equinor/webviz-config/pull/503) - Added `__main__.py`. This will allow users to do `python -m webviz_config [...]` in addition to `webviz [...]`.
