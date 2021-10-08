@@ -95,7 +95,7 @@ setup(
         "requests>=2.20",
         "tqdm>=4.8",
         "typing-extensions>=3.7; python_version<'3.8'",
-        "webviz-core-components>=0.5.0",
+        "webviz-core-components>=0.5.2",
     ],
     extras_require={
         "tests": TESTS_REQUIRES,
