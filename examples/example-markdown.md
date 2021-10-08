@@ -48,3 +48,10 @@ First Header | Second Header
 ------------ | -------------
 Content Cell | Content Cell
 Content Cell | Content Cell
+
+#### Some code
+
+```python
+def some_function(input: int) -> int:
+    return 42 * input
+```

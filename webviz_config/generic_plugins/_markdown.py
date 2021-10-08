@@ -170,6 +170,7 @@ class Markdown(WebvizPluginABC):
             markdown.markdown(
                 get_path(self.markdown_file).read_text(),
                 extensions=[
+                    "fenced_code",
                     "tables",
                     "sane_lists",
                     _WebvizMarkdownExtension(base_path=markdown_file.parent),
