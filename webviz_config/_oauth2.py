@@ -116,8 +116,8 @@ class Oauth2:
     def is_empty_token() -> Tuple[bool, str]:
         if (
             not flask.session.get("access_token")
-            and flask.request.path != "/login"
-            and flask.request.path != "/auth-return"
+            and flask.request.endpoint != "_login_controller"
+            and flask.request.endpoint != "_auth_return_controller"
         ):
             login_uri = get_login_uri()
             return True, login_uri
