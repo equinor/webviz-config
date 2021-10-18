@@ -47,7 +47,7 @@ class Oauth2:
 
         @self._app.route("/login")
         def _login_controller():  # type: ignore[no-untyped-def]
-            redirect_uri = get_auth_redirect_uri(flask.request.url_root)
+            redirect_uri = get_auth_redirect_uri()
 
             # First leg of Oauth2 authorization code flow
             auth_url = self._msal_app.get_authorization_request_url(
@@ -57,7 +57,7 @@ class Oauth2:
 
         @self._app.route("/auth-return")
         def _auth_return_controller():  # type: ignore[no-untyped-def]
-            redirect_uri = get_auth_redirect_uri(flask.request.url_root)
+            redirect_uri = get_auth_redirect_uri()
             returned_query_params = flask.request.args
 
             # There is an error from the first leg of Oauth2 authorization code flow
@@ -119,7 +119,7 @@ class Oauth2:
             and flask.request.path != "/login"
             and flask.request.path != "/auth-return"
         ):
-            login_uri = get_login_uri(flask.request.url_root)
+            login_uri = get_login_uri()
             return True, login_uri
 
         return False, ""
@@ -151,9 +151,9 @@ class Oauth2:
                 )
 
 
-def get_login_uri(url_root: str) -> str:
-    return url_root + "login"
+def get_login_uri() -> str:
+    return flask.url_for("_login_controller")
 
 
-def get_auth_redirect_uri(url_root: str) -> str:
-    return url_root + "auth-return"
+def get_auth_redirect_uri() -> str:
+    return flask.url_for("_auth_return_controller", _external=True)
