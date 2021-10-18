@@ -4,6 +4,7 @@ from typing import Tuple
 
 import msal
 import flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 
 class Oauth2:
@@ -11,6 +12,8 @@ class Oauth2:
 
     def __init__(self, app: flask.app.Flask):
         self._app = app
+
+        self.configure_proxy_trust()
 
         # Azure AD app registration info (currently the values are taken from environment variables)
         self._tenant_id = os.environ["WEBVIZ_TENANT_ID"]
@@ -28,6 +31,20 @@ class Oauth2:
 
         # Initiate oauth2 endpoints
         self.set_oauth2_endpoints()
+
+    def configure_proxy_trust(self):
+        """Configure """
+        proxy_settings = {
+            "x_for": os.environ.get("WEBVIZ_X_FORWARDED_FOR"),
+            "x_proto": os.environ.get("WEBVIZ_X_FORWARDED_PROTO"),
+            "x_host": os.environ.get("WEBVIZ_X_FORWARDED_HOST"),
+            "x_port": os.environ.get("WEBVIZ_X_FORWARDED_PORT"),
+            "x_prefix": os.environ.get("WEBVIZ_X_FORWARDED_PREFIX")
+        }
+
+        if any(x is not None for x in proxy_settings.values()):
+            proxy_settings = {k: int(v) if v else 0 for k, v in proxy_settings.items()}
+            self._app.wsgi_app = ProxyFix(self._app.wsgi_app, **proxy_settings)
 
     def set_oauth2_endpoints(self) -> None:
         """/login and /auth-return endpoints are added for Oauth2 authorization
