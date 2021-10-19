@@ -506,6 +506,8 @@ Internally, this is done by using a ProxyFix class, as described in the Flask [d
 
 Any omitted argument will be set to 0.
 
+Webviz will store the users oauth and refresh tokens in the flask session. To ensure that this session is treated consistently across server replicas, you should set the environment variable `WEBVIZ_SESSION_SECRET_KEY` to the same value in all replicas.
+
 To get the access token of the authenticated user in the flask session, use `flask.session.get("access_token")`.
 
 To get the expiration date of the token, use `flask.session.get("expiration_date")`.
