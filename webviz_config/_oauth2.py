@@ -81,7 +81,7 @@ class Oauth2:
             if "error" in returned_query_params:
                 error_description = returned_query_params.get("error_description")
                 print("Error description:", error_description)
-                redirect_error_uri = flask.url_for("error_controller")
+                redirect_error_uri = flask.url_for("_error_controller")
                 return flask.redirect(redirect_error_uri)
 
             code = returned_query_params.get("code")
@@ -121,13 +121,16 @@ class Oauth2:
         # pylint: disable=inconsistent-return-statements
         @self._app.before_request
         def _check_access_token():  # type: ignore[no-untyped-def]
-            # The session of the request does not contain access token, redirect to /login
-            is_redirected, redirect_url = self.is_empty_token()
-            if is_redirected:
-                return flask.redirect(redirect_url)
+            self.check_access_token()
 
-            # The session contains access token, check its expiration date
-            self.check_and_set_token_expiry()
+    def check_access_token(self):  # type: ignore[no-untyped-def]
+        self.check_and_set_token_expiry()
+
+        # If the client session does not contain access token, redirect to /login
+        is_redirected, redirect_url = self.is_empty_token()
+        if is_redirected:
+            return flask.redirect(redirect_url)
+    
 
     @staticmethod
     def is_empty_token() -> Tuple[bool, str]:
@@ -147,25 +150,36 @@ class Oauth2:
             current_date = datetime.datetime.now(datetime.timezone.utc)
             if current_date > expiration_date:
                 # Access token has expired
-                print("Access token has expired.")
-                if not self._accounts:
-                    self._accounts = self._msal_app.get_accounts()
-                renewed_tokens_result = self._msal_app.acquire_token_silent(
-                    scopes=[self._scope], account=self._accounts[0]
-                )
-                expires_in = renewed_tokens_result.get("expires_in")
-                new_expiration_date = datetime.datetime.now(
-                    datetime.timezone.utc
-                ) + datetime.timedelta(seconds=expires_in - 60)
-                print("New access token expiration date (UTC):", new_expiration_date)
+                print("Access token has expired, trying to refresh.")
+                try:
+                    access_token, expiration_date = self.refresh_token_if_possible()
+                    flask.session["access_token"] = access_token
+                    flask.session["expiration_date"] = expiration_date
+                except Exception as e:
+                    print(
+                        f"Warning: error {e} encountered when trying to refresh access token.\n"
+                        "Clearing any stored access token info to force re-login"
+                    )
+                    if "access_token" in flask.session:
+                        flask.session.pop("access_token")
+                    if "expiration_date" in flask.session:
+                        flask.session.pop("expiration_date")
 
-                # Set new expiration date in the session
-                flask.session["expiration_date"] = new_expiration_date
+    def refresh_token_if_possible(self) -> Tuple[str, datetime.datetime]:
+        if not self._accounts:
+            self._accounts = self._msal_app.get_accounts()
+        renewed_tokens_result = self._msal_app.acquire_token_silent(
+            scopes=[self._scope], account=self._accounts[0]
+        )
+        expires_in = renewed_tokens_result.get("expires_in")
+        new_expiration_date = datetime.datetime.now(
+            datetime.timezone.utc
+        ) + datetime.timedelta(seconds=expires_in - 60)
+        print("New access token expiration date (UTC):", new_expiration_date)
 
-                # Set new access token in the session
-                flask.session["access_token"] = renewed_tokens_result.get(
-                    "access_token"
-                )
+        return renewed_tokens_result.get(
+            "access_token"
+        ), new_expiration_date
 
 
 def get_login_uri() -> str:
