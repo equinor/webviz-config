@@ -1,4 +1,4 @@
-from typing import Dict, Union, Callable, Tuple, cast, Optional, List, Type, Any
+from typing import Dict, Union, Callable, Tuple, cast, Optional, List, Type
 import inspect
 
 from ._plugin_abc import WebvizPluginABC
