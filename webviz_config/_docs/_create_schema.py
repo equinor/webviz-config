@@ -38,7 +38,7 @@ JSON_SCHEMA = {
                         "type": "boolean",
                     },
                     "initially_collapsed": {
-                        "description": "State if the all groups in the menu shall initially be collapsed",
+                        "description": "State if all groups in menu shall initially be collapsed",
                         "type": "boolean",
                     },
                 },
