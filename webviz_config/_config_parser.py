@@ -519,6 +519,19 @@ class ConfigParser:
                         f"{terminal_colors.END}"
                     )
 
+                if "initially_collapsed" not in self.configuration["options"]["menu"]:
+                    self.configuration["options"]["menu"]["initially_collapsed"] = False
+                elif not isinstance(
+                    self.configuration["options"]["menu"]["initially_collapsed"], bool
+                ):
+                    raise ParserError(
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                        "Invalid option for options > menu > initially_collapsed: "
+                        f"{self.configuration['options']['menu']['initially_collapsed']}. "
+                        "Please select a boolean value: True, False"
+                        f"{terminal_colors.END}"
+                    )
+
                 if "show_logo" not in self.configuration["options"]["menu"]:
                     self.configuration["options"]["menu"]["show_logo"] = True
                 elif not isinstance(
@@ -526,7 +539,7 @@ class ConfigParser:
                 ):
                     raise ParserError(
                         f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "Invalid option for options > menu > initially_pinned: "
+                        "Invalid option for options > menu > show_logo: "
                         f"{self.configuration['options']['menu']['show_logo']}. "
                         "Please select a boolean value: True, False"
                         f"{terminal_colors.END}"
@@ -540,5 +553,6 @@ class ConfigParser:
                 "bar_position": "left",
                 "drawer_position": "left",
                 "initially_pinned": False,
+                "initially_collapsed": False,
                 "show_logo": True,
             }
