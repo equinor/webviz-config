@@ -366,13 +366,11 @@ def create_app_registration(display_name: str) -> str:
     return app_id
 
 
-def create_secret(
-    app_registration_id: str, secret_description: str, years: int = 100
-) -> str:
+def create_secret(app_registration_id: str, secret_description: str) -> str:
 
     object_id = _object_id_from_app_id(app_registration_id)
 
-    end_datetime = datetime.datetime.now() + datetime.timedelta(days=365.242 * years)
+    end_datetime = datetime.datetime.now() + datetime.timedelta(days=365)
     data = requests.post(
         f"{GRAPH_BASE_URL}/v1.0/applications/{object_id}/addPassword",
         json={
