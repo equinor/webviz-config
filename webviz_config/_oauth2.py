@@ -44,7 +44,7 @@ class Oauth2:
 
         if any(x is not None for x in _proxy_settings.values()):
             proxy_settings = {k: int(v) if v else 0 for k, v in _proxy_settings.items()}
-            self._app.wsgi_app = ProxyFix(self._app.wsgi_app, **proxy_settings)
+            self._app.wsgi_app = ProxyFix(self._app.wsgi_app, **proxy_settings)  # type: ignore
 
     def set_oauth2_endpoints(self) -> None:
         """/login and /auth-return endpoints are added for Oauth2 authorization
