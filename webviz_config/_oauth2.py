@@ -32,7 +32,7 @@ class Oauth2:
         # Initiate oauth2 endpoints
         self.set_oauth2_endpoints()
 
-    def configure_proxy_trust(self):
+    def configure_proxy_trust(self) -> None:
         """Configure"""
         proxy_settings = {
             "x_for": os.environ.get("WEBVIZ_X_FORWARDED_FOR"),
