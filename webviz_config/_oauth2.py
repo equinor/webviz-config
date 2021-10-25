@@ -34,7 +34,7 @@ class Oauth2:
 
     def configure_proxy_trust(self) -> None:
         """Configure"""
-        proxy_settings = {
+        _proxy_settings = {
             "x_for": os.environ.get("WEBVIZ_X_FORWARDED_FOR"),
             "x_proto": os.environ.get("WEBVIZ_X_FORWARDED_PROTO"),
             "x_host": os.environ.get("WEBVIZ_X_FORWARDED_HOST"),
@@ -42,8 +42,8 @@ class Oauth2:
             "x_prefix": os.environ.get("WEBVIZ_X_FORWARDED_PREFIX"),
         }
 
-        if any(x is not None for x in proxy_settings.values()):
-            proxy_settings = {k: int(v) if v else 0 for k, v in proxy_settings.items()}
+        if any(x is not None for x in _proxy_settings.values()):
+            proxy_settings = {k: int(v) if v else 0 for k, v in _proxy_settings.items()}
             self._app.wsgi_app = ProxyFix(self._app.wsgi_app, **proxy_settings)
 
     def set_oauth2_endpoints(self) -> None:
