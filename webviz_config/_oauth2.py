@@ -118,11 +118,11 @@ class Oauth2:
         set in the session cookie.
         """
 
-        # pylint: disable=inconsistent-return-statements
         @self._app.before_request
         def _check_access_token():  # type: ignore[no-untyped-def]
-            self.check_access_token()
+            return self.check_access_token()
 
+    # pylint: disable=inconsistent-return-statements
     def check_access_token(self):  # type: ignore[no-untyped-def]
         self.check_and_set_token_expiry()
 
@@ -154,9 +154,11 @@ class Oauth2:
                     access_token, expiration_date = self.refresh_token_if_possible()
                     flask.session["access_token"] = access_token
                     flask.session["expiration_date"] = expiration_date
-                except Exception as e:
+                except Exception as exc:  # pylint: disable=broad-except
+                    # Catch all and any error here,
+                    # since in all cases an error means we want to force a loud login
                     print(
-                        f"Warning: error {e} encountered when trying to refresh access token.\n"
+                        f"Warning: error {exc} encountered when trying to refresh access token.\n"
                         "Clearing any stored access token info to force re-login"
                     )
                     if "access_token" in flask.session:
