@@ -46,7 +46,7 @@ app = Dash(
 
 # For signing session cookies
 # Use user provided environment variable if exists, otherwise generate fresh
-session_secret_key = os.environment.get("WEBVIZ_SESSION_SECRET_KEY")
+session_secret_key = os.environ.get("WEBVIZ_SESSION_SECRET_KEY")
 app.server.secret_key = session_secret_key or webviz_config.LocalhostToken.generate_token()
 
 server = app.server
