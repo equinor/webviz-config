@@ -33,13 +33,13 @@ class Oauth2:
         self.set_oauth2_endpoints()
 
     def configure_proxy_trust(self):
-        """Configure """
+        """Configure"""
         proxy_settings = {
             "x_for": os.environ.get("WEBVIZ_X_FORWARDED_FOR"),
             "x_proto": os.environ.get("WEBVIZ_X_FORWARDED_PROTO"),
             "x_host": os.environ.get("WEBVIZ_X_FORWARDED_HOST"),
             "x_port": os.environ.get("WEBVIZ_X_FORWARDED_PORT"),
-            "x_prefix": os.environ.get("WEBVIZ_X_FORWARDED_PREFIX")
+            "x_prefix": os.environ.get("WEBVIZ_X_FORWARDED_PREFIX"),
         }
 
         if any(x is not None for x in proxy_settings.values()):
@@ -130,7 +130,6 @@ class Oauth2:
         is_redirected, redirect_url = self.is_empty_token()
         if is_redirected:
             return flask.redirect(redirect_url)
-    
 
     @staticmethod
     def is_empty_token() -> Tuple[bool, str]:
@@ -177,9 +176,7 @@ class Oauth2:
         ) + datetime.timedelta(seconds=expires_in - 60)
         print("New access token expiration date (UTC):", new_expiration_date)
 
-        return renewed_tokens_result.get(
-            "access_token"
-        ), new_expiration_date
+        return renewed_tokens_result.get("access_token"), new_expiration_date
 
 
 def get_login_uri() -> str:
