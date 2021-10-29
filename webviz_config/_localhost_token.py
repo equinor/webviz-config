@@ -77,7 +77,7 @@ class LocalhostToken:
                 self._ott_validated = True
 
                 if self._oauth2:
-                    self._oauth2.check_access_token()
+                    return self._oauth2.check_access_token()
 
             else:
                 flask.abort(401)
