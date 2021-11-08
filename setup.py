@@ -75,6 +75,7 @@ setup(
             "TablePlotter = webviz_config.generic_plugins._table_plotter:TablePlotter",
             "PivotTable = webviz_config.generic_plugins._pivot_table:PivotTable",
         ],
+        "pytest11": ["webviz = webviz_config.testing.plugin"],
     },
     install_requires=[
         "bleach>=3.1",
