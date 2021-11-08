@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.3.6] - 2021-11-08
+
 ### Added
 - [#528](https://github.com/equinor/webviz-config/pull/528) - Implemented `initiallyCollapsed` setting for groups in menu.
 
