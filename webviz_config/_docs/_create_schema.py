@@ -37,6 +37,10 @@ JSON_SCHEMA = {
                         "description": "State if the menu shall be pinned when initially showing.",
                         "type": "boolean",
                     },
+                    "initially_collapsed": {
+                        "description": "State if all groups in menu shall initially be collapsed",
+                        "type": "boolean",
+                    },
                 },
                 "additionalProperties": False,
             },
