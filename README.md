@@ -56,6 +56,11 @@ npm ci --ignore-scripts && npm run postinstall
 pip install -e .
 ```
 
+NOTE: If you are on Windows, make sure to first set `npm`'s default `script-shell` to `powershell`.
+```
+npm config set script-shell powershell
+```
+
 After installation, there is a console script named `webviz` available. You can test the
 installation by using the provided example configuration file,
 ```bash
