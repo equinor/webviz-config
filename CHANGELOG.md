@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [#528](https://github.com/equinor/webviz-config/pull/528) - Implemented `initiallyCollapsed` setting for groups in menu.
 
+### Changed
+- [#545](https://github.com/equinor/webviz-config/pull/545) - Replaced `cp` with `copyfiles` in `package.json`'s `postinstall` script.
+
 ## [0.3.5] - 2021-10-08
 
 ### Changed
