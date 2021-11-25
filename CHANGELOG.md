@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
-- [#539](https://github.com/equinor/webviz-config/pull/539) - Support using oauth behind proxy, if silent refresh of oauth token fails, fall back to loud refresh of token instead of raising internal server error
+### Fixed
+- [#539](https://github.com/equinor/webviz-config/pull/539) - Support using OAuth behind proxy. If silent refresh of OAuth token fails, fall back to loud refresh of token instead of raising internal server error.
+- [#550](https://github.com/equinor/webviz-config/pull/550) - Change user data directory on Windows from `Application Data` to `AppData` (both work on Windows 10, but only the latter works on Windows 11).
 
 ## [0.3.6] - 2021-11-08
 
