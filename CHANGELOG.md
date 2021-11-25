@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#539](https://github.com/equinor/webviz-config/pull/539) - Support using OAuth behind proxy. If silent refresh of OAuth token fails, fall back to loud refresh of token instead of raising internal server error.
 - [#550](https://github.com/equinor/webviz-config/pull/550) - Change user data directory on Windows from `Application Data` to `AppData` (both work on Windows 10, but only the latter works on Windows 11).
 - [#546](https://github.com/equinor/webviz-config/pull/546) - Replaced `cp` with `copyfiles` in `package.json`'s `postinstall` script and added note to `README`.
+- [#552](https://github.com/equinor/webviz-config/pull/552) - Fix Windows problem when calling `gh api` in Radix deploy.
 
 ## [0.3.6] - 2021-11-08
 

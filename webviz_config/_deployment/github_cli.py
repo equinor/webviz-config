@@ -82,27 +82,22 @@ def turn_on_github_vulnerability_alers(directory: Path) -> None:
 
 
 def _call_post_api(endpoint: str, data: dict, directory: Path) -> None:
-    _, temp_file = tempfile.mkstemp()
-
-    try:
-        Path(temp_file).write_text(json.dumps(data))
-
-        subprocess.run(
-            [
-                "gh",
-                "api",
-                endpoint,
-                "--method",
-                "POST",
-                "--input",
-                temp_file,
-                "--silent",
-            ],
-            check=True,
-            cwd=directory,
-        )
-    finally:
-        Path(temp_file).unlink()
+    subprocess.run(
+        [
+            "gh",
+            "api",
+            endpoint,
+            "--method",
+            "POST",
+            "--input",
+            "-",
+            "--silent",
+        ],
+        input=json.dumps(data),
+        check=True,
+        cwd=directory,
+        text=True,
+    )
 
 
 def add_webhook(directory: Path, receiver_url: str, secret: str) -> None:
