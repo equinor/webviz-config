@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+- [#539](https://github.com/equinor/webviz-config/pull/539) - Support using oauth behind proxy, if silent refresh of oauth token fails, fall back to loud refresh of token instead of raising internal server error
+
 ## [0.3.6] - 2021-11-08
 
 ### Added

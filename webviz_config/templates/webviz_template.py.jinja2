@@ -7,6 +7,7 @@
 
 import logging
 import logging.config
+import os
 import threading
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
@@ -44,7 +45,8 @@ app = Dash(
 )
 
 # For signing session cookies
-app.server.secret_key = webviz_config.LocalhostToken.generate_token()
+# Use user provided environment variable if exists, otherwise generate fresh
+app.server.secret_key = os.environ.get("WEBVIZ_SESSION_SECRET_KEY") or webviz_config.LocalhostToken.generate_token()
 
 server = app.server
 
