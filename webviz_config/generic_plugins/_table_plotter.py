@@ -7,10 +7,7 @@ from typing import Optional, List, Dict, Any
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import dash_html_components as html
-import dash_core_components as dcc
-from dash.dependencies import Input, Output
-from dash import Dash
+from dash import html, dcc, Input, Output, Dash
 import webviz_core_components as wcc
 
 from .. import WebvizPluginABC, WebvizSettings, EncodedFile
@@ -18,7 +15,7 @@ from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
 
-# pylint: disable=too-many-instance-attributes, too-many-arguments
+# pylint: disable=too-many-arguments
 class TablePlotter(WebvizPluginABC):
     """Adds a plotter to the webviz instance, using tabular data from a provided csv file.
 If feature is requested, the data could also come from a database.
@@ -62,7 +59,7 @@ If feature is requested, the data could also come from a database.
         self.set_filters(filter_cols)
         self.columns = list(self.data.columns)
         self.numeric_columns = list(
-            self.data.select_dtypes(  # PyCQA/pylint#4577 # pylint: disable=no-member
+            self.data.select_dtypes(  # pylint: disable=no-member
                 include=[np.number]
             ).columns
         )
@@ -215,7 +212,7 @@ If feature is requested, the data could also come from a database.
         df = self.data
         dropdowns = [html.H4("Set filters")]
         for col in self.filter_cols:
-            if df[col].dtype == np.float64 or df[col].dtype == np.int64:
+            if df[col].dtype in [np.float64, np.int64]:
                 min_val = df[col].min()
                 max_val = df[col].max()
                 mean_val = df[col].mean()
@@ -441,7 +438,7 @@ def filter_dataframe(
         columns = [columns]
     for filt, col in zip(column_values, columns):
         if isinstance(filt, list):
-            if df[col].dtype == np.float64 or df[col].dtype == np.int64:
+            if df[col].dtype in [np.float64, np.int64]:
                 df = df.loc[df[col].between(filt[0], filt[1])]
             else:
                 df = df.loc[df[col].isin(filt)]

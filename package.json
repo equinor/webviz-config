@@ -2,7 +2,7 @@
   "name": "webviz-config",
   "description": "Documentation system for webviz-config plugins",
   "scripts": {
-    "postinstall": "cd ./node_modules; cp ./docsify/lib/docsify.min.js ./docsify/lib/plugins/search.min.js ./docsify/lib/themes/vue.css ./docsify-tabs/dist/docsify-tabs.min.js ./prismjs/components/prism-bash.min.js ./prismjs/components/prism-python.min.js ./prismjs/components/prism-yaml.min.js ./docsify-copy-code/dist/docsify-copy-code.min.js ./katex/dist/katex.min.css ./docsify-katex/dist/docsify-katex.js ../INTRODUCTION.md ../webviz_config/_docs/static/; mkdir -p ../webviz_config/_docs/static/fonts; cp ./katex/dist/fonts/*.woff2 ../webviz_config/_docs/static/fonts/; cd .."
+    "postinstall": "cd ./node_modules; copyfiles --flat ./docsify/lib/docsify.min.js ./docsify/lib/plugins/search.min.js ./docsify/lib/themes/vue.css ./docsify-tabs/dist/docsify-tabs.min.js ./prismjs/components/prism-bash.min.js ./prismjs/components/prism-python.min.js ./prismjs/components/prism-yaml.min.js ./docsify-copy-code/dist/docsify-copy-code.min.js ./katex/dist/katex.min.css ./docsify-katex/dist/docsify-katex.js ../INTRODUCTION.md ../webviz_config/_docs/static/; copyfiles --flat ./katex/dist/fonts/*.woff2 ../webviz_config/_docs/static/fonts; cd .."
   },
   "author": "Equinor",
   "license": "MIT",
@@ -12,6 +12,9 @@
     "docsify-katex": "^1.4.3",
     "docsify-tabs": "^1.4.4",
     "katex": "^0.12.0",
-    "prismjs": "^1.24.0"
+    "prismjs": "^1.25.0"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1"
   }
 }

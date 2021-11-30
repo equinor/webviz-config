@@ -21,11 +21,10 @@ from typing import Any, Dict, Optional, Tuple, List
 
 try:
     # Python 3.8+
-    # pylint: disable=ungrouped-imports
-    from typing import TypedDict  # type: ignore
+    from typing import TypedDict
 except (ImportError, ModuleNotFoundError):
     # Python < 3.8
-    from typing_extensions import TypedDict  # type: ignore
+    from typing_extensions import TypedDict
 
 import jinja2
 

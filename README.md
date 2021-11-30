@@ -52,7 +52,10 @@ can do something along the lines of:
 ```bash
 git clone git@github.com:equinor/webviz-config.git
 cd ./webviz-config
-npm ci --ignore-scripts && npm run postinstall
+npm ci --ignore-scripts
+# NOTE: If you are on Windows, make sure to first set `npm`'s default `script-shell` to `powershell` by running
+# npm config set script-shell powershell
+npm run postinstall
 pip install -e .
 ```
 

@@ -77,13 +77,7 @@ class LocalhostToken:
                 self._ott_validated = True
 
                 if self._oauth2:
-                    # The session of the request does not contain access token, redirect to /login
-                    is_redirected, redirect_url = self._oauth2.is_empty_token()
-                    if is_redirected:
-                        return flask.redirect(redirect_url)
-
-                    # The session contains access token, check (and set) its expiration date
-                    self._oauth2.check_and_set_token_expiry()
+                    return self._oauth2.check_access_token()
 
             else:
                 flask.abort(401)
@@ -92,7 +86,7 @@ class LocalhostToken:
         def _set_cookie_token_in_response(
             response: flask.wrappers.Response,
         ) -> flask.wrappers.Response:
-            if flask.g.get("set_cookie_token", False):  # type: ignore[attr-defined]
+            if flask.g.get("set_cookie_token", False):
                 response.set_cookie(
                     key=f"cookie_token_{self._port}", value=self._cookie_token
                 )

@@ -1,70 +1,37 @@
-# pylint: disable=invalid-sequence-index
-
-import logging
-import os
 import time
+import functools
 import secrets
+import asyncio
 import pathlib
+import datetime
 import warnings
 import webbrowser
-import contextlib
-import subprocess
-from typing import List, Dict, Optional, Tuple, Any
+from typing import List, Dict, Optional, Tuple
+
+import requests
+from tqdm.asyncio import tqdm
 
 try:
-    import azure.cli.core
-    from azure.common import AzureHttpError
+    from azure.identity import InteractiveBrowserCredential
     from azure.core.exceptions import HttpResponseError
-    from msrestazure.azure_exceptions import CloudError
+    from azure.mgmt.resource.subscriptions import SubscriptionClient
+    from azure.mgmt.resource import ResourceManagementClient
+    from azure.mgmt.storage import StorageManagementClient
+    from azure.storage.blob import BlobServiceClient
+    from azure.storage.blob.aio import ContainerClient
 
     AZURE_CLI_INSTALLED = True
 except ModuleNotFoundError:
     AZURE_CLI_INSTALLED = False
 
+GRAPH_BASE_URL = "https://graph.microsoft.com"
 PIMCOMMON_URL = (
     "https://portal.azure.com/#blade/Microsoft_Azure_PIMCommon/ActivationMenuBlade"
 )
 
 
-def _azure_cli(args: List[str], devnull_stderr: bool = True) -> Any:
-    """Runs an Azure CLI command using the Azure Python library."""
-
-    # When returning errors, azure cli seems to close the stderr stream similar to
-    # https://github.com/pytest-dev/pytest/issues/5502
-    # This makes it impossible to catch an error and later perform a new call
-    # to azure cli.
-    # Therefore cleaning the root logger as suggested in
-    # https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
-    loggers = [logging.getLogger()] + list(
-        logging.Logger.manager.loggerDict.values()  # type: ignore[attr-defined, arg-type]
-    )
-    for logger in loggers:
-        handlers = getattr(logger, "handlers", [])
-        for handler in handlers:
-            logger.removeHandler(handler)
-
-    cli = azure.cli.core.get_default_cli()
-    with open(os.devnull, "w") as out_file:
-        # contextlib.nullcontext available only in Python 3.7+
-        if devnull_stderr:
-            with contextlib.redirect_stderr(out_file):
-                cli.invoke(args, out_file=out_file)
-        else:
-            cli.invoke(args, out_file=out_file)
-
-    if cli.result.error:
-        raise cli.result.error
-
-    return cli.result.result
-
-
-def logged_in() -> bool:
-    """Returns true if user is logged into Azure,
-    otherwise returns False.
-    """
-    # No easy way currently checking if logged in.
-    # https://github.com/Azure/azure-cli/issues/6802
-
+@functools.lru_cache()  # paranthesis required on python < 3.8
+def _credential() -> "InteractiveBrowserCredential":  # Python 3.7+ can have forward reference
     if not AZURE_CLI_INSTALLED:
         raise RuntimeError(
             "In order to use webviz deploy features, you need to first install "
@@ -72,50 +39,72 @@ def logged_in() -> bool:
             "'pip install webviz-config[deployment]'"
         )
 
-    try:
-        _azure_cli(["account", "list-locations"], devnull_stderr=False)
-        return True
-    except azure.cli.core.CLIError:
-        return False
+    return InteractiveBrowserCredential()
 
 
-def log_in() -> None:
-    _azure_cli(["login", "--use-device-code"])
+def _subscription_id(subscription_name: str = None) -> str:
+    subscription_list = SubscriptionClient(_credential()).subscriptions.list()
+
+    if subscription_name is None:
+        return next(subscription_list).subscription_id
+
+    for sub in subscription_list:
+        if sub.display_name == subscription_name:
+            return sub.subscription_id
+
+    raise ValueError(f"Could not find a subscription with name {subscription_name}")
+
+
+def _connection_string(
+    subscription: str, resource_group: str, storage_account: str
+) -> str:
+    key = get_storage_account_access_key(subscription, resource_group, storage_account)
+    return (
+        f"DefaultEndpointsProtocol=https;AccountName={storage_account};AccountKey={key}"
+    )
 
 
 def subscriptions() -> List[str]:
     """Returns list of all Azure subscriptions logged in user has read access to."""
-    return [group["name"] for group in _azure_cli(["account", "list"])]
+    return [
+        sub.display_name
+        for sub in SubscriptionClient(_credential()).subscriptions.list()
+    ]
 
 
 def resource_groups(subscription: str) -> List[str]:
     """Returns list of all Azure resource group names logged in user has read access to
     within given subscription."""
-    try:
-        return [
-            group["name"]
-            for group in _azure_cli(["group", "list", "--subscription", subscription])
-        ]
-    except CloudError:  # AuthorizationFailed
-        return []
+
+    rmc = ResourceManagementClient(_credential(), _subscription_id(subscription))
+    return [rg.name for rg in rmc.resource_groups.list()]
 
 
 def storage_account_name_available(name: str) -> Tuple[bool, str]:
-    result = _azure_cli(["storage", "account", "check-name", "--name", name])
-    return (result["nameAvailable"], result["message"])
+    storage_client = StorageManagementClient(_credential(), _subscription_id())
+    result = storage_client.storage_accounts.check_name_availability({"name": name})
+    return (result.name_available, result.message)
 
 
 def storage_account_exists(name: str, subscription: str, resource_group: str) -> bool:
-    accounts = _azure_cli(
-        ["storage", "account", "list", "--subscription", subscription]
+    storage_client = StorageManagementClient(
+        _credential(), _subscription_id(subscription)
     )
 
-    for account in accounts:
-        if account["name"] == name:
-            if account["resourceGroup"] != resource_group:
+    if any(
+        account.name == name
+        for account in storage_client.storage_accounts.list_by_resource_group(
+            resource_group
+        )
+    ):
+        return True
+
+    for account in storage_client.storage_accounts.list():
+        if account.name == name:
+            if account.resourceGroup != resource_group:
                 warnings.warn(
                     f"Storage account with name {name} found, but it belongs "
-                    f"to another resource group ({account['resourceGroup']}."
+                    f"to another resource group ({account.resourceGroup}."
                 )
             return True
 
@@ -123,22 +112,13 @@ def storage_account_exists(name: str, subscription: str, resource_group: str) ->
 
 
 def storage_container_exists(
-    container_name: str, account_name: str, subscription: str
+    container_name: str, account_name: str, subscription: str, resource_group: str
 ) -> bool:
-    containers = _azure_cli(
-        [
-            "storage",
-            "container",
-            "list",
-            "--account-name",
-            account_name,
-            "--auth-mode",
-            "login",
-            "--subscription",
-            subscription,
-        ]
+    storage_client = StorageManagementClient(
+        _credential(), _subscription_id(subscription)
     )
-    return any(container["name"] == container_name for container in containers)
+    containers = storage_client.blob_containers.list(resource_group, account_name)
+    return any(container.name == container_name for container in containers)
 
 
 def create_storage_account(subscription: str, resource_group: str, name: str) -> None:
@@ -150,277 +130,313 @@ def create_storage_account(subscription: str, resource_group: str, name: str) ->
     after the command has finished until the added access is enabled in practice.
     """
 
+    storage_client = StorageManagementClient(
+        _credential(), _subscription_id(subscription)
+    )
+
     azure_pim_already_open = False
 
     while True:
         try:
-            _azure_cli(
-                [
-                    "storage",
-                    "account",
-                    "create",
-                    "--subscription",
-                    subscription,
-                    "--resource-group",
-                    resource_group,
-                    "--name",
-                    name,
-                    "--location",
-                    "northeurope",
-                    "--sku",
-                    "Standard_ZRS",
-                    "--encryption-services",
-                    "blob",
-                ]
-            )
-            break
-        except (HttpResponseError, CloudError) as exc:
+            return storage_client.storage_accounts.begin_create(
+                resource_group,
+                name,
+                {
+                    "sku": {"name": "Standard_ZRS"},
+                    "kind": "StorageV2",
+                    "location": "northeurope",
+                    "encryption": {
+                        "key_source": "Microsoft.Storage",
+                        "services": {"blob": {"key_type": "Account", "enabled": True}},
+                    },
+                },
+            ).result()
+        except HttpResponseError as exc:
             if "AuthorizationFailed" in str(exc):
                 if not azure_pim_already_open:
                     webbrowser.open(f"{PIMCOMMON_URL}/azurerbac")
                     print(
                         "Not able to create new storage account. Do you have "
                         "enough priviliges to do it? We automatically opened the URL "
-                        "to where you activate Azure PIM. Please activate necessary "
-                        "priviliges. You need to be 'Owner' of the subscription in "
-                        "order to both create the new account and assign user "
-                        "roles to it afterwards."
+                        "to where you activate Azure PIM. Please activate/add necessary "
+                        "priviliges."
                     )
                     azure_pim_already_open = True
-                print("New attempt of app registration in 1 minute.")
-                time.sleep(60)
+                print("New attempt of creating storage account in 30 seconds.")
+                time.sleep(30)
             else:
                 raise RuntimeError("Not able to create new storage account.") from exc
 
-    user_id: str = _azure_cli(
-        ["ad", "signed-in-user", "show", "--query", "objectId", "-o", "tsv"]
-    )
-    resource_group_id: str = _azure_cli(
-        ["group", "show", "--subscription", subscription, "--name", resource_group]
-    )["id"]
 
-    for role in [
-        "Storage Blob Data Contributor",
-        "Storage Account Key Operator Service Role",
-    ]:
-        _azure_cli(
-            [
-                "role",
-                "assignment",
-                "create",
-                "--role",
-                role,
-                "--assignee",
-                user_id,
-                "--scope",
-                f"{resource_group_id}/providers/Microsoft.Storage/storageAccounts/{name}",
-            ]
-        )
-
-
-def get_storage_account_access_key(subscription: str, account_name: str) -> str:
-    result = _azure_cli(
-        [
-            "storage",
-            "account",
-            "keys",
-            "list",
-            "--account-name",
-            account_name,
-            "--subscription",
-            subscription,
-        ]
+def get_storage_account_access_key(
+    subscription: str,
+    resource_group: str,
+    account_name: str,
+) -> str:
+    storage_client = StorageManagementClient(
+        _credential(), _subscription_id(subscription)
     )
 
-    return result[0]["value"]
+    azure_pim_already_open = False
+
+    while True:
+        try:
+            return (
+                storage_client.storage_accounts.list_keys(resource_group, account_name)
+                .keys[0]
+                .value
+            )
+        except HttpResponseError as exc:
+            if "AuthorizationFailed" in str(exc):
+                if not azure_pim_already_open:
+                    webbrowser.open(f"{PIMCOMMON_URL}/azurerbac")
+                    print(
+                        "Not able to get access keys for storage account. Do you have "
+                        "enough priviliges to do it? We automatically opened the URL "
+                        "to where you activate Azure PIM. Please activate/add necessary "
+                        "priviliges. If not inherited from higher privileges, you will "
+                        "as a minmium need role 'Storage Account Key Operator Service Role' "
+                        f"for the storage account {account_name}."
+                    )
+                    azure_pim_already_open = True
+                print("New attempt of getting storage account keys in 30 seconds.")
+                time.sleep(30)
+            else:
+                raise RuntimeError("Not able to get storage account keys.") from exc
 
 
 def create_storage_container(
-    subscription: str, storage_account: str, container: str
+    subscription: str,
+    resource_group: str,
+    storage_account: str,
+    container: str,
 ) -> None:
-    """Creates a container in given storage account."""
-    _azure_cli(
-        [
-            "storage",
-            "container",
-            "create",
-            "--account-name",
-            storage_account,
-            "--name",
-            container,
-            "--auth-mode",
-            "login",
-            "--subscription",
-            subscription,
-        ]
-    )
+    BlobServiceClient.from_connection_string(
+        _connection_string(subscription, resource_group, storage_account)
+    ).get_container_client(container).create_container()
 
 
 def storage_container_upload_folder(
+    subscription: str,
+    resource_group: str,
     storage_name: str,
     container_name: str,
-    destination_folder: str,
     source_folder: pathlib.Path,
 ) -> None:
-    # If the upload access was recently added, Azure documentation
-    # says it can take up until five minutes before the access is
-    # enabled in practice.
 
-    command_arguments = [
-        "storage",
-        "blob",
-        "upload-batch",
-        "--account-name",
-        storage_name,
-        "--destination",
-        f"{container_name}/{destination_folder}",
-        "--auth-mode",
-        "login",
-        "--source",
-        str(source_folder),
-    ]
+    paths_to_upload = [path for path in source_folder.rglob("*") if path.is_file()]
 
-    for _ in range(5):
-        try:
-            _azure_cli(
-                command_arguments,
-                devnull_stderr=False,  # progress status shown in stderr by Azure CLI...
-            )
-            return
-        except AzureHttpError:
-            pass
-        except ValueError:
-            print(
-                "====================================================================\n"
-                "Ignore the 'ValueError: I/O operation on closed file' above.\n"
-                "There is currently a bug in the Azure Python CLI that hits when you\n"
-                " 1) Create a new Azure storage account.\n"
-                " 2) Upload to the new storage account in the same Python session.\n\n"
-                "We will try to upload in a subprocess.\n"
-                "===================================================================="
-            )
+    async def _upload_file(
+        container_client: ContainerClient,
+        path: pathlib.Path,
+        source_folder: pathlib.Path,
+        semaphore: asyncio.Semaphore,
+    ) -> None:
+        async with semaphore:
+            with open(path, "rb") as file_handle:
+                await container_client.upload_blob(
+                    name=path.relative_to(source_folder).as_posix(),
+                    data=file_handle,
+                    overwrite=True,
+                )
 
-            result = subprocess.run(  # pylint: disable=subprocess-run-check
-                ["az"] + command_arguments,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                # capture_output=True, <-- First vailable in Python 3.7
-            )
+    async def _upload_blob() -> None:
+        async with ContainerClient.from_connection_string(  # type: ignore[attr-defined]
+            _connection_string(subscription, resource_group, storage_name),
+            container_name,
+        ) as container_client:
 
-            if not b"ERROR" in result.stderr:
-                # Azure CLI shows progress in stderr,
-                # i.e. even successfull runs have content in stderr
-                return
-        finally:
-            print("Waiting on Azure access activation... please wait.")
-            time.sleep(60)
+            class UploadTasks:
+                def __init__(
+                    self, paths_to_upload: List[pathlib.Path], max_open_files: int = 100
+                ):
+                    self.index = 0
+                    self.paths_to_upload = paths_to_upload
+                    self.semaphore = asyncio.Semaphore(max_open_files)
 
-    raise RuntimeError("Not able to upload folder to blob storage container.")
+                # Forward reference not possible on Python 3.6:
+                def __iter__(self):  # type: ignore[no-untyped-def]
+                    return self
+
+                def __next__(self) -> asyncio.Task:
+                    try:
+                        task = asyncio.create_task(
+                            _upload_file(
+                                container_client,
+                                self.paths_to_upload[self.index],
+                                source_folder,
+                                self.semaphore,
+                            )
+                        )
+                    except IndexError as exc:
+                        raise StopIteration from exc
+                    self.index += 1
+                    return task
+
+                def __len__(self) -> int:
+                    return len(self.paths_to_upload)
+
+            for task in tqdm.as_completed(
+                UploadTasks(paths_to_upload),
+                bar_format="{l_bar} {bar} | Uploaded {n_fmt}/{total_fmt}",
+            ):
+                await task
+
+    asyncio.run(_upload_blob())
 
 
-def appservice_plan_list() -> List[str]:
-    """Returns list of all Azure resource group names logged in user has access to."""
-    return [group["name"] for group in _azure_cli(["appservice", "plan", "list"])]
+def _graph_headers() -> Dict[str, str]:
+    token = _credential().get_token(f"{GRAPH_BASE_URL}/.default").token
+    return {"Authorization": f"bearer {token}", "Content-type": "application/json"}
+
+
+def _object_id_from_app_id(app_registration_id: str) -> str:
+    endpoint = f"applications?$filter=appID eq '{app_registration_id}'"
+
+    data = requests.get(
+        f"{GRAPH_BASE_URL}/v1.0/{endpoint}",
+        headers=_graph_headers(),
+    ).json()
+
+    object_id = data["value"][0]["id"]
+    return object_id
 
 
 def existing_app_registration(display_name: str) -> Optional[str]:
-    existing = _azure_cli(["ad", "app", "list", "--display-name", display_name])
-    if existing:
-        return existing[0]["appId"]
+    """Returns application (client) ID with given display_name if it exists,
+    otherwise returns None.
+    """
+    endpoint = f"applications?$filter=displayName eq '{display_name}'"
+    data = requests.get(
+        f"{GRAPH_BASE_URL}/v1.0/{endpoint}", headers=_graph_headers()
+    ).json()
+
+    if data["value"]:
+        return data["value"][0]["appId"]
     return None
 
 
 def create_app_registration(display_name: str) -> str:
 
-    existing = existing_app_registration(display_name)
+    existing_app_id = existing_app_registration(display_name)
+    if existing_app_id is not None:
+        return existing_app_id
 
-    return (
-        existing
-        if existing is not None
-        else _azure_cli(
-            [
-                "ad",
-                "app",
-                "create",
-                "--display-name",
-                display_name,
-            ]
-        )["appId"]
+    data = requests.post(
+        f"{GRAPH_BASE_URL}/v1.0/applications",
+        json={"displayName": display_name, "signInAudience": "AzureADMyOrg"},
+        headers=_graph_headers(),
+    ).json()
+
+    if "error" in data and data["error"]["code"] == "Authorization_RequestDenied":
+        raise PermissionError("Insufficient privileges to create new app registration.")
+
+    app_id = data["appId"]
+
+    webbrowser.open(
+        "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/"
+        f"ApplicationMenuBlade/Manifest/appId/{app_id}"
     )
 
+    input(
+        """
+    Due to current limitations in Microsoft Graph API
+    (https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-app-manifest),
+    we need to update the app manifest manually. In the browser tab that was opened,
+    please update "oauth2Permissions" to this:
 
-def create_secret(
-    app_registration_id: str, secret_description: str, years: int = 100
-) -> str:
-    new_secret = secrets.token_urlsafe()
-    _azure_cli(
-        [
-            "ad",
-            "app",
-            "credential",
-            "reset",
-            "--append",
-            "--id",
-            app_registration_id,
-            "--credential-description",
-            secret_description,
-            "--password",
-            new_secret,
-            "--years",
-            str(years),
-        ]
+    	"oauth2Permissions": [
+		{
+			"adminConsentDescription": "Access on behalf of the signed-in user",
+			"adminConsentDisplayName": "Access on behalf of the signed-in user",
+			"id": "00000000-0000-0000-0000-000000000001",
+			"isEnabled": true,
+			"lang": null,
+			"origin": "Application",
+			"type": "User",
+			"userConsentDescription": "Access application on your behalf",
+			"userConsentDisplayName": "Access application on your behalf",
+			"value": "user_impersonation"
+		}
+	],
+
+    Press enter to continue."""
     )
-    return new_secret
+
+    return app_id
+
+
+def create_secret(app_registration_id: str, secret_description: str) -> str:
+
+    object_id = _object_id_from_app_id(app_registration_id)
+
+    end_datetime = datetime.datetime.now() + datetime.timedelta(days=365)
+    data = requests.post(
+        f"{GRAPH_BASE_URL}/v1.0/applications/{object_id}/addPassword",
+        json={
+            "passwordCredential": {
+                "displayName": secret_description,
+                "endDateTime": end_datetime.isoformat(),
+            }
+        },
+        headers=_graph_headers(),
+    ).json()
+
+    return data["secretText"]
 
 
 def add_reply_url(app_registration_id: str, reply_url: str) -> None:
     """Will add web reply url to given app registration id, if it does not alredy exist."""
 
-    app_data = _azure_cli(["ad", "app", "show", "--id", app_registration_id])
+    object_id = _object_id_from_app_id(app_registration_id)
 
-    reply_urls = app_data["replyUrls"]
-    if reply_url not in reply_urls:
-        reply_urls.append(reply_url)
+    data = requests.get(
+        f"{GRAPH_BASE_URL}/v1.0/applications/{object_id}",
+        headers=_graph_headers(),
+    ).json()
 
-    _azure_cli(
-        [
-            "ad",
-            "app",
-            "update",
-            "--id",
-            app_registration_id,
-            "--reply-urls",
-        ]
-        + reply_urls
+    web = data["web"]
+
+    if reply_url not in web["redirectUris"]:
+        web["redirectUris"].append(reply_url)
+
+    requests.patch(
+        f"{GRAPH_BASE_URL}/v1.0/applications/{object_id}",
+        json={"web": web},
+        headers=_graph_headers(),
     )
 
 
 def create_service_principal(app_registration_id: str) -> Tuple[str, str]:
-    existing_service_principal = _azure_cli(
-        ["ad", "sp", "list", "--filter", f"appId eq '{app_registration_id}'"]
-    )
 
-    service_principal = (
-        existing_service_principal[0]
-        if existing_service_principal
-        else _azure_cli(["ad", "sp", "create", "--id", app_registration_id])
-    )
+    endpoint = f"servicePrincipals?$filter=appID eq '{app_registration_id}'"
+    data = requests.get(
+        f"{GRAPH_BASE_URL}/v1.0/{endpoint}",
+        headers=_graph_headers(),
+    ).json()
 
-    object_id = service_principal["objectId"]
+    if "error" not in data and data["value"]:
+        data_object = data["value"][0]
+        if not data_object["appRoleAssignmentRequired"]:
+            raise RuntimeError(
+                "Service principal already exists, and it does not require app role "
+                "assignments. Deployment stopped, as this should be set to true in "
+                "order to secure access."
+            )
+    else:
+        data_object = requests.post(
+            f"{GRAPH_BASE_URL}/v1.0/servicePrincipals",
+            json={"appId": app_registration_id, "appRoleAssignmentRequired": True},
+            headers=_graph_headers(),
+        ).json()
 
-    _azure_cli(
-        [
-            "ad",
-            "sp",
-            "update",
-            "--id",
-            object_id,
-            "--set",
-            "appRoleAssignmentRequired=true",
-        ]
-    )
+        if "error" in data:
+            raise RuntimeError(f"Graph query failed with response {data}")
 
-    return object_id, service_principal["appOwnerTenantId"]
+    object_id = data_object["id"]
+    directory_tenant_id = data_object["appOwnerOrganizationId"]
+
+    return object_id, directory_tenant_id
 
 
 def azure_app_registration_setup(
@@ -434,21 +450,19 @@ def azure_app_registration_setup(
             app_registration_id = create_app_registration(display_name)
             object_id, tenant_id = create_service_principal(app_registration_id)
             break
-        except azure.cli.core.CLIError as exc:
-
+        except PermissionError:
             if not azure_pim_already_open:
                 webbrowser.open(f"{PIMCOMMON_URL}/aadmigratedroles")
                 azure_pim_already_open = True
 
-                print(exc)
                 print(
-                    "Not able to create new app registration. Do you have enough priviliges "
-                    "to do it? We automatically opened the URL to where you activate Azure PIM. "
-                    "Please active necessary priviliges."
+                    "Not able to create new app registration. Do you have enough "
+                    "priviliges to do it? We automatically opened the URL where you "
+                    "can activate Azure PIM. Please activate necessary priviliges."
                 )
 
-            print("New attempt of app registration in 1 minute.")
-            time.sleep(60)
+            print("New attempt of app registration in 30 seconds.")
+            time.sleep(30)
 
     proxy_client_secret = create_secret(app_registration_id, "cli secret")
     add_reply_url(app_registration_id, proxy_redirect_url)

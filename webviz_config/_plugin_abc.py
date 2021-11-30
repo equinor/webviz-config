@@ -8,18 +8,16 @@ import urllib
 from uuid import uuid4
 from typing import List, Optional, Type, Union, Dict
 
-# pylint: disable=wrong-import-position
+import bleach
+from dash.development.base_component import Component
+from dash import Input, Output
+import jinja2
+import webviz_core_components as wcc
+
 if sys.version_info >= (3, 8):
     from typing import TypedDict
 else:
     from typing_extensions import TypedDict
-
-import bleach
-from dash.development.base_component import Component
-from dash.dependencies import Input, Output
-import jinja2
-
-import webviz_core_components as wcc
 
 
 class ZipFileMember(TypedDict):

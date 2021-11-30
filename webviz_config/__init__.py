@@ -1,6 +1,6 @@
 try:
     # Python 3.8+
-    from importlib.metadata import version, PackageNotFoundError  # type: ignore
+    from importlib.metadata import version, PackageNotFoundError
 except ModuleNotFoundError:
     # Python < 3.8
     from importlib_metadata import version, PackageNotFoundError  # type: ignore

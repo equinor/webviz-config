@@ -75,11 +75,11 @@ class LocalhostOpenBrowser:
         try:
             with urllib.request.urlopen(self._url()):  # nosec
                 app_ready = True
-        except urllib.error.HTTPError:  # type: ignore[attr-defined]
+        except urllib.error.HTTPError:
             # The flask instance responded with some HTTP error (likely 401),
             # but is otherwise ready to accept connections
             app_ready = True
-        except urllib.error.URLError:  # type: ignore[attr-defined]
+        except urllib.error.URLError:
             # The flask instance has not started
             app_ready = False
         except ConnectionResetError:

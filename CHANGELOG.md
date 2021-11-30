@@ -6,6 +6,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Fixed
+- [#539](https://github.com/equinor/webviz-config/pull/539) - Support using OAuth behind proxy. If silent refresh of OAuth token fails, fall back to loud refresh of token instead of raising internal server error.
+- [#550](https://github.com/equinor/webviz-config/pull/550) - Change user data directory on Windows from `Application Data` to `AppData` (both work on Windows 10, but only the latter works on Windows 11).
+- [#546](https://github.com/equinor/webviz-config/pull/546) - Replaced `cp` with `copyfiles` in `package.json`'s `postinstall` script and added note to `README`.
+- [#552](https://github.com/equinor/webviz-config/pull/552) - Fix Windows problem when calling `gh api` in Radix deploy.
+
+## [0.3.6] - 2021-11-08
+
+### Added
+- [#528](https://github.com/equinor/webviz-config/pull/528) - Implemented `initiallyCollapsed` setting for groups in menu.
+
+## [0.3.5] - 2021-10-08
+
+### Changed
+- [#502](https://github.com/equinor/webviz-config/pull/502) - Updated to `Dash 2.0`.
+- [#496](https://github.com/equinor/webviz-config/pull/496) - Implemented automatic menu creation from YAML file with new `wcc` Menu component (see https://github.com/equinor/webviz-core-components/pull/154).
+
+### Fixed
+- [#498](https://github.com/equinor/webviz-config/pull/498) - Explicitly use UTC when comparing time zones in the `OAuth` implementation.
+- [#476](https://github.com/equinor/webviz-config/pull/476) - Use Azure SDK Python packages instead of wrapping Azure CLI.
+- [#521](https://github.com/equinor/webviz-config/pull/521) - Improved performance on deployment workflow for Webviz applications with large data sets. Also allow for empty commits (i.e. redeployment of same application triggering new build).
+- [#532](https://github.com/equinor/webviz-config/pull/532) - Fixed syntax highlighting of code blocks in markdown.
+
+### Added
+- [#503](https://github.com/equinor/webviz-config/pull/503) - Added `__main__.py`. This will allow users to do `python -m webviz_config [...]` in addition to `webviz [...]`.
+- [#510](https://github.com/equinor/webviz-config/pull/510) - Added command line option `--debug` which enables selected underlying Dash development features.
+
 ## [0.3.4] - 2021-08-30
 
 ### Fixed

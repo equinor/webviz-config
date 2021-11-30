@@ -24,23 +24,24 @@ def write_script(
     config_parser = ConfigParser(args.yaml_file)
     configuration = config_parser.configuration
 
-    configuration["shared_settings"] = config_parser.shared_settings
-    configuration["portable"] = args.portable is not None
-
-    configuration["loglevel"] = args.loglevel
+    configuration.update(
+        {
+            "author": getpass.getuser(),
+            "config_folder": repr(args.yaml_file.resolve().parent),
+            "current_date": datetime.date.today().strftime("%Y-%m-%d"),
+            "debug": args.debug,
+            "loglevel": args.loglevel,
+            "portable": args.portable is not None,
+            "shared_settings": config_parser.shared_settings,
+            "sys_executable": sys.executable,
+            "theme_name": args.theme,
+        }
+    )
 
     if args.logconfig is not None:
         configuration["logging_config_dict"] = yaml.safe_load(
             args.logconfig.read_text()
         )
-
-    configuration["config_folder"] = repr(args.yaml_file.resolve().parent)
-
-    configuration["theme_name"] = args.theme
-
-    configuration["author"] = getpass.getuser()
-    configuration["current_date"] = datetime.date.today().strftime("%Y-%m-%d")
-    configuration["sys_executable"] = sys.executable
 
     template_environment = jinja2.Environment(  # nosec
         loader=jinja2.PackageLoader("webviz_config", "templates"),

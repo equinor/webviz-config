@@ -7,7 +7,7 @@ import bleach
 import markdown
 from markdown.extensions import Extension
 from markdown.inlinepatterns import ImageInlineProcessor, IMAGE_LINK_RE
-import dash_core_components as dcc
+from dash import dcc
 
 from .. import WebvizPluginABC
 from ..webviz_assets import WEBVIZ_ASSETS
@@ -21,7 +21,7 @@ class _WebvizMarkdownExtension(Extension):
         super().__init__()
 
     def extendMarkdown(self, md: markdown.Markdown) -> None:
-        md.inlinePatterns.register(  # type: ignore[attr-defined]
+        md.inlinePatterns.register(
             item=_MarkdownImageProcessor(IMAGE_LINK_RE, md, self.base_path),
             name="image_link",
             priority=50,
@@ -170,6 +170,7 @@ class Markdown(WebvizPluginABC):
             markdown.markdown(
                 get_path(self.markdown_file).read_text(),
                 extensions=[
+                    "fenced_code",
                     "tables",
                     "sane_lists",
                     _WebvizMarkdownExtension(base_path=markdown_file.parent),

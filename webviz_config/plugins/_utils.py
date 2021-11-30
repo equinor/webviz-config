@@ -4,12 +4,11 @@ from typing import Any, Dict, Iterable, Optional, Tuple
 
 try:
     # Python 3.8+
-    # pylint: disable=ungrouped-imports
-    from typing import TypedDict  # type: ignore
-    from importlib.metadata import requires, version, PackageNotFoundError  # type: ignore
+    from typing import TypedDict
+    from importlib.metadata import requires, version, PackageNotFoundError
 except ImportError:
     # Python < 3.8
-    from typing_extensions import TypedDict  # type: ignore
+    from typing_extensions import TypedDict
     from importlib_metadata import requires, version, PackageNotFoundError  # type: ignore
 
 

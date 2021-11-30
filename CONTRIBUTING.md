@@ -20,7 +20,7 @@ Of the three things mentioned above, it is only the `layout` proprety that is
 mandatory to provide. A minimal plugin could look like:
 
 ```python
-import dash_html_components as html
+from dash import html
 
 from webviz_config import WebvizPluginABC
 
@@ -81,8 +81,7 @@ backend, you can add callbacks. A simple example of this is given below.
 ```python
 from uuid import uuid4
 
-import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash import html, Input, Output
 from webviz_config import WebvizPluginABC
 
 
@@ -191,7 +190,7 @@ Since the plugins are reusable and generic, they usually take in some
 user provided arguments. A minimal example could look like:
 
 ```python
-import dash_html_components as html
+from dash import html
 from webviz_config import WebvizPluginABC
 
 
@@ -495,6 +494,19 @@ The values can be found in the Azure AD configuration page. Short explanation of
 - `WEBVIZ_CLIENT_ID`: ID of the Webviz Azure AD app.
 - `WEBVIZ_CLIENT_SECRET`: Webviz Azure AD app's client secret.
 - `WEBVIZ_SCOPE`: The API permission for this Webviz Azure AD app.
+
+If you are serving behind a proxy, you might need to configure trust for X-FORWARD headers.
+Internally, this is done by using a ProxyFix class, as described in the Flask [docs](https://flask.palletsprojects.com/en/2.0.x/deploying/wsgi-standalone/#proxy-setups). To enable the use of the ProxyFix class, set one or all of the following variables to an integer describing the number of trusted forwards:
+
+- `WEBVIZ_X_FORWARDED_FOR`: Corresponds to x_for of the ProxyFix class
+- `WEBVIZ_X_FORWARDED_PROTO`: Corresponds to x_proto of the ProxyFix class
+- `WEBVIZ_X_FORWARDED_HOST`: Corresponds to x_host of the ProxyFix class
+- `WEBVIZ_X_FORWARDED_PORT`: Corresponds to x_port of the ProxyFix class
+- `WEBVIZ_X_FORWARDED_PREFIX`: Corresponds to x_prefix of the ProxyFix class
+
+Any omitted argument will be set to 0.
+
+Webviz will store the users oauth and refresh tokens in the flask session. To ensure that this session is treated consistently across server replicas, you should set the environment variable `WEBVIZ_SESSION_SECRET_KEY` to the same value in all replicas.
 
 To get the access token of the authenticated user in the flask session, use `flask.session.get("access_token")`.
 

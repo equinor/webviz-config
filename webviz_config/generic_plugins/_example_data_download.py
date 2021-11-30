@@ -1,7 +1,6 @@
 from typing import Optional
 
-import dash_html_components as html
-from dash import Dash
+from dash import html, Dash
 
 from .. import WebvizPluginABC, EncodedFile
 

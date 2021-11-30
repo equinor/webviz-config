@@ -1,3 +1,4 @@
+import sys
 import json
 import time
 import secrets
@@ -45,7 +46,7 @@ def website_online(url: str) -> bool:
 
 def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) -> None:
     """Creates a Radix configuration file."""
-    # pylint: disable=too-many-statements,too-many-locals
+    # pylint: disable=too-many-statements
 
     if not radix_cli.binary_available():
         raise RuntimeError(
@@ -99,10 +100,11 @@ def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) ->
 
     progress_bar.write("✓ Uploading Webviz file resources to Azure storage container.")
     azure_cli.storage_container_upload_folder(
-        azure_configuration_values["storage_account_name"],
-        azure_configuration_values["storage_container_name"],
-        ".",
-        build_directory / "resources",
+        subscription=azure_configuration_values["subscription"],
+        resource_group=azure_configuration_values["resource_group"],
+        storage_name=azure_configuration_values["storage_account_name"],
+        container_name=azure_configuration_values["storage_container_name"],
+        source_folder=build_directory / "resources",
     )
     progress_bar.update()
 
@@ -140,7 +142,7 @@ def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) ->
                 "tenant_id": azure_configuration_values["tenant_id"],
             },
         )
-        github_cli.upload_directory(
+        github_cli.commit_portable_webviz(
             github_slug=github_slug, source_directory=build_directory
         )
         (build_directory / "deploy_settings.json").unlink()
@@ -255,24 +257,26 @@ def radix_redeploy(github_slug: str, build_directory: pathlib.Path) -> None:
     deploy_settings = json.loads(
         github_cli.read_file_in_repository(github_slug, "deploy_settings.json")
     )
-    github_cli.upload_directory(github_slug, build_directory, commit_message="Update")
+    github_cli.commit_portable_webviz(
+        github_slug, build_directory, commit_message="Update"
+    )
 
     azure_cli.storage_container_upload_folder(
-        deploy_settings["azure"]["storage_account_name"],
-        deploy_settings["azure"]["storage_container_name"],
-        ".",
-        build_directory / "resources",
+        subscription=deploy_settings["azure"]["subscription"],
+        resource_group=deploy_settings["azure"]["resource_group"],
+        storage_name=deploy_settings["azure"]["storage_account_name"],
+        container_name=deploy_settings["azure"]["storage_container_name"],
+        source_folder=build_directory / "resources",
     )
 
 
 def main_radix_deployment(args: argparse.Namespace) -> None:
 
+    if sys.version_info < (3, 8):
+        raise RuntimeError("Radix deployment workflow requires at least Python 3.8")
+
     if not args.portable_app.is_dir():
         raise ValueError(f"{args.portable_app} is not a directory.")
-
-    if not azure_cli.logged_in():
-        print("You are not logged in with Azure CLI. Follow instructions below.")
-        azure_cli.log_in()
 
     if args.initial_deploy:
         radix_initial_deployment(args.github_slug, args.portable_app)
