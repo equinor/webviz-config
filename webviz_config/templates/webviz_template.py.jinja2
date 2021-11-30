@@ -90,9 +90,6 @@ app._deprecated_webviz_settings = {
 
 CACHE.init_app(server)
 
-theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
-Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy, force_https=False, session_cookie_secure=False)
-
 storage_folder = Path(__file__).resolve().parent / "resources" / "webviz_storage"
 
 WEBVIZ_STORAGE.use_storage = {{portable}}
@@ -150,6 +147,9 @@ else:
     )
 
 WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
+
+theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
+Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy, force_https=False, session_cookie_secure=False)
 
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
