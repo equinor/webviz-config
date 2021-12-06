@@ -14,7 +14,7 @@ from webviz_config.themes import installed_themes
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.common_cache import CACHE
-from webviz_config.webviz_instance_info import WebvizRunMode, WebvizInstanceInfo
+from webviz_config.webviz_instance_info import WebvizRunMode, WEBVIZ_INSTANCE_INFO
 from webviz_config.webviz_factory_registry import WEBVIZ_FACTORY_REGISTRY
 from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 
@@ -55,13 +55,15 @@ storage_folder = Path(__file__).resolve().parent / "resources" / "webviz_storage
 
 WEBVIZ_STORAGE.storage_folder = storage_folder
 
-app_instance_info = WebvizInstanceInfo(WebvizRunMode.BUILDING_PORTABLE, storage_folder)
-{% if internal_factory_settings is defined %}
-factory_settings_dict = {{ internal_factory_settings }}
-{% else %}
-factory_settings_dict = None
-{% endif %}
-WEBVIZ_FACTORY_REGISTRY.initialize(app_instance_info, factory_settings_dict)
+WEBVIZ_INSTANCE_INFO.initialize(
+    dash_app=app,
+    run_mode=WebvizRunMode.BUILDING_PORTABLE,
+    theme=theme,
+    storage_folder=storage_folder
+)
+
+WEBVIZ_FACTORY_REGISTRY.initialize({{ internal_factory_settings if internal_factory_settings is defined else None }})
+
 
 # The lines below can be simplified when assignment
 # expressions become available in Python 3.8

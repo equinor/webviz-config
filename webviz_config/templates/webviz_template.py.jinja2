@@ -21,7 +21,7 @@ from webviz_config.themes import installed_themes
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
-from webviz_config.webviz_instance_info import WebvizRunMode, WebvizInstanceInfo
+from webviz_config.webviz_instance_info import WebvizRunMode, WEBVIZ_INSTANCE_INFO
 from webviz_config.webviz_factory_registry import WEBVIZ_FACTORY_REGISTRY
 from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 
@@ -101,8 +101,14 @@ WEBVIZ_STORAGE.storage_folder = storage_folder
 WEBVIZ_ASSETS.portable = {{ portable }}
 
 run_mode = WebvizRunMode.PORTABLE if {{portable}} else WebvizRunMode.NON_PORTABLE
-app_instance_info = WebvizInstanceInfo(run_mode, storage_folder)
-WEBVIZ_FACTORY_REGISTRY.initialize(app_instance_info, {{ internal_factory_settings if internal_factory_settings is defined else None }})
+WEBVIZ_INSTANCE_INFO.initialize(
+    dash_app=app,
+    run_mode=run_mode,
+    theme=theme,
+    storage_folder=storage_folder
+)
+
+WEBVIZ_FACTORY_REGISTRY.initialize({{ internal_factory_settings if internal_factory_settings is defined else None }})
 
 use_oauth2 = False
 

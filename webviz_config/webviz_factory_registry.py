@@ -1,8 +1,6 @@
-from typing import Dict, TypeVar, Type, Optional, Any
+from typing import Any, Dict, Optional, Type, TypeVar
 
 from .webviz_factory import WebvizFactory
-from .webviz_instance_info import WebvizInstanceInfo
-
 
 # pylint: disable=invalid-name
 T = TypeVar("T", bound=WebvizFactory)
@@ -23,13 +21,11 @@ class WebvizFactoryRegistry:
 
     def __init__(self) -> None:
         self._is_initialized: bool = False
-        self._app_instance_info: Optional[WebvizInstanceInfo] = None
         self._factory_settings_dict: Dict[str, Any] = {}
         self._factories: Dict[Type, WebvizFactory] = {}
 
     def initialize(
         self,
-        app_instance_info: WebvizInstanceInfo,
         factory_settings_dict: Optional[Dict[str, Any]],
     ) -> None:
         """Does the actual initialization of the object instance.
@@ -37,10 +33,6 @@ class WebvizFactoryRegistry:
         """
         if self._is_initialized:
             raise RuntimeError("Registry already initialized")
-
-        if not isinstance(app_instance_info, WebvizInstanceInfo):
-            raise TypeError("app_instance_info must be of type WebvizInstanceInfo")
-        self._app_instance_info = app_instance_info
 
         if factory_settings_dict:
             if not isinstance(factory_settings_dict, dict):
@@ -84,13 +76,6 @@ class WebvizFactoryRegistry:
             raise RuntimeError("Illegal access, factory registry is not initialized")
 
         return self._factory_settings_dict
-
-    @property
-    def app_instance_info(self) -> WebvizInstanceInfo:
-        if not self._is_initialized or self._app_instance_info is None:
-            raise RuntimeError("Factory registry is not initialized")
-
-        return self._app_instance_info
 
 
 WEBVIZ_FACTORY_REGISTRY = WebvizFactoryRegistry()
