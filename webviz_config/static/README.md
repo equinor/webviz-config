@@ -24,5 +24,7 @@ application, you will need to provide a build time environment variable to Docke
 docker build . --build-arg GITHUB_DEPLOY_KEYS=COMMA_SEPARATED_LIST_OF_DEPLOY_KEYS.
 
 To read more on GitHub deploy keys, see https://docs.github.com/en/free-pro-team@latest/developers/overview/managing-deploy-keys#deploy-keys.
-In order to support multi-line deploy keys, spaces in GITHUB_DEPLOY_KEYS are converted
-into line shifts. Multiple keys can be separated with a comma (,).
+In order to add the multi-line deploy keys, you should `base64` encode the deploy key
+before giving it as the `GITHUB_DEPLOY_KEYS` variable. Multiple keys (in case you have
+multiple private repositiories as dependencies) can be joined together with a comma
+separator (,) before `base64` encoding.

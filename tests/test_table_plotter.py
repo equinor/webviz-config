@@ -25,7 +25,7 @@ def test_table_plotter(dash_duo: DashComposite) -> None:
     time.sleep(5)
 
     # Checking that no plot options are defined
-    assert page.plot_options == {}
+    assert not page.plot_options
     # Check that filter is not active
     assert not page.use_filter
 
@@ -62,7 +62,7 @@ def test_table_plotter_filter(dash_duo: DashComposite) -> None:
     time.sleep(5)
 
     # Checking that no plot options are defined
-    assert page.plot_options == {}
+    assert not page.plot_options
     # Check that filter is active
     assert page.use_filter
     assert page.filter_cols == ["Well"]

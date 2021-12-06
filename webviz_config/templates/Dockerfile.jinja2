@@ -23,10 +23,11 @@ ENV PATH="${PATH}:/home/appuser/.local/bin"{% if ssh_required %}  \
 # temporary files which the ssh command can read from.
 ARG GITHUB_DEPLOY_KEYS
 RUN python -c "\
-import os; from pathlib import Path; \
-keys = os.environ['GITHUB_DEPLOY_KEYS'].replace(' ', '\n').split(','); \
+import base64, os, stat; from pathlib import Path; \
+keys = base64.b64decode(os.environ['GITHUB_DEPLOY_KEYS']).decode('utf-8').split(','); \
 paths = [f'github_deploy_key_{i}' for i, _ in enumerate(keys)]; \
 [Path(path).write_text(key) for path, key in zip(paths, keys)]; \
+[Path(path).chmod(stat.S_IRUSR) for path in paths]; \
 Path('ssh_identity_files').write_text('-i ' + ' -i '.join(paths))"
 
 # Add github.com ssh as known host, and verify that fingerprint equals known value
