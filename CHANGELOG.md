@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.3.7] - 2021-12-09
+
 ### Fixed
 - [#558](https://github.com/equinor/webviz-config/pull/558) - Added documentation on SSH deploy keys, and fix permission on `ssh_identity` files in Dockerfile.
 - [#555](https://github.com/equinor/webviz-config/pull/555) - Fix issue where clientside callbacks were not getting whitelisted
