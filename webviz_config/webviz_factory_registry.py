@@ -1,6 +1,8 @@
 from typing import Any, Dict, Optional, Type, TypeVar
+import warnings
 
 from .webviz_factory import WebvizFactory
+from .webviz_instance_info import WebvizInstanceInfo, WEBVIZ_INSTANCE_INFO
 
 # pylint: disable=invalid-name
 T = TypeVar("T", bound=WebvizFactory)
@@ -76,6 +78,16 @@ class WebvizFactoryRegistry:
             raise RuntimeError("Illegal access, factory registry is not initialized")
 
         return self._factory_settings_dict
+
+    @property
+    def app_instance_info(self) -> WebvizInstanceInfo:
+        warnings.warn(
+            "Accessing WebvizInstanceInfo through WebvizFactoryRegistry has been deprecated, "
+            "please use global WEBVIZ_INSTANCE_INFO instead",
+            DeprecationWarning,
+        )
+
+        return WEBVIZ_INSTANCE_INFO
 
 
 WEBVIZ_FACTORY_REGISTRY = WebvizFactoryRegistry()
