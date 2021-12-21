@@ -73,21 +73,21 @@ class WebvizInstanceInfo:
 
     @property
     def dash_app(self) -> Dash:
-        if not self._is_initialized:
+        if not self._is_initialized or self._dash_app is None:
             raise RuntimeError("WebvizInstanceInfo is not yet initialized")
 
         return self._dash_app
 
     @property
     def run_mode(self) -> WebvizRunMode:
-        if not self._is_initialized:
+        if not self._is_initialized or self._run_mode is None:
             raise RuntimeError("WebvizInstanceInfo is not yet initialized")
 
         return self._run_mode
 
     @property
     def theme(self) -> WebvizConfigTheme:
-        if not self._is_initialized:
+        if not self._is_initialized or self._theme is None:
             raise RuntimeError("WebvizInstanceInfo is not yet initialized")
 
         # The theme class is mutable, so return a copy
@@ -95,7 +95,7 @@ class WebvizInstanceInfo:
 
     @property
     def storage_folder(self) -> Path:
-        if not self._is_initialized:
+        if not self._is_initialized or self._storage_folder is None:
             raise RuntimeError("WebvizInstanceInfo is not yet initialized")
 
         return self._storage_folder
