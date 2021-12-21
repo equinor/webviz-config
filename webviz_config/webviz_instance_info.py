@@ -15,7 +15,7 @@ class WebvizRunMode(Enum):
 
 
 class WebvizInstanceInfo:
-    """Containins global information regarding the running webviz app instance, exposed
+    """Contains global information regarding the running webviz app instance, exposed
     globally through WEBVIZ_INSTANCE_INFO.
 
     Note that this class utilizes a two-stage initialization approach which renders it
