@@ -1,11 +1,10 @@
 from typing import Optional
-from pathlib import Path
+
 import pytest
 
 from webviz_config.webviz_factory import WebvizFactory
 from webviz_config.webviz_factory_registry import WebvizFactoryRegistry
-from webviz_config.webviz_instance_info import WebvizInstanceInfo
-from webviz_config.webviz_instance_info import WebvizRunMode
+
 
 # pylint: disable=no-self-use
 class FactoryA(WebvizFactory):
@@ -29,9 +28,8 @@ class UnrelatedFactory:
 
 
 def create_initialized_registry() -> WebvizFactoryRegistry:
-    instance_info = WebvizInstanceInfo(WebvizRunMode.NON_PORTABLE, Path("somePath"))
     registry = WebvizFactoryRegistry()
-    registry.initialize(instance_info, {"MyFactory": "someValue"})
+    registry.initialize({"MyFactory": "someValue"})
     return registry
 
 
@@ -39,17 +37,11 @@ def test_uninitialized_access() -> None:
     registry = WebvizFactoryRegistry()
 
     with pytest.raises(RuntimeError):
-        _inst_info = registry.app_instance_info
-
-    with pytest.raises(RuntimeError):
         _settings = registry.all_factory_settings
 
 
 def test_initialization_and_basic_access() -> None:
     registry = create_initialized_registry()
-
-    inst_info = registry.app_instance_info
-    assert inst_info.run_mode == WebvizRunMode.NON_PORTABLE
 
     settings = registry.all_factory_settings
     assert "MyFactory" in settings
@@ -59,12 +51,11 @@ def test_initialization_and_basic_access() -> None:
 
 
 def test_multiple_initializations() -> None:
-    instance_info = WebvizInstanceInfo(WebvizRunMode.NON_PORTABLE, Path("somePath"))
     registry = WebvizFactoryRegistry()
-    registry.initialize(instance_info, {"MyFactory": "someValue"})
+    registry.initialize({"MyFactory": "someValue"})
 
     with pytest.raises(RuntimeError):
-        registry.initialize(instance_info, {"MyFactory": "someValue"})
+        registry.initialize({"MyFactory": "someValue"})
 
 
 def test_set_get_factory() -> None:
