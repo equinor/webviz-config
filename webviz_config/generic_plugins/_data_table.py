@@ -48,9 +48,7 @@ If feature is requested, the data could also come from a database.
     def layout(self) -> dash_table.DataTable:
         return dash_table.DataTable(
             columns=[{"name": i, "id": i} for i in self.df.columns],
-            data=self.df.to_dict(  # PyCQA/pylint#4577 # pylint: disable=no-member
-                "records"
-            ),
+            data=self.df.to_dict("records"),
             sort_action="native" if self.sorting else "none",
             filter_action="native" if self.filtering else "none",
             page_action="native" if self.pagination else "none",
