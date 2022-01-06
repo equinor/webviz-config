@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.3.8] - 2022-01-06
+
 ### Changed
 - [#562](https://github.com/equinor/webviz-config/pull/562) - Added global WebvizInstanceInfo accessible through `WEBVIZ_INSTANCE_INFO`
 
