@@ -46,7 +46,7 @@ Useful on e.g. the front page for introducing a field or project.
 
     @property
     def layout(self) -> html.Div:
-        
+
         if self.title_position == "top":
             self.title_position = "start"
         elif self.title_position == "bottom":
@@ -56,7 +56,7 @@ Useful on e.g. the front page for introducing a field or project.
             "color": self.color,
             "backgroundImage": f"url({self.image_url})",
             "height": f"{self.height}px",
-            "align-items": f"{self.title_position}"
+            "align-items": f"{self.title_position}",
         }
 
         if self.shadow:
