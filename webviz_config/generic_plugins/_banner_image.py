@@ -30,6 +30,7 @@ Useful on e.g. the front page for introducing a field or project.
         color: str = "white",
         shadow: bool = True,
         height: int = 300,
+        title_position: str = "center",
     ):
 
         super().__init__()
@@ -39,16 +40,23 @@ Useful on e.g. the front page for introducing a field or project.
         self.color = color
         self.shadow = shadow
         self.height = height
+        self.title_position = title_position
 
         self.image_url = WEBVIZ_ASSETS.add(image)
 
     @property
     def layout(self) -> html.Div:
+        
+        if self.title_position == "top":
+            self.title_position = "start"
+        elif self.title_position == "bottom":
+            self.title_position = "end"
 
         style = {
             "color": self.color,
             "backgroundImage": f"url({self.image_url})",
             "height": f"{self.height}px",
+            "align-items": f"{self.title_position}"
         }
 
         if self.shadow:
