@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 from dash import html
 
@@ -47,16 +47,25 @@ Useful on e.g. the front page for introducing a field or project.
     @property
     def layout(self) -> html.Div:
 
-        if self.title_position == "top":
-            self.title_position = "start"
-        elif self.title_position == "bottom":
-            self.title_position = "end"
+        CSS_TITLE_POSITIONS: Dict[str, str] = {
+            "top": "start",
+            "center": "center",
+            "bottom": "end",
+        }
+
+        try:
+            if self.title_position not in CSS_TITLE_POSITIONS:
+                raise Exception(KeyError)
+        except KeyError:
+            print(
+                f"{self.title_position} is not a valid option. Try: 'bottom', 'center' or 'top'."
+            )
 
         style = {
             "color": self.color,
             "backgroundImage": f"url({self.image_url})",
             "height": f"{self.height}px",
-            "align-items": f"{self.title_position}",
+            "align-items": CSS_TITLE_POSITIONS[self.title_position],
         }
 
         if self.shadow:
