@@ -19,9 +19,16 @@ Useful on e.g. the front page for introducing a field or project.
 * **`color`:** Color to be used for the font.
 * **`shadow`:** Set to `False` if you do not want text shadow for the title.
 * **`height`:** Height of the banner image (in pixels).
+* **`title_position`:** Position of title (either `center`, `top` or `bottom`).
 """
 
     TOOLBAR_BUTTONS: List[str] = []
+
+    CSS_TITLE_POSITIONS: Dict[str, str] = {
+        "top": "start",
+        "center": "center",
+        "bottom": "end",
+    }
 
     def __init__(
         self,
@@ -40,32 +47,25 @@ Useful on e.g. the front page for introducing a field or project.
         self.color = color
         self.shadow = shadow
         self.height = height
-        self.title_position = title_position
+
+        try:
+            self.css_title_position = BannerImage.CSS_TITLE_POSITIONS[title_position]
+        except KeyError as exc:
+            raise ValueError(
+                f"{title_position} not a valid position for banner image title. "
+                f"Valid options: {', '.join(BannerImage.CSS_TITLE_POSITIONS.keys())}"
+            ) from exc
 
         self.image_url = WEBVIZ_ASSETS.add(image)
 
     @property
     def layout(self) -> html.Div:
 
-        CSS_TITLE_POSITIONS: Dict[str, str] = {
-            "top": "start",
-            "center": "center",
-            "bottom": "end",
-        }
-
-        try:
-            if self.title_position not in CSS_TITLE_POSITIONS:
-                raise Exception(KeyError)
-        except KeyError:
-            print(
-                f"{self.title_position} is not a valid option. Try: 'bottom', 'center' or 'top'."
-            )
-
         style = {
             "color": self.color,
             "backgroundImage": f"url({self.image_url})",
             "height": f"{self.height}px",
-            "align-items": CSS_TITLE_POSITIONS[self.title_position],
+            "align-items": self.css_title_position,
         }
 
         if self.shadow:
