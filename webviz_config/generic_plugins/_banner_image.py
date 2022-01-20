@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 from dash import html
 
@@ -19,9 +19,16 @@ Useful on e.g. the front page for introducing a field or project.
 * **`color`:** Color to be used for the font.
 * **`shadow`:** Set to `False` if you do not want text shadow for the title.
 * **`height`:** Height of the banner image (in pixels).
+* **`title_position`:** Position of title (either `center`, `top` or `bottom`).
 """
 
     TOOLBAR_BUTTONS: List[str] = []
+
+    CSS_TITLE_POSITIONS: Dict[str, str] = {
+        "top": "start",
+        "center": "center",
+        "bottom": "end",
+    }
 
     def __init__(
         self,
@@ -30,6 +37,7 @@ Useful on e.g. the front page for introducing a field or project.
         color: str = "white",
         shadow: bool = True,
         height: int = 300,
+        title_position: str = "center",
     ):
 
         super().__init__()
@@ -40,6 +48,14 @@ Useful on e.g. the front page for introducing a field or project.
         self.shadow = shadow
         self.height = height
 
+        try:
+            self.css_title_position = BannerImage.CSS_TITLE_POSITIONS[title_position]
+        except KeyError as exc:
+            raise ValueError(
+                f"{title_position} not a valid position for banner image title. "
+                f"Valid options: {', '.join(BannerImage.CSS_TITLE_POSITIONS.keys())}"
+            ) from exc
+
         self.image_url = WEBVIZ_ASSETS.add(image)
 
     @property
@@ -49,6 +65,7 @@ Useful on e.g. the front page for introducing a field or project.
             "color": self.color,
             "backgroundImage": f"url({self.image_url})",
             "height": f"{self.height}px",
+            "align-items": self.css_title_position,
         }
 
         if self.shadow:
