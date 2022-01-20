@@ -82,6 +82,7 @@ setup(
         "dash>=2.0",
         "dash-pivottable>=0.0.2",
         "dataclasses>=0.8; python_version<'3.7'",
+        "flask>=2.0",
         "flask-caching>=1.4",
         "flask-talisman>=0.6",
         "importlib-metadata>=1.7; python_version<'3.8'",
@@ -96,6 +97,7 @@ setup(
         "tqdm>=4.8",
         "typing-extensions>=3.7; python_version<'3.8'",
         "webviz-core-components>=0.5.4",
+        "werkzeug>=2.0",
     ],
     extras_require={
         "tests": TESTS_REQUIRES,
