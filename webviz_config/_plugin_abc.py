@@ -5,7 +5,6 @@ import zipfile
 import warnings
 import sys
 import urllib
-from uuid import uuid4
 from typing import List, Optional, Type, Union, Dict
 
 import bleach
@@ -92,6 +91,10 @@ class WebvizPluginABC(abc.ABC):
     # All paths in the returned ASSETS list should be absolute.
     ASSETS: list = []
 
+    # Counter for instances of the same plugin.
+    # Used to create unique ids of DOM elements
+    CLASS_INSTANCE_COUNTER: int = 0
+
     def __init__(self, screenshot_filename: str = "webviz-screenshot.png") -> None:
         """If a plugin/subclass defines its own `__init__` function
         (which they usually do), they should remember to call
@@ -100,8 +103,10 @@ class WebvizPluginABC(abc.ABC):
         ```
         in its own `__init__` function in order to also run the parent `__init__`.
         """
-
-        self._plugin_uuid = uuid4()
+        self.__class__.CLASS_INSTANCE_COUNTER += 1
+        self._plugin_uuid = (
+            f"{type(self).__name__}-{self.__class__.CLASS_INSTANCE_COUNTER}"
+        )
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
 
