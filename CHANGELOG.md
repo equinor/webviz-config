@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.3.9] - 2022-02-09
+
 ### Added
 - [#572](https://github.com/equinor/webviz-config/pull/572) - Added `title_position` for the BannerImage plugin, allowing the user to place the text at the top or at the bottom of the image.
 
