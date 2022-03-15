@@ -1,6 +1,9 @@
+from dataclasses import dataclass
 import io
 import abc
 import base64
+import string
+from tkinter.messagebox import NO
 import zipfile
 import warnings
 import sys
@@ -10,9 +13,12 @@ from typing import List, Optional, Type, Union, Dict
 
 import bleach
 from dash.development.base_component import Component
-from dash import Input, Output
+from dash import Dash, Input, Output, html
+import dash
 import jinja2
 import webviz_core_components as wcc
+
+from .webviz_plugin_subclasses import SettingsGroupABC, ViewABC
 
 if sys.version_info >= (3, 8):
     from typing import TypedDict
@@ -92,7 +98,11 @@ class WebvizPluginABC(abc.ABC):
     # All paths in the returned ASSETS list should be absolute.
     ASSETS: list = []
 
-    def __init__(self, screenshot_filename: str = "webviz-screenshot.png") -> None:
+    def __init__(
+        self,
+        app: dash.Dash,
+        screenshot_filename: str = "webviz-screenshot.png",
+    ) -> None:
         """If a plugin/subclass defines its own `__init__` function
         (which they usually do), they should remember to call
         ```python
@@ -104,6 +114,8 @@ class WebvizPluginABC(abc.ABC):
         self._plugin_uuid = uuid4()
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
+
+        self._set_wrapper_callbacks(app)
 
     def uuid(self, element: str) -> str:
         """Typically used to get a unique ID for some given element/component in
@@ -123,12 +135,53 @@ class WebvizPluginABC(abc.ABC):
         return f"{element}-{self._plugin_uuid}"
 
     @property
-    @abc.abstractmethod
     def layout(self) -> Union[str, Type[Component]]:
         """This is the only required function of a Webviz plugin.
         It returns a Dash layout which by webviz-config is added to
         the main Webviz application.
         """
+        raise NotImplementedError
+
+    def views(self) -> List[ViewABC]:
+        raise NotImplementedError
+
+    @property
+    def _get_views_dict(self) -> Optional[List[dict]]:
+        try:
+            return [elm.as_dict() for elm in self.views()] if self.views() else None
+        except NotImplementedError:
+            return None
+
+    def shared_settings(self) -> Optional[List[SettingsGroupABC]]:
+        return None
+
+    def settings(self) -> List[html.Div]:
+        settings = []
+        for view in self.views():
+            settings.extend(
+                [
+                    wcc.WebvizSettingsGroup(
+                        id=setting.uuid(),
+                        title=setting.title,
+                        viewId=view.uuid(),
+                        pluginId=self._plugin_wrapper_id,
+                        children=[setting.layout()],
+                    )
+                    for setting in view.settings()
+                ]
+            )
+
+        return settings
+
+    @property
+    def _get_shared_settings_dict(self) -> Optional[List[dict]]:
+        try:
+            shared_settings = self.shared_settings()
+            return (
+                [elm.as_dict() for elm in shared_settings] if shared_settings else None
+            )
+        except NotImplementedError:
+            return None
 
     @property
     def _plugin_wrapper_id(self) -> str:
@@ -242,7 +295,7 @@ class WebvizPluginABC(abc.ABC):
         contact_person: Optional[dict] = None,
         plugin_deprecation_warnings: Optional[List[str]] = None,
         argument_deprecation_warnings: Optional[List[str]] = None,
-    ) -> Union[str, Type[Component]]:
+    ) -> Type[Component]:
         """This function returns (if the class constant SHOW_TOOLBAR is True,
         the plugin layout wrapped into a common webviz config plugin
         component, which provides some useful buttons like download of data,
@@ -267,6 +320,7 @@ class WebvizPluginABC(abc.ABC):
         if self._add_download_button:
             buttons.append("download")
 
+        """
         if buttons or plugin_deprecation_warnings or argument_deprecation_warnings:
             # pylint: disable=no-member
             return wcc.WebvizPluginPlaceholder(
@@ -285,5 +339,23 @@ class WebvizPluginABC(abc.ABC):
                 ),
                 feedback_url=self._make_feedback_url(),
             )
+        """
 
-        return self.layout
+        return wcc.WebvizPluginWrapper(
+            id=self._plugin_wrapper_id,
+            name=type(self).__name__,
+            children=[self.views()[0].layout() if self.views() else self.layout],
+        )
+
+        # return self.layout
+
+    def _set_wrapper_callbacks(self, app: Dash) -> None:
+        @app.callback(
+            Output(self._plugin_wrapper_id, "children"),
+            Input("webviz-content-manager", "activeViewId"),
+        )
+        def change_view(view_id: str) -> Component:
+            view = next((view for view in self.views() if view.uuid() == view_id), None)
+            if view:
+                return view.layout()
+            return dash.no_update
