@@ -139,20 +139,7 @@ else:
 
     page_plugins["{{page.id}}"].append(plugin.plugin_layout())
     page_metadata["{{page.id}}"].append({ "id": plugin._plugin_wrapper_id, "views": [{"id": view.uuid(), "name": view.name} for view in plugin.views()], "name": type(plugin).__name__, "activeViewId": plugin.views()[0].uuid() if plugin.views() else "0" })
-    settings = []
-    if plugin.shared_settings():
-        settings = [
-                    wcc.WebvizSettingsGroup(
-                        id=setting.uuid(),
-                        title=setting.title,
-                        viewId="",
-                        pluginId=plugin._plugin_wrapper_id,
-                        children=[setting.layout()],
-                    )
-                    for setting in plugin.shared_settings()
-                ]
-    settings.extend([settings for settings in plugin.settings()])
-    page_settings["{{page.id}}"] = settings
+    page_settings["{{page.id}}"].extend([settings for settings in plugin.get_all_settings()])
 
     {% endif %}
     {% endfor %}
