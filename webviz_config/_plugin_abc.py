@@ -152,14 +152,13 @@ class WebvizPluginABC(abc.ABC):
         except NotImplementedError:
             return None
 
-    @property
     def shared_settings(self) -> Optional[List[SettingsGroupABC]]:
         return None
 
     def get_all_settings(self) -> List[html.Div]:
         settings = []
-
-        if self.shared_settings is not None:
+        shared_settings = self.shared_settings()
+        if shared_settings is not None:
             settings = [
                 wcc.WebvizSettingsGroup(
                     id=setting.uuid(),
@@ -168,7 +167,7 @@ class WebvizPluginABC(abc.ABC):
                     pluginId=self._plugin_wrapper_id,
                     children=[setting.layout()],
                 )
-                for setting in self.shared_settings
+                for setting in shared_settings
             ]
 
         for view in self.views():
@@ -190,7 +189,7 @@ class WebvizPluginABC(abc.ABC):
     @property
     def _get_shared_settings_dict(self) -> Optional[List[dict]]:
         try:
-            shared_settings = self.shared_settings
+            shared_settings = self.shared_settings()
             return (
                 [elm.as_dict() for elm in shared_settings] if shared_settings else None
             )
