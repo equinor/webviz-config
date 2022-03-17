@@ -4,6 +4,7 @@ import abc
 from uuid import uuid4
 
 from dash.development.base_component import Component
+from dash import Dash
 
 
 class SettingsGroupABC(abc.ABC):
@@ -11,7 +12,10 @@ class SettingsGroupABC(abc.ABC):
         super().__init__()
 
         self.title = title
-        self._uuid = str(uuid4())
+        self._uuid = ""
+
+    def _set_uuid(self, uuid: str) -> None:
+        self._uuid = uuid
 
     def uuid(self, element: Optional[str] = None) -> str:
         if element:
@@ -23,5 +27,5 @@ class SettingsGroupABC(abc.ABC):
     def layout(self) -> Type[Component]:
         raise NotImplementedError
 
-    def as_dict(self) -> dict:
-        return {"id": self._uuid, "title": self.title, "content": self.layout}
+    def _set_callbacks(self, app: Dash) -> None:
+        return

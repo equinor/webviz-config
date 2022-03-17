@@ -4,16 +4,17 @@ import abc
 import base64
 import string
 from tkinter.messagebox import NO
+from xml.dom import NotFoundErr
 import zipfile
 import warnings
 import sys
 import urllib
 from uuid import uuid4
-from typing import List, Optional, Type, Union, Dict
+from typing import List, Optional, Type, Union, Dict, Callable, Tuple
 
 import bleach
 from dash.development.base_component import Component
-from dash import Dash, Input, Output, html
+from dash import Dash, Input, Output, State, html
 import dash
 import jinja2
 import webviz_core_components as wcc
@@ -115,6 +116,24 @@ class WebvizPluginABC(abc.ABC):
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
 
+        self._views: List[ViewABC] = []
+        self._shared_settings_groups: List[SettingsGroupABC] = []
+
+        self._app = app
+        self._active_view_id = ""
+
+        self._registered_callbacks: Dict[
+            str,
+            List[
+                Tuple[
+                    Output,
+                    Union[List[Input], Input],
+                    Union[List[State], State],
+                    Callable,
+                ]
+            ],
+        ] = {}
+
         self._set_wrapper_callbacks(app)
 
     def uuid(self, element: str) -> str:
@@ -142,22 +161,52 @@ class WebvizPluginABC(abc.ABC):
         """
         raise NotImplementedError
 
-    def views(self) -> List[ViewABC]:
-        raise NotImplementedError
+    def add_view(self, view: ViewABC, id: Optional[str] = None) -> None:
+        uuid = f"{self._plugin_uuid}-"
+        if id:
+            uuid += id
+        else:
+            uuid += f"view{len(self._views)}"
+
+        view._set_uuid(uuid)
+        view._set_all_callbacks(self._app)
+        self._views.append(view)
+
+    def add_shared_settings_group(
+        self, settings_group: SettingsGroupABC, id: Optional[str] = None
+    ) -> None:
+        uuid = f"{self._plugin_uuid}-"
+        if id:
+            uuid += id
+        else:
+            uuid += f"settings{len(self._shared_settings_groups)}"
+
+        settings_group._set_uuid(uuid)
+        settings_group._set_callbacks(self._app)
+        self._shared_settings_groups.append(settings_group)
 
     @property
-    def _get_views_dict(self) -> Optional[List[dict]]:
-        try:
-            return [elm.as_dict() for elm in self.views()] if self.views else None
-        except NotImplementedError:
-            return None
+    def active_view_id(self) -> str:
+        return self._active_view_id
 
-    def shared_settings(self) -> Optional[List[SettingsGroupABC]]:
-        return None
+    def views(self) -> List[ViewABC]:
+        return self._views
+
+    def view(self, id: str) -> ViewABC:
+        view = next((el for el in self.views() if el.uuid().split("-")[-1] == id), None)
+        if view:
+            return view
+
+        raise LookupError(
+            f"Invalid view id: '{id}. Available view ids: {[el.uuid for el in self.views()]}"
+        )
+
+    def shared_settings_groups(self) -> Optional[List[SettingsGroupABC]]:
+        return self._shared_settings_groups
 
     def get_all_settings(self) -> List[html.Div]:
         settings = []
-        shared_settings = self.shared_settings()
+        shared_settings = self.shared_settings_groups()
         if shared_settings is not None:
             settings = [
                 wcc.WebvizSettingsGroup(
@@ -180,21 +229,11 @@ class WebvizPluginABC(abc.ABC):
                         pluginId=self._plugin_wrapper_id,
                         children=[setting.layout()],
                     )
-                    for setting in view.settings()
+                    for setting in view.settings_groups()
                 ]
             )
 
         return settings
-
-    @property
-    def _get_shared_settings_dict(self) -> Optional[List[dict]]:
-        try:
-            shared_settings = self.shared_settings()
-            return (
-                [elm.as_dict() for elm in shared_settings] if shared_settings else None
-            )
-        except NotImplementedError:
-            return None
 
     @property
     def _plugin_wrapper_id(self) -> str:
@@ -370,5 +409,29 @@ class WebvizPluginABC(abc.ABC):
         def change_view(view_id: str) -> Component:
             view = next((view for view in self.views() if view.uuid() == view_id), None)
             if view:
+                self._active_view_id = view.uuid()
                 return view.layout()
             return dash.no_update
+
+    def callback(
+        self,
+        input: Union[Input, List[Input]],
+        output: Union[Output, List[Output]],
+        state: Optional[Union[State, List[State]]] = None,
+    ) -> Callable:
+        def wrapper(cb: Callable) -> None:
+            if isinstance(output, list):
+                for el in output:
+                    if el.__str__() not in self._registered_callbacks:
+                        self._registered_callbacks[el.__str__()] = []
+                    self._registered_callbacks[el.__str__()].append(
+                        (output, input, state, cb)
+                    )
+            else:
+                if output.__str__() not in self._registered_callbacks:
+                    self._registered_callbacks[output.__str__()] = []
+                self._registered_callbacks[output.__str__()].append(
+                    (output, input, state, cb)
+                )
+
+        return wrapper

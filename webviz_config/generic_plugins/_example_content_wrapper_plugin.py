@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Type, Union, overload
 
 from dash.development.base_component import Component
-from dash import html, Dash, Input, Output, dash_table
+from dash import html, Dash, Input, Output, dash_table, callback_context
 
 import webviz_core_components as wcc
 
@@ -16,7 +16,7 @@ class TextViewElement(ViewElementABC):
 
     def layout(self) -> Union[str, Type[Component]]:
         return html.Div(
-            id="text",
+            id=self.uuid("text"),
             children=[
                 html.H1("Hello"),
                 "This is an example plugin. Please have a look how views and settings are working in this new environment =).",
@@ -33,7 +33,7 @@ class PlotViewElement(ViewElementABC):
         return html.Div(
             children=[
                 wcc.Graph(
-                    id="my-graph",
+                    id=self.uuid("my-graph"),
                     figure={
                         "data": [
                             {
@@ -60,7 +60,7 @@ class TableViewElement(ViewElementABC):
 
     def layout(self) -> Union[str, Type[Component]]:
         return dash_table.DataTable(
-            id="my-table",
+            id=self.uuid("my-table"),
             columns=[{"id": "x", "name": "X"}, {"id": "y", "name": "Y"}],
             data=[{"x": d[0], "y": d[1]} for d in self.data],
         )
@@ -72,7 +72,7 @@ class PlotViewSettingsGroup(SettingsGroupABC):
 
     def layout(self) -> Component:
         return wcc.RadioItems(
-            id="coordinates-selector",
+            id=self.uuid("coordinates-selector"),
             options=[
                 {
                     "label": "x - y",
@@ -93,7 +93,7 @@ class TableViewSettingsGroup(SettingsGroupABC):
 
     def layout(self) -> Component:
         return wcc.RadioItems(
-            id="order-selector",
+            id=self.uuid("order-selector"),
             options=[
                 {
                     "label": "ASC",
@@ -110,47 +110,136 @@ class TableViewSettingsGroup(SettingsGroupABC):
 
 class SharedSettingsGroup(SettingsGroupABC):
     def __init__(self) -> None:
-        super().__init__("Kindness")
+        super().__init__("Shared settings")
 
     def layout(self) -> Component:
-        return wcc.RadioItems(
-            id="kindness-selector",
-            options=[
-                {
-                    "label": "friendly",
-                    "value": "friendly",
-                },
-                {
-                    "label": "unfriendly",
-                    "value": "unfriendly",
-                },
-            ],
-            value="friendly",
+        return html.Div(
+            children=[
+                wcc.Label("Kindness"),
+                wcc.RadioItems(
+                    id=self.uuid("kindness-selector"),
+                    options=[
+                        {
+                            "label": "friendly",
+                            "value": "friendly",
+                        },
+                        {
+                            "label": "unfriendly",
+                            "value": "unfriendly",
+                        },
+                    ],
+                    value="friendly",
+                ),
+                wcc.Label("Power"),
+                wcc.RadioItems(
+                    id=self.uuid("power-selector"),
+                    options=[
+                        {
+                            "label": "2",
+                            "value": "2",
+                        },
+                        {
+                            "label": "3",
+                            "value": "3",
+                        },
+                    ],
+                    value="2",
+                ),
+            ]
         )
 
 
 class PlotView(ViewABC):
-    def __init__(self, app: Dash, data: List[Tuple[int, int]]) -> None:
+    def __init__(self, data: List[Tuple[int, int]], text_view: ViewElementABC) -> None:
         super().__init__("Plot")
         self.data = data
 
-        self.my_elements = [TextViewElement(), PlotViewElement(self.data)]
-        self.my_settings: List[SettingsGroupABC] = [PlotViewSettingsGroup()]
+        self.my_elements: List[ViewElementABC] = [
+            text_view,
+            PlotViewElement(self.data),
+        ]
 
-        self._set_callbacks(app)
+        self.add_view_elements(self.my_elements)
 
-    def view_elements(self) -> List[ViewElementABC]:
-        return self.my_elements
+        self.add_settings_group(PlotViewSettingsGroup(), "PlotSettings")
 
-    def settings(self) -> List[SettingsGroupABC]:
-        return self.my_settings
+
+class TableView(ViewABC):
+    def __init__(self, data: List[Tuple[int, int]], text_view: ViewElementABC) -> None:
+        super().__init__("Table")
+        self.data = data
+
+        self.table_view = TableViewElement(self.data)
+
+        self.add_view_element(text_view, id="Text")
+        self.add_view_element(self.table_view)
+
+        self.add_settings_group(TableViewSettingsGroup(), id="Settings")
 
     def _set_callbacks(self, app: Dash) -> None:
         @app.callback(
-            Output("my-graph", "figure"),
-            Input("coordinates-selector", "value"),
+            Output(self.table_view.uuid("my-table"), "data"),
+            Input(self.settings_group_uuid("Settings", "order-selector"), "value"),
         )
-        def swap_coordinates(coordinates: str) -> dict:
+        def swap_order(order: str) -> List[dict]:
+            data = self.data.copy()
+            if order == "desc":
+                data.reverse()
+            return [{"x": d[0], "y": d[1]} for d in data]
+
+
+class ExampleContentWrapperPlugin(WebvizPluginABC):
+    def __init__(self, app: Dash, title: str):
+        super().__init__(app)
+
+        self.data = [(x, x * x) for x in range(0, 10)]
+        self.app = app
+        self.title = title
+
+        self.text_view = TextViewElement()
+
+        self.add_view(PlotView(self.data, self.text_view), "PlotView")
+        self.add_view(TableView(self.data, self.text_view), "TableView")
+
+        self.settings_group = SharedSettingsGroup()
+        self.add_shared_settings_group(self.settings_group, "SharedSettings")
+
+        self._set_callbacks(app)
+
+    def _set_callbacks(self, app: Dash) -> None:
+        @app.callback(
+            Output(self.text_view.uuid("text"), "children"),
+            Input(self.settings_group.uuid("kindness-selector"), "value"),
+        )
+        def change_kindness(kindness: str) -> Component:
+            if kindness == "friendly":
+                return [
+                    html.H1("Hello"),
+                    "I am an example plugin. Please have a look how views and settings are working in my environment =).",
+                ]
+            return [
+                html.H1("Goodbye"),
+                "I am a bloody example plugin. Leave me alone! =(",
+            ]
+
+        @app.callback(
+            Output(self.view("PlotView").view_elements()[1].uuid("my-graph"), "figure"),
+            [
+                Input(self.settings_group.uuid("power-selector"), "value"),
+                Input(
+                    self.view("PlotView")
+                    .settings_group("PlotSettings")
+                    .uuid("coordinates-selector"),
+                    "value",
+                ),
+            ],
+        )
+        def change_power_and_coordinates(power: str, coordinates: str) -> Component:
+            if power == "2":
+                self.data = [(x, x * x) for x in range(0, 10)]
+            else:
+                self.data = [(x, x * x * x) for x in range(0, 10)]
+
             if coordinates == "yx":
                 return {
                     "data": [
@@ -170,67 +259,3 @@ class PlotView(ViewABC):
                 ],
                 "layout": {"title": "Example Graph"},
             }
-
-
-class TableView(ViewABC):
-    def __init__(self, app: Dash, data: List[Tuple[int, int]]) -> None:
-        super().__init__("Table")
-        self.data = data
-
-        self.my_elements = [TextViewElement(), TableViewElement(self.data)]
-        self.my_settings: List[SettingsGroupABC] = [TableViewSettingsGroup()]
-
-        self._set_callbacks(app)
-
-    def view_elements(self) -> List[ViewElementABC]:
-        return self.my_elements
-
-    def settings(self) -> List[SettingsGroupABC]:
-        return self.my_settings
-
-    def _set_callbacks(self, app: Dash) -> None:
-        @app.callback(
-            Output("my-table", "data"),
-            Input("order-selector", "value"),
-        )
-        def swap_order(order: str) -> List[dict]:
-            data = self.data.copy()
-            if order == "desc":
-                data.reverse()
-            return [{"x": d[0], "y": d[1]} for d in data]
-
-
-class ExampleContentWrapperPlugin(WebvizPluginABC):
-    def __init__(self, app: Dash, title: str):
-        super().__init__(app)
-
-        self.data = [(x, x * x) for x in range(0, 10)]
-        self.app = app
-        self.title = title
-
-        self.my_views = [PlotView(app, self.data), TableView(app, self.data)]
-        self.my_shared_settings: List[SettingsGroupABC] = [SharedSettingsGroup()]
-
-        self._set_callbacks(app)
-
-    def views(self) -> List[ViewABC]:
-        return self.my_views
-
-    def shared_settings(self) -> Optional[List[SettingsGroupABC]]:
-        return self.my_shared_settings
-
-    def _set_callbacks(self, app: Dash) -> None:
-        @app.callback(
-            Output("text", "children"),
-            Input("kindness-selector", "value"),
-        )
-        def change_kindness(kindness: str) -> Component:
-            if kindness == "friendly":
-                return [
-                    html.H1("Hello"),
-                    "I am an example plugin. Please have a look how views and settings are working in this my environment =).",
-                ]
-            return [
-                html.H1("Goodbye"),
-                "I am a bloody example plugin. Leave me alone! =(",
-            ]
