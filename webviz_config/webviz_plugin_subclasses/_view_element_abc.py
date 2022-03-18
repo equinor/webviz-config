@@ -4,15 +4,20 @@ from uuid import uuid4
 
 from ._settings_group_abc import SettingsGroupABC
 
-from dash import Dash
+from dash import Dash, Input, Output
 from dash.development.base_component import Component
 
 
 class ViewElementABC(abc.ABC):
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        screenshot_filename: str = "webviz-screenshot.png",
+    ) -> None:
         super().__init__()
 
         self._uuid: str = ""
+        self._screenshot_filename = screenshot_filename
+        self._add_download_button = False
 
         self._settings: List[SettingsGroupABC] = []
 
@@ -38,6 +43,15 @@ class ViewElementABC(abc.ABC):
 
         settings_group._set_uuid(uuid)
         self._settings.append(settings_group)
+
+    @property
+    def view_element_data_output(self) -> Output:
+        self._add_download_button = True
+        return Output(self.uuid(), "download")
+
+    @property
+    def view_element_data_requested(self) -> Input:
+        return Input(self.uuid(), "data_requested")
 
     def layout(self) -> Union[str, Type[Component]]:
         raise NotImplementedError

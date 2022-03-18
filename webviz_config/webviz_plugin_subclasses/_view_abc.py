@@ -121,7 +121,11 @@ class ViewABC(abc.ABC):
     def layout(self) -> Type[Component]:
         return html.Div(
             [
-                wcc.WebvizViewElement(id=el.uuid(), children=[el.layout()])
+                wcc.WebvizViewElement(
+                    id=el.uuid(),
+                    showDownload=el._add_download_button,
+                    children=[el.layout()],
+                )
                 for el in self.view_elements()
             ]
         )
