@@ -154,12 +154,9 @@ class PlotView(ViewABC):
         super().__init__("Plot")
         self.data = data
 
-        self.my_elements: List[ViewElementABC] = [
-            text_view,
-            PlotViewElement(self.data),
-        ]
-
-        self.add_view_elements(self.my_elements)
+        row = self.add_row()
+        row.add_view_element(text_view)
+        row.add_view_element(PlotViewElement(self.data))
 
         self.add_settings_group(PlotViewSettingsGroup(), "PlotSettings")
 
