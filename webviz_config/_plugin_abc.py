@@ -1,10 +1,6 @@
-from dataclasses import dataclass
 import io
 import abc
 import base64
-import string
-from tkinter.messagebox import NO
-from xml.dom import NotFoundErr
 import zipfile
 import warnings
 import sys
@@ -362,9 +358,7 @@ class WebvizPluginABC(abc.ABC):
 
         buttons = self.__class__.TOOLBAR_BUTTONS.copy()
 
-        if contact_person is None:
-            contact_person = {}
-        else:
+        if contact_person:
             # Sanitize the configuration user input
             for key in contact_person:
                 contact_person[key] = bleach.clean(str(contact_person[key]))
@@ -396,10 +390,16 @@ class WebvizPluginABC(abc.ABC):
         return wcc.WebvizPluginWrapper(
             id=self._plugin_wrapper_id,
             name=type(self).__name__,
+            views=[{"id": view.uuid(), "name": view.name} for view in self.views()],
+            showDownload=self._add_download_button,
+            contactPerson=contact_person,
+            deprecationWarnings=self._make_extended_deprecation_warnings(
+                plugin_deprecation_warnings, argument_deprecation_warnings
+            ),
+            screenshotFilename=self._screenshot_filename,
+            feedbackUrl=self._make_feedback_url(),
             children=[self.views()[0].layout() if self.views() else self.layout],
         )
-
-        # return self.layout
 
     def _set_wrapper_callbacks(self, app: Dash) -> None:
         @app.callback(
