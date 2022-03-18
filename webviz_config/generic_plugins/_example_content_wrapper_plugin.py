@@ -26,7 +26,7 @@ class TextViewElement(ViewElementABC):
 
 class PlotViewElement(ViewElementABC):
     def __init__(self, data: List[Tuple[int, int]]) -> None:
-        super().__init__()
+        super().__init__(flex_grow=8)
         self.data = data
 
     def layout(self) -> Union[str, Type[Component]]:
