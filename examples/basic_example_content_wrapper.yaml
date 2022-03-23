@@ -18,3 +18,10 @@ layout:
       content:
        - ExampleContentWrapperPlugin:
            title: Example Plugin
+           contact_person:
+             email: ruben.thoms@ceetronsolutions.com
+             name: Ruben Thoms
+             phone: "000000000"
+
+       - ExampleContentWrapperPlugin2:
+           title: Example Plugin 2

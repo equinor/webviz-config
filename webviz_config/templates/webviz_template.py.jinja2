@@ -134,7 +134,7 @@ else:
     if not use_oauth2:
         use_oauth2 = plugin_content.oauth2 if hasattr(plugin, "oauth2") else use_oauth2
 
-    page_plugins["{{page.id}}"].append(plugin.plugin_layout())
+    page_plugins["{{page.id}}"].append(plugin.{{ content_item._call_signature[1] }})
     page_settings["{{page.id}}"].extend([settings for settings in plugin.get_all_settings()])
 
     {% endif %}

@@ -60,8 +60,8 @@ class ViewElementABC(abc.ABC):
     def layout(self) -> Union[str, Type[Component]]:
         raise NotImplementedError
 
-    def settings(self) -> Optional[Type[Component]]:
-        return None
+    def settings(self) -> List[SettingsGroupABC]:
+        return self._settings
 
     def _set_all_callbacks(self, app: Dash) -> None:
         for setting in self._settings:
@@ -105,7 +105,7 @@ class ViewLayoutElement:
     def add_view_element(
         self, view_element: ViewElementABC, id: Optional[str] = None
     ) -> None:
-        self._parent_view.add_view_element(view_element, id)
+        self._parent_view._add_view_element(view_element, id)
         self._children.append(view_element)
 
     def add_view_elements(self, view_elements: List[ViewElementABC]) -> None:
@@ -133,7 +133,10 @@ class ViewLayoutElement:
                         id=el.uuid(),
                         showDownload=el._add_download_button,
                         flexGrow=el._flex_grow,
-                        children=el.layout(),
+                        children=[
+                            el.layout(),
+                            *[setting._wrapped_layout() for setting in el.settings()],
+                        ],
                     )
                     if isinstance(el, ViewElementABC)
                     else el.layout()
@@ -148,7 +151,10 @@ class ViewLayoutElement:
                         id=el.uuid(),
                         showDownload=el._add_download_button,
                         flexGrow=el._flex_grow,
-                        children=el.layout(),
+                        children=[
+                            el.layout(),
+                            *[setting._wrapped_layout() for setting in el.settings()],
+                        ],
                     )
                     if isinstance(el, ViewElementABC)
                     else el.layout()
@@ -227,6 +233,19 @@ class ViewABC(abc.ABC):
             uuid += f"element{len(self._view_elements)}"
 
         view_element._set_uuid(uuid)
+        self._layout_elements.append(view_element)
+        self._view_elements.append(view_element)
+
+    def _add_view_element(
+        self, view_element: ViewElementABC, id: Optional[str] = None
+    ) -> None:
+        uuid = f"{self._uuid}-" if self._uuid != "" else ""
+        if id is not None:
+            uuid += id
+        else:
+            uuid += f"element{len(self._view_elements)}"
+
+        view_element._set_uuid(uuid)
         self._view_elements.append(view_element)
 
     def add_row(self, flex_grow: int = 1) -> ViewLayoutElement:
@@ -250,7 +269,7 @@ class ViewABC(abc.ABC):
         if id is not None:
             uuid += id
         else:
-            uuid += f"element{len(self._view_elements)}"
+            uuid += f"element{len(self._settings_groups)}"
 
         settings_group._set_uuid(uuid)
         self._settings_groups.append(settings_group)
@@ -281,7 +300,10 @@ class ViewABC(abc.ABC):
                     id=el.uuid(),
                     showDownload=el._add_download_button,
                     flexGrow=el._flex_grow,
-                    children=[el.layout()],
+                    children=[
+                        el.layout(),
+                        *[setting._wrapped_layout() for setting in el.settings()],
+                    ],
                 )
                 if isinstance(el, ViewElementABC)
                 else el.layout

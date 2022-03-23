@@ -6,6 +6,8 @@ from uuid import uuid4
 from dash.development.base_component import Component
 from dash import Dash
 
+import webviz_core_components as wcc
+
 
 class SettingsGroupABC(abc.ABC):
     def __init__(self, title: str) -> None:
@@ -26,6 +28,17 @@ class SettingsGroupABC(abc.ABC):
     @abc.abstractmethod
     def layout(self) -> Type[Component]:
         raise NotImplementedError
+
+    def _wrapped_layout(
+        self, view_id: Optional[str] = "", plugin_id: Optional[str] = ""
+    ) -> Type[Component]:
+        return wcc.WebvizSettingsGroup(
+            id=self.uuid(),
+            title=self.title,
+            viewId=view_id,
+            pluginId=plugin_id,
+            children=[self.layout()],
+        )
 
     def _set_callbacks(self, app: Dash) -> None:
         return

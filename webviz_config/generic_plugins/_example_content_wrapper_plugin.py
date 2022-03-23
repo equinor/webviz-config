@@ -7,6 +7,7 @@ import webviz_core_components as wcc
 
 from .. import WebvizPluginABC
 
+from ..deprecation_decorators import deprecated_plugin
 from ..webviz_plugin_subclasses import ViewABC, ViewElementABC, SettingsGroupABC
 
 
@@ -24,13 +25,37 @@ class TextViewElement(ViewElementABC):
         )
 
 
+class PlotViewElementSettings(SettingsGroupABC):
+    def __init__(self) -> None:
+        super().__init__("Plot coordinate system")
+
+    def layout(self) -> Component:
+        return wcc.RadioItems(
+            id=self.uuid("test"),
+            options=[
+                {
+                    "label": "x - y",
+                    "value": "xy",
+                },
+                {
+                    "label": "y - x",
+                    "value": "yx",
+                },
+            ],
+            value="xy",
+        )
+
+
 class PlotViewElement(ViewElementABC):
     def __init__(self, data: List[Tuple[int, int]]) -> None:
         super().__init__(flex_grow=8)
         self.data = data
 
+        self.add_settings_group(PlotViewSettingsGroup())
+
     def layout(self) -> Union[str, Type[Component]]:
         return html.Div(
+            style={"height": 450},
             children=[
                 wcc.Graph(
                     id=self.uuid("my-graph"),
@@ -256,3 +281,17 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 ],
                 "layout": {"title": "Example Graph"},
             }
+
+
+@deprecated_plugin("This is an example plugin that should be removed.")
+class ExampleContentWrapperPlugin2(WebvizPluginABC):
+    def __init__(self, app: Dash, title: str):
+        super().__init__(app)
+
+        self.data = [(x, x * x) for x in range(0, 10)]
+        self.app = app
+        self.title = title
+
+        self.text_view = TextViewElement()
+
+        self.add_view(PlotView(self.data, self.text_view), "PlotView")
