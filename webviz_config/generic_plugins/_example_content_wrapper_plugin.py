@@ -193,10 +193,10 @@ class TableView(ViewABC):
 
         self.table_view = TableViewElement(self.data)
 
-        self.add_view_element(text_view, id="Text")
+        self.add_view_element(text_view, view_element_id="Text")
         self.add_view_element(self.table_view)
 
-        self.add_settings_group(TableViewSettingsGroup(), id="Settings")
+        self.add_settings_group(TableViewSettingsGroup(), settings_group_id="Settings")
 
     def _set_callbacks(self, app: Dash) -> None:
         @app.callback(
@@ -227,6 +227,9 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         self.add_shared_settings_group(self.settings_group, "SharedSettings")
 
         self._set_callbacks(app)
+
+    def _tour_step(self) -> List[dict]:
+        return [{}]
 
     def _set_callbacks(self, app: Dash) -> None:
         @app.callback(

@@ -1,12 +1,9 @@
 from typing import Optional, Type
 import abc
 
-from uuid import uuid4
-
-from dash.development.base_component import Component
-from dash import Dash
-
-import webviz_core_components as wcc
+from dash.development.base_component import Component # type: ignore
+from dash import Dash # type: ignore
+import webviz_core_components as wcc # type: ignore
 
 
 class SettingsGroupABC(abc.ABC):
@@ -41,4 +38,4 @@ class SettingsGroupABC(abc.ABC):
         )
 
     def _set_callbacks(self, app: Dash) -> None:
-        return
+        pass

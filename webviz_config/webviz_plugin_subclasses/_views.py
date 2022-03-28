@@ -2,14 +2,11 @@ from typing import List, Optional, Type, Union
 import abc
 from enum import Enum
 
-from dash import html
-
-import webviz_core_components as wcc
+from dash import html, Dash, Input, Output # type: ignore
+from dash.development.base_component import Component # type: ignore
+import webviz_core_components as wcc # type: ignore
 
 from ._settings_group_abc import SettingsGroupABC
-
-from dash import Dash, Input, Output
-from dash.development.base_component import Component
 
 
 class ViewElementABC(abc.ABC):
@@ -29,6 +26,7 @@ class ViewElementABC(abc.ABC):
         self._uuid = uuid
 
         for setting in self._settings:
+            # pylint: disable=protected-access
             setting._set_uuid(f"{uuid}-{setting.uuid()}")
 
     def uuid(self, element: Optional[str] = None) -> str:
@@ -37,14 +35,15 @@ class ViewElementABC(abc.ABC):
         return f"{element}-{self._uuid}"
 
     def add_settings_group(
-        self, settings_group: SettingsGroupABC, id: Optional[str] = None
+        self, settings_group: SettingsGroupABC, settings_group_id: Optional[str] = None
     ) -> None:
         uuid = f"{self._uuid}-" if self._uuid != "" else ""
-        if id:
-            uuid += id
+        if settings_group_id:
+            uuid += settings_group_id
         else:
             uuid += f"settings{len(self._settings)}"
 
+        # pylint: disable=protected-access
         settings_group._set_uuid(uuid)
         self._settings.append(settings_group)
 
@@ -65,12 +64,13 @@ class ViewElementABC(abc.ABC):
 
     def _set_all_callbacks(self, app: Dash) -> None:
         for setting in self._settings:
+            # pylint: disable=protected-access
             setting._set_callbacks(app)
 
         self._set_callbacks(app)
 
     def _set_callbacks(self, app: Dash) -> None:
-        return
+        pass
 
 
 class LayoutElementType(Enum):
@@ -80,12 +80,12 @@ class LayoutElementType(Enum):
 
 class ViewLayoutElement:
     def __init__(
-        self, type: LayoutElementType, parent_view: "ViewABC", flex_grow: int = 1
+        self, layout_element_type: LayoutElementType, parent_view: "ViewABC", flex_grow: int = 1
     ):
         self._parent_view: ViewABC = parent_view
         self._children: List[Union[ViewLayoutElement, ViewElementABC]] = []
         self._flex_grow = flex_grow
-        self.__type = type
+        self.__type = layout_element_type
 
     def make_row(self, flex_grow: int = 1) -> "ViewLayoutElement":
         row = ViewLayoutElement(LayoutElementType.ROW, self._parent_view, flex_grow)
@@ -103,9 +103,10 @@ class ViewLayoutElement:
         return column
 
     def add_view_element(
-        self, view_element: ViewElementABC, id: Optional[str] = None
+        self, view_element: ViewElementABC, view_element_id: Optional[str] = None
     ) -> None:
-        self._parent_view._add_view_element(view_element, id)
+        # pylint: disable=protected-access
+        self._parent_view._add_view_element(view_element, view_element_id)
         self._children.append(view_element)
 
     def add_view_elements(self, view_elements: List[ViewElementABC]) -> None:
@@ -114,9 +115,11 @@ class ViewLayoutElement:
 
     def _set_all_callbacks(self, app: Dash) -> None:
         for child in self._children:
+            # pylint: disable=protected-access
             child._set_all_callbacks(app)
 
     def _set_uuid(self, uuid: str) -> None:
+        # pylint: disable=protected-access
         for child in self._children:
             if isinstance(child, ViewElementABC):
                 child._set_uuid(f"{uuid}-{child.uuid()}")
@@ -125,12 +128,14 @@ class ViewLayoutElement:
 
     @property
     def layout(self) -> Type[Component]:
+        # pylint: disable=protected-access
         if self.__type == LayoutElementType.ROW:
             return wcc.WebvizPluginLayoutRow(
                 flexGrow=self._flex_grow,
                 children=[
                     wcc.WebvizViewElement(
                         id=el.uuid(),
+                        # pylint: disable=protected-access
                         showDownload=el._add_download_button,
                         flexGrow=el._flex_grow,
                         children=[
@@ -143,24 +148,23 @@ class ViewLayoutElement:
                     for el in self._children
                 ],
             )
-        else:
-            return wcc.WebvizPluginLayoutColumn(
-                flexGrow=self._flex_grow,
-                children=[
-                    wcc.WebvizViewElement(
-                        id=el.uuid(),
-                        showDownload=el._add_download_button,
-                        flexGrow=el._flex_grow,
-                        children=[
-                            el.layout(),
-                            *[setting._wrapped_layout() for setting in el.settings()],
-                        ],
-                    )
-                    if isinstance(el, ViewElementABC)
-                    else el.layout()
-                    for el in self._children
-                ],
-            )
+        return wcc.WebvizPluginLayoutColumn(
+            flexGrow=self._flex_grow,
+            children=[
+                wcc.WebvizViewElement(
+                    id=el.uuid(),
+                    showDownload=el._add_download_button,
+                    flexGrow=el._flex_grow,
+                    children=[
+                        el.layout(),
+                        *[setting._wrapped_layout() for setting in el.settings()],
+                    ],
+                )
+                if isinstance(el, ViewElementABC)
+                else el.layout()
+                for el in self._children
+            ],
+        )
 
 
 class ViewABC(abc.ABC):
@@ -175,6 +179,7 @@ class ViewABC(abc.ABC):
         self._settings_groups: List[SettingsGroupABC] = []
 
     def _set_uuid(self, uuid: str) -> None:
+        # pylint: disable=protected-access
         self._uuid = uuid
         for element in self._layout_elements:
             if isinstance(element, ViewElementABC):
@@ -195,27 +200,31 @@ class ViewABC(abc.ABC):
             return f"{element}-{self._uuid}-{view_id}"
         return f"{self._uuid}-{view_id}"
 
-    def view_element(self, id: str) -> "ViewElementABC":
+    def view_element(self, view_element_id: str) -> "ViewElementABC":
         view_element = next(
-            (el for el in self.view_elements() if el.uuid().split("-")[-1] == id), None
+            (el for el in self.view_elements() if el.uuid().split("-")[-1] == view_element_id), None
         )
         if view_element:
             return view_element
 
         raise LookupError(
-            f"Invalid view element id: '{id}. Available view element ids: {[el.uuid for el in self.view_elements()]}"
+            f"""Invalid view element id: '{view_element_id}. 
+            Available view element ids: {[el.uuid for el in self.view_elements()]}
+            """
         )
 
-    def settings_group(self, id: str) -> SettingsGroupABC:
+    def settings_group(self, settings_group_id: str) -> SettingsGroupABC:
         settings_group = next(
-            (el for el in self.settings_groups() if el.uuid().split("-")[-1] == id),
+            (el for el in self.settings_groups() if el.uuid().split("-")[-1] == settings_group_id),
             None,
         )
         if settings_group:
             return settings_group
 
         raise LookupError(
-            f"Invalid settings group id: '{id}. Available settings group ids: {[el.uuid for el in self.settings_groups()]}"
+            f"""Invalid settings group id: '{settings_group_id}. 
+            Available settings group ids: {[el.uuid for el in self.settings_groups()]}
+            """
         )
 
     def settings_group_uuid(self, settings_id: str, element: Optional[str]) -> str:
@@ -224,11 +233,12 @@ class ViewABC(abc.ABC):
         return f"{self._uuid}-{settings_id}"
 
     def add_view_element(
-        self, view_element: ViewElementABC, id: Optional[str] = None
+        self, view_element: ViewElementABC, view_element_id: Optional[str] = None
     ) -> None:
+        # pylint: disable=protected-access
         uuid = f"{self._uuid}-" if self._uuid != "" else ""
-        if id is not None:
-            uuid += id
+        if view_element_id is not None:
+            uuid += view_element_id
         else:
             uuid += f"element{len(self._view_elements)}"
 
@@ -237,11 +247,12 @@ class ViewABC(abc.ABC):
         self._view_elements.append(view_element)
 
     def _add_view_element(
-        self, view_element: ViewElementABC, id: Optional[str] = None
+        self, view_element: ViewElementABC, view_element_id: Optional[str] = None
     ) -> None:
+        # pylint: disable=protected-access
         uuid = f"{self._uuid}-" if self._uuid != "" else ""
-        if id is not None:
-            uuid += id
+        if view_element_id is not None:
+            uuid += view_element_id
         else:
             uuid += f"element{len(self._view_elements)}"
 
@@ -263,11 +274,12 @@ class ViewABC(abc.ABC):
             self.add_view_element(view_element)
 
     def add_settings_group(
-        self, settings_group: SettingsGroupABC, id: Optional[str] = None
+        self, settings_group: SettingsGroupABC, settings_group_id: Optional[str] = None
     ) -> None:
+        # pylint: disable=protected-access
         uuid = f"{self._uuid}-" if self._uuid != "" else ""
-        if id is not None:
-            uuid += id
+        if settings_group_id is not None:
+            uuid += settings_group_id
         else:
             uuid += f"element{len(self._settings_groups)}"
 
@@ -279,6 +291,7 @@ class ViewABC(abc.ABC):
             self.add_settings_group(settings_group)
 
     def _set_all_callbacks(self, app: Dash) -> None:
+        # pylint: disable=protected-access
         for element in self._view_elements:
             element._set_all_callbacks(app)
 
@@ -294,6 +307,7 @@ class ViewABC(abc.ABC):
         return self._settings_groups
 
     def layout(self) -> Type[Component]:
+        # pylint: disable=protected-access
         return html.Div(
             [
                 wcc.WebvizViewElement(
@@ -312,4 +326,4 @@ class ViewABC(abc.ABC):
         )
 
     def _set_callbacks(self, app: Dash) -> None:
-        return
+        pass

@@ -6,11 +6,12 @@ import warnings
 import sys
 import urllib
 from uuid import uuid4
-from typing import List, Optional, Type, Union, Dict, Callable, Tuple
+import inspect
+from typing import Any, List, Optional, Type, Union, Dict, Callable, Tuple
 
 import bleach
 from dash.development.base_component import Component
-from dash import Dash, Input, Output, State, html
+from dash import Dash, Input, Output, State, html, callback, _callback
 import dash
 import jinja2
 import webviz_core_components as wcc
@@ -117,18 +118,6 @@ class WebvizPluginABC(abc.ABC):
 
         self._app = app
         self._active_view_id = ""
-
-        self._registered_callbacks: Dict[
-            str,
-            List[
-                Tuple[
-                    Output,
-                    Union[List[Input], Input],
-                    Union[List[State], State],
-                    Callable,
-                ]
-            ],
-        ] = {}
 
         self._set_wrapper_callbacks(app)
 
@@ -413,25 +402,32 @@ class WebvizPluginABC(abc.ABC):
                 return view.layout()
             return dash.no_update
 
-    def callback(
+    @staticmethod
+    def extract_view_id(id_string: str) -> str:
+        return id_string.split(":")[1]
+
+    def callback( # type: ignore
         self,
-        input: Union[Input, List[Input]],
-        output: Union[Output, List[Output]],
-        state: Optional[Union[State, List[State]]] = None,
+        *_args,
+        **_kwargs
     ) -> Callable:
-        def wrapper(cb: Callable) -> None:
-            if isinstance(output, list):
-                for el in output:
-                    if el.__str__() not in self._registered_callbacks:
-                        self._registered_callbacks[el.__str__()] = []
-                    self._registered_callbacks[el.__str__()].append(
-                        (output, input, state, cb)
-                    )
-            else:
-                if output.__str__() not in self._registered_callbacks:
-                    self._registered_callbacks[output.__str__()] = []
-                self._registered_callbacks[output.__str__()].append(
-                    (output, input, state, cb)
-                )
+        # Get the outputs using a Dash internal function
+        output = _callback.handle_grouped_callback_args(_args, _kwargs)[0]
+
+        view_ids: List[str] = []
+
+        if isinstance(output, Output):
+            view_ids.append(WebvizPluginABC.extract_view_id(output.component_id_str()))
+        else:
+            view_ids.extend([WebvizPluginABC.extract_view_id(el.component_id_str()) for el in output])
+
+        def wrapper(original_callback_function: Callable) -> Callable:
+            @self._app.callback(_args, _kwargs)
+            def callback_wrapper(*_wrapper_args, **_wrapper_kwargs) -> Any: # type: ignore
+                results = original_callback_function(_wrapper_args, _wrapper_kwargs)
+                if isinstance(results, tuple):
+                    return tuple(results[i] if view_ids[i] == self.active_view_id else dash.no_update for i in range(0, len(results)))
+                return results if view_ids[0] == self.active_view_id else dash.no_update
+            return callback_wrapper
 
         return wrapper
