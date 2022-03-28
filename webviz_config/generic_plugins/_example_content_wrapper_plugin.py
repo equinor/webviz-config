@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Type, Union, overload
 
 from dash.development.base_component import Component
-from dash import html, Dash, Input, Output, dash_table, callback_context
+from dash import html, Dash, Input, Output, dash_table, callback_context, no_update
 
 import webviz_core_components as wcc
 
@@ -17,7 +17,7 @@ class TextViewElement(ViewElementABC):
 
     def layout(self) -> Union[str, Type[Component]]:
         return html.Div(
-            id=self.uuid("text"),
+            id=self.register_component_uuid("text"),
             children=[
                 html.H1("Hello"),
                 "This is an example plugin. Please have a look how views and settings are working in this new environment =).",
@@ -31,7 +31,7 @@ class PlotViewElementSettings(SettingsGroupABC):
 
     def layout(self) -> Component:
         return wcc.RadioItems(
-            id=self.uuid("test"),
+            id=self.register_component_uuid("test"),
             options=[
                 {
                     "label": "x - y",
@@ -51,14 +51,14 @@ class PlotViewElement(ViewElementABC):
         super().__init__(flex_grow=8)
         self.data = data
 
-        self.add_settings_group(PlotViewSettingsGroup())
+        self.add_settings_group(PlotViewSettingsGroup(), "PlotViewSettings")
 
     def layout(self) -> Union[str, Type[Component]]:
         return html.Div(
             style={"height": 450},
             children=[
                 wcc.Graph(
-                    id=self.uuid("my-graph"),
+                    id=self.register_component_uuid("my-graph"),
                     figure={
                         "data": [
                             {
@@ -85,7 +85,7 @@ class TableViewElement(ViewElementABC):
 
     def layout(self) -> Union[str, Type[Component]]:
         return dash_table.DataTable(
-            id=self.uuid("my-table"),
+            id=self.register_component_uuid("my-table"),
             columns=[{"id": "x", "name": "X"}, {"id": "y", "name": "Y"}],
             data=[{"x": d[0], "y": d[1]} for d in self.data],
         )
@@ -97,7 +97,7 @@ class PlotViewSettingsGroup(SettingsGroupABC):
 
     def layout(self) -> Component:
         return wcc.RadioItems(
-            id=self.uuid("coordinates-selector"),
+            id=self.register_component_uuid("coordinates-selector"),
             options=[
                 {
                     "label": "x - y",
@@ -118,7 +118,7 @@ class TableViewSettingsGroup(SettingsGroupABC):
 
     def layout(self) -> Component:
         return wcc.RadioItems(
-            id=self.uuid("order-selector"),
+            id=self.register_component_uuid("order-selector"),
             options=[
                 {
                     "label": "ASC",
@@ -142,7 +142,7 @@ class SharedSettingsGroup(SettingsGroupABC):
             children=[
                 wcc.Label("Kindness"),
                 wcc.RadioItems(
-                    id=self.uuid("kindness-selector"),
+                    id=self.register_component_uuid("kindness-selector"),
                     options=[
                         {
                             "label": "friendly",
@@ -157,7 +157,7 @@ class SharedSettingsGroup(SettingsGroupABC):
                 ),
                 wcc.Label("Power"),
                 wcc.RadioItems(
-                    id=self.uuid("power-selector"),
+                    id=self.register_component_uuid("power-selector"),
                     options=[
                         {
                             "label": "2",
@@ -175,32 +175,32 @@ class SharedSettingsGroup(SettingsGroupABC):
 
 
 class PlotView(ViewABC):
-    def __init__(self, data: List[Tuple[int, int]], text_view: ViewElementABC) -> None:
+    def __init__(self, data: List[Tuple[int, int]]) -> None:
         super().__init__("Plot")
         self.data = data
 
         row = self.add_row()
-        row.add_view_element(text_view)
-        row.add_view_element(PlotViewElement(self.data))
+        row.add_view_element(TextViewElement(), "Text")
+        row.add_view_element(PlotViewElement(self.data), "Plot")
 
         self.add_settings_group(PlotViewSettingsGroup(), "PlotSettings")
 
 
 class TableView(ViewABC):
-    def __init__(self, data: List[Tuple[int, int]], text_view: ViewElementABC) -> None:
+    def __init__(self, data: List[Tuple[int, int]]) -> None:
         super().__init__("Table")
         self.data = data
 
         self.table_view = TableViewElement(self.data)
 
-        self.add_view_element(text_view, view_element_id="Text")
-        self.add_view_element(self.table_view)
+        self.add_view_element(TextViewElement(), "Text")
+        self.add_view_element(self.table_view, "Table")
 
         self.add_settings_group(TableViewSettingsGroup(), settings_group_id="Settings")
 
     def _set_callbacks(self, app: Dash) -> None:
         @app.callback(
-            Output(self.table_view.uuid("my-table"), "data"),
+            Output(self.table_view.component_uuid("my-table"), "data"),
             Input(self.settings_group_uuid("Settings", "order-selector"), "value"),
         )
         def swap_order(order: str) -> List[dict]:
@@ -218,10 +218,8 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         self.app = app
         self.title = title
 
-        self.text_view = TextViewElement()
-
-        self.add_view(PlotView(self.data, self.text_view), "PlotView")
-        self.add_view(TableView(self.data, self.text_view), "TableView")
+        self.add_view(PlotView(self.data), "PlotView")
+        self.add_view(TableView(self.data), "TableView")
 
         self.settings_group = SharedSettingsGroup()
         self.add_shared_settings_group(self.settings_group, "SharedSettings")
@@ -233,28 +231,48 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
     def _set_callbacks(self, app: Dash) -> None:
         @app.callback(
-            Output(self.text_view.uuid("text"), "children"),
-            Input(self.settings_group.uuid("kindness-selector"), "value"),
+            Output(
+                self.view("PlotView").view_element("Text").component_uuid("text"),
+                "children",
+            ),
+            Input(self.settings_group.component_uuid("kindness-selector"), "value"),
         )
+        def pseudo1(kindness: str) -> Component:
+            return change_kindness(kindness)
+
+        @app.callback(
+            Output(
+                self.view("TableView").view_element("Text").component_uuid("text"),
+                "children",
+            ),
+            Input(self.settings_group.component_uuid("kindness-selector"), "value"),
+        )
+        def pseudo2(kindness: str) -> Component:
+            return change_kindness(kindness)
+
         def change_kindness(kindness: str) -> Component:
             if kindness == "friendly":
                 return [
                     html.H1("Hello"),
                     "I am an example plugin. Please have a look how views and settings are working in my environment =).",
                 ]
+
             return [
                 html.H1("Goodbye"),
                 "I am a bloody example plugin. Leave me alone! =(",
             ]
 
         @app.callback(
-            Output(self.view("PlotView").view_elements()[1].uuid("my-graph"), "figure"),
+            Output(
+                self.view("PlotView").view_elements()[1].component_uuid("my-graph"),
+                "figure",
+            ),
             [
-                Input(self.settings_group.uuid("power-selector"), "value"),
+                Input(self.settings_group.component_uuid("power-selector"), "value"),
                 Input(
                     self.view("PlotView")
                     .settings_group("PlotSettings")
-                    .uuid("coordinates-selector"),
+                    .component_uuid("coordinates-selector"),
                     "value",
                 ),
             ],
@@ -295,6 +313,4 @@ class ExampleContentWrapperPlugin2(WebvizPluginABC):
         self.app = app
         self.title = title
 
-        self.text_view = TextViewElement()
-
-        self.add_view(PlotView(self.data, self.text_view), "PlotView")
+        self.add_view(PlotView(self.data), "PlotView")

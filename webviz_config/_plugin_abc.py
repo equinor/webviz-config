@@ -1,6 +1,7 @@
 import io
 import abc
 import base64
+from operator import contains
 import zipfile
 import warnings
 import sys
@@ -54,6 +55,10 @@ def _create_feedback_text(
             "dependencies": dependencies,
         }
     )
+
+
+class DuplicatePluginChildId(Exception):
+    pass
 
 
 class WebvizPluginABC(abc.ABC):
@@ -115,8 +120,10 @@ class WebvizPluginABC(abc.ABC):
 
         self._views: List[ViewABC] = []
         self._shared_settings_groups: List[SettingsGroupABC] = []
+        self._registered_ids: List[str] = []
 
         self._app = app
+        app.config["suppress_callback_exceptions"] = True
         self._active_view_id = ""
 
         self._set_wrapper_callbacks(app)
@@ -146,26 +153,28 @@ class WebvizPluginABC(abc.ABC):
         """
         raise NotImplementedError
 
-    def add_view(self, view: ViewABC, id: Optional[str] = None) -> None:
-        uuid = f"{self._plugin_uuid}-"
-        if id:
-            uuid += id
-        else:
-            uuid += f"view{len(self._views)}"
+    def _check_and_register_id(self, id: Union[str, List[str]]) -> None:
+        for i in [el for el in (id if isinstance(id, list) else [id])]:
+            if i in self._registered_ids:
+                raise DuplicatePluginChildId(
+                    f"Duplicate ID in plugin '{type(self).__name__}' detected: '{i}'"
+                )
+            self._registered_ids.append(i)
 
+    def add_view(self, view: ViewABC, id: str) -> None:
+        uuid = f"{self._plugin_uuid}-{id}"
+        # pylint: disable=protected-access
+        view._set_plugin_register_id_func(self._check_and_register_id)
         view._set_uuid(uuid)
         view._set_all_callbacks(self._app)
         self._views.append(view)
 
     def add_shared_settings_group(
-        self, settings_group: SettingsGroupABC, id: Optional[str] = None
+        self, settings_group: SettingsGroupABC, id: str
     ) -> None:
-        uuid = f"{self._plugin_uuid}-"
-        if id:
-            uuid += id
-        else:
-            uuid += f"settings{len(self._shared_settings_groups)}"
-
+        uuid = f"{self._plugin_uuid}-{id}"
+        # pylint: disable=protected-access
+        settings_group._set_plugin_register_id_func(self._check_and_register_id)
         settings_group._set_uuid(uuid)
         settings_group._set_callbacks(self._app)
         self._shared_settings_groups.append(settings_group)
@@ -406,11 +415,7 @@ class WebvizPluginABC(abc.ABC):
     def extract_view_id(id_string: str) -> str:
         return id_string.split(":")[1]
 
-    def callback( # type: ignore
-        self,
-        *_args,
-        **_kwargs
-    ) -> Callable:
+    def callback(self, *_args, **_kwargs) -> Callable:  # type: ignore
         # Get the outputs using a Dash internal function
         output = _callback.handle_grouped_callback_args(_args, _kwargs)[0]
 
@@ -419,15 +424,26 @@ class WebvizPluginABC(abc.ABC):
         if isinstance(output, Output):
             view_ids.append(WebvizPluginABC.extract_view_id(output.component_id_str()))
         else:
-            view_ids.extend([WebvizPluginABC.extract_view_id(el.component_id_str()) for el in output])
+            view_ids.extend(
+                [
+                    WebvizPluginABC.extract_view_id(el.component_id_str())
+                    for el in output
+                ]
+            )
 
         def wrapper(original_callback_function: Callable) -> Callable:
             @self._app.callback(_args, _kwargs)
-            def callback_wrapper(*_wrapper_args, **_wrapper_kwargs) -> Any: # type: ignore
+            def callback_wrapper(*_wrapper_args, **_wrapper_kwargs) -> Any:  # type: ignore
                 results = original_callback_function(_wrapper_args, _wrapper_kwargs)
                 if isinstance(results, tuple):
-                    return tuple(results[i] if view_ids[i] == self.active_view_id else dash.no_update for i in range(0, len(results)))
+                    return tuple(
+                        results[i]
+                        if view_ids[i] == self.active_view_id
+                        else dash.no_update
+                        for i in range(0, len(results))
+                    )
                 return results if view_ids[0] == self.active_view_id else dash.no_update
+
             return callback_wrapper
 
         return wrapper
