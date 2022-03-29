@@ -46,11 +46,11 @@ class ViewElementABC(abc.ABC):
             setting._set_uuid(f"{uuid}-{setting.uuid()}")
 
     def register_component_uuid(self, component_name: str) -> str:
-        id = self.component_uuid(component_name)
+        uuid = self.component_uuid(component_name)
         if self._plugin_register_id_func and not self._layout_created:
-            self._plugin_register_id_func(id)
+            self._plugin_register_id_func(uuid)
 
-        return id
+        return uuid
 
     def component_uuid(self, component_name: str) -> str:
         return f"{component_name}-{self._uuid}"
@@ -248,7 +248,7 @@ class ViewABC(abc.ABC):
             return f"{element}-{self._uuid}"
         return self._uuid
 
-    def view_element_uuid(self, view_id: str, element: Optional[str]) -> str:
+    def view_element_uuid(self, view_id: str, element: Optional[str] = None) -> str:
         if element:
             return f"{element}-{self._uuid}-{view_id}"
         return f"{self._uuid}-{view_id}"

@@ -1,14 +1,12 @@
+from typing import Any, List, Optional, Type, Union, Dict, Callable
 import io
 import abc
 import base64
-from operator import contains
 import zipfile
 import warnings
 import sys
 import urllib
 from uuid import uuid4
-import inspect
-from typing import Any, List, Optional, Type, Union, Dict, Callable, Tuple
 
 import bleach
 from dash.development.base_component import Component
@@ -153,16 +151,18 @@ class WebvizPluginABC(abc.ABC):
         """
         raise NotImplementedError
 
-    def _check_and_register_id(self, id: Union[str, List[str]]) -> None:
-        for i in [el for el in (id if isinstance(id, list) else [id])]:
+    def _check_and_register_id(self, id_or_list_of_ids: Union[str, List[str]]) -> None:
+        for i in list(
+            id_or_list_of_ids if isinstance(id_or_list_of_ids, list) else [id_or_list_of_ids]
+        ):
             if i in self._registered_ids:
                 raise DuplicatePluginChildId(
                     f"Duplicate ID in plugin '{type(self).__name__}' detected: '{i}'"
                 )
             self._registered_ids.append(i)
 
-    def add_view(self, view: ViewABC, id: str) -> None:
-        uuid = f"{self._plugin_uuid}-{id}"
+    def add_view(self, view: ViewABC, view_id: str) -> None:
+        uuid = f"{self._plugin_uuid}-{view_id}"
         # pylint: disable=protected-access
         view._set_plugin_register_id_func(self._check_and_register_id)
         view._set_uuid(uuid)
@@ -170,10 +170,18 @@ class WebvizPluginABC(abc.ABC):
         self._views.append(view)
 
     def add_shared_settings_group(
-        self, settings_group: SettingsGroupABC, id: str
+        self,
+        settings_group: SettingsGroupABC,
+        settings_groups_id: str,
+        visible_in_views: Optional[List[str]] = None,
+        not_visible_in_views: Optional[List[str]] = None
     ) -> None:
-        uuid = f"{self._plugin_uuid}-{id}"
+        uuid = f"{self._plugin_uuid}-{settings_groups_id}"
         # pylint: disable=protected-access
+        settings_group._set_visible_in_views(visible_in_views if visible_in_views else [])
+        settings_group._set_not_visible_in_views(
+            not_visible_in_views if not_visible_in_views else []
+        )
         settings_group._set_plugin_register_id_func(self._check_and_register_id)
         settings_group._set_uuid(uuid)
         settings_group._set_callbacks(self._app)
@@ -186,43 +194,31 @@ class WebvizPluginABC(abc.ABC):
     def views(self) -> List[ViewABC]:
         return self._views
 
-    def view(self, id: str) -> ViewABC:
-        view = next((el for el in self.views() if el.uuid().split("-")[-1] == id), None)
+    def view(self, view_id: str) -> ViewABC:
+        view = next((el for el in self.views() if el.uuid().split("-")[-1] == view_id), None)
         if view:
             return view
 
         raise LookupError(
-            f"Invalid view id: '{id}. Available view ids: {[el.uuid for el in self.views()]}"
+            f"Invalid view id: '{view_id}. Available view ids: {[el.uuid for el in self.views()]}"
         )
 
     def shared_settings_groups(self) -> Optional[List[SettingsGroupABC]]:
         return self._shared_settings_groups
 
     def get_all_settings(self) -> List[html.Div]:
+        # pylint: disable=protected-access
         settings = []
         shared_settings = self.shared_settings_groups()
         if shared_settings is not None:
-            settings = [
-                wcc.WebvizSettingsGroup(
-                    id=setting.uuid(),
-                    title=setting.title,
-                    viewId="",
-                    pluginId=self._plugin_wrapper_id,
-                    children=[setting.layout()],
-                )
+            settings = [setting._wrapped_layout("", self._plugin_wrapper_id)
                 for setting in shared_settings
             ]
 
         for view in self.views():
             settings.extend(
                 [
-                    wcc.WebvizSettingsGroup(
-                        id=setting.uuid(),
-                        title=setting.title,
-                        viewId=view.uuid(),
-                        pluginId=self._plugin_wrapper_id,
-                        children=[setting.layout()],
-                    )
+                    setting._wrapped_layout(view.uuid(), self._plugin_wrapper_id)
                     for setting in view.settings_groups()
                 ]
             )
@@ -241,12 +237,6 @@ class WebvizPluginABC(abc.ABC):
     @property
     def plugin_data_requested(self) -> Input:
         return Input(self._plugin_wrapper_id, "data_requested")
-
-    @staticmethod
-    def _reformat_tour_steps(steps: List[dict]) -> List[dict]:
-        return [
-            {"selector": "#" + step["id"], "content": step["content"]} for step in steps
-        ]
 
     @staticmethod
     def plugin_compressed_data(
@@ -364,8 +354,8 @@ class WebvizPluginABC(abc.ABC):
         if self._add_download_button:
             buttons.append("download")
 
-        """
-        if buttons or plugin_deprecation_warnings or argument_deprecation_warnings:
+        
+        """ if buttons or plugin_deprecation_warnings or argument_deprecation_warnings:
             # pylint: disable=no-member
             return wcc.WebvizPluginPlaceholder(
                 id=self._plugin_wrapper_id,
@@ -383,7 +373,7 @@ class WebvizPluginABC(abc.ABC):
                 ),
                 feedback_url=self._make_feedback_url(),
             )
-        """
+         """
 
         return wcc.WebvizPluginWrapper(
             id=self._plugin_wrapper_id,
@@ -396,6 +386,9 @@ class WebvizPluginABC(abc.ABC):
             ),
             screenshotFilename=self._screenshot_filename,
             feedbackUrl=self._make_feedback_url(),
+            tourSteps=self.tour_steps  # type: ignore[attr-defined]
+                if hasattr(self, "tour_steps")
+                else [],
             children=[self.views()[0].layout() if self.views() else self.layout],
         )
 

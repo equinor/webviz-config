@@ -16,6 +16,14 @@ class SettingsGroupABC(abc.ABC):
             Callable[[Union[str, List[str]]], None]
         ] = None
         self._layout_created: bool = False
+        self._visible_in_views: List[str] = []
+        self._not_visible_in_views: List[str] = []
+
+    def _set_visible_in_views(self, visible_in_views: List[str]) -> None:
+        self._visible_in_views = visible_in_views
+
+    def _set_not_visible_in_views(self, not_visible_in_views: List[str]) -> None:
+        self._not_visible_in_views = not_visible_in_views
 
     def _set_plugin_register_id_func(
         self, func: Callable[[Union[str, List[str]]], None]
@@ -29,11 +37,11 @@ class SettingsGroupABC(abc.ABC):
             self._plugin_register_id_func(uuid)
 
     def register_component_uuid(self, component_name: str) -> str:
-        id = self.component_uuid(component_name)
+        uuid = self.component_uuid(component_name)
         if self._plugin_register_id_func and not self._layout_created:
-            self._plugin_register_id_func(id)
+            self._plugin_register_id_func(uuid)
 
-        return id
+        return uuid
 
     def component_uuid(self, component_name: str) -> str:
         return f"{component_name}-{self._uuid}"
@@ -41,7 +49,6 @@ class SettingsGroupABC(abc.ABC):
     def uuid(self) -> str:
         return self._uuid
 
-    @property
     @abc.abstractmethod
     def layout(self) -> Type[Component]:
         raise NotImplementedError
@@ -54,6 +61,8 @@ class SettingsGroupABC(abc.ABC):
             title=self.title,
             viewId=view_id,
             pluginId=plugin_id,
+            visibleInViews=self._visible_in_views if len(self._visible_in_views) > 0 else None,
+            notVisibleInViews=self._not_visible_in_views if len(self._not_visible_in_views) > 0 else None,
             children=[self.layout()],
         )
         self._layout_created = True
