@@ -63,7 +63,7 @@ class SettingsGroupABC(abc.ABC):
             pluginId=plugin_id,
             visibleInViews=self._visible_in_views if len(self._visible_in_views) > 0 else None,
             notVisibleInViews=self._not_visible_in_views if len(self._not_visible_in_views) > 0 else None,
-            children=[self.layout()],
+            children=[self.layout],
         )
         self._layout_created = True
         return layout
