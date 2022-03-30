@@ -128,7 +128,7 @@ else:
     {% for content_item in page.content -%}
     {% if content_item is string %}
     uuid = str(uuid4())
-    page_plugins["{{page.id}}"].append(wcc.WebvizPluginWrapper(id=uuid, name="Text" children=[dcc.Markdown(r"""{{ content_item }}""")])
+    page_plugins["{{page.id}}"].append(wcc.WebvizPluginWrapper(id=uuid, name="Text", children=[dcc.Markdown(r"""{{ content_item }}""")])
     {% else %}
     plugin = webviz_config.plugins.{{ content_item._call_signature[0] }}
     if not use_oauth2:
@@ -158,11 +158,11 @@ else:
                     ),
                     wcc.WebvizSettingsDrawer(
                         id="settings-drawer",
-                        children=[]
+                        children=[],
                     ),
                     wcc.WebvizPluginsWrapper(
                         id="plugins-wrapper",
-                        children=[]
+                        children=[],
                     )
                 ]
             ),
@@ -211,16 +211,16 @@ if __name__ == "__main__":
         debug=False,
         use_reloader={{not portable}},
         dev_tools_prune_errors=False,
-      {% if not portable -%}
+        {% if not portable -%}
         dev_tools_hot_reload=True,
         dev_tools_hot_reload_interval=1.0,
         dev_tools_silence_routes_logging=False,
-      {% endif %}
-      {% if debug %}
+        {% endif %}
+        {% if debug %}
         dev_tools_ui=True,
         dev_tools_props_check=True,
         dev_tools_serve_dev_bundles=True,
-      {% endif %}        
+        {% endif %}        
     )
 else:
     # This will be applied if not running on localhost

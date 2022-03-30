@@ -121,7 +121,6 @@ class WebvizPluginABC(abc.ABC):
         self._registered_ids: List[str] = []
 
         self._app = app
-        app.config["suppress_callback_exceptions"] = True
         self._active_view_id = ""
 
         self._set_wrapper_callbacks(app)
@@ -153,7 +152,9 @@ class WebvizPluginABC(abc.ABC):
 
     def _check_and_register_id(self, id_or_list_of_ids: Union[str, List[str]]) -> None:
         for i in list(
-            id_or_list_of_ids if isinstance(id_or_list_of_ids, list) else [id_or_list_of_ids]
+            id_or_list_of_ids
+            if isinstance(id_or_list_of_ids, list)
+            else [id_or_list_of_ids]
         ):
             if i in self._registered_ids:
                 raise DuplicatePluginChildId(
@@ -174,11 +175,13 @@ class WebvizPluginABC(abc.ABC):
         settings_group: SettingsGroupABC,
         settings_groups_id: str,
         visible_in_views: Optional[List[str]] = None,
-        not_visible_in_views: Optional[List[str]] = None
+        not_visible_in_views: Optional[List[str]] = None,
     ) -> None:
         uuid = f"{self._plugin_uuid}-{settings_groups_id}"
         # pylint: disable=protected-access
-        settings_group._set_visible_in_views(visible_in_views if visible_in_views else [])
+        settings_group._set_visible_in_views(
+            visible_in_views if visible_in_views else []
+        )
         settings_group._set_not_visible_in_views(
             not_visible_in_views if not_visible_in_views else []
         )
@@ -195,7 +198,9 @@ class WebvizPluginABC(abc.ABC):
         return self._views
 
     def view(self, view_id: str) -> ViewABC:
-        view = next((el for el in self.views() if el.uuid().split("-")[-1] == view_id), None)
+        view = next(
+            (el for el in self.views() if el.uuid().split("-")[-1] == view_id), None
+        )
         if view:
             return view
 
@@ -211,7 +216,8 @@ class WebvizPluginABC(abc.ABC):
         settings = []
         shared_settings = self.shared_settings_groups()
         if shared_settings is not None:
-            settings = [setting._wrapped_layout("", self._plugin_wrapper_id)
+            settings = [
+                setting._wrapped_layout("", self._plugin_wrapper_id)
                 for setting in shared_settings
             ]
 
@@ -354,7 +360,6 @@ class WebvizPluginABC(abc.ABC):
         if self._add_download_button:
             buttons.append("download")
 
-        
         """ if buttons or plugin_deprecation_warnings or argument_deprecation_warnings:
             # pylint: disable=no-member
             return wcc.WebvizPluginPlaceholder(
@@ -387,21 +392,27 @@ class WebvizPluginABC(abc.ABC):
             screenshotFilename=self._screenshot_filename,
             feedbackUrl=self._make_feedback_url(),
             tourSteps=self.tour_steps  # type: ignore[attr-defined]
-                if hasattr(self, "tour_steps")
-                else [],
+            if hasattr(self, "tour_steps")
+            else None,
             children=[self.views()[0].layout() if self.views() else self.layout],
+            persistence_type="session",
+            persistence=True,
         )
 
     def _set_wrapper_callbacks(self, app: Dash) -> None:
         @app.callback(
             Output(self._plugin_wrapper_id, "children"),
             Input("webviz-content-manager", "activeViewId"),
+            Input("webviz-content-manager", "activePluginId"),
         )
-        def change_view(view_id: str) -> Component:
-            view = next((view for view in self.views() if view.uuid() == view_id), None)
-            if view:
-                self._active_view_id = view.uuid()
-                return view.layout()
+        def change_view(view_id: str, plugin_id: str) -> Component:
+            if plugin_id == self._plugin_wrapper_id:
+                view = next(
+                    (view for view in self.views() if view.uuid() == view_id), None
+                )
+                if view and self.active_view_id != view_id:
+                    self._active_view_id = view.uuid()
+                    return view.layout()
             return dash.no_update
 
     @staticmethod

@@ -30,7 +30,7 @@ class PlotViewElementSettings(SettingsGroupABC):
         super().__init__("Plot coordinate system")
 
     def layout(self) -> Component:
-        return wcc.RadioItems(
+        return wcc.Select(
             id=self.register_component_uuid("test"),
             options=[
                 {
@@ -43,6 +43,7 @@ class PlotViewElementSettings(SettingsGroupABC):
                 },
             ],
             value="xy",
+            persistence=True,
         )
 
 
@@ -62,8 +63,8 @@ class PlotViewElement(ViewElementABC):
                     figure={
                         "data": [
                             {
-                                "x": [x[1] for x in self.data],
-                                "y": [x[0] for x in self.data],
+                                "x": [x[0] for x in self.data],
+                                "y": [x[1] for x in self.data],
                             }
                         ],
                         "layout": {
@@ -96,8 +97,9 @@ class PlotViewSettingsGroup(SettingsGroupABC):
         super().__init__("Plot coordinate system")
 
     def layout(self) -> Component:
-        return wcc.RadioItems(
+        return wcc.Dropdown(
             id=self.register_component_uuid("coordinates-selector"),
+            label="Coordinates",
             options=[
                 {
                     "label": "x - y",

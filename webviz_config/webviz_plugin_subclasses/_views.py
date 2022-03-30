@@ -176,7 +176,10 @@ class ViewLayoutElement:
                         flexGrow=el._flex_grow,
                         children=[
                             el._wrapped_layout(),
-                            *[setting._wrapped_layout() for setting in el.settings()],
+                            *[
+                                setting._wrapped_layout(always_open=True)
+                                for setting in el.settings()
+                            ],
                         ],
                     )
                     if isinstance(el, ViewElementABC)
@@ -193,7 +196,10 @@ class ViewLayoutElement:
                     flexGrow=el._flex_grow,
                     children=[
                         el._wrapped_layout(),
-                        *[setting._wrapped_layout() for setting in el.settings()],
+                        *[
+                            setting._wrapped_layout(always_open=True)
+                            for setting in el.settings()
+                        ],
                     ],
                 )
                 if isinstance(el, ViewElementABC)
@@ -365,7 +371,10 @@ class ViewABC(LayoutBaseABC):
                     flexGrow=el._flex_grow,
                     children=[
                         el._wrapped_layout(),
-                        *[setting._wrapped_layout() for setting in el.settings()],
+                        *[
+                            setting._wrapped_layout(always_open=True)
+                            for setting in el.settings()
+                        ],
                     ],
                 )
                 if isinstance(el, ViewElementABC)

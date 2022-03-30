@@ -43,7 +43,10 @@ class SettingsGroupABC(LayoutBaseABC):
         raise NotImplementedError
 
     def _wrapped_layout(
-        self, view_id: Optional[str] = "", plugin_id: Optional[str] = ""
+        self,
+        view_id: Optional[str] = "",
+        plugin_id: Optional[str] = "",
+        always_open: bool = False,
     ) -> Type[Component]:
         layout = wcc.WebvizSettingsGroup(
             id=self.uuid(),
@@ -56,6 +59,7 @@ class SettingsGroupABC(LayoutBaseABC):
             notVisibleInViews=self._not_visible_in_views
             if len(self._not_visible_in_views) > 0
             else None,
+            alwaysOpen=always_open,
             children=[self.layout()],
         )
         self._layout_created = True
