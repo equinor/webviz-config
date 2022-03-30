@@ -68,7 +68,9 @@ class ViewElementABC(abc.ABC):
         settings_group._set_uuid(uuid)
         self._settings.append(settings_group)
 
-    def setting_group_uuid(self, settings_id: str, element: Optional[str]) -> str:
+    def setting_group_uuid(
+        self, settings_id: str, element: Optional[str] = None
+    ) -> str:
         if element:
             return f"{element}-{self._uuid}-{settings_id}"
         return f"{self._uuid}-{settings_id}"
@@ -253,7 +255,7 @@ class ViewABC(abc.ABC):
             return f"{element}-{self._uuid}"
         return self._uuid
 
-    def view_element_uuid(self, view_id: str, element: Optional[str]) -> str:
+    def view_element_uuid(self, view_id: str, element: Optional[str] = None) -> str:
         if element:
             return f"{element}-{self._uuid}-{view_id}"
         return f"{self._uuid}-{view_id}"
@@ -294,7 +296,9 @@ class ViewABC(abc.ABC):
             """
         )
 
-    def settings_group_uuid(self, settings_id: str, element: Optional[str]) -> str:
+    def settings_group_uuid(
+        self, settings_id: str, element: Optional[str] = None
+    ) -> str:
         if element:
             return f"{element}-{self._uuid}-{settings_id}"
         return f"{self._uuid}-{settings_id}"
