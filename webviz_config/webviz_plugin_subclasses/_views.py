@@ -1,5 +1,4 @@
 from typing import Callable, Dict, List, Optional, Type, Union
-import abc
 from enum import Enum
 
 from dash import html, Dash, Input, Output  # type: ignore
@@ -7,16 +6,16 @@ from dash.development.base_component import Component  # type: ignore
 import webviz_core_components as wcc  # type: ignore
 
 from ._settings_group_abc import SettingsGroupABC
+from ._layout_base_abc import LayoutBaseABC
 
 
-class ViewElementABC(abc.ABC):
+class ViewElementABC(LayoutBaseABC):
     def __init__(
         self, flex_grow: int = 1, screenshot_filename: str = "webviz-screenshot.png"
     ) -> None:
         super().__init__()
 
         self._flex_grow = flex_grow
-        self._uuid: str = ""
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
         self._plugin_register_id_func: Optional[
@@ -29,21 +28,18 @@ class ViewElementABC(abc.ABC):
     def _set_plugin_register_id_func(
         self, func: Callable[[Union[str, List[str]]], None]
     ) -> None:
-        self._plugin_register_id_func = func
+        super()._set_plugin_register_id_func(func)
 
         for setting in self._settings:
             # pylint: disable=protected-access
-            setting._set_plugin_register_id_func(self._plugin_register_id_func)
+            setting._set_plugin_register_id_func(func)
 
     def _set_uuid(self, uuid: str) -> None:
-        self._uuid = uuid
-
-        if self._plugin_register_id_func:
-            self._plugin_register_id_func(uuid)
+        super()._set_uuid(uuid)
 
         for setting in self._settings:
             # pylint: disable=protected-access
-            setting._set_uuid(f"{uuid}-{setting.uuid()}")
+            setting._set_uuid(f"{uuid}-{setting.custom_uuid()}")
 
     def register_component_uuid(self, component_name: str) -> str:
         uuid = self.component_uuid(component_name)
@@ -55,9 +51,6 @@ class ViewElementABC(abc.ABC):
     def component_uuid(self, component_name: str) -> str:
         return f"{component_name}-{self._uuid}"
 
-    def uuid(self) -> str:
-        return self._uuid
-
     def add_settings_group(
         self, settings_group: SettingsGroupABC, settings_group_id: str
     ) -> None:
@@ -65,7 +58,7 @@ class ViewElementABC(abc.ABC):
         uuid += settings_group_id
 
         # pylint: disable=protected-access
-        settings_group._set_uuid(uuid)
+        settings_group._set_custom_id(uuid)
         self._settings.append(settings_group)
 
     def setting_group_uuid(
@@ -165,7 +158,7 @@ class ViewLayoutElement:
         # pylint: disable=protected-access
         for child in self._children:
             if isinstance(child, ViewElementABC):
-                child._set_uuid(f"{uuid}-{child.uuid()}")
+                child._set_uuid(f"{uuid}-{child.custom_uuid()}")
             else:
                 child._set_uuid(uuid)
 
@@ -210,11 +203,10 @@ class ViewLayoutElement:
         )
 
 
-class ViewABC(abc.ABC):
+class ViewABC(LayoutBaseABC):
     def __init__(self, name: str) -> None:
         super().__init__()
 
-        self._uuid = ""
         self.name = name
 
         self._layout_elements: List[Union[ViewElementABC, ViewLayoutElement]] = []
@@ -237,18 +229,16 @@ class ViewABC(abc.ABC):
 
     def _set_uuid(self, uuid: str) -> None:
         # pylint: disable=protected-access
-        self._uuid = uuid
-        if self._plugin_register_id_func:
-            self._plugin_register_id_func(uuid)
+        super()._set_uuid(uuid)
 
         for element in self._layout_elements:
             if isinstance(element, ViewElementABC):
-                element._set_uuid(f"{uuid}-{element.uuid()}")
+                element._set_uuid(f"{uuid}-{element.custom_uuid()}")
             else:
                 element._set_uuid(uuid)
 
         for setting in self._settings_groups:
-            setting._set_uuid(f"{uuid}-{setting.uuid()}")
+            setting._set_uuid(f"{uuid}-{setting.custom_uuid()}")
 
     def uuid(self, element: Optional[str] = None) -> str:
         if element:
@@ -262,11 +252,7 @@ class ViewABC(abc.ABC):
 
     def view_element(self, view_element_id: str) -> "ViewElementABC":
         view_element = next(
-            (
-                el
-                for el in self.view_elements()
-                if el.uuid().split("-")[-1] == view_element_id
-            ),
+            (el for el in self.view_elements() if el.custom_uuid() == view_element_id),
             None,
         )
         if view_element:
@@ -283,7 +269,7 @@ class ViewABC(abc.ABC):
             (
                 el
                 for el in self.settings_groups()
-                if el.uuid().split("-")[-1] == settings_group_id
+                if el.custom_uuid() == settings_group_id
             ),
             None,
         )
@@ -292,7 +278,7 @@ class ViewABC(abc.ABC):
 
         raise LookupError(
             f"""Invalid settings group id: '{settings_group_id}. 
-            Available settings group ids: {[el.uuid for el in self.settings_groups()]}
+            Available settings group ids: {[el.custom_uuid() for el in self.settings_groups()]}
             """
         )
 
@@ -310,7 +296,7 @@ class ViewABC(abc.ABC):
         uuid = f"{self._uuid}-" if self._uuid != "" else ""
         uuid += view_element_id
 
-        view_element._set_uuid(uuid)
+        view_element._set_custom_id(uuid)
         self._layout_elements.append(view_element)
         self._view_elements.append(view_element)
 
@@ -321,7 +307,7 @@ class ViewABC(abc.ABC):
         uuid = f"{self._uuid}-" if self._uuid != "" else ""
         uuid += view_element_id
 
-        view_element._set_uuid(uuid)
+        view_element._set_custom_id(uuid)
         self._view_elements.append(view_element)
 
     def add_row(self, flex_grow: int = 1) -> ViewLayoutElement:
@@ -345,7 +331,7 @@ class ViewABC(abc.ABC):
         uuid = f"{self._uuid}-" if self._uuid != "" else ""
         uuid += settings_group_id
 
-        settings_group._set_uuid(uuid)
+        settings_group._set_custom_id(uuid)
         self._settings_groups.append(settings_group)
 
     def add_settings_groups(self, settings_groups: Dict[str, SettingsGroupABC]) -> None:

@@ -54,7 +54,10 @@ class PlotViewElement(ViewElementABC):
         self.add_settings_group(PlotViewSettingsGroup(), "PlotViewSettings")
 
     def layout(self) -> Union[str, Type[Component]]:
-        return  wcc.Graph(
+        return html.Div(
+            style={"height": "20vh"},
+            children=[
+                wcc.Graph(
                     id=self.register_component_uuid("my-graph"),
                     figure={
                         "data": [
@@ -70,6 +73,8 @@ class PlotViewElement(ViewElementABC):
                     config={
                         "responsive": True,
                     },
+                )
+            ],
         )
 
 
@@ -217,21 +222,32 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         self.add_view(TableView(self.data), "TableView")
 
         self.settings_group = SharedSettingsGroup()
-        self.add_shared_settings_group(self.settings_group, "SharedSettings", visible_in_views=[self.view("PlotView").uuid()])
+        self.add_shared_settings_group(
+            self.settings_group,
+            "SharedSettings",
+            visible_in_views=[self.view("PlotView").uuid()],
+        )
 
         self._set_callbacks(app)
 
     @property
     def tour_steps(self) -> List[dict]:
-        return [{
-                "elementId": self.view("PlotView").view_element("Plot").component_uuid("my-graph"),
+        return [
+            {
+                "elementId": self.view("PlotView")
+                .view_element("Plot")
+                .component_uuid("my-graph"),
                 "viewId": self.view("PlotView").uuid(),
                 "content": "Plot showing plot data.",
-            },{
-                "elementId": self.view("TableView").view_element("Table").component_uuid("my-table"),
+            },
+            {
+                "elementId": self.view("TableView")
+                .view_element("Table")
+                .component_uuid("my-table"),
                 "viewId": self.view("TableView").uuid(),
                 "content": "Table showing plot data.",
-            }]
+            },
+        ]
 
     def _set_callbacks(self, app: Dash) -> None:
         @app.callback(

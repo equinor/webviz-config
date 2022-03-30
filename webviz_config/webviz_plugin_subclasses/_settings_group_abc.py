@@ -5,16 +5,14 @@ from dash.development.base_component import Component  # type: ignore
 from dash import Dash  # type: ignore
 import webviz_core_components as wcc  # type: ignore
 
+from ._layout_base_abc import LayoutBaseABC
 
-class SettingsGroupABC(abc.ABC):
+
+class SettingsGroupABC(LayoutBaseABC):
     def __init__(self, title: str) -> None:
         super().__init__()
 
         self.title = title
-        self._uuid = ""
-        self._plugin_register_id_func: Optional[
-            Callable[[Union[str, List[str]]], None]
-        ] = None
         self._layout_created: bool = False
         self._visible_in_views: List[str] = []
         self._not_visible_in_views: List[str] = []
@@ -30,12 +28,6 @@ class SettingsGroupABC(abc.ABC):
     ) -> None:
         self._plugin_register_id_func = func
 
-    def _set_uuid(self, uuid: str) -> None:
-        self._uuid = uuid
-
-        if self._plugin_register_id_func:
-            self._plugin_register_id_func(uuid)
-
     def register_component_uuid(self, component_name: str) -> str:
         uuid = self.component_uuid(component_name)
         if self._plugin_register_id_func and not self._layout_created:
@@ -45,9 +37,6 @@ class SettingsGroupABC(abc.ABC):
 
     def component_uuid(self, component_name: str) -> str:
         return f"{component_name}-{self._uuid}"
-
-    def uuid(self) -> str:
-        return self._uuid
 
     @abc.abstractmethod
     def layout(self) -> Type[Component]:
@@ -61,9 +50,13 @@ class SettingsGroupABC(abc.ABC):
             title=self.title,
             viewId=view_id,
             pluginId=plugin_id,
-            visibleInViews=self._visible_in_views if len(self._visible_in_views) > 0 else None,
-            notVisibleInViews=self._not_visible_in_views if len(self._not_visible_in_views) > 0 else None,
-            children=[self.layout],
+            visibleInViews=self._visible_in_views
+            if len(self._visible_in_views) > 0
+            else None,
+            notVisibleInViews=self._not_visible_in_views
+            if len(self._not_visible_in_views) > 0
+            else None,
+            children=[self.layout()],
         )
         self._layout_created = True
         return layout
