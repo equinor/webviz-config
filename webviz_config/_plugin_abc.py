@@ -208,7 +208,7 @@ class WebvizPluginABC(abc.ABC):
                     title=setting.title,
                     viewId="",
                     pluginId=self._plugin_wrapper_id,
-                    children=[setting.layout()],
+                    children=[setting.layout],
                 )
                 for setting in shared_settings
             ]
@@ -221,7 +221,7 @@ class WebvizPluginABC(abc.ABC):
                         title=setting.title,
                         viewId=view.uuid(),
                         pluginId=self._plugin_wrapper_id,
-                        children=[setting.layout()],
+                        children=[setting.layout],
                     )
                     for setting in view.settings_groups()
                 ]

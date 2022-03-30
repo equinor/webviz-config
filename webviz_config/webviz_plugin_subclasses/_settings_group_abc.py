@@ -54,7 +54,7 @@ class SettingsGroupABC(abc.ABC):
             title=self.title,
             viewId=view_id,
             pluginId=plugin_id,
-            children=[self.layout()],
+            children=[self.layout],
         )
         self._layout_created = True
         return layout
