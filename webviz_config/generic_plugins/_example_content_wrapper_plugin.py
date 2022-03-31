@@ -202,7 +202,7 @@ class TableView(ViewABC):
 
     def _set_callbacks(self, app: Dash) -> None:
         @app.callback(
-            Output(self.table_view.component_uuid("my-table"), "data"),
+            Output(self.table_view.component_uuid("my-table").to_string(), "data"),
             Input(self.settings_group_uuid("Settings", "order-selector"), "value"),
         )
         def swap_order(order: str) -> List[dict]:
@@ -236,17 +236,21 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
     def tour_steps(self) -> List[dict]:
         return [
             {
-                "elementId": self.view("PlotView")
+                "id": self.view("PlotView")
                 .view_element("Plot")
                 .component_uuid("my-graph"),
-                "viewId": self.view("PlotView").uuid(),
                 "content": "Plot showing plot data.",
             },
             {
-                "elementId": self.view("TableView")
+                "id": self.view("PlotView")
+                .settings_group("PlotSettings")
+                .component_uuid("coordinates-selector"),
+                "content": "Use this to change the coordinate system.",
+            },
+            {
+                "id": self.view("TableView")
                 .view_element("Table")
                 .component_uuid("my-table"),
-                "viewId": self.view("TableView").uuid(),
                 "content": "Table showing plot data.",
             },
         ]
@@ -254,20 +258,32 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
     def _set_callbacks(self, app: Dash) -> None:
         @app.callback(
             Output(
-                self.view("PlotView").view_element("Text").component_uuid("text"),
+                self.view("PlotView")
+                .view_element("Text")
+                .component_uuid("text")
+                .to_string(),
                 "children",
             ),
-            Input(self.settings_group.component_uuid("kindness-selector"), "value"),
+            Input(
+                self.settings_group.component_uuid("kindness-selector").to_string(),
+                "value",
+            ),
         )
         def pseudo1(kindness: str) -> Component:
             return change_kindness(kindness)
 
         @app.callback(
             Output(
-                self.view("TableView").view_element("Text").component_uuid("text"),
+                self.view("TableView")
+                .view_element("Text")
+                .component_uuid("text")
+                .to_string(),
                 "children",
             ),
-            Input(self.settings_group.component_uuid("kindness-selector"), "value"),
+            Input(
+                self.settings_group.component_uuid("kindness-selector").to_string(),
+                "value",
+            ),
         )
         def pseudo2(kindness: str) -> Component:
             return change_kindness(kindness)
@@ -286,15 +302,22 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
         @app.callback(
             Output(
-                self.view("PlotView").view_elements()[1].component_uuid("my-graph"),
+                self.view("PlotView")
+                .view_elements()[1]
+                .component_uuid("my-graph")
+                .to_string(),
                 "figure",
             ),
             [
-                Input(self.settings_group.component_uuid("power-selector"), "value"),
+                Input(
+                    self.settings_group.component_uuid("power-selector").to_string(),
+                    "value",
+                ),
                 Input(
                     self.view("PlotView")
                     .settings_group("PlotSettings")
-                    .component_uuid("coordinates-selector"),
+                    .component_uuid("coordinates-selector")
+                    .to_string(),
                     "value",
                 ),
             ],

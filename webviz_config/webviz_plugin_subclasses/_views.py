@@ -7,6 +7,7 @@ import webviz_core_components as wcc  # type: ignore
 
 from ._settings_group_abc import SettingsGroupABC
 from ._layout_base_abc import LayoutBaseABC
+from ._layout_uuid import LayoutUuid
 
 
 class ViewElementABC(LayoutBaseABC):
@@ -34,31 +35,31 @@ class ViewElementABC(LayoutBaseABC):
             # pylint: disable=protected-access
             setting._set_plugin_register_id_func(func)
 
-    def _set_uuid(self, uuid: str) -> None:
-        super()._set_uuid(uuid)
+    def _set_uuid(self, parent_uuid: LayoutUuid) -> None:
+        super()._set_uuid(parent_uuid)
 
         for setting in self._settings:
             # pylint: disable=protected-access
-            setting._set_uuid(f"{uuid}-{setting.custom_uuid()}")
+            setting._set_uuid(self.get_uuid())
 
     def register_component_uuid(self, component_name: str) -> str:
-        uuid = self.component_uuid(component_name)
+        uuid = self.component_uuid(component_name).to_string()
         if self._plugin_register_id_func and not self._layout_created:
             self._plugin_register_id_func(uuid)
 
         return uuid
 
-    def component_uuid(self, component_name: str) -> str:
-        return f"{component_name}-{self._uuid}"
+    def component_uuid(self, component_name: str) -> LayoutUuid:
+        component_uuid = LayoutUuid(other=self.get_uuid())
+        component_uuid.set_component_id(component_name)
+        return component_uuid
 
     def add_settings_group(
         self, settings_group: SettingsGroupABC, settings_group_id: str
     ) -> None:
-        uuid = f"{self._uuid}-" if self._uuid != "" else ""
-        uuid += settings_group_id
-
         # pylint: disable=protected-access
-        settings_group._set_custom_id(uuid)
+        settings_group.get_uuid().set_settings_group_id(settings_group_id)
+        settings_group._set_uuid(self._uuid)
         self._settings.append(settings_group)
 
     def setting_group_uuid(
@@ -71,11 +72,11 @@ class ViewElementABC(LayoutBaseABC):
     @property
     def view_element_data_output(self) -> Output:
         self._add_download_button = True
-        return Output(self.uuid(), "download")
+        return Output(str(self.get_uuid()), "download")
 
     @property
     def view_element_data_requested(self) -> Input:
-        return Input(self.uuid(), "data_requested")
+        return Input(str(self.get_uuid()), "data_requested")
 
     def _wrapped_layout(self) -> Union[str, Type[Component]]:
         layout = self.layout()
@@ -154,11 +155,11 @@ class ViewLayoutElement:
             # pylint: disable=protected-access
             element._set_plugin_register_id_func(func)
 
-    def _set_uuid(self, uuid: str) -> None:
+    def _set_uuid(self, uuid: LayoutUuid) -> None:
         # pylint: disable=protected-access
         for child in self._children:
             if isinstance(child, ViewElementABC):
-                child._set_uuid(f"{uuid}-{child.custom_uuid()}")
+                child._set_uuid(uuid)
             else:
                 child._set_uuid(uuid)
 
@@ -170,7 +171,7 @@ class ViewLayoutElement:
                 flexGrow=self._flex_grow,
                 children=[
                     wcc.WebvizViewElement(
-                        id=el.uuid(),
+                        id=str(el.get_uuid()),
                         # pylint: disable=protected-access
                         showDownload=el._add_download_button,
                         flexGrow=el._flex_grow,
@@ -191,7 +192,7 @@ class ViewLayoutElement:
             flexGrow=self._flex_grow,
             children=[
                 wcc.WebvizViewElement(
-                    id=el.uuid(),
+                    id=str(el.get_uuid()),
                     showDownload=el._add_download_button,
                     flexGrow=el._flex_grow,
                     children=[
@@ -233,23 +234,20 @@ class ViewABC(LayoutBaseABC):
         for setting in self._settings_groups:
             setting._set_plugin_register_id_func(func)
 
-    def _set_uuid(self, uuid: str) -> None:
+    def _set_uuid(self, parent_uuid: LayoutUuid) -> None:
         # pylint: disable=protected-access
-        super()._set_uuid(uuid)
+        super()._set_uuid(parent_uuid)
 
         for element in self._layout_elements:
-            if isinstance(element, ViewElementABC):
-                element._set_uuid(f"{uuid}-{element.custom_uuid()}")
-            else:
-                element._set_uuid(uuid)
+            element._set_uuid(self.get_uuid())
 
         for setting in self._settings_groups:
-            setting._set_uuid(f"{uuid}-{setting.custom_uuid()}")
+            setting._set_uuid(self.get_uuid())
 
     def uuid(self, element: Optional[str] = None) -> str:
         if element:
             return f"{element}-{self._uuid}"
-        return self._uuid
+        return str(self._uuid)
 
     def view_element_uuid(self, view_id: str, element: Optional[str] = None) -> str:
         if element:
@@ -258,7 +256,11 @@ class ViewABC(LayoutBaseABC):
 
     def view_element(self, view_element_id: str) -> "ViewElementABC":
         view_element = next(
-            (el for el in self.view_elements() if el.custom_uuid() == view_element_id),
+            (
+                el
+                for el in self.view_elements()
+                if el.get_uuid().get_view_element_id() == view_element_id
+            ),
             None,
         )
         if view_element:
@@ -266,7 +268,7 @@ class ViewABC(LayoutBaseABC):
 
         raise LookupError(
             f"""Invalid view element id: '{view_element_id}. 
-            Available view element ids: {[el.uuid for el in self.view_elements()]}
+            Available view element ids: {[el.get_uuid().get_view_element_id() for el in self.view_elements()]}
             """
         )
 
@@ -275,7 +277,7 @@ class ViewABC(LayoutBaseABC):
             (
                 el
                 for el in self.settings_groups()
-                if el.custom_uuid() == settings_group_id
+                if el.get_uuid().get_settings_group_id() == settings_group_id
             ),
             None,
         )
@@ -284,7 +286,7 @@ class ViewABC(LayoutBaseABC):
 
         raise LookupError(
             f"""Invalid settings group id: '{settings_group_id}. 
-            Available settings group ids: {[el.custom_uuid() for el in self.settings_groups()]}
+            Available settings group ids: {[el.get_uuid().get_settings_group_id() for el in self.settings_groups()]}
             """
         )
 
@@ -299,10 +301,8 @@ class ViewABC(LayoutBaseABC):
         self, view_element: ViewElementABC, view_element_id: str
     ) -> None:
         # pylint: disable=protected-access
-        uuid = f"{self._uuid}-" if self._uuid != "" else ""
-        uuid += view_element_id
-
-        view_element._set_custom_id(uuid)
+        view_element._set_uuid(self._uuid)
+        view_element.get_uuid().set_view_element_id(view_element_id)
         self._layout_elements.append(view_element)
         self._view_elements.append(view_element)
 
@@ -310,10 +310,8 @@ class ViewABC(LayoutBaseABC):
         self, view_element: ViewElementABC, view_element_id: str
     ) -> None:
         # pylint: disable=protected-access
-        uuid = f"{self._uuid}-" if self._uuid != "" else ""
-        uuid += view_element_id
-
-        view_element._set_custom_id(uuid)
+        view_element._set_uuid(self._uuid)
+        view_element.get_uuid().set_view_element_id(view_element_id)
         self._view_elements.append(view_element)
 
     def add_row(self, flex_grow: int = 1) -> ViewLayoutElement:
@@ -334,10 +332,8 @@ class ViewABC(LayoutBaseABC):
         self, settings_group: SettingsGroupABC, settings_group_id: str
     ) -> None:
         # pylint: disable=protected-access
-        uuid = f"{self._uuid}-" if self._uuid != "" else ""
-        uuid += settings_group_id
-
-        settings_group._set_custom_id(uuid)
+        settings_group._set_uuid(self._uuid)
+        settings_group.get_uuid().set_settings_group_id(settings_group_id)
         self._settings_groups.append(settings_group)
 
     def add_settings_groups(self, settings_groups: Dict[str, SettingsGroupABC]) -> None:
@@ -366,7 +362,7 @@ class ViewABC(LayoutBaseABC):
             className="WebvizPluginWrapper__DashContent",
             children=[
                 wcc.WebvizViewElement(
-                    id=el.uuid(),
+                    id=str(el.get_uuid()),
                     showDownload=el._add_download_button,
                     flexGrow=el._flex_grow,
                     children=[

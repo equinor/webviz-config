@@ -6,6 +6,7 @@ from dash import Dash  # type: ignore
 import webviz_core_components as wcc  # type: ignore
 
 from ._layout_base_abc import LayoutBaseABC
+from ._layout_uuid import LayoutUuid
 
 
 class SettingsGroupABC(LayoutBaseABC):
@@ -29,14 +30,16 @@ class SettingsGroupABC(LayoutBaseABC):
         self._plugin_register_id_func = func
 
     def register_component_uuid(self, component_name: str) -> str:
-        uuid = self.component_uuid(component_name)
+        uuid = self.component_uuid(component_name).to_string()
         if self._plugin_register_id_func and not self._layout_created:
             self._plugin_register_id_func(uuid)
 
         return uuid
 
-    def component_uuid(self, component_name: str) -> str:
-        return f"{component_name}-{self._uuid}"
+    def component_uuid(self, component_name: str) -> LayoutUuid:
+        component_uuid = LayoutUuid(other=self.get_uuid())
+        component_uuid.set_component_id(component_name)
+        return component_uuid
 
     @abc.abstractmethod
     def layout(self) -> Type[Component]:
@@ -49,7 +52,7 @@ class SettingsGroupABC(LayoutBaseABC):
         always_open: bool = False,
     ) -> Type[Component]:
         layout = wcc.WebvizSettingsGroup(
-            id=self.uuid(),
+            id=str(self.get_uuid()),
             title=self.title,
             viewId=view_id,
             pluginId=plugin_id,

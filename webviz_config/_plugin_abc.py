@@ -15,7 +15,7 @@ import dash
 import jinja2
 import webviz_core_components as wcc
 
-from .webviz_plugin_subclasses import SettingsGroupABC, ViewABC
+from .webviz_plugin_subclasses import SettingsGroupABC, ViewABC, LayoutUuid
 
 if sys.version_info >= (3, 8):
     from typing import TypedDict
@@ -112,7 +112,7 @@ class WebvizPluginABC(abc.ABC):
         in its own `__init__` function in order to also run the parent `__init__`.
         """
 
-        self._plugin_uuid = uuid4()
+        self._plugin_uuid = LayoutUuid(plugin_id=str(uuid4()))
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
 
@@ -163,21 +163,21 @@ class WebvizPluginABC(abc.ABC):
             self._registered_ids.append(i)
 
     def add_view(self, view: ViewABC, view_id: str) -> None:
-        uuid = f"{self._plugin_uuid}-{view_id}"
         # pylint: disable=protected-access
+        view.get_uuid().set_view_id(view_id)
         view._set_plugin_register_id_func(self._check_and_register_id)
-        view._set_uuid(uuid)
+        view._set_uuid(self._plugin_uuid)
         view._set_all_callbacks(self._app)
         self._views.append(view)
 
     def add_shared_settings_group(
         self,
         settings_group: SettingsGroupABC,
-        settings_groups_id: str,
+        settings_group_id: str,
         visible_in_views: Optional[List[str]] = None,
         not_visible_in_views: Optional[List[str]] = None,
     ) -> None:
-        uuid = f"{self._plugin_uuid}-{settings_groups_id}"
+        settings_group.get_uuid().set_settings_group_id(settings_group_id)
         # pylint: disable=protected-access
         settings_group._set_visible_in_views(
             visible_in_views if visible_in_views else []
@@ -186,7 +186,7 @@ class WebvizPluginABC(abc.ABC):
             not_visible_in_views if not_visible_in_views else []
         )
         settings_group._set_plugin_register_id_func(self._check_and_register_id)
-        settings_group._set_uuid(uuid)
+        settings_group._set_uuid(self._plugin_uuid)
         settings_group._set_callbacks(self._app)
         self._shared_settings_groups.append(settings_group)
 
@@ -243,6 +243,20 @@ class WebvizPluginABC(abc.ABC):
     @property
     def plugin_data_requested(self) -> Input:
         return Input(self._plugin_wrapper_id, "data_requested")
+
+    @staticmethod
+    def _reformat_tour_steps(steps: List[dict]) -> List[dict]:
+        return [
+            {
+                "elementId": "#" + str(step["id"]),
+                "viewId": step["id"].get_view_uuid(),
+                "isSettingsGroup": step["id"].is_settings_group(),
+                "isViewElementSetting": step["id"].is_settings_group()
+                and step["id"].get_view_element_id() != None,
+                "content": step["content"],
+            }
+            for step in steps
+        ]
 
     @staticmethod
     def plugin_compressed_data(
@@ -391,7 +405,9 @@ class WebvizPluginABC(abc.ABC):
             ),
             screenshotFilename=self._screenshot_filename,
             feedbackUrl=self._make_feedback_url(),
-            tourSteps=self.tour_steps  # type: ignore[attr-defined]
+            tourSteps=WebvizPluginABC._reformat_tour_steps(
+                self.tour_steps  # type: ignore[attr-defined]
+            )
             if hasattr(self, "tour_steps")
             else None,
             children=[self.views()[0].layout() if self.views() else self.layout],
