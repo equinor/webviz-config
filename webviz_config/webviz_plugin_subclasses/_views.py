@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List, Optional, Type, Union
+from typing import Callable, cast, Dict, List, Optional, Type, Union
 from enum import Enum
 
 from dash import html, Dash, Input, Output  # type: ignore
@@ -8,6 +8,10 @@ import webviz_core_components as wcc  # type: ignore
 from ._settings_group_abc import SettingsGroupABC
 from ._layout_base_abc import LayoutBaseABC
 from ._layout_uuid import LayoutUuid
+
+
+class UnknownId(Exception):
+    pass
 
 
 class ViewElementABC(LayoutBaseABC):
@@ -65,9 +69,29 @@ class ViewElementABC(LayoutBaseABC):
     def setting_group_uuid(
         self, settings_id: str, element: Optional[str] = None
     ) -> str:
+        setting = next(
+            (
+                el
+                for el in self.settings_groups()
+                if el.get_uuid().get_settings_group_id() == settings_id
+            ),
+            None,
+        )
+        if not setting:
+            available_ids = [
+                cast(str, el.get_uuid().get_settings_group_id())
+                for el in self.settings_groups()
+                if el.get_uuid().get_settings_group_id() != None
+            ]
+            raise UnknownId(
+                f"Could not find settings group with id '{settings_id}'.\n"
+                f"Available ids are: {' ,'.join(available_ids)}"
+            )
+
+        uuid = LayoutUuid(other=setting.get_uuid())
         if element:
-            return f"{element}-{self._uuid}-{settings_id}"
-        return f"{self._uuid}-{settings_id}"
+            uuid.set_component_id(element)
+        return uuid.to_string()
 
     @property
     def view_element_data_output(self) -> Output:
@@ -86,7 +110,7 @@ class ViewElementABC(LayoutBaseABC):
     def layout(self) -> Union[str, Type[Component]]:
         raise NotImplementedError
 
-    def settings(self) -> List[SettingsGroupABC]:
+    def settings_groups(self) -> List[SettingsGroupABC]:
         return self._settings
 
     def _set_all_callbacks(self, app: Dash) -> None:
@@ -179,7 +203,7 @@ class ViewLayoutElement:
                             el._wrapped_layout(),
                             *[
                                 setting._wrapped_layout(always_open=True)
-                                for setting in el.settings()
+                                for setting in el.settings_groups()
                             ],
                         ],
                     )
@@ -199,7 +223,7 @@ class ViewLayoutElement:
                         el._wrapped_layout(),
                         *[
                             setting._wrapped_layout(always_open=True)
-                            for setting in el.settings()
+                            for setting in el.settings_groups()
                         ],
                     ],
                 )
@@ -249,10 +273,32 @@ class ViewABC(LayoutBaseABC):
             return f"{element}-{self._uuid}"
         return str(self._uuid)
 
-    def view_element_uuid(self, view_id: str, element: Optional[str] = None) -> str:
+    def view_element_uuid(
+        self, view_element_id: str, element: Optional[str] = None
+    ) -> str:
+        view_element = next(
+            (
+                el
+                for el in self.view_elements()
+                if el.get_uuid().get_view_element_id() == view_element_id
+            ),
+            None,
+        )
+        if not view_element:
+            available_ids = [
+                cast(str, el.get_uuid().get_view_element_id())
+                for el in self.view_elements()
+                if el.get_uuid().get_view_element_id() != None
+            ]
+            raise UnknownId(
+                f"Could not find view element with id '{view_element_id}'.\n"
+                f"Available ids are: {' ,'.join(available_ids)}"
+            )
+
+        uuid = LayoutUuid(other=view_element.get_uuid())
         if element:
-            return f"{element}-{self._uuid}-{view_id}"
-        return f"{self._uuid}-{view_id}"
+            uuid.set_component_id(element)
+        return uuid.to_string()
 
     def view_element(self, view_element_id: str) -> "ViewElementABC":
         view_element = next(
@@ -293,9 +339,29 @@ class ViewABC(LayoutBaseABC):
     def settings_group_uuid(
         self, settings_id: str, element: Optional[str] = None
     ) -> str:
+        setting = next(
+            (
+                el
+                for el in self.settings_groups()
+                if el.get_uuid().get_settings_group_id() == settings_id
+            ),
+            None,
+        )
+        if not setting:
+            available_ids = [
+                cast(str, el.get_uuid().get_settings_group_id())
+                for el in self.settings_groups()
+                if el.get_uuid().get_settings_group_id() != None
+            ]
+            raise UnknownId(
+                f"Could not find settings group with id '{settings_id}'.\n"
+                f"Available ids are: {' ,'.join(available_ids)}"
+            )
+
+        uuid = LayoutUuid(other=setting.get_uuid())
         if element:
-            return f"{element}-{self._uuid}-{settings_id}"
-        return f"{self._uuid}-{settings_id}"
+            uuid.set_component_id(element)
+        return uuid.to_string()
 
     def add_view_element(
         self, view_element: ViewElementABC, view_element_id: str
@@ -369,7 +435,7 @@ class ViewABC(LayoutBaseABC):
                         el._wrapped_layout(),
                         *[
                             setting._wrapped_layout(always_open=True)
-                            for setting in el.settings()
+                            for setting in el.settings_groups()
                         ],
                     ],
                 )
