@@ -170,6 +170,7 @@ class WebvizPluginABC(abc.ABC):
     def add_view(self, view: ViewABC, view_id: str) -> None:
         # pylint: disable=protected-access
         view.get_uuid().set_view_id(view_id)
+        view._set_get_plugin_shared_settings_func(self.shared_settings_groups)
         view._set_plugin_register_id_func(self._check_and_register_id)
         view._set_uuid(self._plugin_uuid)
         view._set_all_callbacks(self._app)
@@ -213,7 +214,7 @@ class WebvizPluginABC(abc.ABC):
             f"Invalid view id: '{view_id}. Available view ids: {[el.uuid for el in self.views()]}"
         )
 
-    def shared_settings_groups(self) -> Optional[List[SettingsGroupABC]]:
+    def shared_settings_groups(self) -> List[SettingsGroupABC]:
         return self._shared_settings_groups
 
     def get_all_settings(self) -> List[html.Div]:

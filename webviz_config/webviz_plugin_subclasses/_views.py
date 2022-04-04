@@ -10,6 +10,10 @@ from ._layout_base_abc import LayoutBaseABC
 from ._layout_uuid import LayoutUuid
 
 
+class NoParentPlugin(Exception):
+    pass
+
+
 class UnknownId(Exception):
     pass
 
@@ -246,6 +250,69 @@ class ViewABC(LayoutBaseABC):
         self._plugin_register_id_func: Optional[
             Callable[[Union[str, List[str]]], None]
         ] = None
+        self._get_plugin_shared_settings: Optional[
+            Callable[[], List[SettingsGroupABC]]
+        ] = None
+
+    def shared_settings_group(self, settings_group_id: str) -> SettingsGroupABC:
+        if not self._get_plugin_shared_settings:
+            raise NoParentPlugin(
+                f"The view {self.name} has not been added to a plugin yet."
+            )
+        settings_group = next(
+            (
+                el
+                for el in self._get_plugin_shared_settings()
+                if el.get_uuid().get_settings_group_id() == settings_group_id
+            ),
+            None,
+        )
+        if settings_group:
+            return settings_group
+
+        raise LookupError(
+            f"""Invalid shared settings group id: '{settings_group_id}. 
+            Available shared settings group ids: {
+                [el.get_uuid().get_settings_group_id() for el in self._get_plugin_shared_settings()]
+            }
+            """
+        )
+
+    def shared_settings_group_uuid(
+        self, settings_id: str, element: Optional[str] = None
+    ) -> str:
+        if not self._get_plugin_shared_settings:
+            raise NoParentPlugin(
+                f"The view {self.name} has not been added to a plugin yet."
+            )
+        setting = next(
+            (
+                el
+                for el in self._get_plugin_shared_settings()
+                if el.get_uuid().get_settings_group_id() == settings_id
+            ),
+            None,
+        )
+        if not setting:
+            available_ids = [
+                cast(str, el.get_uuid().get_settings_group_id())
+                for el in self._get_plugin_shared_settings()
+                if el.get_uuid().get_settings_group_id() != None
+            ]
+            raise UnknownId(
+                f"Could not find settings group with id '{settings_id}'.\n"
+                f"Available ids are: {' ,'.join(available_ids)}"
+            )
+
+        uuid = LayoutUuid(other=setting.get_uuid())
+        if element:
+            uuid.set_component_id(element)
+        return uuid.to_string()
+
+    def _set_get_plugin_shared_settings_func(
+        self, func: Callable[[], List[SettingsGroupABC]]
+    ) -> None:
+        self._get_plugin_shared_settings = func
 
     def _set_plugin_register_id_func(
         self, func: Callable[[Union[str, List[str]]], None]
