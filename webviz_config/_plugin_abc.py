@@ -124,6 +124,7 @@ class WebvizPluginABC(abc.ABC):
         self._app = app
         self._active_view_id = ""
         self._stretch = stretch
+        self._all_callbacks_set = False
 
         self._set_wrapper_callbacks(app)
 
@@ -173,7 +174,6 @@ class WebvizPluginABC(abc.ABC):
         view._set_get_plugin_shared_settings_func(self.shared_settings_groups)
         view._set_plugin_register_id_func(self._check_and_register_id)
         view._set_uuid(self._plugin_uuid)
-        view._set_all_callbacks(self._app)
         self._views.append(view)
 
     def add_shared_settings_group(
@@ -193,8 +193,17 @@ class WebvizPluginABC(abc.ABC):
         )
         settings_group._set_plugin_register_id_func(self._check_and_register_id)
         settings_group._set_uuid(self._plugin_uuid)
-        settings_group._set_callbacks(self._app)
         self._shared_settings_groups.append(settings_group)
+
+    def _set_all_callbacks(self) -> None:
+        if not self._all_callbacks_set:
+            for view in self._views:
+                view._set_all_callbacks(self._app)
+
+            for settings_group in self._shared_settings_groups:
+                settings_group._set_callbacks(self._app)
+
+            self._all_callbacks_set = True
 
     @property
     def active_view_id(self) -> str:
@@ -369,6 +378,8 @@ class WebvizPluginABC(abc.ABC):
         If `TOOLBAR_BUTTONS` is empty, this functions returns the same
         dash layout as the plugin class provides directly.
         """
+
+        self._set_all_callbacks()
 
         buttons = self.__class__.TOOLBAR_BUTTONS.copy()
 
