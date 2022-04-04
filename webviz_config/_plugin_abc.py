@@ -103,6 +103,7 @@ class WebvizPluginABC(abc.ABC):
         self,
         app: dash.Dash,
         screenshot_filename: str = "webviz-screenshot.png",
+        stretch: bool = False,
     ) -> None:
         """If a plugin/subclass defines its own `__init__` function
         (which they usually do), they should remember to call
@@ -122,6 +123,7 @@ class WebvizPluginABC(abc.ABC):
 
         self._app = app
         self._active_view_id = ""
+        self._stretch = stretch
 
         self._set_wrapper_callbacks(app)
 
@@ -141,6 +143,9 @@ class WebvizPluginABC(abc.ABC):
         """
 
         return f"{element}-{self._plugin_uuid}"
+
+    def set_stretch(self, stretch: bool) -> None:
+        self._stretch = stretch
 
     @property
     def layout(self) -> Union[str, Type[Component]]:
@@ -410,6 +415,7 @@ class WebvizPluginABC(abc.ABC):
             )
             if hasattr(self, "tour_steps")
             else None,
+            stretch=self._stretch,
             children=[self.views()[0].layout() if self.views() else self.layout],
             persistence_type="session",
             persistence=True,
