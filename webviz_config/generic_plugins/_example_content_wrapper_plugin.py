@@ -1,7 +1,5 @@
 from typing import List, Tuple, Type, Union
 
-import time
-
 from dash.development.base_component import Component
 from dash import html, Dash, Input, Output, dash_table, callback_context, no_update
 
@@ -208,7 +206,6 @@ class TableView(ViewABC):
             Input(self.settings_group_uuid("Settings", "order-selector"), "value"),
         )
         def swap_order(order: str) -> List[dict]:
-            time.sleep(5)
             data = self.data.copy()
             if order == "desc":
                 data.reverse()
@@ -292,7 +289,6 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             return change_kindness(kindness)
 
         def change_kindness(kindness: str) -> Component:
-            time.sleep(5)
             if kindness == "friendly":
                 return [
                     html.H1("Hello"),
@@ -327,7 +323,6 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             ],
         )
         def change_power_and_coordinates(power: str, coordinates: str) -> Component:
-            time.sleep(5)
             if power == "2":
                 self.data = [(x, x * x) for x in range(0, 10)]
             else:
