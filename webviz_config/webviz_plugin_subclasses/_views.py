@@ -19,8 +19,13 @@ class UnknownId(Exception):
 
 
 class ViewElementABC(LayoutBaseABC):
+    class LoadingMask(Enum):
+        Text = "text"
+        Graph = "graph"
+        Table = "table"
+
     def __init__(
-        self, flex_grow: int = 1, screenshot_filename: str = "webviz-screenshot.png"
+        self, flex_grow: int = 1, screenshot_filename: str = "webviz-screenshot.png", loading_mask: LoadingMask = LoadingMask.Text
     ) -> None:
         super().__init__()
 
@@ -33,6 +38,7 @@ class ViewElementABC(LayoutBaseABC):
 
         self._settings: List[SettingsGroupABC] = []
         self._layout_created: bool = False
+        self._loading_mask = loading_mask
 
     def _set_plugin_register_id_func(
         self, func: Callable[[Union[str, List[str]]], None]
@@ -203,6 +209,7 @@ class ViewLayoutElement:
                         # pylint: disable=protected-access
                         showDownload=el._add_download_button,
                         flexGrow=el._flex_grow,
+                        loadingMask=el._loading_mask,
                         children=[
                             el._wrapped_layout(),
                             *[
@@ -223,6 +230,7 @@ class ViewLayoutElement:
                     id=str(el.get_uuid()),
                     showDownload=el._add_download_button,
                     flexGrow=el._flex_grow,
+                    loadingMask=el._loading_mask,
                     children=[
                         el._wrapped_layout(),
                         *[
@@ -497,6 +505,7 @@ class ViewABC(LayoutBaseABC):
                 wcc.WebvizViewElement(
                     id=str(el.get_uuid()),
                     showDownload=el._add_download_button,
+                    loadingMask=el._loading_mask,
                     flexGrow=el._flex_grow,
                     children=[
                         el._wrapped_layout(),

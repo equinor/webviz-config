@@ -51,7 +51,7 @@ class PlotViewElementSettings(SettingsGroupABC):
 
 class PlotViewElement(ViewElementABC):
     def __init__(self, data: List[Tuple[int, int]]) -> None:
-        super().__init__(flex_grow=8)
+        super().__init__(flex_grow=8, loading_mask=ViewElementABC.LoadingMask.Graph)
         self.data = data
 
         self.add_settings_group(PlotViewSettingsGroup(), "PlotViewSettings")
@@ -83,7 +83,7 @@ class PlotViewElement(ViewElementABC):
 
 class TableViewElement(ViewElementABC):
     def __init__(self, data: List[Tuple[int, int]]) -> None:
-        super().__init__()
+        super().__init__(loading_mask=ViewElementABC.LoadingMask.Table)
         self.data = data
 
     def layout(self) -> Union[str, Type[Component]]:
@@ -208,6 +208,7 @@ class TableView(ViewABC):
             Input(self.settings_group_uuid("Settings", "order-selector"), "value"),
         )
         def swap_order(order: str) -> List[dict]:
+            time.sleep(5)
             data = self.data.copy()
             if order == "desc":
                 data.reverse()
@@ -241,19 +242,19 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 "id": self.view("PlotView")
                 .view_element("Plot")
                 .component_uuid("my-graph"),
-                "content": "Plot showing plot data.",
+                "content": "This is a plot showing data.",
             },
             {
                 "id": self.view("PlotView")
-                .settings_group("PlotSettings")
-                .component_uuid("coordinates-selector"),
-                "content": "Use this to change the coordinate system.",
+                .view_element("Plot")
+                .component_uuid("my-graph"),
+                "content": "Plot showing plot data.",
             },
             {
                 "id": self.view("TableView")
                 .view_element("Table")
                 .component_uuid("my-table"),
-                "content": "Table showing plot data.",
+                "content": "A table showing data.",
             },
         ]
 
@@ -291,6 +292,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             return change_kindness(kindness)
 
         def change_kindness(kindness: str) -> Component:
+            time.sleep(5)
             if kindness == "friendly":
                 return [
                     html.H1("Hello"),

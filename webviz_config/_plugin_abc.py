@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Type, Union, Dict, Callable
+from typing import Dict, List, Optional, Type, Union
 import io
 import abc
 import base64
@@ -10,7 +10,7 @@ from uuid import uuid4
 
 import bleach
 from dash.development.base_component import Component
-from dash import Dash, Input, Output, State, html, callback, _callback
+from dash import Dash, Input, Output, html
 import dash
 import jinja2
 import webviz_core_components as wcc
@@ -101,7 +101,7 @@ class WebvizPluginABC(abc.ABC):
 
     def __init__(
         self,
-        app: dash.Dash,
+        app: Optional[dash.Dash] = None,
         screenshot_filename: str = "webviz-screenshot.png",
         stretch: bool = False,
     ) -> None:
@@ -126,7 +126,8 @@ class WebvizPluginABC(abc.ABC):
         self._stretch = stretch
         self._all_callbacks_set = False
 
-        self._set_wrapper_callbacks(app)
+        if app:
+            self._set_wrapper_callbacks(app)
 
     def uuid(self, element: str) -> str:
         """Typically used to get a unique ID for some given element/component in
@@ -196,7 +197,8 @@ class WebvizPluginABC(abc.ABC):
         self._shared_settings_groups.append(settings_group)
 
     def _set_all_callbacks(self) -> None:
-        if not self._all_callbacks_set:
+        if not self._all_callbacks_set and self._app:
+            # pylint: disable=protected-access
             for view in self._views:
                 view._set_all_callbacks(self._app)
 
@@ -391,26 +393,6 @@ class WebvizPluginABC(abc.ABC):
         if self._add_download_button:
             buttons.append("download")
 
-        """ if buttons or plugin_deprecation_warnings or argument_deprecation_warnings:
-            # pylint: disable=no-member
-            return wcc.WebvizPluginPlaceholder(
-                id=self._plugin_wrapper_id,
-                buttons=buttons,
-                contact_person=contact_person,
-                children=[self.layout],
-                screenshot_filename=self._screenshot_filename,
-                tour_steps=WebvizPluginABC._reformat_tour_steps(
-                    self.tour_steps  # type: ignore[attr-defined]
-                )
-                if "guided_tour" in buttons and hasattr(self, "tour_steps")
-                else [],
-                deprecation_warnings=self._make_extended_deprecation_warnings(
-                    plugin_deprecation_warnings, argument_deprecation_warnings
-                ),
-                feedback_url=self._make_feedback_url(),
-            )
-         """
-
         return wcc.WebvizPluginWrapper(
             id=self._plugin_wrapper_id,
             name=type(self).__name__,
@@ -448,40 +430,3 @@ class WebvizPluginABC(abc.ABC):
                     self._active_view_id = view.uuid()
                     return view.layout()
             return dash.no_update
-
-    @staticmethod
-    def extract_view_id(id_string: str) -> str:
-        return id_string.split(":")[1]
-
-    def callback(self, *_args, **_kwargs) -> Callable:  # type: ignore
-        # Get the outputs using a Dash internal function
-        output = _callback.handle_grouped_callback_args(_args, _kwargs)[0]
-
-        view_ids: List[str] = []
-
-        if isinstance(output, Output):
-            view_ids.append(WebvizPluginABC.extract_view_id(output.component_id_str()))
-        else:
-            view_ids.extend(
-                [
-                    WebvizPluginABC.extract_view_id(el.component_id_str())
-                    for el in output
-                ]
-            )
-
-        def wrapper(original_callback_function: Callable) -> Callable:
-            @self._app.callback(_args, _kwargs)
-            def callback_wrapper(*_wrapper_args, **_wrapper_kwargs) -> Any:  # type: ignore
-                results = original_callback_function(_wrapper_args, _wrapper_kwargs)
-                if isinstance(results, tuple):
-                    return tuple(
-                        results[i]
-                        if view_ids[i] == self.active_view_id
-                        else dash.no_update
-                        for i in range(0, len(results))
-                    )
-                return results if view_ids[0] == self.active_view_id else dash.no_update
-
-            return callback_wrapper
-
-        return wrapper
