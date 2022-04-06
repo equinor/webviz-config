@@ -1,11 +1,23 @@
-from typing import List, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from dash.development.base_component import Component
-from dash import html, Dash, Input, Output, dash_table, callback_context, no_update
+from dash import (
+    html,
+    Dash,
+    Input,
+    Output,
+    State,
+    dash_table,
+    callback_context,
+    no_update,
+)
+from dash.exceptions import PreventUpdate
+
+import pandas as pd
 
 import webviz_core_components as wcc
 
-from .. import WebvizPluginABC
+from .. import WebvizPluginABC, EncodedFile
 
 from ..deprecation_decorators import deprecated_plugin
 from ..webviz_plugin_subclasses import ViewABC, ViewElementABC, SettingsGroupABC
@@ -78,6 +90,48 @@ class PlotViewElement(ViewElementABC):
             ],
         )
 
+    @staticmethod
+    def download_data_df(graph_figure: Dict[str, Any]) -> pd.DataFrame:
+        graph_data: Optional[List[Dict[str, Any]]] = graph_figure.get("data", None)
+        if not graph_data:
+            return "No data present in graph figure"
+
+        x = graph_data[0].get("x", None)
+        y = graph_data[0].get("y", None)
+        if x is None or y is None:
+            return f"Missing x or y data: x = {x} and y = {y}"
+
+        df = pd.DataFrame(
+            columns=["x", "y"],
+        )
+        df["x"] = x
+        df["y"] = y
+        return df
+
+    def _set_callbacks(self, app: Dash) -> None:
+        @app.callback(
+            self.view_element_data_output,
+            self.view_element_data_requested,
+            State(self.component_uuid("my-graph").to_string(), "figure"),
+            prevent_initial_call=True,
+        )
+        def _download_data(
+            data_requested: Union[int, None], graph_figure: Dict[str, Any]
+        ) -> Union[EncodedFile, str]:
+            if data_requested is None:
+                raise PreventUpdate
+
+            return WebvizPluginABC.plugin_data_compress(
+                [
+                    {
+                        "filename": f"{self.component_uuid('my-graph').to_string()}.csv",
+                        "content": self.download_data_df(graph_figure).to_csv(
+                            index=False
+                        ),
+                    }
+                ]
+            )
+
 
 class TableViewElement(ViewElementABC):
     def __init__(self, data: List[Tuple[int, int]]) -> None:
@@ -90,6 +144,53 @@ class TableViewElement(ViewElementABC):
             columns=[{"id": "x", "name": "X"}, {"id": "y", "name": "Y"}],
             data=[{"x": d[0], "y": d[1]} for d in self.data],
         )
+
+    @staticmethod
+    def download_data_df(table_data: List[Dict[str, int]]) -> pd.DataFrame:
+        x = []
+        y = []
+        for index, elm in enumerate(table_data):
+            _x = elm.get("x", None)
+            _y = elm.get("y", None)
+            if _x is None:
+                raise ValueError(f'No "x" column data in table at index {index}')
+            if _y is None:
+                raise ValueError(f'No "y" column data in table at index {index}')
+            x.append(_x)
+            y.append(_y)
+
+        df = pd.DataFrame(
+            columns=["x", "y"],
+        )
+        df["x"] = x
+        df["y"] = y
+
+    def _set_callbacks(self, app: Dash) -> None:
+        @app.callback(
+            self.view_element_data_output,
+            self.view_element_data_requested,
+            State(self.component_uuid("my-table").to_string(), "data"),
+            prevent_initial_call=True,
+        )
+        def _download_data(
+            data_requested: Union[int, None], table_data: List[Dict[str, int]]
+        ) -> Union[EncodedFile, str]:
+            if data_requested is None:
+                raise PreventUpdate
+
+            if not table_data:
+                return "No data present in table"
+
+            return WebvizPluginABC.plugin_data_compress(
+                [
+                    {
+                        "filename": f"{self.component_uuid('my-table').to_string()}.csv",
+                        "content": self.download_data_df(table_data).to_csv(
+                            index=False
+                        ),
+                    }
+                ]
+            )
 
 
 class PlotViewSettingsGroup(SettingsGroupABC):
@@ -256,6 +357,52 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         ]
 
     def _set_callbacks(self, app: Dash) -> None:
+        @app.callback(
+            self.plugin_data_output,
+            self.plugin_data_requested,
+            State(
+                self.view("PlotView")
+                .view_element("Plot")
+                .component_uuid("my-graph")
+                .to_string(),
+                "figure",
+            ),
+            # State(
+            #     self.view("TableView")
+            #     .view_element("Table")
+            #     .component_uuid("my-table")
+            #     .to_string(),
+            #     "data",
+            # ),
+        )
+        def _download_plugin_data(
+            data_requested: Union[int, None],
+            graph_figure: Dict[str, Any],
+            # table_data: List[Dict[str, int]],
+        ) -> Union[EncodedFile, str]:
+            if data_requested is None:
+                raise PreventUpdate
+
+            plot_data_csv = PlotViewElement.download_data_df(graph_figure).to_csv(
+                index=False
+            )
+            # table_data_csv = TableViewElement.download_data_df(table_data).to_csv(
+            #     index=False
+            # )
+
+            return WebvizPluginABC.plugin_data_compress(
+                [
+                    {
+                        "filename": f"{self.view('PlotView').view_element('Plot').component_uuid('my-graph').to_string()}.csv",
+                        "content": plot_data_csv,
+                    },
+                    # {
+                    #     "filename": f"{self.view('TableView').view_element('Table').component_uuid('my-table').to_string()}.csv",
+                    #     "content": table_data_csv,
+                    # },
+                ]
+            )
+
         @app.callback(
             Output(
                 self.view("PlotView")
