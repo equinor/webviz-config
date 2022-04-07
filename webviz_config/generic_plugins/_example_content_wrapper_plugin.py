@@ -304,6 +304,40 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         @app.callback(
             Output(
                 self.view("PlotView")
+                .settings_group("PlotSettings")
+                .component_uuid("coordinates-selector")
+                .to_string(),
+                "options",
+            ),
+            Input(
+                self.settings_group.component_uuid("power-selector").to_string(),
+                "value",
+            )
+        )
+        def change_selection(power: str) -> list:
+            time.sleep(8)
+            if power == "2":
+                return [
+                    {
+                        "label": "x - y",
+                        "value": "xy",
+                    },
+                    {
+                        "label": "y - x",
+                        "value": "yx",
+                    },
+                ]
+            
+            return [
+                {
+                    "label": "x - y",
+                    "value": "xy",
+                },
+            ]
+
+        @app.callback(
+            Output(
+                self.view("PlotView")
                 .view_elements()[1]
                 .component_uuid("my-graph")
                 .to_string(),
@@ -323,7 +357,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 ),
             ],
         )
-        def change_power_and_coordinates(power: str, coordinates: str) -> Component:
+        def change_power_and_coordinates(power: str, coordinates: str) -> dict:
             time.sleep(5)
             if power == "2":
                 self.data = [(x, x * x) for x in range(0, 10)]
