@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
+import time
+
 from dash.development.base_component import Component
 from dash import (
     html,
@@ -61,7 +63,7 @@ class PlotViewElementSettings(SettingsGroupABC):
 
 class PlotViewElement(ViewElementABC):
     def __init__(self, data: List[Tuple[int, int]]) -> None:
-        super().__init__(flex_grow=8, loading_mask=ViewElementABC.LoadingMask.Graph)
+        super().__init__(flex_grow=8)
         self.data = data
 
         self.add_settings_group(PlotViewSettingsGroup(), "PlotViewSettings")
@@ -135,7 +137,7 @@ class PlotViewElement(ViewElementABC):
 
 class TableViewElement(ViewElementABC):
     def __init__(self, data: List[Tuple[int, int]]) -> None:
-        super().__init__(loading_mask=ViewElementABC.LoadingMask.Table)
+        super().__init__()
         self.data = data
 
     def layout(self) -> Union[str, Type[Component]]:
@@ -327,8 +329,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         self.settings_group = SharedSettingsGroup()
         self.add_shared_settings_group(
             self.settings_group,
-            "SharedSettings",
-            visible_in_views=[self.view("PlotView").uuid()],
+            "SharedSettings"
         )
 
         self._set_callbacks(app)
@@ -470,6 +471,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             ],
         )
         def change_power_and_coordinates(power: str, coordinates: str) -> Component:
+            time.sleep(5)
             if power == "2":
                 self.data = [(x, x * x) for x in range(0, 10)]
             else:
