@@ -226,10 +226,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         self.add_view(TableView(self.data), "TableView")
 
         self.settings_group = SharedSettingsGroup()
-        self.add_shared_settings_group(
-            self.settings_group,
-            "SharedSettings"
-        )
+        self.add_shared_settings_group(self.settings_group, "SharedSettings")
 
         self._set_callbacks(app)
 
@@ -237,22 +234,40 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
     def tour_steps(self) -> List[dict]:
         return [
             {
-                "id": self.view("PlotView")
-                .view_element("Plot")
-                .component_uuid("my-graph"),
-                "content": "This is a plot showing data.",
+                "id": self.view("PlotView").view_element("Text").component_uuid("text"),
+                "content": "Greetings from your example plugin.",
+            },
+            {
+                "id": self.settings_group.component_uuid("kindness-selector"),
+                "content": "You can change here if this shall be friendly or not.",
             },
             {
                 "id": self.view("PlotView")
                 .view_element("Plot")
                 .component_uuid("my-graph"),
-                "content": "Plot showing plot data.",
+                "content": "Over here you see a plot that shows x² or x³.",
+            },
+            {
+                "id": self.settings_group.component_uuid("power-selector"),
+                "content": "You can change here which exponent you prefer.",
+            },
+            {
+                "id": self.view("PlotView")
+                .settings_group("PlotSettings")
+                .component_uuid("coordinates-selector"),
+                "content": "...and here you can swap the axes.",
             },
             {
                 "id": self.view("TableView")
                 .view_element("Table")
                 .component_uuid("my-table"),
-                "content": "A table showing data.",
+                "content": "There is also a table visualizing the data.",
+            },
+            {
+                "id": self.view("TableView")
+                .settings_group("Settings")
+                .component_uuid("order-selector"),
+                "content": "You can change the order of the table here.",
             },
         ]
 
@@ -312,7 +327,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             Input(
                 self.settings_group.component_uuid("power-selector").to_string(),
                 "value",
-            )
+            ),
         )
         def change_selection(power: str) -> list:
             time.sleep(8)
@@ -327,7 +342,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                         "value": "yx",
                     },
                 ]
-            
+
             return [
                 {
                     "label": "x - y",

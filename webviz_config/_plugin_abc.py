@@ -265,11 +265,16 @@ class WebvizPluginABC(abc.ABC):
     def _reformat_tour_steps(steps: List[dict]) -> List[dict]:
         return [
             {
-                "elementId": "#" + str(step["id"]),
-                "viewId": step["id"].get_view_uuid(),
-                "isSettingsGroup": step["id"].is_settings_group(),
-                "isViewElementSetting": step["id"].is_settings_group()
-                and step["id"].get_view_element_id() != None,
+                "elementId": str(step["id"]),
+                "viewId": step["id"].get_view_uuid()
+                if step["id"].get_view_id() != None
+                else "",
+                "settingsGroupId": step["id"].get_settings_group_uuid()
+                if step["id"].is_settings_group()
+                else None,
+                "viewElementId": step["id"].get_view_element_uuiid()
+                if step["id"].is_view_element() and step["id"].is_settings_group()
+                else None,
                 "content": step["content"],
             }
             for step in steps
@@ -397,7 +402,6 @@ class WebvizPluginABC(abc.ABC):
             id=self._plugin_wrapper_id,
             name=type(self).__name__,
             views=[{"id": view.uuid(), "name": view.name} for view in self.views()],
-            showDownload=self._add_download_button,
             contactPerson=contact_person,
             deprecationWarnings=self._make_extended_deprecation_warnings(
                 plugin_deprecation_warnings, argument_deprecation_warnings

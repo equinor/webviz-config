@@ -55,6 +55,19 @@ class LayoutUuid:
     def get_settings_group_id(self) -> Optional[str]:
         return self._settings_group_id
 
+    def get_settings_group_uuid(self) -> str:
+        ids: List[str] = []
+        if self._plugin_id:
+            ids.append(self._plugin_id)
+        if self._view_id:
+            ids.append(self._view_id)
+        if self._view_element_id:
+            ids.append(self._view_element_id)
+        if self._settings_group_id:
+            ids.append(self._settings_group_id)
+
+        return "-".join(ids)
+
     def set_plugin_id(self, plugin_id: str) -> None:
         self._plugin_id = plugin_id
 
