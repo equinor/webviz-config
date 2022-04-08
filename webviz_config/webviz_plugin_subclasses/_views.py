@@ -97,12 +97,10 @@ class ViewElementABC(LayoutBaseABC):
             uuid.set_component_id(element)
         return uuid.to_string()
 
-    @property
     def view_element_data_output(self) -> Output:
         self._add_download_button = True
         return Output(str(self.get_uuid()), "download")
 
-    @property
     def view_element_data_requested(self) -> Input:
         return Input(str(self.get_uuid()), "data_requested")
 
@@ -244,6 +242,7 @@ class ViewABC(LayoutBaseABC):
 
         self.name = name
 
+        self._add_download_button = False
         self._layout_elements: List[Union[ViewElementABC, ViewLayoutElement]] = []
         self._view_elements: List[ViewElementABC] = []
         self._settings_groups: List[SettingsGroupABC] = []
@@ -489,10 +488,18 @@ class ViewABC(LayoutBaseABC):
     def settings_groups(self) -> List[SettingsGroupABC]:
         return self._settings_groups
 
+    def view_data_output(self) -> Output:
+        self._add_download_button = True
+        return Output(str(self.get_uuid()), "download")
+
+    def view_data_requested(self) -> Input:
+        return Input(str(self.get_uuid()), "data_requested")
+
     def layout(self) -> Type[Component]:
         # pylint: disable=protected-access
-        return html.Div(
-            className="WebvizPluginWrapper__DashContent",
+        return wcc.WebvizView(
+            id=str(self.get_uuid()),
+            showDownload=self._add_download_button,
             children=[
                 wcc.WebvizViewElement(
                     id=str(el.get_uuid()),

@@ -401,7 +401,14 @@ class WebvizPluginABC(abc.ABC):
         return wcc.WebvizPluginWrapper(
             id=self._plugin_wrapper_id,
             name=type(self).__name__,
-            views=[{"id": view.uuid(), "name": view.name} for view in self.views()],
+            views=[
+                {
+                    "id": view.uuid(),
+                    "name": view.name,
+                    "showDownload": view._add_download_button,
+                }
+                for view in self.views()
+            ],
             contactPerson=contact_person,
             deprecationWarnings=self._make_extended_deprecation_warnings(
                 plugin_deprecation_warnings, argument_deprecation_warnings
