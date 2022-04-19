@@ -528,6 +528,10 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         )
         def change_power_and_coordinates(power: str, coordinates: str) -> dict:
             time.sleep(5)
+            layout = {
+                "title": "Example Graph Swapped",
+                "margin": {"t": 50, "r": 20, "b": 20, "l": 20},
+            }
             if power == "2":
                 self.data = [(x, x * x) for x in range(0, 10)]
             else:
@@ -541,7 +545,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                             "y": [x[0] for x in self.data],
                         }
                     ],
-                    "layout": {"title": "Example Graph Swapped"},
+                    "layout": layout,
                 }
             return {
                 "data": [
@@ -550,7 +554,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                         "y": [x[1] for x in self.data],
                     }
                 ],
-                "layout": {"title": "Example Graph"},
+                "layout": layout,
             }
 
 
