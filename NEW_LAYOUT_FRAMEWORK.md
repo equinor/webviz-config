@@ -17,29 +17,71 @@ while still providing a high degree of freedom for the individual plugin develop
 
 ## Introduction / Overview
 
-A Webviz application consists of one or multiple pages. Each of these can again contain one or more plugins. A plugin
-is regarded as a set of views on a concrete data source. A view is structured by using view elements which contain a 
-single visualization element. This can for example be a table, a plot or a map. 
-
 The layout of a Webviz application can be separated in three main elements: 
+
 - the `Main menu` for navigating the pages of an application, 
 - the `Settings drawer` for displaying all preferences affecting the current view, and
 - the `Content container` which wraps the plugins of the current page.
 
 ![Webviz Layout High-level Overview](/assets/high-level-overview.png)
 
-Settings that users can apply to a Webviz application can be separated in three different types:
+A Webviz application consists of one or multiple pages. These are shown in the `main menu` and each can contain one or 
+more plugins. A plugin is regarded as a set of views on a concrete data source. A view is structured by using view 
+elements which contain a single visualization element and are shown in the `content container`. A visualization element 
+can for example be a table, a plot or a map. Each plugin, view and view element can have its own settings. 
+These can be separated in three different types:
+
 - Settings which change the whole data source and affect all views,
 - Settings which only change the currently active view, and
-- Settings which change the style of a concrete element, e.g. the axes range of a plot or the number of rows shown in a 
-table.
-
+- Settings which change the style/view of a concrete element, e.g. the axes range of a plot or the number of rows shown 
+in a table.
 
 The first two types are displayed in the settings drawer while the last one is accessible via the `View element` actions 
 (see below).
 
-The new layout framework comes with a couple of new elements and containers which are highlighted and explained in the 
-following illustration.
+The following illustration gives an overview over all elements in the new layout framework.
 
 ![Webviz Layout Overview](/assets/webviz-layout-overview.png)
 
+## Changes from old layout framework
+
+### Views: From tabs to view selector
+
+One of the major changes from the old to the new layout framework is the replacement of tabs with views.
+
+![Before and after: From tabs to views](/assets/before-after-tabs-views.png)
+
+Tabs have been widely used to provide different views on the same data source. They were placed at the top of a plugin 
+and had to be implemented in the plugin's `layout()` function as individual containers. However, it was up to the 
+plugin author to decide how views were made available in the user interface. The new view framework provides a 
+consistent way to define views and makes them accessible via the `View selector` in the settings drawer. This has the 
+advantage of saving space at the top of the page and provides a consistent user experience, since it standardises how
+views are presented and accessed.  
+
+### Plugin settings: From individual settings container to settings drawer
+
+Another change is the standardisation of how plugin settings are made available. Before, settings were often displayed
+in a separate container on either of the sides of the plugin (left and/or right). However, there was no consistent way 
+of displaying settings. The new layout framework solves this issue by always displaying plugin and view settings in the 
+settings drawer next to the main menu.
+
+![Before and after: From individual settings container to settings drawer](/assets/before-after-settings.png)
+
+### Plugin actions: Moved from `PluginPlaceholder` to settings drawer
+
+Plugin actions, as e.g. `full screen` and `screenshot`, have been moved from the plugin placeholder to the settings 
+drawer.
+
+![Before and after: Plugin actions](/assets/before-after-plugin-actions.png)
+
+## Getting started
+
+### Implementing a new plugin
+
+#### Structure plugin
+
+#### Views
+
+#### Shared settings
+
+###
