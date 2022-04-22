@@ -2,7 +2,6 @@ from typing import Callable, List, Optional, Type, Union
 import abc
 
 from dash.development.base_component import Component  # type: ignore
-from dash import Dash  # type: ignore
 import webviz_core_components as wcc  # type: ignore
 
 from ._layout_base_abc import LayoutBaseABC
@@ -68,5 +67,5 @@ class SettingsGroupABC(LayoutBaseABC):
         self._layout_created = True
         return layout
 
-    def _set_callbacks(self, app: Dash) -> None:
+    def _set_callbacks(self) -> None:
         pass

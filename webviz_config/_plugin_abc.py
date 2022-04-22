@@ -10,7 +10,7 @@ from uuid import uuid4
 
 import bleach
 from dash.development.base_component import Component
-from dash import Dash, Input, Output, html
+from dash import callback, Input, Output, html
 import dash
 import jinja2
 import webviz_core_components as wcc
@@ -101,7 +101,6 @@ class WebvizPluginABC(abc.ABC):
 
     def __init__(
         self,
-        app: Optional[dash.Dash] = None,
         screenshot_filename: str = "webviz-screenshot.png",
         stretch: bool = False,
     ) -> None:
@@ -121,13 +120,11 @@ class WebvizPluginABC(abc.ABC):
         self._shared_settings_groups: List[SettingsGroupABC] = []
         self._registered_ids: List[str] = []
 
-        self._app = app
         self._active_view_id = ""
         self._stretch = stretch
         self._all_callbacks_set = False
 
-        if app:
-            self._set_wrapper_callbacks(app)
+        self._set_wrapper_callbacks()
 
     def uuid(self, element: str) -> str:
         """Typically used to get a unique ID for some given element/component in
@@ -197,13 +194,13 @@ class WebvizPluginABC(abc.ABC):
         self._shared_settings_groups.append(settings_group)
 
     def _set_all_callbacks(self) -> None:
-        if not self._all_callbacks_set and self._app:
+        if not self._all_callbacks_set:
             # pylint: disable=protected-access
             for view in self._views:
-                view._set_all_callbacks(self._app)
+                view._set_all_callbacks()
 
             for settings_group in self._shared_settings_groups:
-                settings_group._set_callbacks(self._app)
+                settings_group._set_callbacks()
 
             self._all_callbacks_set = True
 
@@ -405,6 +402,7 @@ class WebvizPluginABC(abc.ABC):
                 {
                     "id": view.uuid(),
                     "name": view.name,
+                    # pylint: disable=protected-access
                     "showDownload": view._add_download_button,
                 }
                 for view in self.views()
@@ -426,8 +424,8 @@ class WebvizPluginABC(abc.ABC):
             persistence=True,
         )
 
-    def _set_wrapper_callbacks(self, app: Dash) -> None:
-        @app.callback(
+    def _set_wrapper_callbacks(self) -> None:
+        @callback(
             Output(self._plugin_wrapper_id, "children"),
             Input("webviz-content-manager", "activeViewId"),
             Input("webviz-content-manager", "activePluginId"),

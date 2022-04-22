@@ -42,7 +42,7 @@ The first two types are displayed in the settings drawer while the last one is a
 The following illustration gives an overview over all elements in the new layout framework.
 
 ![Webviz Layout Overview](/assets/webviz-layout-overview.png)
-
+ 
 ## Changes from old layout framework
 
 ### Views: From tabs to view selector
@@ -78,7 +78,49 @@ drawer.
 
 ### Implementing a new plugin
 
-#### Structure plugin
+Every new plugin starts with a new class inheriting from `WebvizPluginABC`.
+
+```python
+from webviz_config import WebvizPluginABC
+
+class MyPlugin(WebvizPluginABC):
+    def __init__(self):
+        super().__init__()
+```
+
+The data supposed to be visualized in the plugin is either given directly as an argument from within the config file or the path to a data source (e.g. a file) is provided. The latter is the most common approach.
+
+```python
+from pathlib import Path
+
+import pandas as pd
+
+from webviz_config import WebvizPluginABC
+
+class MyPlugin(WebvizPluginABC):
+    def __init__(self, path_to_csv_file: Path):
+        super().__init__()
+
+        self.data = pd.read_csv(path_to_csv_file)
+```
+
+When wanting to add a view to the plugin, a new class inheriting from `ViewABC` must be implemented.
+
+```python
+from webviz_config.webviz_plugin_subclasses._views import ViewABC
+
+class MyView(ViewABC):
+    def __init__(self):
+        super().__init__("My view")
+```
+
+This views can then be added to the plugin by using
+
+```python
+self.add_view(MyView(), "MyView")
+```
+
+whereas the second argument is the id of the view that can be used to access it later on.
 
 #### Views
 

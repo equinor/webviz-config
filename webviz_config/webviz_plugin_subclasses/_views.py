@@ -1,7 +1,7 @@
 from typing import Callable, cast, Dict, List, Optional, Type, Union
 from enum import Enum
 
-from dash import html, Dash, Input, Output  # type: ignore
+from dash import Input, Output  # type: ignore
 from dash.development.base_component import Component  # type: ignore
 import webviz_core_components as wcc  # type: ignore
 
@@ -115,14 +115,14 @@ class ViewElementABC(LayoutBaseABC):
     def settings_groups(self) -> List[SettingsGroupABC]:
         return self._settings
 
-    def _set_all_callbacks(self, app: Dash) -> None:
+    def _set_all_callbacks(self) -> None:
         for setting in self._settings:
             # pylint: disable=protected-access
-            setting._set_callbacks(app)
+            setting._set_callbacks()
 
-        self._set_callbacks(app)
+        self._set_callbacks()
 
-    def _set_callbacks(self, app: Dash) -> None:
+    def _set_callbacks(self) -> None:
         pass
 
 
@@ -169,10 +169,10 @@ class ViewLayoutElement:
         for view_element_id, view_element in view_elements.items():
             self.add_view_element(view_element, view_element_id)
 
-    def _set_all_callbacks(self, app: Dash) -> None:
+    def _set_all_callbacks(self) -> None:
         for child in self._children:
             # pylint: disable=protected-access
-            child._set_all_callbacks(app)
+            child._set_all_callbacks()
 
     def _set_plugin_register_id_func(
         self, func: Callable[[Union[str, List[str]]], None]
@@ -472,15 +472,15 @@ class ViewABC(LayoutBaseABC):
         for settings_group_id, settings_group in settings_groups.items():
             self.add_settings_group(settings_group, settings_group_id)
 
-    def _set_all_callbacks(self, app: Dash) -> None:
+    def _set_all_callbacks(self) -> None:
         # pylint: disable=protected-access
         for element in self._view_elements:
-            element._set_all_callbacks(app)
+            element._set_all_callbacks()
 
         for setting in self._settings_groups:
-            setting._set_callbacks(app)
+            setting._set_callbacks()
 
-        self._set_callbacks(app)
+        self._set_callbacks()
 
     def view_elements(self) -> List[ViewElementABC]:
         return self._view_elements
@@ -519,5 +519,5 @@ class ViewABC(LayoutBaseABC):
             ],
         )
 
-    def _set_callbacks(self, app: Dash) -> None:
+    def _set_callbacks(self) -> None:
         pass
