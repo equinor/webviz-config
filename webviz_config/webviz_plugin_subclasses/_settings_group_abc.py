@@ -41,7 +41,7 @@ class SettingsGroupABC(LayoutBaseABC):
         return component_uuid
 
     @abc.abstractmethod
-    def layout(self) -> Type[Component]:
+    def layout(self) -> Union[List[Component], Type[Component]]:
         raise NotImplementedError
 
     def _wrapped_layout(
@@ -50,7 +50,8 @@ class SettingsGroupABC(LayoutBaseABC):
         plugin_id: Optional[str] = "",
         always_open: bool = False,
     ) -> Type[Component]:
-        layout = wcc.WebvizSettingsGroup(
+        layout = self.layout()
+        wrapped_layout = wcc.WebvizSettingsGroup(
             id=str(self.get_uuid()),
             title=self.title,
             viewId=view_id,
@@ -62,10 +63,10 @@ class SettingsGroupABC(LayoutBaseABC):
             if len(self._not_visible_in_views) > 0
             else None,
             alwaysOpen=always_open,
-            children=[self.layout()],
+            children=layout if isinstance(layout, list) else [layout],
         )
         self._layout_created = True
-        return layout
+        return wrapped_layout
 
-    def _set_callbacks(self) -> None:
+    def set_callbacks(self) -> None:
         pass

@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, List, Optional, Tuple, Type, Union
 import io
 import abc
 import base64
@@ -116,7 +116,7 @@ class WebvizPluginABC(abc.ABC):
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
 
-        self._views: List[ViewABC] = []
+        self._views: List[Tuple[str, ViewABC]] = []
         self._shared_settings_groups: List[SettingsGroupABC] = []
         self._registered_ids: List[str] = []
 
@@ -166,13 +166,13 @@ class WebvizPluginABC(abc.ABC):
                 )
             self._registered_ids.append(i)
 
-    def add_view(self, view: ViewABC, view_id: str) -> None:
+    def add_view(self, view: ViewABC, view_id: str, view_group: str = "") -> None:
         # pylint: disable=protected-access
         view.get_uuid().set_view_id(view_id)
         view._set_get_plugin_shared_settings_func(self.shared_settings_groups)
         view._set_plugin_register_id_func(self._check_and_register_id)
         view._set_uuid(self._plugin_uuid)
-        self._views.append(view)
+        self._views.append((view_group, view))
 
     def add_shared_settings_group(
         self,
@@ -197,10 +197,10 @@ class WebvizPluginABC(abc.ABC):
         if not self._all_callbacks_set:
             # pylint: disable=protected-access
             for view in self._views:
-                view._set_all_callbacks()
+                view[1]._set_all_callbacks()
 
             for settings_group in self._shared_settings_groups:
-                settings_group._set_callbacks()
+                settings_group.set_callbacks()
 
             self._all_callbacks_set = True
 
@@ -208,18 +208,19 @@ class WebvizPluginABC(abc.ABC):
     def active_view_id(self) -> str:
         return self._active_view_id
 
-    def views(self) -> List[ViewABC]:
+    def views(self) -> List[Tuple[str, ViewABC]]:
         return self._views
 
     def view(self, view_id: str) -> ViewABC:
         view = next(
-            (el for el in self.views() if el.uuid().split("-")[-1] == view_id), None
+            (el[1] for el in self.views() if el[1].uuid().split("-")[-1] == view_id),
+            None,
         )
         if view:
             return view
 
         raise LookupError(
-            f"Invalid view id: '{view_id}. Available view ids: {[el.uuid for el in self.views()]}"
+            f"Invalid view id: '{view_id}. Available view ids: {[el[1].uuid for el in self._views]}"
         )
 
     def shared_settings_groups(self) -> List[SettingsGroupABC]:
@@ -235,11 +236,11 @@ class WebvizPluginABC(abc.ABC):
                 for setting in shared_settings
             ]
 
-        for view in self.views():
+        for view in self._views:
             settings.extend(
                 [
-                    setting._wrapped_layout(view.uuid(), self._plugin_wrapper_id)
-                    for setting in view.settings_groups()
+                    setting._wrapped_layout(view[1].uuid(), self._plugin_wrapper_id)
+                    for setting in view[1].settings_groups()
                 ]
             )
 
@@ -400,10 +401,11 @@ class WebvizPluginABC(abc.ABC):
             name=type(self).__name__,
             views=[
                 {
-                    "id": view.uuid(),
-                    "name": view.name,
+                    "id": view[1].uuid(),
+                    "group": view[0],
+                    "name": view[1].name,
                     # pylint: disable=protected-access
-                    "showDownload": view._add_download_button,
+                    "showDownload": view[1]._add_download_button,
                 }
                 for view in self.views()
             ],
@@ -419,7 +421,9 @@ class WebvizPluginABC(abc.ABC):
             if hasattr(self, "tour_steps")
             else None,
             stretch=self._stretch,
-            children=[self.views()[0].layout() if self.views() else self.layout],
+            children=[
+                self.views()[0][1].outer_layout() if self.views() else self.layout
+            ],
             persistence_type="session",
             persistence=True,
         )
@@ -433,9 +437,10 @@ class WebvizPluginABC(abc.ABC):
         def change_view(view_id: str, plugin_id: str) -> Component:
             if plugin_id == self._plugin_wrapper_id:
                 view = next(
-                    (view for view in self.views() if view.uuid() == view_id), None
+                    (view[1] for view in self.views() if view[1].uuid() == view_id),
+                    None,
                 )
                 if view and self.active_view_id != view_id:
                     self._active_view_id = view.uuid()
-                    return view.layout()
+                    return view.outer_layout()
             return dash.no_update

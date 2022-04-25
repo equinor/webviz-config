@@ -1,5 +1,6 @@
 from typing import Callable, cast, Dict, List, Optional, Type, Union
 from enum import Enum
+from abc import ABC
 
 from dash import Input, Output  # type: ignore
 from dash.development.base_component import Component  # type: ignore
@@ -105,11 +106,25 @@ class ViewElementABC(LayoutBaseABC):
         return Input(str(self.get_uuid()), "data_requested")
 
     def _wrapped_layout(self) -> Union[str, Type[Component]]:
-        layout = self.layout()
+        layout = self.inner_layout()
         self._layout_created = True
         return layout
 
-    def layout(self) -> Union[str, Type[Component]]:
+    def outer_layout(self) -> Type[Component]:
+        return wcc.WebvizViewElement(
+            id=str(self.get_uuid()),
+            showDownload=self._add_download_button,
+            flexGrow=self._flex_grow,
+            children=[
+                self._wrapped_layout(),
+                *[
+                    setting._wrapped_layout(always_open=True)
+                    for setting in self.settings_groups()
+                ],
+            ],
+        )
+
+    def inner_layout(self) -> Union[str, Type[Component]]:
         raise NotImplementedError
 
     def settings_groups(self) -> List[SettingsGroupABC]:
@@ -118,11 +133,11 @@ class ViewElementABC(LayoutBaseABC):
     def _set_all_callbacks(self) -> None:
         for setting in self._settings:
             # pylint: disable=protected-access
-            setting._set_callbacks()
+            setting.set_callbacks()
 
-        self._set_callbacks()
+        self.set_callbacks()
 
-    def _set_callbacks(self) -> None:
+    def set_callbacks(self) -> None:
         pass
 
 
@@ -460,6 +475,15 @@ class ViewABC(LayoutBaseABC):
         for view_element_id, view_element in view_elements.items():
             self.add_view_element(view_element, view_element_id)
 
+    def remove_view_element(self, view_element_id: str) -> bool:
+        old_length = len(self._view_elements)
+        self._view_elements = [
+            view_element
+            for view_element in self._view_elements
+            if view_element.get_uuid().get_view_element_id() == view_element_id
+        ]
+        return old_length != len(self._view_elements)
+
     def add_settings_group(
         self, settings_group: SettingsGroupABC, settings_group_id: str
     ) -> None:
@@ -478,9 +502,9 @@ class ViewABC(LayoutBaseABC):
             element._set_all_callbacks()
 
         for setting in self._settings_groups:
-            setting._set_callbacks()
+            setting.set_callbacks()
 
-        self._set_callbacks()
+        self.set_callbacks()
 
     def view_elements(self) -> List[ViewElementABC]:
         return self._view_elements
@@ -495,29 +519,19 @@ class ViewABC(LayoutBaseABC):
     def view_data_requested(self) -> Input:
         return Input(str(self.get_uuid()), "data_requested")
 
-    def layout(self) -> Type[Component]:
+    def inner_layout(self) -> List[Type[Component]]:
+        return [
+            el.outer_layout() if isinstance(el, ViewElementABC) else el.layout
+            for el in self._layout_elements
+        ]
+
+    def outer_layout(self) -> Type[Component]:
         # pylint: disable=protected-access
         return wcc.WebvizView(
             id=str(self.get_uuid()),
             showDownload=self._add_download_button,
-            children=[
-                wcc.WebvizViewElement(
-                    id=str(el.get_uuid()),
-                    showDownload=el._add_download_button,
-                    flexGrow=el._flex_grow,
-                    children=[
-                        el._wrapped_layout(),
-                        *[
-                            setting._wrapped_layout(always_open=True)
-                            for setting in el.settings_groups()
-                        ],
-                    ],
-                )
-                if isinstance(el, ViewElementABC)
-                else el.layout
-                for el in self._layout_elements
-            ],
+            children=self.inner_layout(),
         )
 
-    def _set_callbacks(self) -> None:
+    def set_callbacks(self) -> None:
         pass
