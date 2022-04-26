@@ -7,10 +7,11 @@ import warnings
 import sys
 import urllib
 from uuid import uuid4
+import enum
 
 import bleach
 from dash.development.base_component import Component
-from dash import callback, Input, Output, html
+from dash import callback, Input, Output, html, dcc
 import dash
 import jinja2
 import webviz_core_components as wcc
@@ -99,6 +100,11 @@ class WebvizPluginABC(abc.ABC):
     # All paths in the returned ASSETS list should be absolute.
     ASSETS: list = []
 
+    class StorageType(enum.Enum):
+        MEMORY = "memory"
+        LOCAL = "local"
+        SESSION = "session"
+
     def __init__(
         self,
         screenshot_filename: str = "webviz-screenshot.png",
@@ -117,6 +123,7 @@ class WebvizPluginABC(abc.ABC):
         self._add_download_button = False
 
         self._views: List[Tuple[str, ViewABC]] = []
+        self._stores: List[Tuple[str, WebvizPluginABC.StorageType]] = []
         self._shared_settings_groups: List[SettingsGroupABC] = []
         self._registered_ids: List[str] = []
 
@@ -171,6 +178,7 @@ class WebvizPluginABC(abc.ABC):
         view.get_uuid().set_view_id(view_id)
         view._set_get_plugin_shared_settings_func(self.shared_settings_groups)
         view._set_plugin_register_id_func(self._check_and_register_id)
+        view._set_plugin_get_store_func(self.get_store_id)
         view._set_uuid(self._plugin_uuid)
         self._views.append((view_group, view))
 
@@ -190,12 +198,29 @@ class WebvizPluginABC(abc.ABC):
             not_visible_in_views if not_visible_in_views else []
         )
         settings_group._set_plugin_register_id_func(self._check_and_register_id)
+        settings_group._set_plugin_get_store_func(self.get_store_id)
         settings_group._set_uuid(self._plugin_uuid)
         self._shared_settings_groups.append(settings_group)
+
+    def add_store(self, store_id: str, storage_type: StorageType) -> None:
+        self._stores.append((store_id, storage_type))
+
+    def get_store_id(self, store_id: str) -> str:
+        store = next((el[0] for el in self._stores if el[0] == store_id))
+        if store:
+            return self.uuid(f"store-{store[0]}")
+
+        raise LookupError(
+            f"Invalid store id: '{store_id}. Available store ids: {[el[0] for el in self._stores]}"
+        )
+
+    def _set_callbacks(self) -> None:
+        pass
 
     def _set_all_callbacks(self) -> None:
         if not self._all_callbacks_set:
             # pylint: disable=protected-access
+            self._set_callbacks()
             for view in self._views:
                 view[1]._set_all_callbacks()
 
@@ -213,18 +238,33 @@ class WebvizPluginABC(abc.ABC):
 
     def view(self, view_id: str) -> ViewABC:
         view = next(
-            (el[1] for el in self.views() if el[1].uuid().split("-")[-1] == view_id),
+            (el[1] for el in self.views() if el[1].get_uuid().get_view_id() == view_id),
             None,
         )
         if view:
             return view
 
         raise LookupError(
-            f"Invalid view id: '{view_id}. Available view ids: {[el[1].uuid for el in self._views]}"
+            f"Invalid view id: '{view_id}. Available view ids: {[el[1].get_uuid().get_view_id() for el in self._views]}"
         )
 
     def shared_settings_groups(self) -> List[SettingsGroupABC]:
         return self._shared_settings_groups
+
+    def shared_settings_group(self, settings_group_id: str) -> SettingsGroupABC:
+        group = next(
+            (el for el in self.shared_settings_groups() if el.get_uuid().get_settings_group_id() == settings_group_id),
+            None,
+        )
+        if group:
+            return group
+
+        raise LookupError(
+            f"""
+            Invalid settings group id: '{settings_group_id}'.
+            Available settings group ids: {[el.get_uuid().get_settings_group_id() for el in self._shared_settings_groups]}
+            """
+        )
 
     def get_all_settings(self) -> List[html.Div]:
         # pylint: disable=protected-access
@@ -422,8 +462,9 @@ class WebvizPluginABC(abc.ABC):
             else None,
             stretch=self._stretch,
             children=[
-                self.views()[0][1].outer_layout() if self.views() else self.layout
-            ],
+                dcc.Store(id=self.uuid(f"store-{store[0]}"), storage_type=store[1].value) for store in self._stores
+            ] + [self.views()[0][1].outer_layout() if self.views() else self.layout]
+            ,
             persistence_type="session",
             persistence=True,
         )
