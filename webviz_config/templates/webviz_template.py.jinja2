@@ -133,7 +133,7 @@ else:
     if not use_oauth2:
         use_oauth2 = plugin_content.oauth2 if hasattr(plugin, "oauth2") else use_oauth2
 
-    page_plugins["{{page.id}}"].append(plugin.{{ content_item._call_signature[1] }})
+    page_plugins["{{page.id}}"].extend(plugin.{{ content_item._call_signature[1] }})
     page_settings["{{page.id}}"].extend([settings for settings in plugin.get_all_settings()])
 
     {% endif %}
@@ -186,7 +186,7 @@ def update_page(url, pathname):
             pathname = pathname.replace("/", "")
         if not pathname:
             pathname = next(iter(page_plugins)) 
-    return [page_plugins.get(pathname, "Oooppss... Page not found."), page_settings.get(pathname, [])]
+    return page_plugins.get(pathname, ["Oooppss... Page not found."]), page_settings.get(pathname, [])
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
 

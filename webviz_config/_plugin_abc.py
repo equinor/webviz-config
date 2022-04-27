@@ -178,7 +178,7 @@ class WebvizPluginABC(abc.ABC):
         view.get_uuid().set_view_id(view_id)
         view._set_get_plugin_shared_settings_func(self.shared_settings_groups)
         view._set_plugin_register_id_func(self._check_and_register_id)
-        view._set_plugin_get_store_func(self.get_store_id)
+        view._set_plugin_get_store_uuid_func(self.get_store_uuid)
         view._set_uuid(self._plugin_uuid)
         self._views.append((view_group, view))
 
@@ -198,17 +198,17 @@ class WebvizPluginABC(abc.ABC):
             not_visible_in_views if not_visible_in_views else []
         )
         settings_group._set_plugin_register_id_func(self._check_and_register_id)
-        settings_group._set_plugin_get_store_func(self.get_store_id)
+        settings_group._set_plugin_get_store_uuid_func(self.get_store_uuid)
         settings_group._set_uuid(self._plugin_uuid)
         self._shared_settings_groups.append(settings_group)
 
     def add_store(self, store_id: str, storage_type: StorageType) -> None:
         self._stores.append((store_id, storage_type))
 
-    def get_store_id(self, store_id: str) -> str:
+    def get_store_uuid(self, store_id: str) -> str:
         store = next((el[0] for el in self._stores if el[0] == store_id))
         if store:
-            return self.uuid(f"store-{store[0]}")
+            return self.uuid(f"store-{store}")
 
         raise LookupError(
             f"Invalid store id: '{store_id}. Available store ids: {[el[0] for el in self._stores]}"
@@ -253,7 +253,11 @@ class WebvizPluginABC(abc.ABC):
 
     def shared_settings_group(self, settings_group_id: str) -> SettingsGroupABC:
         group = next(
-            (el for el in self.shared_settings_groups() if el.get_uuid().get_settings_group_id() == settings_group_id),
+            (
+                el
+                for el in self.shared_settings_groups()
+                if el.get_uuid().get_settings_group_id() == settings_group_id
+            ),
             None,
         )
         if group:
@@ -411,7 +415,7 @@ class WebvizPluginABC(abc.ABC):
         contact_person: Optional[dict] = None,
         plugin_deprecation_warnings: Optional[List[str]] = None,
         argument_deprecation_warnings: Optional[List[str]] = None,
-    ) -> Type[Component]:
+    ) -> List[Component]:
         """This function returns (if the class constant SHOW_TOOLBAR is True,
         the plugin layout wrapped into a common webviz config plugin
         component, which provides some useful buttons like download of data,
@@ -436,38 +440,45 @@ class WebvizPluginABC(abc.ABC):
         if self._add_download_button:
             buttons.append("download")
 
-        return wcc.WebvizPluginWrapper(
-            id=self._plugin_wrapper_id,
-            name=type(self).__name__,
-            views=[
-                {
-                    "id": view[1].uuid(),
-                    "group": view[0],
-                    "name": view[1].name,
-                    # pylint: disable=protected-access
-                    "showDownload": view[1]._add_download_button,
-                }
-                for view in self.views()
-            ],
-            contactPerson=contact_person,
-            deprecationWarnings=self._make_extended_deprecation_warnings(
-                plugin_deprecation_warnings, argument_deprecation_warnings
-            ),
-            screenshotFilename=self._screenshot_filename,
-            feedbackUrl=self._make_feedback_url(),
-            tourSteps=WebvizPluginABC._reformat_tour_steps(
-                self.tour_steps  # type: ignore[attr-defined]
+        return [
+            dcc.Store(
+                id=self.uuid(f"store-{store[0]}"),
+                storage_type=store[1].value,
             )
-            if hasattr(self, "tour_steps")
-            else None,
-            stretch=self._stretch,
-            children=[
-                dcc.Store(id=self.uuid(f"store-{store[0]}"), storage_type=store[1].value) for store in self._stores
-            ] + [self.views()[0][1].outer_layout() if self.views() else self.layout]
-            ,
-            persistence_type="session",
-            persistence=True,
-        )
+            for store in self._stores
+        ] + [
+            wcc.WebvizPluginWrapper(
+                id=self._plugin_wrapper_id,
+                name=type(self).__name__,
+                views=[
+                    {
+                        "id": view[1].uuid(),
+                        "group": view[0],
+                        "name": view[1].name,
+                        # pylint: disable=protected-access
+                        "showDownload": view[1]._add_download_button,
+                    }
+                    for view in self.views()
+                ],
+                contactPerson=contact_person,
+                deprecationWarnings=self._make_extended_deprecation_warnings(
+                    plugin_deprecation_warnings, argument_deprecation_warnings
+                ),
+                screenshotFilename=self._screenshot_filename,
+                feedbackUrl=self._make_feedback_url(),
+                tourSteps=WebvizPluginABC._reformat_tour_steps(
+                    self.tour_steps  # type: ignore[attr-defined]
+                )
+                if hasattr(self, "tour_steps")
+                else None,
+                stretch=self._stretch,
+                children=[
+                    self.views()[0][1].outer_layout() if self.views() else self.layout
+                ],
+                persistence_type="session",
+                persistence=True,
+            )
+        ]
 
     def _set_wrapper_callbacks(self) -> None:
         @callback(
