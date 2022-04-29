@@ -166,6 +166,9 @@ class ViewLayoutElement:
     def add_column(self, column: "ViewLayoutElement") -> None:
         self._children.append(column)
 
+    def add_row(self, row: "ViewLayoutElement") -> None:
+        self._children.append(row)
+
     def make_column(self, flex_grow: int = 1) -> "ViewLayoutElement":
         column = ViewLayoutElement(
             LayoutElementType.COLUMN, self._parent_view, flex_grow
