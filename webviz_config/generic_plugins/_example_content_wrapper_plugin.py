@@ -10,6 +10,7 @@ from dash import (
     Output,
     State,
     dash_table,
+    callback
 )
 from dash.exceptions import PreventUpdate
 
@@ -27,7 +28,7 @@ class TextViewElement(ViewElementABC):
     def __init__(self) -> None:
         super().__init__()
 
-    def layout(self) -> Union[str, Type[Component]]:
+    def inner_layout(self) -> Union[str, Type[Component]]:
         return html.Div(
             id=self.register_component_uuid("text"),
             children=[
@@ -66,7 +67,7 @@ class PlotViewElement(ViewElementABC):
 
         self.add_settings_group(PlotViewSettingsGroup(), "PlotViewSettings")
 
-    def layout(self) -> Union[str, Type[Component]]:
+    def inner_layout(self) -> Union[str, Type[Component]]:
         return html.Div(
             style={"height": "20vh"},
             children=[
@@ -108,8 +109,8 @@ class PlotViewElement(ViewElementABC):
         df["y"] = y
         return df
 
-    def _set_callbacks(self, app: Dash) -> None:
-        @app.callback(
+    def _set_callbacks(self) -> None:
+        @callback(
             self.view_element_data_output(),
             self.view_element_data_requested(),
             State(self.component_uuid("my-graph").to_string(), "figure"),
@@ -138,7 +139,7 @@ class TableViewElement(ViewElementABC):
         super().__init__()
         self.data = data
 
-    def layout(self) -> Union[str, Type[Component]]:
+    def inner_layout(self) -> Union[str, Type[Component]]:
         return dash_table.DataTable(
             id=self.register_component_uuid("my-table"),
             columns=[{"id": "x", "name": "X"}, {"id": "y", "name": "Y"}],
@@ -166,8 +167,8 @@ class TableViewElement(ViewElementABC):
         df["y"] = y
         return df
 
-    def _set_callbacks(self, app: Dash) -> None:
-        @app.callback(
+    def _set_callbacks(self) -> None:
+        @callback(
             self.view_element_data_output(),
             self.view_element_data_requested(),
             State(self.component_uuid("my-table").to_string(), "data"),
@@ -291,8 +292,8 @@ class PlotView(ViewABC):
 
         self.add_settings_group(PlotViewSettingsGroup(), "PlotSettings")
 
-    def _set_callbacks(self, app: Dash) -> None:
-        @app.callback(
+    def _set_callbacks(self) -> None:
+        @callback(
             self.view_data_output(),
             self.view_data_requested(),
             State(self._plot_view.component_uuid("my-graph").to_string(), "figure"),
@@ -332,8 +333,8 @@ class TableView(ViewABC):
 
         self.add_settings_group(TableViewSettingsGroup(), settings_group_id="Settings")
 
-    def _set_callbacks(self, app: Dash) -> None:
-        @app.callback(
+    def _set_callbacks(self) -> None:
+        @callback(
             Output(self.table_view.component_uuid("my-table").to_string(), "data"),
             Input(self.settings_group_uuid("Settings", "order-selector"), "value"),
         )
@@ -343,7 +344,7 @@ class TableView(ViewABC):
                 data.reverse()
             return [{"x": d[0], "y": d[1]} for d in data]
 
-        @app.callback(
+        @callback(
             self.view_data_output(),
             self.view_data_requested(),
             State(self.table_view.component_uuid("my-table").to_string(), "data"),
@@ -382,7 +383,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         self.settings_group = SharedSettingsGroup()
         self.add_shared_settings_group(self.settings_group, "SharedSettings")
 
-        self._set_callbacks(app)
+        self._set_callbacks()
 
     @property
     def tour_steps(self) -> List[dict]:
@@ -425,8 +426,8 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             },
         ]
 
-    def _set_callbacks(self, app: Dash) -> None:
-        @app.callback(
+    def _set_callbacks(self) -> None:
+        @callback(
             Output(
                 self.view("PlotView")
                 .view_element("Text")
@@ -442,7 +443,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         def pseudo1(kindness: str) -> Component:
             return change_kindness(kindness)
 
-        @app.callback(
+        @callback(
             Output(
                 self.view("TableView")
                 .view_element("Text")
@@ -470,7 +471,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 "I am a bloody example plugin. Leave me alone! =(",
             ]
 
-        @app.callback(
+        @callback(
             Output(
                 self.view("PlotView")
                 .settings_group("PlotSettings")
@@ -504,7 +505,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 },
             ]
 
-        @app.callback(
+        @callback(
             Output(
                 self.view("PlotView")
                 .view_elements()[1]
