@@ -133,7 +133,7 @@ class WebvizPluginABC(abc.ABC):
 
         self._set_wrapper_callbacks()
 
-    def uuid(self, element: str) -> str:
+    def uuid(self, element: Optional[str] = None) -> str:
         """Typically used to get a unique ID for some given element/component in
         a plugins layout. If the element string is unique within the plugin, this
         function returns a string which is guaranteed to be unique also across the
@@ -148,7 +148,10 @@ class WebvizPluginABC(abc.ABC):
         file changes in a non-portable setting).
         """
 
-        return f"{element}-{self._plugin_uuid}"
+        if element is None:
+            return f"{self._plugin_uuid.get_plugin_id()}"
+
+        return f"{element}-{self._plugin_uuid.get_plugin_id()}"
 
     def set_stretch(self, stretch: bool) -> None:
         self._stretch = stretch
@@ -247,6 +250,10 @@ class WebvizPluginABC(abc.ABC):
         raise LookupError(
             f"Invalid view id: '{view_id}. Available view ids: {[el[1].get_uuid().get_view_id() for el in self._views]}"
         )
+
+    def unverified_view_uuid(self, view_id: str) -> str:
+        view_uuid = LayoutUuid(self.uuid(), view_id)
+        return view_uuid.to_string()
 
     def shared_settings_groups(self) -> List[SettingsGroupABC]:
         return self._shared_settings_groups

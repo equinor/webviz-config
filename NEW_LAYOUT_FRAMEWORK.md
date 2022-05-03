@@ -127,3 +127,5 @@ whereas the second argument is the id of the view that can be used to access it 
 #### Shared settings
 
 ###
+
+- Add ViewElements directly or indirectly
