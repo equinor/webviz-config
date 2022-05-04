@@ -77,7 +77,8 @@ setup(
         ],
     },
     install_requires=[
-        "bleach>=3.1",
+        "bleach>=3.1; python_version<'3.7'",
+        "bleach[css]>=5; python_version>='3.7'",
         "cryptography>=2.4",
         "dash>=2.0",
         "dash-pivottable>=0.0.2",
