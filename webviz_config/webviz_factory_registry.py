@@ -4,7 +4,6 @@ import warnings
 from .webviz_factory import WebvizFactory
 from .webviz_instance_info import WebvizInstanceInfo, WEBVIZ_INSTANCE_INFO
 
-# pylint: disable=invalid-name
 T = TypeVar("T", bound=WebvizFactory)
 
 

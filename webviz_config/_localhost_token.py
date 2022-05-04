@@ -68,7 +68,7 @@ class LocalhostToken:
 
             if not self._ott_validated and self._ott == flask.request.args.get("ott"):
                 self._ott_validated = True
-                flask.g.set_cookie_token = True  # pylint: disable=assigning-non-slot
+                flask.g.set_cookie_token = True
                 return flask.redirect(flask.request.base_url)
 
             if self._cookie_token == flask.request.cookies.get(
