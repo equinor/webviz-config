@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Fixed
+- [#588](https://github.com/equinor/webviz-config/pull/588) - Added compatibility with upstream dependency `bleach >= 5`.
+
 ## [0.3.9] - 2022-02-09
 
 ### Added
