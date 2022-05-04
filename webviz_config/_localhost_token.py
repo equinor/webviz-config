@@ -82,7 +82,7 @@ class LocalhostToken:
             else:
                 flask.abort(401)
 
-        @self._app.after_request
+        @self._app.after_request  # type: ignore[arg-type]
         def _set_cookie_token_in_response(
             response: flask.wrappers.Response,
         ) -> flask.wrappers.Response:
