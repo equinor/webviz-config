@@ -236,7 +236,9 @@ class WebvizPluginABC(abc.ABC):
     def active_view_id(self) -> str:
         return self._active_view_id
 
-    def views(self) -> List[Tuple[str, ViewABC]]:
+    def views(self, view_group: str = "") -> List[Tuple[str, ViewABC]]:
+        if view_group != "":
+            return list(filter(lambda x: x[0] == view_group, self._views))
         return self._views
 
     def view(self, view_id: str) -> ViewABC:
