@@ -1,6 +1,6 @@
 # New Webviz Plugin Framework
 
-The new `Webviz Plugin Framework` aims on improving consistency, usability and structure of Webviz plugins. It provides
+The new `Webviz Plugin Framework` aims to improve consistency, (re-)usability and structure of Webviz plugins. It provides
 new abstract Python classes that can be inherited from in order to build easily understandable plugins with better 
 separation of different views on a common data source.
 
@@ -13,7 +13,7 @@ backgrounds and experiences, it can be challenging to deliver a consistent exper
 the way plugins are implemented and structured is also object to individual preference and experience.
 
 The goal of this framework is to structure Webviz plugins in a way that promises better usability and comprehensibility
-while still providing a high degree of freedom for the individual plugin developers.
+while still providing a high degree of freedom to the individual plugin developers. Moreover, it allows for easier reusability of individual views and view elements.
 
 ## Introduction / Overview
 
@@ -75,6 +75,33 @@ drawer.
 ![Before and after: Plugin actions](/assets/before-after-plugin-actions.png)
 
 ## Getting started
+
+### Terminology
+
+#### - `ID`
+Identifier for an entity within a plugin. This is not a unique identifier yet, but becomes one in combination with the plugin's `UUID`.
+
+#### - `UID`
+Unique identifier for a specific entity within a specific plugin. Created by combining an entity's `ID` with a plugin's `UUID`.
+
+#### - `UUID`
+[Universal Unique Identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) - Each plugin creates such a `UUID` when being initialized. This is used to uniquely identify each instance of a plugin.
+
+#### - `View`
+Represents a specific perspective on the plugin's dataset. Consists of one or multiple `ViewElements` and uses `ViewLayoutElements` to structure these in rows and columns.
+
+*Python base class: `ViewABC`*
+
+#### - `ViewLayoutElement`
+A layout helper element that can either be a row or a column. These layout elements can again contain other `ViewLayoutElements` or `ViewElements`, allowing for creation of complex view layouts. 
+
+*Python base class: `ViewLayoutABC`*
+
+#### - `ViewElement`
+Layout element wrapping a data visualization, description or documentation. A `View` consists of one or more `ViewElements`.
+
+*Python base class: `ViewElementABC`* 
+
 
 ### Implementing a new plugin
 
