@@ -257,6 +257,10 @@ class WebvizPluginABC(abc.ABC):
         view_uuid = LayoutUuid(self.uuid(), view_id)
         return view_uuid.to_string()
 
+    def unverified_settings_group_uuid(self, group_id: str) -> str:
+        group_uuid = LayoutUuid(self.uuid(), group_id)
+        return group_uuid.to_string()
+
     def shared_settings_groups(self) -> List[SettingsGroupABC]:
         return self._shared_settings_groups
 
