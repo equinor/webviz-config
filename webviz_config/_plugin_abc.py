@@ -16,7 +16,7 @@ import dash
 import jinja2
 import webviz_core_components as wcc
 
-from .webviz_plugin_subclasses import SettingsGroupABC, ViewABC, LayoutUuid
+from .webviz_plugin_subclasses import SettingsGroupABC, ViewABC, LayoutUniqueId
 
 if sys.version_info >= (3, 8):
     from typing import TypedDict
@@ -118,7 +118,7 @@ class WebvizPluginABC(abc.ABC):
         in its own `__init__` function in order to also run the parent `__init__`.
         """
 
-        self._plugin_uuid = LayoutUuid(plugin_id=str(uuid4()))
+        self._plugin_unique_id = LayoutUniqueId(plugin_uuid=str(uuid4()))
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
 
@@ -149,9 +149,9 @@ class WebvizPluginABC(abc.ABC):
         """
 
         if element is None:
-            return f"{self._plugin_uuid.get_plugin_id()}"
+            return f"{self._plugin_unique_id.get_plugin_uuid()}"
 
-        return f"{element}-{self._plugin_uuid.get_plugin_id()}"
+        return f"{element}-{self._plugin_unique_id.get_plugin_uuid()}"
 
     def set_stretch(self, stretch: bool) -> None:
         self._stretch = stretch
@@ -178,11 +178,11 @@ class WebvizPluginABC(abc.ABC):
 
     def add_view(self, view: ViewABC, view_id: str, view_group: str = "") -> None:
         # pylint: disable=protected-access
-        view.get_uuid().set_view_id(view_id)
+        view.get_unique_id().set_view_id(view_id)
         view._set_get_plugin_shared_settings_func(self.shared_settings_groups)
         view._set_plugin_register_id_func(self._check_and_register_id)
-        view._set_plugin_get_store_uuid_func(self.get_store_uuid)
-        view._set_uuid(self._plugin_uuid)
+        view._set_plugin_get_store_unique_id_func(self.get_store_unique_id)
+        view._set_unique_id(self._plugin_unique_id)
         self._views.append((view_group, view))
 
     def add_shared_settings_group(
@@ -192,7 +192,7 @@ class WebvizPluginABC(abc.ABC):
         visible_in_views: Optional[List[str]] = None,
         not_visible_in_views: Optional[List[str]] = None,
     ) -> None:
-        settings_group.get_uuid().set_settings_group_id(settings_group_id)
+        settings_group.get_unique_id().set_settings_group_id(settings_group_id)
         # pylint: disable=protected-access
         settings_group._set_visible_in_views(
             visible_in_views if visible_in_views else []
@@ -201,14 +201,14 @@ class WebvizPluginABC(abc.ABC):
             not_visible_in_views if not_visible_in_views else []
         )
         settings_group._set_plugin_register_id_func(self._check_and_register_id)
-        settings_group._set_plugin_get_store_uuid_func(self.get_store_uuid)
-        settings_group._set_uuid(self._plugin_uuid)
+        settings_group._set_plugin_get_store_unique_id_func(self.get_store_unique_id)
+        settings_group._set_unique_id(self._plugin_unique_id)
         self._shared_settings_groups.append(settings_group)
 
     def add_store(self, store_id: str, storage_type: StorageType) -> None:
         self._stores.append((store_id, storage_type))
 
-    def get_store_uuid(self, store_id: str) -> str:
+    def get_store_unique_id(self, store_id: str) -> str:
         store = next((el[0] for el in self._stores if el[0] == store_id))
         if store:
             return self.uuid(f"store-{store}")
@@ -243,22 +243,22 @@ class WebvizPluginABC(abc.ABC):
 
     def view(self, view_id: str) -> ViewABC:
         view = next(
-            (el[1] for el in self.views() if el[1].get_uuid().get_view_id() == view_id),
+            (el[1] for el in self.views() if el[1].get_unique_id().get_view_id() == view_id),
             None,
         )
         if view:
             return view
 
         raise LookupError(
-            f"Invalid view id: '{view_id}. Available view ids: {[el[1].get_uuid().get_view_id() for el in self._views]}"
+            f"Invalid view id: '{view_id}. Available view ids: {[el[1].get_unique_id().get_view_id() for el in self._views]}"
         )
 
     def unverified_view_uuid(self, view_id: str) -> str:
-        view_uuid = LayoutUuid(self.uuid(), view_id)
+        view_uuid = LayoutUniqueId(self._plugin_unique_id.get_plugin_uuid(), view_id)
         return view_uuid.to_string()
 
     def unverified_settings_group_uuid(self, group_id: str) -> str:
-        group_uuid = LayoutUuid(self.uuid(), group_id)
+        group_uuid = LayoutUniqueId(self._plugin_unique_id.get_plugin_uuid(), group_id)
         return group_uuid.to_string()
 
     def shared_settings_groups(self) -> List[SettingsGroupABC]:
@@ -269,7 +269,7 @@ class WebvizPluginABC(abc.ABC):
             (
                 el
                 for el in self.shared_settings_groups()
-                if el.get_uuid().get_settings_group_id() == settings_group_id
+                if el.get_unique_id().get_settings_group_id() == settings_group_id
             ),
             None,
         )
@@ -279,7 +279,7 @@ class WebvizPluginABC(abc.ABC):
         raise LookupError(
             f"""
             Invalid settings group id: '{settings_group_id}'.
-            Available settings group ids: {[el.get_uuid().get_settings_group_id() for el in self._shared_settings_groups]}
+            Available settings group ids: {[el.get_unique_id().get_settings_group_id() for el in self._shared_settings_groups]}
             """
         )
 
@@ -296,7 +296,7 @@ class WebvizPluginABC(abc.ABC):
         for view in self._views:
             settings.extend(
                 [
-                    setting._wrapped_layout(view[1].uuid(), self._plugin_wrapper_id)
+                    setting._wrapped_layout(view[1].unique_id(), self._plugin_wrapper_id)
                     for setting in view[1].settings_groups()
                 ]
             )
@@ -305,7 +305,7 @@ class WebvizPluginABC(abc.ABC):
 
     @property
     def _plugin_wrapper_id(self) -> str:
-        return f"plugin-wrapper-{self._plugin_uuid}"
+        return f"plugin-wrapper-{self._plugin_unique_id}"
 
     @property
     def plugin_data_output(self) -> Output:
@@ -324,7 +324,7 @@ class WebvizPluginABC(abc.ABC):
                 "viewId": step["id"].get_view_uuid()
                 if step["id"].get_view_id() != None
                 else "",
-                "settingsGroupId": step["id"].get_settings_group_uuid()
+                "settingsGroupId": step["id"].get_settings_group_unique_id()
                 if step["id"].is_settings_group()
                 else None,
                 "viewElementId": step["id"].get_view_element_uuiid()
@@ -465,7 +465,7 @@ class WebvizPluginABC(abc.ABC):
                 name=type(self).__name__,
                 views=[
                     {
-                        "id": view[1].uuid(),
+                        "id": view[1].unique_id(),
                         "group": view[0],
                         "name": view[1].name,
                         # pylint: disable=protected-access
@@ -502,10 +502,10 @@ class WebvizPluginABC(abc.ABC):
         def change_view(view_id: str, plugin_id: str) -> Component:
             if plugin_id == self._plugin_wrapper_id:
                 view = next(
-                    (view[1] for view in self.views() if view[1].uuid() == view_id),
+                    (view[1] for view in self.views() if view[1].unique_id() == view_id),
                     None,
                 )
                 if view and self.active_view_id != view_id:
-                    self._active_view_id = view.uuid()
+                    self._active_view_id = view.unique_id()
                     return view.outer_layout()
             return dash.no_update

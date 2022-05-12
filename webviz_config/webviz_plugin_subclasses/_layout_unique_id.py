@@ -1,17 +1,17 @@
-from typing import List, Optional, overload
+from typing import List, Optional
 
 
-class LayoutUuid:
+class LayoutUniqueId:
     def __init__(
         self,
-        plugin_id: Optional[str] = None,
+        plugin_uuid: Optional[str] = None,
         view_id: Optional[str] = None,
         view_element_id: Optional[str] = None,
         settings_group_id: Optional[str] = None,
         component_id: Optional[str] = None,
-        other: Optional["LayoutUuid"] = None,
+        other: Optional["LayoutUniqueId"] = None,
     ) -> None:
-        self._plugin_id = plugin_id
+        self._plugin_uuid = plugin_uuid
         self._view_id = view_id
         self._settings_group_id = settings_group_id
         self._view_element_id = view_element_id
@@ -20,10 +20,10 @@ class LayoutUuid:
         if other:
             self.adopt(other)
 
-    def get_plugin_id(self) -> Optional[str]:
+    def get_plugin_uuid(self) -> Optional[str]:
         return self._plugin_id
 
-    def get_view_uuid(self) -> str:
+    def get_view_unique_id(self) -> str:
         ids: List[str] = []
         if self._plugin_id:
             ids.append(self._plugin_id)
@@ -35,7 +35,7 @@ class LayoutUuid:
     def get_view_id(self) -> Optional[str]:
         return self._view_id
 
-    def get_view_element_uuid(self) -> str:
+    def get_view_element_unique_id(self) -> str:
         ids: List[str] = []
         if self._plugin_id:
             ids.append(self._plugin_id)
@@ -55,7 +55,7 @@ class LayoutUuid:
     def get_settings_group_id(self) -> Optional[str]:
         return self._settings_group_id
 
-    def get_settings_group_uuid(self) -> str:
+    def get_settings_group_unique_id(self) -> str:
         ids: List[str] = []
         if self._plugin_id:
             ids.append(self._plugin_id)
@@ -106,9 +106,9 @@ class LayoutUuid:
     def is_component(self) -> bool:
         return self._component_id != None
 
-    def adopt(self, other: "LayoutUuid") -> None:
-        if self._plugin_id == None and other.get_plugin_id() != None:
-            self._plugin_id = other.get_plugin_id()
+    def adopt(self, other: "LayoutUniqueId") -> None:
+        if self._plugin_uuid == None and other.get_plugin_uuid() != None:
+            self._plugin_uuid = other.get_plugin_uuid()
 
         if self._view_id == None and other.get_view_id() != None:
             self._view_id = other.get_view_id()
@@ -127,8 +127,8 @@ class LayoutUuid:
 
     def to_string(self) -> str:
         ids: List[str] = []
-        if self._plugin_id:
-            ids.append(self._plugin_id)
+        if self._plugin_uuid:
+            ids.append(self._plugin_uuid)
         if self._view_id:
             ids.append(self._view_id)
         if self._view_element_id:

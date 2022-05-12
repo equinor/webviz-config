@@ -393,7 +393,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 "content": "Greetings from your example plugin.",
             },
             {
-                "id": self.settings_group.component_uuid("kindness-selector"),
+                "id": self.settings_group.component_unique_id("kindness-selector"),
                 "content": "You can change here if this shall be friendly or not.",
             },
             {
@@ -403,13 +403,13 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 "content": "Over here you see a plot that shows x² or x³.",
             },
             {
-                "id": self.settings_group.component_uuid("power-selector"),
+                "id": self.settings_group.component_unique_id("power-selector"),
                 "content": "You can change here which exponent you prefer.",
             },
             {
                 "id": self.view("PlotView")
                 .settings_group("PlotSettings")
-                .component_uuid("coordinates-selector"),
+                .component_unique_id("coordinates-selector"),
                 "content": "...and here you can swap the axes.",
             },
             {
@@ -421,7 +421,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             {
                 "id": self.view("TableView")
                 .settings_group("Settings")
-                .component_uuid("order-selector"),
+                .component_unique_id("order-selector"),
                 "content": "You can change the order of the table here.",
             },
         ]
@@ -436,7 +436,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 "children",
             ),
             Input(
-                self.settings_group.component_uuid("kindness-selector").to_string(),
+                self.settings_group.component_unique_id("kindness-selector").to_string(),
                 "value",
             ),
         )
@@ -452,7 +452,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 "children",
             ),
             Input(
-                self.settings_group.component_uuid("kindness-selector").to_string(),
+                self.settings_group.component_unique_id("kindness-selector").to_string(),
                 "value",
             ),
         )
@@ -475,12 +475,12 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             Output(
                 self.view("PlotView")
                 .settings_group("PlotSettings")
-                .component_uuid("coordinates-selector")
+                .component_unique_id("coordinates-selector")
                 .to_string(),
                 "options",
             ),
             Input(
-                self.settings_group.component_uuid("power-selector").to_string(),
+                self.settings_group.component_unique_id("power-selector").to_string(),
                 "value",
             ),
         )
@@ -515,13 +515,13 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             ),
             [
                 Input(
-                    self.settings_group.component_uuid("power-selector").to_string(),
+                    self.settings_group.component_unique_id("power-selector").to_string(),
                     "value",
                 ),
                 Input(
                     self.view("PlotView")
                     .settings_group("PlotSettings")
-                    .component_uuid("coordinates-selector")
+                    .component_unique_id("coordinates-selector")
                     .to_string(),
                     "value",
                 ),

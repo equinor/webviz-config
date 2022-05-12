@@ -5,7 +5,7 @@ from dash.development.base_component import Component  # type: ignore
 import webviz_core_components as wcc  # type: ignore
 
 from ._layout_base_abc import LayoutBaseABC
-from ._layout_uuid import LayoutUuid
+from ._layout_unique_id import LayoutUniqueId
 
 
 class SettingsGroupABC(LayoutBaseABC):
@@ -29,14 +29,14 @@ class SettingsGroupABC(LayoutBaseABC):
         self._plugin_register_id_func = func
 
     def register_component_uuid(self, component_name: str) -> str:
-        uuid = self.component_uuid(component_name).to_string()
+        uuid = self.component_unique_id(component_name).to_string()
         if self._plugin_register_id_func and not self._layout_created:
             self._plugin_register_id_func(uuid)
 
         return uuid
 
-    def component_uuid(self, component_name: str) -> LayoutUuid:
-        component_uuid = LayoutUuid(other=self.get_uuid())
+    def component_unique_id(self, component_name: str) -> LayoutUniqueId:
+        component_uuid = LayoutUniqueId(other=self.get_unique_id())
         component_uuid.set_component_id(component_name)
         return component_uuid
 
@@ -52,7 +52,7 @@ class SettingsGroupABC(LayoutBaseABC):
     ) -> Type[Component]:
         layout = self.layout()
         wrapped_layout = wcc.WebvizSettingsGroup(
-            id=str(self.get_uuid()),
+            id=str(self.get_unique_id()),
             title=self.title,
             viewId=view_id,
             pluginId=plugin_id,
