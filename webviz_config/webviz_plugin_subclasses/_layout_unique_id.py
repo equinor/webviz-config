@@ -21,12 +21,12 @@ class LayoutUniqueId:
             self.adopt(other)
 
     def get_plugin_uuid(self) -> Optional[str]:
-        return self._plugin_id
+        return self._plugin_uuid
 
     def get_view_unique_id(self) -> str:
         ids: List[str] = []
-        if self._plugin_id:
-            ids.append(self._plugin_id)
+        if self._plugin_uuid:
+            ids.append(self._plugin_uuid)
         if self._view_id:
             ids.append(self._view_id)
 
@@ -37,8 +37,8 @@ class LayoutUniqueId:
 
     def get_view_element_unique_id(self) -> str:
         ids: List[str] = []
-        if self._plugin_id:
-            ids.append(self._plugin_id)
+        if self._plugin_uuid:
+            ids.append(self._plugin_uuid)
         if self._view_id:
             ids.append(self._view_id)
         if self._view_element_id:
@@ -57,8 +57,8 @@ class LayoutUniqueId:
 
     def get_settings_group_unique_id(self) -> str:
         ids: List[str] = []
-        if self._plugin_id:
-            ids.append(self._plugin_id)
+        if self._plugin_uuid:
+            ids.append(self._plugin_uuid)
         if self._view_id:
             ids.append(self._view_id)
         if self._view_element_id:
@@ -68,8 +68,8 @@ class LayoutUniqueId:
 
         return "-".join(ids)
 
-    def set_plugin_id(self, plugin_id: str) -> None:
-        self._plugin_id = plugin_id
+    def set_plugin_uuid(self, plugin_uuid: str) -> None:
+        self._plugin_uuid = plugin_uuid
 
     def set_view_id(self, view_id: str) -> None:
         self._view_id = view_id
@@ -85,41 +85,44 @@ class LayoutUniqueId:
 
     def is_plugin(self) -> bool:
         return (
-            self._plugin_id != None
-            and self._view_id == None
-            and self.get_settings_group_id == None
+            self._plugin_uuid is not None
+            and self._view_id is None
+            and self._settings_group_id is None
         )
 
     def is_view(self) -> bool:
         return (
-            self._view_id != None
-            and self._view_element_id == None
-            and self._settings_group_id == None
+            self._view_id is not None
+            and self._view_element_id is None
+            and self._settings_group_id is None
         )
 
     def is_view_element(self) -> bool:
-        return self._view_element_id != None
+        return self._view_element_id is not None
 
     def is_settings_group(self) -> bool:
-        return self._settings_group_id != None
+        return self._settings_group_id is not None
 
     def is_component(self) -> bool:
-        return self._component_id != None
+        return self._component_id is not None
 
     def adopt(self, other: "LayoutUniqueId") -> None:
-        if self._plugin_uuid == None and other.get_plugin_uuid() != None:
+        if self._plugin_uuid is None and other.get_plugin_uuid() is not None:
             self._plugin_uuid = other.get_plugin_uuid()
 
-        if self._view_id == None and other.get_view_id() != None:
+        if self._view_id is None and other.get_view_id() is not None:
             self._view_id = other.get_view_id()
 
-        if self._view_element_id == None and other.get_view_element_id() != None:
+        if self._view_element_id is None and other.get_view_element_id() is not None:
             self._view_element_id = other.get_view_element_id()
 
-        if self._settings_group_id == None and other.get_settings_group_id() != None:
+        if (
+            self._settings_group_id is None
+            and other.get_settings_group_id() is not None
+        ):
             self._settings_group_id = other.get_settings_group_id()
 
-        if self._component_id == None and other.get_component_id() != None:
+        if self._component_id is None and other.get_component_id() is not None:
             self._component_id = other.get_component_id()
 
     def __str__(self) -> str:
