@@ -51,6 +51,9 @@ class ViewElementABC(LayoutBaseABC):
             # pylint: disable=protected-access
             setting._set_unique_id(self.get_unique_id())
 
+    def set_flex_grow(self, flex_grow: int) -> None:
+        self._flex_grow = flex_grow
+
     def register_component_unique_id(self, component_name: str) -> str:
         uuid = self.component_unique_id(component_name).to_string()
         if self._plugin_register_id_func and not self._layout_created:
@@ -178,9 +181,10 @@ class ViewLayoutElement:
         self._children.append(column)
 
     def add_view_element(
-        self, view_element: ViewElementABC, view_element_id: str
+        self, view_element: ViewElementABC, view_element_id: str, flex_grow: int = 1
     ) -> None:
         # pylint: disable=protected-access
+        view_element.set_flex_grow(flex_grow)
         self._parent_view._add_view_element(view_element, view_element_id)
         self._children.append(view_element)
 
@@ -254,7 +258,7 @@ class ViewLayoutElement:
             ],
         )
 
-
+# pylint: disable=too-many-public-methods
 class ViewABC(LayoutBaseABC):
     def __init__(self, name: str) -> None:
         super().__init__()
