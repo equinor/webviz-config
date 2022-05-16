@@ -35,6 +35,8 @@ class LayoutUniqueId:
     def get_view_id(self) -> Optional[str]:
         return self._view_id
 
+
+
     def get_view_element_unique_id(self) -> str:
         ids: List[str] = []
         if self._plugin_uuid:

@@ -1,6 +1,6 @@
 from typing import Callable, cast, Dict, List, Optional, Type, Union
 from enum import Enum
-from abc import ABC
+from uuid import uuid4
 
 from dash import Input, Output  # type: ignore
 from dash.development.base_component import Component  # type: ignore
@@ -28,9 +28,6 @@ class ViewElementABC(LayoutBaseABC):
         self._flex_grow = flex_grow
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
-        self._plugin_register_id_func: Optional[
-            Callable[[Union[str, List[str]]], None]
-        ] = None
 
         self._settings: List[SettingsGroupABC] = []
         self._layout_created: bool = False
@@ -136,7 +133,6 @@ class ViewElementABC(LayoutBaseABC):
 
     def _set_all_callbacks(self) -> None:
         for setting in self._settings:
-            # pylint: disable=protected-access
             setting.set_callbacks()
 
         self.set_callbacks()
@@ -150,34 +146,62 @@ class LayoutElementType(Enum):
     COLUMN = 2
 
 
-class ViewLayoutElement:
+class ViewLayoutElement(LayoutBaseABC):
     def __init__(
         self,
         layout_element_type: LayoutElementType,
         parent_view: "ViewABC",
         flex_grow: int = 1,
     ):
+        super().__init__()
+
         self._parent_view: ViewABC = parent_view
         self._children: List[Union[ViewLayoutElement, ViewElementABC]] = []
         self._flex_grow = flex_grow
         self.__type = layout_element_type
 
-    def make_row(self, flex_grow: int = 1) -> "ViewLayoutElement":
+    def make_row(self, row_id: Optional[str] = None, flex_grow: int = 1) -> "ViewLayoutElement":
+        # pylint: disable=protected-access
+        if row_id is None:
+            row_id = str(uuid4())
         row = ViewLayoutElement(LayoutElementType.ROW, self._parent_view, flex_grow)
+        row._set_unique_id(self._unique_id)
+        row.get_unique_id().set_view_element_id(row_id)
         self._children.append(row)
+        self._parent_view._add_layout_element(row, row_id)
         return row
 
-    def make_column(self, flex_grow: int = 1) -> "ViewLayoutElement":
+    def make_column(
+        self,
+        column_id: Optional[str] = None,
+        flex_grow: int = 1
+    ) -> "ViewLayoutElement":
+        # pylint: disable=protected-access
+        if column_id is None:
+            column_id = str(uuid4())
         column = ViewLayoutElement(
             LayoutElementType.COLUMN, self._parent_view, flex_grow
         )
+        column._set_unique_id(self._unique_id)
+        column.get_unique_id().set_view_element_id(column_id)
         self._children.append(column)
+        self._parent_view._add_layout_element(column, column_id)
         return column
 
-    def add_row(self, row: "ViewLayoutElement") -> None:
+    def add_row(self, row: "ViewLayoutElement", row_id: Optional[str] = None) -> None:
+        # pylint: disable=protected-access
+        row_id = row_id if row_id is not None else str(uuid4())
+        row._set_unique_id(self.get_unique_id())
+        row.get_unique_id().set_view_element_id(row_id)
+        self._parent_view._add_layout_element(row, row_id)
         self._children.append(row)
 
-    def add_column(self, column: "ViewLayoutElement") -> None:
+    def add_column(self, column: "ViewLayoutElement", column_id: Optional[str] = None) -> None:
+        # pylint: disable=protected-access
+        column_id = column_id if column_id is not None else str(uuid4())
+        column._set_unique_id(self.get_unique_id())
+        column.get_unique_id().set_view_element_id(column_id)
+        self._parent_view._add_layout_element(column, column_id)
         self._children.append(column)
 
     def add_view_element(
@@ -200,23 +224,24 @@ class ViewLayoutElement:
     def _set_plugin_register_id_func(
         self, func: Callable[[Union[str, List[str]]], None]
     ) -> None:
+        super()._set_plugin_register_id_func(func)
         for element in self._children:
             # pylint: disable=protected-access
             element._set_plugin_register_id_func(func)
 
-    def _set_unique_id(self, uuid: LayoutUniqueId) -> None:
+    def _set_unique_id(self, parent_unique_id: LayoutUniqueId) -> None:
         # pylint: disable=protected-access
+        super()._set_unique_id(parent_unique_id)
+  
         for child in self._children:
-            if isinstance(child, ViewElementABC):
-                child._set_unique_id(uuid)
-            else:
-                child._set_unique_id(uuid)
+            child._set_unique_id(parent_unique_id)
 
     @property
     def layout(self) -> Type[Component]:
         # pylint: disable=protected-access
         if self.__type == LayoutElementType.ROW:
             return wcc.WebvizPluginLayoutRow(
+                id=str(self.get_unique_id()),
                 flexGrow=self._flex_grow,
                 children=[
                     wcc.WebvizViewElement(
@@ -238,6 +263,7 @@ class ViewLayoutElement:
                 ],
             )
         return wcc.WebvizPluginLayoutColumn(
+            id=str(self.get_unique_id()),
             flexGrow=self._flex_grow,
             children=[
                 wcc.WebvizViewElement(
@@ -266,8 +292,9 @@ class ViewABC(LayoutBaseABC):
         self.name = name
 
         self._add_download_button = False
-        self._layout_elements: List[Union[ViewElementABC, ViewLayoutElement]] = []
+        self._child_elements: List[Union[ViewElementABC, ViewLayoutElement]] = []
         self._view_elements: List[ViewElementABC] = []
+        self._layout_elements: List[ViewLayoutElement] = []
         self._settings_groups: List[SettingsGroupABC] = []
         self._plugin_register_id_func: Optional[
             Callable[[Union[str, List[str]]], None]
@@ -294,9 +321,10 @@ class ViewABC(LayoutBaseABC):
 
         raise LookupError(
             f"""Invalid shared settings group id: '{settings_group_id}. 
-            Available shared settings group ids: {
-                [el.get_unique_id().get_settings_group_id() for el in self._get_plugin_shared_settings()]
-            }
+            Available shared settings group ids: {[
+                el.get_unique_id().get_settings_group_id() 
+                for el in self._get_plugin_shared_settings()
+            ]}
             """
         )
 
@@ -341,7 +369,7 @@ class ViewABC(LayoutBaseABC):
     ) -> None:
         # pylint: disable=protected-access
         self._plugin_register_id_func = func
-        for element in self._layout_elements:
+        for element in self._child_elements:
             element._set_plugin_register_id_func(func)
 
         for setting in self._settings_groups:
@@ -351,7 +379,7 @@ class ViewABC(LayoutBaseABC):
         # pylint: disable=protected-access
         super()._set_unique_id(parent_unique_id)
 
-        for element in self._layout_elements:
+        for element in self._child_elements:
             element._set_unique_id(self.get_unique_id())
 
         for setting in self._settings_groups:
@@ -403,7 +431,31 @@ class ViewABC(LayoutBaseABC):
 
         raise LookupError(
             f"""Invalid view element id: '{view_element_id}. 
-            Available view element ids: {[el.get_unique_id().get_view_element_id() for el in self.view_elements()]}
+            Available view element ids: {[
+                el.get_unique_id().get_view_element_id() 
+                for el in self.view_elements()
+            ]}
+            """
+        )
+
+    def layout_element(self, layout_element_id: str) -> "ViewLayoutElement":
+        layout_element = next(
+            (
+                el
+                for el in self.layout_elements()
+                if el.get_unique_id().get_view_element_id() == layout_element_id
+            ),
+            None,
+        )
+        if layout_element:
+            return layout_element
+
+        raise LookupError(
+            f"""Invalid layout element id: '{layout_element_id}. 
+            Available layout element ids: {[
+                el.get_unique_id().get_view_element_id() 
+                for el in self.layout_elements()
+            ]}
             """
         )
 
@@ -421,7 +473,10 @@ class ViewABC(LayoutBaseABC):
 
         raise LookupError(
             f"""Invalid settings group id: '{settings_group_id}. 
-            Available settings group ids: {[el.get_unique_id().get_settings_group_id() for el in self.settings_groups()]}
+            Available settings group ids: {[
+                el.get_unique_id().get_settings_group_id() 
+                for el in self.settings_groups()
+            ]}
             """
         )
 
@@ -458,7 +513,7 @@ class ViewABC(LayoutBaseABC):
         # pylint: disable=protected-access
         view_element._set_unique_id(self._unique_id)
         view_element.get_unique_id().set_view_element_id(view_element_id)
-        self._layout_elements.append(view_element)
+        self._child_elements.append(view_element)
         self._view_elements.append(view_element)
 
     def _add_view_element(
@@ -469,14 +524,36 @@ class ViewABC(LayoutBaseABC):
         view_element.get_unique_id().set_view_element_id(view_element_id)
         self._view_elements.append(view_element)
 
-    def add_row(self, flex_grow: int = 1) -> ViewLayoutElement:
+    def _add_layout_element(
+        self, layout_element: ViewLayoutElement, layout_element_id: str
+    ) -> None:
+        # pylint: disable=protected-access
+        layout_element._set_unique_id(self._unique_id)
+        layout_element.get_unique_id().set_view_element_id(layout_element_id)
+        self._layout_elements.append(layout_element)
+
+    def add_row(
+        self,
+        layout_element_id: Optional[str] = None,
+        flex_grow: int = 1
+    ) -> ViewLayoutElement:
         row = ViewLayoutElement(LayoutElementType.ROW, self, flex_grow)
+        layout_element_id = layout_element_id if layout_element_id is not None else str(uuid4())
+        row.get_unique_id().set_view_element_id(layout_element_id)
         self._layout_elements.append(row)
+        self._child_elements.append(row)
         return row
 
-    def add_column(self, flex_grow: int = 1) -> ViewLayoutElement:
+    def add_column(
+        self,
+        layout_element_id: Optional[str] = None,
+        flex_grow: int = 1
+    ) -> ViewLayoutElement:
         column = ViewLayoutElement(LayoutElementType.COLUMN, self, flex_grow)
+        layout_element_id = layout_element_id if layout_element_id is not None else str(uuid4())
+        column.get_unique_id().set_view_element_id(layout_element_id)
         self._layout_elements.append(column)
+        self._child_elements.append(column)
         return column
 
     def add_view_elements(self, view_elements: Dict[str, ViewElementABC]) -> None:
@@ -517,6 +594,9 @@ class ViewABC(LayoutBaseABC):
     def view_elements(self) -> List[ViewElementABC]:
         return self._view_elements
 
+    def layout_elements(self) -> List[ViewLayoutElement]:
+        return self._layout_elements
+
     def settings_groups(self) -> List[SettingsGroupABC]:
         return self._settings_groups
 
@@ -530,11 +610,10 @@ class ViewABC(LayoutBaseABC):
     def inner_layout(self) -> List[Type[Component]]:
         return [
             el.outer_layout() if isinstance(el, ViewElementABC) else el.layout
-            for el in self._layout_elements
+            for el in self._child_elements
         ]
 
     def outer_layout(self) -> Type[Component]:
-        # pylint: disable=protected-access
         return wcc.WebvizView(
             id=str(self.get_unique_id()),
             showDownload=self._add_download_button,

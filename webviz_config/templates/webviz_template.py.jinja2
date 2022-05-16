@@ -185,9 +185,12 @@ def update_page(url, pathname):
     ctx = callback_context
     if ctx.triggered:
         if ctx.triggered[0]["prop_id"].split('.')[0] == "main-menu":
-            pathname = url.replace("/", "")
+            pathname = url.replace("/", "") if url is not None else ""
         else:
-            pathname = pathname.replace("/", "")
+            if pathname is not None:
+                pathname = pathname.replace("/", "")
+            else:
+                pathname = ""
         if not pathname:
             pathname = next(iter(page_plugins)) 
     return page_plugins.get(pathname, ["Oooppss... Page not found."]), page_settings.get(pathname, []), page_first_plugin_ids.get(pathname, "")
