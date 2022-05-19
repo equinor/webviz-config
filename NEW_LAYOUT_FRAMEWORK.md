@@ -81,7 +81,7 @@ drawer.
 #### - `ID`
 Identifier for an entity within a plugin. This is not a unique identifier yet, but becomes one in combination with the plugin's `UUID`.
 
-#### - `UID`
+#### - `UniqueID`
 Unique identifier for a specific entity within a specific plugin. Created by combining an entity's `ID` with a plugin's `UUID`.
 
 #### - `UUID`
@@ -149,6 +149,8 @@ self.add_view(MyView(), "MyView")
 
 whereas the second argument is the id of the view that can be used to access it later on.
 
+NOTE: It is recommended to use a file per plugin which defines all elements' IDs. Read more about this best practice here: 
+
 #### Views
 
 #### Shared settings
@@ -156,3 +158,7 @@ whereas the second argument is the id of the view that can be used to access it 
 ###
 
 - Add ViewElements directly or indirectly
+
+#### ElementIdFile
+
+### How to set initially active view

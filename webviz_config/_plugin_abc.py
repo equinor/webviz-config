@@ -236,6 +236,11 @@ class WebvizPluginABC(abc.ABC):
     def active_view_id(self) -> str:
         return self._active_view_id
 
+    def set_active_view_id(self, view_id: str) -> None:
+        view = self.view(view_id)
+        if view:
+            self._active_view_id = view_id
+
     def views(self, view_group: str = "") -> List[Tuple[str, ViewABC]]:
         if view_group != "":
             return list(filter(lambda x: x[0] == view_group, self._views))
@@ -243,7 +248,11 @@ class WebvizPluginABC(abc.ABC):
 
     def view(self, view_id: str) -> ViewABC:
         view = next(
-            (el[1] for el in self.views() if el[1].get_unique_id().get_view_id() == view_id),
+            (
+                el[1]
+                for el in self.views()
+                if el[1].get_unique_id().get_view_id() == view_id
+            ),
             None,
         )
         if view:
@@ -296,7 +305,9 @@ class WebvizPluginABC(abc.ABC):
         for view in self._views:
             settings.extend(
                 [
-                    setting._wrapped_layout(view[1].unique_id(), self._plugin_wrapper_id)
+                    setting._wrapped_layout(
+                        view[1].unique_id(), self._plugin_wrapper_id
+                    )
                     for setting in view[1].settings_groups()
                 ]
             )
@@ -443,6 +454,9 @@ class WebvizPluginABC(abc.ABC):
 
         self._set_all_callbacks()
 
+        if self.active_view_id == "":
+            self._active_view_id = self.views()[0][1].get_unique_id().to_string()
+
         buttons = self.__class__.TOOLBAR_BUTTONS.copy()
 
         if contact_person:
@@ -502,7 +516,11 @@ class WebvizPluginABC(abc.ABC):
         def change_view(view_id: str, plugin_id: str) -> Component:
             if plugin_id == self._plugin_wrapper_id:
                 view = next(
-                    (view[1] for view in self.views() if view[1].unique_id() == view_id),
+                    (
+                        view[1]
+                        for view in self.views()
+                        if view[1].unique_id() == view_id
+                    ),
                     None,
                 )
                 if view and self.active_view_id != view_id:
