@@ -239,7 +239,7 @@ class WebvizPluginABC(abc.ABC):
     def set_active_view_id(self, view_id: str) -> None:
         view = self.view(view_id)
         if view:
-            self._active_view_id = view_id
+            self._active_view_id = view.get_unique_id().to_string()
 
     def views(self, view_group: str = "") -> List[Tuple[str, ViewABC]]:
         if view_group != "":
@@ -487,6 +487,7 @@ class WebvizPluginABC(abc.ABC):
                     }
                     for view in self.views()
                 ],
+                initiallyActiveViewId=self.active_view_id,
                 contactPerson=contact_person,
                 deprecationWarnings=self._make_extended_deprecation_warnings(
                     plugin_deprecation_warnings, argument_deprecation_warnings
@@ -523,7 +524,7 @@ class WebvizPluginABC(abc.ABC):
                     ),
                     None,
                 )
-                if view and self.active_view_id != view_id:
+                if view:
                     self._active_view_id = view.unique_id()
                     return view.outer_layout()
             return dash.no_update

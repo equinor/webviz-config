@@ -122,8 +122,6 @@ if {{ not portable }} and not webviz_config.is_reload_process():
 else:
     page_plugins = {}
     page_settings = {}
-    page_first_plugin_ids = {}
-    page_first_view_ids = {}
     {% for page in pageContents %}
     page_plugins["{{page.id}}"] = []
     page_settings["{{page.id}}"] = []
@@ -137,12 +135,6 @@ else:
 
     page_plugins["{{page.id}}"].extend(plugin.{{ content_item._call_signature[1] }})
     page_settings["{{page.id}}"].extend([settings for settings in plugin.get_all_settings()])
-
-    if "{{page.id}}" not in page_first_plugin_ids.keys():
-        page_first_plugin_ids["{{page.id}}"] = f"plugin-wrapper-{plugin.uuid()}"
-
-    if "{{page.id}}" not in page_first_view_ids.keys():
-        page_first_view_ids["{{page.id}}"] = plugin.view(plugin.active_view_id).get_unique_id().to_string()
 
     {% endif %}
     {% endfor %}
@@ -186,8 +178,6 @@ oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 @callback(
     Output("plugins-wrapper", "children"), 
     Output("settings-drawer", "children"), 
-    Output("webviz-content-manager", "activePluginId"), 
-    Output("webviz-content-manager", "activeViewId"),
     Input("main-menu", "url"), 
     Input("location", "pathname")
 )
@@ -203,7 +193,7 @@ def update_page(url, pathname):
                 pathname = ""
         if not pathname:
             pathname = next(iter(page_plugins)) 
-    return page_plugins.get(pathname, ["Oooppss... Page not found."]), page_settings.get(pathname, []), page_first_plugin_ids.get(pathname, ""), page_first_view_ids.get(pathname, "")
+    return page_plugins.get(pathname, ["Oooppss... Page not found."]), page_settings.get(pathname, [])
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
 
