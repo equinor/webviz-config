@@ -6,6 +6,7 @@ from dash import Input, Output  # type: ignore
 from dash.development.base_component import Component  # type: ignore
 import webviz_core_components as wcc  # type: ignore
 
+# pylint: disable=relative-beyond-top-level
 from ._settings_group_abc import SettingsGroupABC
 from ._layout_base_abc import LayoutBaseABC
 from ._layout_unique_id import LayoutUniqueId
@@ -160,7 +161,9 @@ class ViewLayoutElement(LayoutBaseABC):
         self._flex_grow = flex_grow
         self.__type = layout_element_type
 
-    def make_row(self, row_id: Optional[str] = None, flex_grow: int = 1) -> "ViewLayoutElement":
+    def make_row(
+        self, row_id: Optional[str] = None, flex_grow: int = 1
+    ) -> "ViewLayoutElement":
         # pylint: disable=protected-access
         if row_id is None:
             row_id = str(uuid4())
@@ -172,9 +175,7 @@ class ViewLayoutElement(LayoutBaseABC):
         return row
 
     def make_column(
-        self,
-        column_id: Optional[str] = None,
-        flex_grow: int = 1
+        self, column_id: Optional[str] = None, flex_grow: int = 1
     ) -> "ViewLayoutElement":
         # pylint: disable=protected-access
         if column_id is None:
@@ -196,7 +197,9 @@ class ViewLayoutElement(LayoutBaseABC):
         self._parent_view._add_layout_element(row, row_id)
         self._children.append(row)
 
-    def add_column(self, column: "ViewLayoutElement", column_id: Optional[str] = None) -> None:
+    def add_column(
+        self, column: "ViewLayoutElement", column_id: Optional[str] = None
+    ) -> None:
         # pylint: disable=protected-access
         column_id = column_id if column_id is not None else str(uuid4())
         column._set_unique_id(self.get_unique_id())
@@ -232,7 +235,7 @@ class ViewLayoutElement(LayoutBaseABC):
     def _set_unique_id(self, parent_unique_id: LayoutUniqueId) -> None:
         # pylint: disable=protected-access
         super()._set_unique_id(parent_unique_id)
-  
+
         for child in self._children:
             child._set_unique_id(parent_unique_id)
 
@@ -283,6 +286,7 @@ class ViewLayoutElement(LayoutBaseABC):
                 for el in self._children
             ],
         )
+
 
 # pylint: disable=too-many-public-methods
 class ViewABC(LayoutBaseABC):
@@ -533,24 +537,24 @@ class ViewABC(LayoutBaseABC):
         self._layout_elements.append(layout_element)
 
     def add_row(
-        self,
-        layout_element_id: Optional[str] = None,
-        flex_grow: int = 1
+        self, layout_element_id: Optional[str] = None, flex_grow: int = 1
     ) -> ViewLayoutElement:
         row = ViewLayoutElement(LayoutElementType.ROW, self, flex_grow)
-        layout_element_id = layout_element_id if layout_element_id is not None else str(uuid4())
+        layout_element_id = (
+            layout_element_id if layout_element_id is not None else str(uuid4())
+        )
         row.get_unique_id().set_view_element_id(layout_element_id)
         self._layout_elements.append(row)
         self._child_elements.append(row)
         return row
 
     def add_column(
-        self,
-        layout_element_id: Optional[str] = None,
-        flex_grow: int = 1
+        self, layout_element_id: Optional[str] = None, flex_grow: int = 1
     ) -> ViewLayoutElement:
         column = ViewLayoutElement(LayoutElementType.COLUMN, self, flex_grow)
-        layout_element_id = layout_element_id if layout_element_id is not None else str(uuid4())
+        layout_element_id = (
+            layout_element_id if layout_element_id is not None else str(uuid4())
+        )
         column.get_unique_id().set_view_element_id(layout_element_id)
         self._layout_elements.append(column)
         self._child_elements.append(column)

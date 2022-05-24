@@ -127,7 +127,7 @@ else:
     page_settings["{{page.id}}"] = []
     {% for content_item in page.content -%}
     {% if content_item is string %}
-    page_plugins["{{page.id}}"].append(wcc.WebvizPluginWrapper(id="test", name="Text", children=[dcc.Markdown(r"""{{ content_item }}""")])
+    page_plugins["{{page.id}}"].append(wcc.WebvizPluginWrapper(id="test", views=[], initiallyActiveViewId="", name="Text", children=[dcc.Markdown(r"""{{ content_item }}""")]))
     {% else %}
     plugin = webviz_config.plugins.{{ content_item._call_signature[0] }}
     if not use_oauth2:

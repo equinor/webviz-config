@@ -332,13 +332,19 @@ class WebvizPluginABC(abc.ABC):
         return [
             {
                 "elementId": str(step["id"]),
-                "viewId": step["id"].get_view_uuid()
-                if step["id"].get_view_id() != None
+                "viewId": ""
+                if isinstance(step["id"], str)
+                else step["id"].get_view_uuid()
+                if step["id"].get_view_id() is not None
                 else "",
-                "settingsGroupId": step["id"].get_settings_group_unique_id()
+                "settingsGroupId": ""
+                if isinstance(step["id"], str)
+                else step["id"].get_settings_group_unique_id()
                 if step["id"].is_settings_group()
                 else None,
-                "viewElementId": step["id"].get_view_element_uuiid()
+                "viewElementId": ""
+                if isinstance(step["id"], str)
+                else step["id"].get_view_element_uuiid()
                 if step["id"].is_view_element() and step["id"].is_settings_group()
                 else None,
                 "content": step["content"],
@@ -454,7 +460,7 @@ class WebvizPluginABC(abc.ABC):
 
         self._set_all_callbacks()
 
-        if self.active_view_id == "":
+        if self.active_view_id == "" and len(self.views()) > 0:
             self._active_view_id = self.views()[0][1].get_unique_id().to_string()
 
         buttons = self.__class__.TOOLBAR_BUTTONS.copy()
@@ -501,7 +507,9 @@ class WebvizPluginABC(abc.ABC):
                 else None,
                 stretch=self._stretch,
                 children=[
-                    self.views()[0][1].outer_layout() if self.views() else self.layout
+                    wcc.WebvizPluginLoadingIndicator()
+                    if self.views()
+                    else html.Div(children=[self.layout], style={"width": "100%"})
                 ],
                 persistence_type="session",
                 persistence=True,
@@ -525,6 +533,5 @@ class WebvizPluginABC(abc.ABC):
                     None,
                 )
                 if view:
-                    self._active_view_id = view.unique_id()
                     return view.outer_layout()
             return dash.no_update
