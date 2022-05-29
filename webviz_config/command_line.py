@@ -1,7 +1,10 @@
 import sys
 import json
+import shutil
+import logging
 import argparse
 import pathlib
+import subprocess
 
 from ._build_webviz import build_webviz
 from ._deployment import main_radix_deployment
@@ -11,7 +14,7 @@ from ._user_data_dir import user_data_dir
 from ._user_preferences import set_user_preferences, get_user_preference
 
 
-def main() -> None:
+def main() -> None:  # pylint: disable=too-many-statements
 
     parser = argparse.ArgumentParser(
         prog=("Creates a Webviz Dash app from a configuration setup")
@@ -228,6 +231,46 @@ def main() -> None:
         print(f"Schema written to {args.output}")
 
     parser_schema.set_defaults(func=entrypoint_schema)
+
+    # Add "editor" parser:
+
+    parser_editor = subparsers.add_parser(
+        "editor",
+        help="Create and edit Webviz configuration files",
+    )
+
+    # parser_editor.add_argument(
+    #     "--path",
+    #     type=pathlib.Path,
+    #     help="Path to already existing Webviz configuration file.",
+    # )
+
+    def entrypoint_editor(  # pylint: disable=unused-argument
+        args: argparse.Namespace,
+    ) -> None:
+
+        if sys.version_info < (3, 8):
+            raise RuntimeError("Webviz editor requires at least Python 3.8")
+
+        path_wce_executable = shutil.which("webviz-config-editor")
+        if path_wce_executable is None:
+            raise RuntimeError(
+                "webviz-config-editor executable not found. You can download this from "
+                "release assets (https://github.com/equinor/webviz-config-editor/releases)."
+            )
+
+        logging.warning(
+            "Note that Webviz editor is in beta and early testing. "
+            "Problems/bugs likely to occur."
+        )
+
+        command = [path_wce_executable]  # + ([] if args.path is None else [args.path])
+        try:
+            subprocess.run(command, check=True, capture_output=True)
+        except subprocess.CalledProcessError:
+            subprocess.run(command + ["--no-sandbox"], check=True)
+
+    parser_editor.set_defaults(func=entrypoint_editor)
 
     # Do the argument parsing:
 
