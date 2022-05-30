@@ -131,6 +131,8 @@ class MyPlugin(WebvizPluginABC):
         self.data = pd.read_csv(path_to_csv_file)
 ```
 
+### Creating a view
+
 When wanting to add a view to the plugin, a new class inheriting from `ViewABC` must be implemented.
 
 ```python
@@ -141,13 +143,13 @@ class MyView(ViewABC):
         super().__init__("My view")
 ```
 
-This views can then be added to the plugin by using
+This views can then be added to any plugin by using
 
 ```python
 self.add_view(MyView(), "MyView")
 ```
 
-whereas the second argument is the id of the view that can be used to access it later on.
+whereas the second argument is the id of the view which can be used to access it later on.
 
 NOTE: It is recommended to use a file per plugin which defines all elements' IDs. Read more about this best practice here: 
 
