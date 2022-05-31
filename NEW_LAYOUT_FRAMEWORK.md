@@ -105,6 +105,8 @@ Layout element wrapping a data visualization, description or documentation. A `V
 
 ### Implementing a new plugin
 
+![Implement a new plugin](/assets/implement-plugin.svg)
+
 Every new plugin starts with a new class inheriting from `WebvizPluginABC`.
 
 ```python
@@ -133,6 +135,8 @@ class MyPlugin(WebvizPluginABC):
 
 ### Creating a view
 
+![Implement a new view](/assets/implement_view.svg)
+
 When wanting to add a view to the plugin, a new class inheriting from `ViewABC` must be implemented.
 
 ```python
@@ -143,15 +147,52 @@ class MyView(ViewABC):
         super().__init__("My view")
 ```
 
-This views can then be added to any plugin by using
+This view can then be added to any plugin by using
 
 ```python
-self.add_view(MyView(), "MyView")
+self.add_view(MyView(self.data), "MyView")
 ```
 
 whereas the second argument is the id of the view which can be used to access it later on.
 
-NOTE: It is recommended to use a file per plugin which defines all elements' IDs. Read more about this best practice here: 
+Data can also be provided from the plugin to the view by passing it as an argument to the constructor.
+
+```python
+class MyView(ViewABC):
+    def __init__(self, data: pd.DataFrame):
+        super().__init__("My view")
+        self.data = data
+```
+
+NOTE: It is recommended to use a file per plugin which defines all elements' IDs. Read more about this best practice here: MISSING LINK
+
+### Add content to a view - implement a view element
+
+![Implement a new view element](/assets/implement_view_element.svg)
+
+A view by itself does not yet contain anything. In order to create content, usually a ViewElement is implemented.
+
+```python
+from webviz_config.webviz_plugin_subclasses._views import ViewElementABC
+
+class MyViewElement(ViewElementABC):
+    def __init__(self):
+        super().__init__("My view element")
+```
+
+The content of the view element itself is defined in the ViewElement's `inner_layout` function.
+
+```python
+    def inner_layout(self) -> Component:
+        return html.Div() # return any Dash components here
+```
+
+All elements in the layout function can be given a unique id by using the `ViewLement.register_component_unique_id` function.
+
+```python
+    def inner_layout(self) -> Component:
+        return html.Div(id=self.register_component_unique_id("MyDiv"))
+```
 
 #### Views
 
