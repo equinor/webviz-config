@@ -1,6 +1,6 @@
-# New Webviz Plugin Framework
+# New Webviz Layout Framework (WLF)
 
-The new `Webviz Plugin Framework` aims to improve consistency, (re-)usability and structure of Webviz plugins. It provides
+The new `Webviz Layout Framework (WLF)` aims to improve consistency, (re-)usability and structure of Webviz plugins. It provides
 new abstract Python classes that can be inherited from in order to build easily understandable plugins with better 
 separation of different views on a common data source.
 
@@ -246,11 +246,49 @@ class MyPlugin(WebvizPluginABC):
         self.add_shared_settings_group(MySettingsGroup(), "MySettingsGroup", not_visible_in_views=[self.view("MyView").get_unique_id().to_string()])
 ```
 
+The layout of a settings group is implemented in its `layout` function. Note that this function needs to return a list of components.
 
+```python
+    ...
+    def layout(self) -> List[Component]:
+        return [html.Div()]
+```
 
-#### Views
+### Handling IDs while guaranteeing uniqueness
 
-#### Shared settings
+It is very important for each component to have a unique ID within a Webviz application in order to identify each single component in any callback. The WLF ID handling system helps with this issue. Each plugin automatically gets a UUID assigned. The ID of each view or shared settings group is then appended to this UUID, e.g.:
+
+```
+{plugin-uuid}-{view-id}
+```
+
+This concept is also continued for view elements and their components or settings groups.
+```
+{plugin-uuid}-{view-id}-{view-element-id}
+{plugin-uuid}-{view-id}-{view-element-id}-{component-id}
+{plugin-uuid}-{view-id}-{view-element-id}-{settings-group-id}
+{plugin-uuid}-{view-id}-{settings-group-id}
+```
+
+The unique ID of any layout element is accessible via its `get_unique_id()` method. This will return a `LayoutUniqueId` object which can be used to get any of the parent IDs and which can be transformed to a string (e.g. when using in a callback) by using its `to_string()` method.
+
+```python
+my_view = MyView()
+my_view.get_unique_id() # returns a LayoutUniqueId object
+my_view.get_unique_id().to_string() # returns a string representation of the unique ID
+```
+
+In order for this concept to work, it is important to use it for all components, i.e. when implementing a layout of a view element or a settings group, all components' IDs should be assigned using the `self.register_component_unique_id("component-id")` function. This returns a string representation of a unique ID in the shape of e.g. 
+```
+{plugin-uuid}-{view-id}-{view-element-id}-{component-id}
+```
+Moreover, this registers the ID of the component in the plugin and guarantees its uniqueness. A plugin does not allow two components in the same layout element to have the same ID. 
+
+A component's ID does only need to be registered once, in the respective `layout` function (otherwise, the plugin will warn about a duplicate ID). When wanting to get the unique ID of a component in a callback, the layout element's `component_unique_id("component-id")` can be used. 
+
+Note: In each encapsulation, i.e. layout element (view, view element, settings group etc.), each component's or layout element's local ID ("component-id" in the examples above) must be unique. However, the same local ID can be used in any other layout element, since the global unique ID will always be different (remember e.g. `{plugin-uuid}-{view-id}-{view-element-id}-{component-id}`). This concept allows for using e.g. the same view class twice in a plugin (e.g. with different arguments).
+
+### Group multiple views
 
 ###
 
