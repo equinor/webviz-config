@@ -42,6 +42,12 @@ class ViewElementABC(LayoutBaseABC):
             # pylint: disable=protected-access
             setting._set_plugin_register_id_func(func)
 
+    def _set_plugin_get_store_unique_id_func(self, func: Callable[[str], str]) -> None:
+        super()._set_plugin_get_store_unique_id_func(func)
+        # pylint: disable=protected-access
+        for setting in self._settings:
+            setting._set_plugin_get_store_unique_id_func(func)
+
     def _set_unique_id(self, parent_unique_id: LayoutUniqueId) -> None:
         super()._set_unique_id(parent_unique_id)
 
@@ -232,6 +238,12 @@ class ViewLayoutElement(LayoutBaseABC):
             # pylint: disable=protected-access
             element._set_plugin_register_id_func(func)
 
+    def _set_plugin_get_store_unique_id_func(self, func: Callable[[str], str]) -> None:
+        super()._set_plugin_get_store_unique_id_func(func)
+        # pylint: disable=protected-access
+        for element in self._children:
+            element._set_plugin_get_store_unique_id_func(func)
+
     def _set_unique_id(self, parent_unique_id: LayoutUniqueId) -> None:
         # pylint: disable=protected-access
         super()._set_unique_id(parent_unique_id)
@@ -378,6 +390,15 @@ class ViewABC(LayoutBaseABC):
 
         for setting in self._settings_groups:
             setting._set_plugin_register_id_func(func)
+
+    def _set_plugin_get_store_unique_id_func(self, func: Callable[[str], str]) -> None:
+        super()._set_plugin_get_store_unique_id_func(func)
+        # pylint: disable=protected-access
+        for element in self._child_elements:
+            element._set_plugin_get_store_unique_id_func(func)
+
+        for setting in self._settings_groups:
+            setting._set_plugin_get_store_unique_id_func(func)
 
     def _set_unique_id(self, parent_unique_id: LayoutUniqueId) -> None:
         # pylint: disable=protected-access

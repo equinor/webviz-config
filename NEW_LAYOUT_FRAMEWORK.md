@@ -170,7 +170,7 @@ NOTE: It is recommended to use a file per plugin which defines all elements' IDs
 
 ![Implement a new view element](/assets/implement_view_element.svg)
 
-A view by itself does not yet contain anything. In order to create content, usually a ViewElement is implemented.
+A view by itself does not contain anything yet. In order to create content, usually a ViewElement is implemented.
 
 ```python
 from webviz_config.webviz_plugin_subclasses._views import ViewElementABC
@@ -187,7 +187,7 @@ The content of the view element itself is defined in the ViewElement's `inner_la
         return html.Div() # return any Dash components here
 ```
 
-All elements in the layout function can be given a unique id by using the `ViewLement.register_component_unique_id` function.
+All elements in the layout function can be given a unique id by using the `ViewLement.register_component_unique_id` function. This is a requirement for using the components in Dash callbacks.
 
 ```python
     def inner_layout(self) -> Component:

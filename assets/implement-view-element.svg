@@ -5,7 +5,6 @@
 <g filter="url(#filter0_i_104_136)">
 <rect x="159" y="8" width="139" height="378" fill="#FBFBFB"/>
 </g>
-<rect x="169" y="101" width="96" height="8" rx="2" fill="black"/>
 <rect x="65" y="21" width="49" height="62" fill="url(#pattern0)"/>
 <rect x="32" y="94" width="114" height="14" fill="#F7F7F7"/>
 <rect x="32" y="122" width="88" height="8" rx="2" fill="#46A4C2"/>
@@ -14,21 +13,10 @@
 <rect x="54" y="163" width="71" height="8" rx="2" fill="black"/>
 <rect x="54" y="182" width="71" height="8" rx="2" fill="black"/>
 <path d="M143.5 152L137.871 146L149.129 146L143.5 152Z" fill="black"/>
-<path d="M282.5 109L276.871 103L288.129 103L282.5 109Z" fill="black"/>
 <path d="M282.5 73L276.871 67L288.129 67L282.5 73Z" fill="black"/>
-<path d="M287.14 26.936C287.176 26.636 287.2 26.324 287.2 26C287.2 25.676 287.176 25.364 287.128 25.064L289.156 23.48C289.336 23.336 289.384 23.072 289.276 22.868L287.356 19.544C287.236 19.328 286.984 19.256 286.768 19.328L284.38 20.288C283.876 19.904 283.348 19.592 282.76 19.352L282.4 16.808C282.364 16.568 282.16 16.4 281.92 16.4H278.08C277.84 16.4 277.648 16.568 277.612 16.808L277.252 19.352C276.664 19.592 276.124 19.916 275.632 20.288L273.244 19.328C273.028 19.244 272.776 19.328 272.656 19.544L270.736 22.868C270.616 23.084 270.664 23.336 270.856 23.48L272.884 25.064C272.836 25.364 272.8 25.688 272.8 26C272.8 26.312 272.824 26.636 272.872 26.936L270.844 28.52C270.664 28.664 270.616 28.928 270.724 29.132L272.644 32.456C272.764 32.672 273.016 32.744 273.232 32.672L275.62 31.712C276.124 32.096 276.652 32.408 277.24 32.648L277.6 35.192C277.648 35.432 277.84 35.6 278.08 35.6H281.92C282.16 35.6 282.364 35.432 282.388 35.192L282.748 32.648C283.336 32.408 283.876 32.084 284.368 31.712L286.756 32.672C286.972 32.756 287.224 32.672 287.344 32.456L289.264 29.132C289.384 28.916 289.336 28.664 289.144 28.52L287.14 26.936V26.936ZM280 29.6C278.02 29.6 276.4 27.98 276.4 26C276.4 24.02 278.02 22.4 280 22.4C281.98 22.4 283.6 24.02 283.6 26C283.6 27.98 281.98 29.6 280 29.6Z" fill="black"/>
+<path d="M287.14 26.936C287.176 26.636 287.2 26.324 287.2 26C287.2 25.676 287.176 25.364 287.128 25.064L289.156 23.48C289.336 23.336 289.384 23.072 289.276 22.868L287.356 19.544C287.236 19.328 286.984 19.256 286.768 19.328L284.38 20.288C283.876 19.904 283.348 19.592 282.76 19.352L282.4 16.808C282.364 16.568 282.16 16.4 281.92 16.4H278.08C277.84 16.4 277.648 16.568 277.612 16.808L277.252 19.352C276.664 19.592 276.124 19.916 275.632 20.288L273.244 19.328C273.028 19.244 272.776 19.328 272.656 19.544L270.736 22.868C270.616 23.084 270.664 23.336 270.856 23.48L272.884 25.064C272.836 25.364 272.8 25.688 272.8 26C272.8 26.312 272.824 26.636 272.872 26.936L270.844 28.52C270.664 28.664 270.616 28.928 270.724 29.132L272.644 32.456C272.764 32.672 273.016 32.744 273.232 32.672L275.62 31.712C276.124 32.096 276.652 32.408 277.24 32.648L277.6 35.192C277.648 35.432 277.84 35.6 278.08 35.6H281.92C282.16 35.6 282.364 35.432 282.388 35.192L282.748 32.648C283.336 32.408 283.876 32.084 284.368 31.712L286.756 32.672C286.972 32.756 287.224 32.672 287.344 32.456L289.264 29.132C289.384 28.916 289.336 28.664 289.144 28.52L287.14 26.936ZM280 29.6C278.02 29.6 276.4 27.98 276.4 26C276.4 24.02 278.02 22.4 280 22.4C281.98 22.4 283.6 24.02 283.6 26C283.6 27.98 281.98 29.6 280 29.6Z" fill="black"/>
 <path d="M264.41 21.41L263 20L257 26L263 32L264.41 30.59L259.83 26L264.41 21.41Z" fill="black"/>
 <path d="M174 78H184V63H174V78ZM169 76H173V65H169V76ZM185 65V76H189V65H185Z" fill="black"/>
-<g filter="url(#filter1_i_104_136)">
-<rect x="160" y="118" width="138" height="72" fill="#E0E0E0"/>
-</g>
-<rect x="191" y="131" width="95" height="8" rx="2" fill="#6A6A6A"/>
-<circle cx="173" cy="135" r="5.5" fill="white" fill-opacity="0.79" stroke="#8F8F8F"/>
-<rect x="191" y="150" width="95" height="8" rx="2" fill="#6A6A6A"/>
-<circle cx="173" cy="154" r="5.5" fill="white" fill-opacity="0.79" stroke="#8F8F8F"/>
-<rect x="191" y="169" width="95" height="8" rx="2" fill="#6A6A6A"/>
-<circle cx="173" cy="173" r="5.5" fill="white" fill-opacity="0.79" stroke="#8F8F8F"/>
-<circle cx="173" cy="135" r="3" fill="#46A4C2"/>
 <rect x="160" y="362" width="138" height="24" fill="#E7E7E7"/>
 <rect x="189" y="367" width="13" height="13" fill="url(#pattern1)"/>
 <rect x="167" y="366" width="15" height="15" fill="url(#pattern2)"/>
@@ -41,7 +29,7 @@
 <rect x="589" y="364" width="83" height="6" rx="2" fill="white"/>
 <rect x="16" y="4" width="300" height="386" fill="white" fill-opacity="0.9"/>
 <rect x="316" y="192" width="392" height="198" fill="white" fill-opacity="0.9"/>
-<g filter="url(#filter2_d_104_136)">
+<g filter="url(#filter1_d_104_136)">
 <rect x="319" y="20" width="179" height="162" fill="white"/>
 </g>
 <rect x="457.5" y="14.5" width="35" height="15" rx="4.5" fill="white" stroke="#CECECE"/>
@@ -61,16 +49,6 @@
 <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_104_136" transform="translate(-0.00411403) scale(0.00401684 0.0031746)"/>
 </pattern>
-<filter id="filter1_i_104_136" x="160" y="118" width="138" height="74" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dy="2"/>
-<feGaussianBlur stdDeviation="2"/>
-<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-<feBlend mode="normal" in2="shape" result="effect1_innerShadow_104_136"/>
-</filter>
 <pattern id="pattern1" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image1_104_136" transform="scale(0.0208333)"/>
 </pattern>
@@ -80,7 +58,7 @@
 <pattern id="pattern3" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image3_104_136" transform="scale(0.0208333)"/>
 </pattern>
-<filter id="filter2_d_104_136" x="315" y="16" width="187" height="170" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter1_d_104_136" x="315" y="16" width="187" height="170" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset/>
