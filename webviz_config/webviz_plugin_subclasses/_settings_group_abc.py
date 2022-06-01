@@ -28,7 +28,7 @@ class SettingsGroupABC(LayoutBaseABC):
     ) -> None:
         self._plugin_register_id_func = func
 
-    def register_component_uuid(self, component_name: str) -> str:
+    def register_component_unique_id(self, component_name: str) -> str:
         uuid = self.component_unique_id(component_name).to_string()
         if self._plugin_register_id_func and not self._layout_created:
             self._plugin_register_id_func(uuid)

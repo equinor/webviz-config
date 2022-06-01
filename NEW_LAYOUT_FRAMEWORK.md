@@ -135,7 +135,7 @@ class MyPlugin(WebvizPluginABC):
 
 ### Creating a view
 
-![Implement a new view](/assets/implement_view.svg)
+![Implement a new view](/assets/implement-view.svg)
 
 When wanting to add a view to the plugin, a new class inheriting from `ViewABC` must be implemented.
 
@@ -168,7 +168,7 @@ NOTE: It is recommended to use a file per plugin which defines all elements' IDs
 
 ### Add content to a view - implement a view element
 
-![Implement a new view element](/assets/implement_view_element.svg)
+![Implement a new view element](/assets/implement-view-element.svg)
 
 A view by itself does not contain anything yet. In order to create content, usually a ViewElement is implemented.
 
@@ -187,12 +187,66 @@ The content of the view element itself is defined in the ViewElement's `inner_la
         return html.Div() # return any Dash components here
 ```
 
-All elements in the layout function can be given a unique id by using the `ViewLement.register_component_unique_id` function. This is a requirement for using the components in Dash callbacks.
+All elements in the layout function can be given a unique id by using the `ViewLement.register_component_unique_id` function. This is a requirement for using the components in Dash callbacks later on.
 
 ```python
     def inner_layout(self) -> Component:
         return html.Div(id=self.register_component_unique_id("MyDiv"))
 ```
+
+### Add a settings group
+
+![Implement a settings group](/assets/implement-settings-group.svg)
+
+A settings group is the preferred place to implement the settings for either a view or even the whole plugin.
+
+```python
+from webviz_config.webviz_plugin_subclasses._views import SettingsGroupABC
+
+class MySettingsGroup(SettingsGroupABC):
+    def __init__(self):
+        super().__init__("My settings")
+```
+
+It is either added in the view's or the plugin's `__init__` function.
+
+```python
+class MyView(ViewABC):
+    def __init__(self):
+        super().__init__()
+        ...
+        self.add_settings_group(MySettingsGroup(), "MySettingsGroup")
+```
+
+When added to the latter it is added as a shared settings group that is shared among multiple views.
+
+```python
+class MyPlugin(WebvizPluginABC):
+    def __init__(self):
+        super().__init__()
+        ...
+        self.add_shared_settings_group(MySettingsGroup(), "MySettingsGroup")
+```
+
+It can be controlled in which views the settings group shall be visible or in which it should be hidden.
+
+```python
+class MyPlugin(WebvizPluginABC):
+    def __init__(self):
+        super().__init__()
+        ...
+        self.add_shared_settings_group(MySettingsGroup(), "MySettingsGroup", visible_in_views=[self.view("MyView").get_unique_id().to_string()])
+```
+
+```python
+class MyPlugin(WebvizPluginABC):
+    def __init__(self):
+        super().__init__()
+        ...
+        self.add_shared_settings_group(MySettingsGroup(), "MySettingsGroup", not_visible_in_views=[self.view("MyView").get_unique_id().to_string()])
+```
+
+
 
 #### Views
 
