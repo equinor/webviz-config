@@ -3,6 +3,7 @@ import shutil
 import tempfile
 import subprocess
 from pathlib import Path
+import os
 
 
 def binary_available() -> bool:
@@ -62,7 +63,21 @@ def create_github_repository(github_slug: str, directory: Path) -> Path:
         cwd=directory,
     )
 
-    return directory / github_slug.split("/")[1]
+    # Fix Issue 576: Compatibility with Github CLI v. >2.2
+    clone_path = directory / github_slug.split("/")[1]
+
+    if not os.path.exists(clone_path):
+        subprocess.run(
+            ["gh", "repo", "clone", github_slug],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            # capture_output=True,  <-- Added in Python 3.7
+            check=True,
+            cwd=directory,
+        )
+
+
+    return clone_path
 
 
 def turn_on_github_vulnerability_alers(directory: Path) -> None:
