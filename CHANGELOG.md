@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - [#588](https://github.com/equinor/webviz-config/pull/588) - Added compatibility with upstream dependency `bleach >= 5`.
+- [#576](https://github.com/equinor/webviz-config/pull/576) - Ensured compatibility with Github CLI v. >2.2 when deploying to Radix
 
 ## [0.3.9] - 2022-02-09
 
