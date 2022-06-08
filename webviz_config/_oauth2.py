@@ -19,7 +19,8 @@ class Oauth2:
         self._tenant_id = os.environ["WEBVIZ_TENANT_ID"]
         self._client_id = os.environ["WEBVIZ_CLIENT_ID"]
         self._client_secret = os.environ["WEBVIZ_CLIENT_SECRET"]
-        self._scope = os.environ["WEBVIZ_SCOPE"]
+        scope_raw = os.environ["WEBVIZ_SCOPE"]
+        self._scope = [scope.strip() for scope in scope_raw.split(",")]
 
         # Initiate msal
         self._msal_app = msal.ConfidentialClientApplication(
@@ -68,7 +69,7 @@ class Oauth2:
 
             # First leg of Oauth2 authorization code flow
             auth_url = self._msal_app.get_authorization_request_url(
-                scopes=[self._scope], redirect_uri=redirect_uri
+                scopes=self._scope, redirect_uri=redirect_uri
             )
             return flask.redirect(auth_url)
 
@@ -88,7 +89,7 @@ class Oauth2:
 
             # Second leg of Oauth2 authorization code flow
             tokens_result = self._msal_app.acquire_token_by_authorization_code(
-                code=code, scopes=[self._scope], redirect_uri=redirect_uri
+                code=code, scopes=self._scope, redirect_uri=redirect_uri
             )
             expires_in = tokens_result.get("expires_in")
             expiration_date = datetime.datetime.now(
@@ -170,7 +171,7 @@ class Oauth2:
         if not self._accounts:
             self._accounts = self._msal_app.get_accounts()
         renewed_tokens_result = self._msal_app.acquire_token_silent(
-            scopes=[self._scope], account=self._accounts[0]
+            scopes=self._scope, account=self._accounts[0]
         )
         expires_in = renewed_tokens_result.get("expires_in")
         new_expiration_date = datetime.datetime.now(
