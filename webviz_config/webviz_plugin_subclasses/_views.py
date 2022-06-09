@@ -93,7 +93,7 @@ class ViewElementABC(LayoutBaseABC):
             available_ids = [
                 cast(str, el.get_unique_id().get_settings_group_id())
                 for el in self.settings_groups()
-                if el.get_unique_id().get_settings_group_id() != None
+                if el.get_unique_id().get_settings_group_id() is not None
             ]
             raise UnknownId(
                 f"Could not find settings group with id '{settings_id}'.\n"
@@ -104,6 +104,27 @@ class ViewElementABC(LayoutBaseABC):
         if element:
             uuid.set_component_id(element)
         return uuid.to_string()
+
+    def settings_group(self, settings_group_id: str) -> SettingsGroupABC:
+        settings_group = next(
+            (
+                el
+                for el in self.settings_groups()
+                if el.get_unique_id().get_settings_group_id() == settings_group_id
+            ),
+            None,
+        )
+        if settings_group:
+            return settings_group
+
+        raise LookupError(
+            f"""Invalid settings group id: '{settings_group_id}.
+            Available settings group ids: {[
+                el.get_unique_id().get_settings_group_id()
+                for el in self.settings_groups()
+            ]}
+            """
+        )
 
     def view_element_data_output(self) -> Output:
         self._add_download_button = True
@@ -336,9 +357,9 @@ class ViewABC(LayoutBaseABC):
             return settings_group
 
         raise LookupError(
-            f"""Invalid shared settings group id: '{settings_group_id}. 
+            f"""Invalid shared settings group id: '{settings_group_id}.
             Available shared settings group ids: {[
-                el.get_unique_id().get_settings_group_id() 
+                el.get_unique_id().get_settings_group_id()
                 for el in self._get_plugin_shared_settings()
             ]}
             """
@@ -363,7 +384,7 @@ class ViewABC(LayoutBaseABC):
             available_ids = [
                 cast(str, el.get_unique_id().get_settings_group_id())
                 for el in self._get_plugin_shared_settings()
-                if el.get_unique_id().get_settings_group_id() != None
+                if el.get_unique_id().get_settings_group_id() is not None
             ]
             raise UnknownId(
                 f"Could not find settings group with id '{settings_id}'.\n"
@@ -430,7 +451,7 @@ class ViewABC(LayoutBaseABC):
             available_ids = [
                 cast(str, el.get_unique_id().get_view_element_id())
                 for el in self.view_elements()
-                if el.get_unique_id().get_view_element_id() != None
+                if el.get_unique_id().get_view_element_id() is not None
             ]
             raise UnknownId(
                 f"Could not find view element with id '{view_element_id}'.\n"
@@ -455,9 +476,9 @@ class ViewABC(LayoutBaseABC):
             return view_element
 
         raise LookupError(
-            f"""Invalid view element id: '{view_element_id}. 
+            f"""Invalid view element id: '{view_element_id}.
             Available view element ids: {[
-                el.get_unique_id().get_view_element_id() 
+                el.get_unique_id().get_view_element_id()
                 for el in self.view_elements()
             ]}
             """
@@ -476,9 +497,9 @@ class ViewABC(LayoutBaseABC):
             return layout_element
 
         raise LookupError(
-            f"""Invalid layout element id: '{layout_element_id}. 
+            f"""Invalid layout element id: '{layout_element_id}.
             Available layout element ids: {[
-                el.get_unique_id().get_view_element_id() 
+                el.get_unique_id().get_view_element_id()
                 for el in self.layout_elements()
             ]}
             """
@@ -497,9 +518,9 @@ class ViewABC(LayoutBaseABC):
             return settings_group
 
         raise LookupError(
-            f"""Invalid settings group id: '{settings_group_id}. 
+            f"""Invalid settings group id: '{settings_group_id}.
             Available settings group ids: {[
-                el.get_unique_id().get_settings_group_id() 
+                el.get_unique_id().get_settings_group_id()
                 for el in self.settings_groups()
             ]}
             """
@@ -520,7 +541,7 @@ class ViewABC(LayoutBaseABC):
             available_ids = [
                 cast(str, el.get_unique_id().get_settings_group_id())
                 for el in self.settings_groups()
-                if el.get_unique_id().get_settings_group_id() != None
+                if el.get_unique_id().get_settings_group_id() is not None
             ]
             raise UnknownId(
                 f"Could not find settings group with id '{settings_id}'.\n"

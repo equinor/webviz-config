@@ -150,7 +150,11 @@ class MyView(ViewABC):
 This view can then be added to any plugin by using
 
 ```python
-self.add_view(MyView(self.data), "MyView")
+class MyPlugin(WebvizPluginABC):
+    def __init__(self):
+        super().__init__()
+        ...
+        self.add_view(MyView(self.data), "MyView")
 ```
 
 whereas the second argument is the id of the view which can be used to access it later on.
@@ -262,7 +266,7 @@ It is very important for each component to have a unique ID within a Webviz appl
 {plugin-uuid}-{view-id}
 ```
 
-This concept is also continued for view elements and their components or settings groups.
+This concept is continued for view elements and their components or settings groups.
 ```
 {plugin-uuid}-{view-id}-{view-element-id}
 {plugin-uuid}-{view-id}-{view-element-id}-{component-id}
@@ -270,25 +274,38 @@ This concept is also continued for view elements and their components or setting
 {plugin-uuid}-{view-id}-{settings-group-id}
 ```
 
-The unique ID of any layout element is accessible via its `get_unique_id()` method. This will return a `LayoutUniqueId` object which can be used to get any of the parent IDs and which can be transformed to a string (e.g. when using in a callback) by using its `to_string()` method.
+The unique ID of any layout element is accessible via its `get_unique_id()` method. This will return a `LayoutUniqueId` object which can be used to get any of the parent IDs and which can be transformed to a string (e.g. when using in a callback) by using its `to_string()` method (or its string representation).
 
 ```python
-my_view = MyView()
 my_view.get_unique_id() # returns a LayoutUniqueId object
 my_view.get_unique_id().to_string() # returns a string representation of the unique ID
+str(my_view.get_unique_id()) # returns a string representation of the unique ID
 ```
 
-In order for this concept to work, it is important to use it for all components, i.e. when implementing a layout of a view element or a settings group, all components' IDs should be assigned using the `self.register_component_unique_id("component-id")` function. This returns a string representation of a unique ID in the shape of e.g. 
+In order for this concept to work, it is important to use it for all components, i.e. when implementing the layout of a view element or a settings group, all components' IDs should be assigned using the `self.register_component_unique_id("component-id")` function. This returns a string representation of a unique ID in the shape of e.g. 
+
 ```
 {plugin-uuid}-{view-id}-{view-element-id}-{component-id}
 ```
+
 Moreover, this registers the ID of the component in the plugin and guarantees its uniqueness. A plugin does not allow two components in the same layout element to have the same ID. 
 
 A component's ID does only need to be registered once, in the respective `layout` function (otherwise, the plugin will warn about a duplicate ID). When wanting to get the unique ID of a component in a callback, the layout element's `component_unique_id("component-id")` can be used. 
 
-Note: In each encapsulation, i.e. layout element (view, view element, settings group etc.), each component's or layout element's local ID ("component-id" in the examples above) must be unique. However, the same local ID can be used in any other layout element, since the global unique ID will always be different (remember e.g. `{plugin-uuid}-{view-id}-{view-element-id}-{component-id}`). This concept allows for using e.g. the same view class twice in a plugin (e.g. with different arguments).
+Note: In each encapsulation, i.e. layout element (view, view element, settings group etc.), each component's or layout element's local ID ("component-id" in the examples above) must be unique. However, the same local ID can be used in any other layout element, since the global unique ID will always be different (remember e.g. `{plugin-uuid}-{view-id}-{view-element-id}-{component-id}`). This concept allows for using e.g. the same view class twice in a plugin (e.g. with different arguments and IDs).
 
 ### Group multiple views
+
+Sometimes, it is desirable to group views together, e.g. when these are represent different ways of visualizing one aspect of the data source. When adding a view to a plugin, a view group name can be added. All groups with the same group name will automatically be grouped together.
+
+```python
+class MyPlugin(WebvizPluginABC):
+    def __init__(self):
+        super().__init__()
+        ...
+        self.add_view(MyView(self.data1), "MyView1", "My View Group")
+        self.add_view(MyView(self.data2), "MyView2", "My View Group")
+```
 
 ###
 
