@@ -334,8 +334,8 @@ class WebvizPluginABC(abc.ABC):
                 "elementId": str(step["id"]),
                 "viewId": ""
                 if isinstance(step["id"], str)
-                else step["id"].get_view_uuid()
-                if step["id"].get_view_id() is not None
+                else step["id"].get_view_unique_id()
+                if step["id"].get_view_unique_id() is not None
                 else "",
                 "settingsGroupId": ""
                 if isinstance(step["id"], str)
@@ -344,7 +344,7 @@ class WebvizPluginABC(abc.ABC):
                 else None,
                 "viewElementId": ""
                 if isinstance(step["id"], str)
-                else step["id"].get_view_element_uuiid()
+                else step["id"].get_view_element_unique_id()
                 if step["id"].is_view_element() and step["id"].is_settings_group()
                 else None,
                 "content": step["content"],
