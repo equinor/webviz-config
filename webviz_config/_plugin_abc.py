@@ -6,7 +6,6 @@ import zipfile
 import warnings
 import sys
 import urllib
-from uuid import uuid4
 import enum
 
 import bleach
@@ -100,6 +99,10 @@ class WebvizPluginABC(abc.ABC):
     # All paths in the returned ASSETS list should be absolute.
     ASSETS: list = []
 
+    # Counter for instances of the same plugin.
+    # Used to create unique ids of DOM elements
+    CLASS_INSTANCE_COUNTER: int = 0
+
     class StorageType(enum.Enum):
         MEMORY = "memory"
         LOCAL = "local"
@@ -117,8 +120,11 @@ class WebvizPluginABC(abc.ABC):
         ```
         in its own `__init__` function in order to also run the parent `__init__`.
         """
+        self.__class__.CLASS_INSTANCE_COUNTER += 1
 
-        self._plugin_unique_id = LayoutUniqueId(plugin_uuid=str(uuid4()))
+        self._plugin_unique_id = LayoutUniqueId(
+            plugin_uuid=f"{type(self).__name__}-{self.__class__.CLASS_INSTANCE_COUNTER}"
+        )
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
 
