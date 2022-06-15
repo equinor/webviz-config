@@ -1,17 +1,7 @@
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
-import time
-
 from dash.development.base_component import Component
-from dash import (
-    html,
-    Dash,
-    Input,
-    Output,
-    State,
-    dash_table,
-    callback
-)
+from dash import html, Dash, Input, Output, State, dash_table, callback
 from dash.exceptions import PreventUpdate
 
 import pandas as pd
@@ -30,7 +20,7 @@ class TextViewElement(ViewElementABC):
 
     def inner_layout(self) -> Union[str, Type[Component]]:
         return html.Div(
-            id=self.register_component_uuid("text"),
+            id=self.register_component_unique_id("text"),
             children=[
                 html.H1("Hello"),
                 "This is an example plugin. Please have a look how views and settings are working in this new environment =).",
@@ -44,7 +34,7 @@ class PlotViewElementSettings(SettingsGroupABC):
 
     def layout(self) -> Component:
         return wcc.Select(
-            id=self.register_component_uuid("test"),
+            id=self.register_component_unique_id("test"),
             options=[
                 {
                     "label": "x - y",
@@ -72,7 +62,7 @@ class PlotViewElement(ViewElementABC):
             style={"height": "20vh"},
             children=[
                 wcc.Graph(
-                    id=self.register_component_uuid("my-graph"),
+                    id=self.register_component_unique_id("my-graph"),
                     figure={
                         "data": [
                             {
@@ -113,7 +103,7 @@ class PlotViewElement(ViewElementABC):
         @callback(
             self.view_element_data_output(),
             self.view_element_data_requested(),
-            State(self.component_uuid("my-graph").to_string(), "figure"),
+            State(self.component_unique_id("my-graph").to_string(), "figure"),
             prevent_initial_call=True,
         )
         def _download_data(
@@ -125,7 +115,7 @@ class PlotViewElement(ViewElementABC):
             return WebvizPluginABC.plugin_data_compress(
                 [
                     {
-                        "filename": f"{self.component_uuid('my-graph').to_string()}.csv",
+                        "filename": f"{self.component_unique_id('my-graph').to_string()}.csv",
                         "content": self.download_data_df(graph_figure).to_csv(
                             index=False
                         ),
@@ -141,7 +131,7 @@ class TableViewElement(ViewElementABC):
 
     def inner_layout(self) -> Union[str, Type[Component]]:
         return dash_table.DataTable(
-            id=self.register_component_uuid("my-table"),
+            id=self.register_component_unique_id("my-table"),
             columns=[{"id": "x", "name": "X"}, {"id": "y", "name": "Y"}],
             data=[{"x": d[0], "y": d[1]} for d in self.data],
         )
@@ -171,7 +161,7 @@ class TableViewElement(ViewElementABC):
         @callback(
             self.view_element_data_output(),
             self.view_element_data_requested(),
-            State(self.component_uuid("my-table").to_string(), "data"),
+            State(self.component_unique_id("my-table").to_string(), "data"),
             prevent_initial_call=True,
         )
         def _download_data(
@@ -186,7 +176,7 @@ class TableViewElement(ViewElementABC):
             return WebvizPluginABC.plugin_data_compress(
                 [
                     {
-                        "filename": f"{self.component_uuid('my-table').to_string()}.csv",
+                        "filename": f"{self.component_unique_id('my-table').to_string()}.csv",
                         "content": self.download_data_df(table_data).to_csv(
                             index=False
                         ),
@@ -201,7 +191,7 @@ class PlotViewSettingsGroup(SettingsGroupABC):
 
     def layout(self) -> Component:
         return wcc.Dropdown(
-            id=self.register_component_uuid("coordinates-selector"),
+            id=self.register_component_unique_id("coordinates-selector"),
             label="Coordinates",
             options=[
                 {
@@ -223,7 +213,7 @@ class TableViewSettingsGroup(SettingsGroupABC):
 
     def layout(self) -> Component:
         return wcc.RadioItems(
-            id=self.register_component_uuid("order-selector"),
+            id=self.register_component_unique_id("order-selector"),
             options=[
                 {
                     "label": "ASC",
@@ -247,7 +237,7 @@ class SharedSettingsGroup(SettingsGroupABC):
             children=[
                 wcc.Label("Kindness"),
                 wcc.RadioItems(
-                    id=self.register_component_uuid("kindness-selector"),
+                    id=self.register_component_unique_id("kindness-selector"),
                     options=[
                         {
                             "label": "friendly",
@@ -262,7 +252,7 @@ class SharedSettingsGroup(SettingsGroupABC):
                 ),
                 wcc.Label("Power"),
                 wcc.RadioItems(
-                    id=self.register_component_uuid("power-selector"),
+                    id=self.register_component_unique_id("power-selector"),
                     options=[
                         {
                             "label": "2",
@@ -296,7 +286,9 @@ class PlotView(ViewABC):
         @callback(
             self.view_data_output(),
             self.view_data_requested(),
-            State(self._plot_view.component_uuid("my-graph").to_string(), "figure"),
+            State(
+                self._plot_view.component_unique_id("my-graph").to_string(), "figure"
+            ),
             prevent_initial_call=True,
         )
         def _download_data(
@@ -309,7 +301,7 @@ class PlotView(ViewABC):
             return WebvizPluginABC.plugin_data_compress(
                 [
                     {
-                        "filename": f"{self._plot_view.component_uuid('my-graph').to_string()}.csv",
+                        "filename": f"{self._plot_view.component_unique_id('my-graph').to_string()}.csv",
                         "content": PlotViewElement.download_data_df(
                             graph_figure
                         ).to_csv(index=False),
@@ -335,8 +327,8 @@ class TableView(ViewABC):
 
     def _set_callbacks(self) -> None:
         @callback(
-            Output(self.table_view.component_uuid("my-table").to_string(), "data"),
-            Input(self.settings_group_uuid("Settings", "order-selector"), "value"),
+            Output(self.table_view.component_unique_id("my-table").to_string(), "data"),
+            Input(self.settings_group_unique_id("Settings", "order-selector"), "value"),
         )
         def swap_order(order: str) -> List[dict]:
             data = self.data.copy()
@@ -347,7 +339,7 @@ class TableView(ViewABC):
         @callback(
             self.view_data_output(),
             self.view_data_requested(),
-            State(self.table_view.component_uuid("my-table").to_string(), "data"),
+            State(self.table_view.component_unique_id("my-table").to_string(), "data"),
             prevent_initial_call=True,
         )
         def _download_data(
@@ -360,7 +352,7 @@ class TableView(ViewABC):
             return WebvizPluginABC.plugin_data_compress(
                 [
                     {
-                        "filename": f"{self.table_view.component_uuid('my-table').to_string()}.csv",
+                        "filename": f"{self.table_view.component_unique_id('my-table').to_string()}.csv",
                         "content": TableViewElement.download_data_df(table_data).to_csv(
                             index=False
                         ),
@@ -389,7 +381,9 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
     def tour_steps(self) -> List[dict]:
         return [
             {
-                "id": self.view("PlotView").view_element("Text").component_uuid("text"),
+                "id": self.view("PlotView")
+                .view_element("Text")
+                .component_unique_id("text"),
                 "content": "Greetings from your example plugin.",
             },
             {
@@ -399,7 +393,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             {
                 "id": self.view("PlotView")
                 .view_element("Plot")
-                .component_uuid("my-graph"),
+                .component_unique_id("my-graph"),
                 "content": "Over here you see a plot that shows x² or x³.",
             },
             {
@@ -415,7 +409,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             {
                 "id": self.view("TableView")
                 .view_element("Table")
-                .component_uuid("my-table"),
+                .component_unique_id("my-table"),
                 "content": "There is also a table visualizing the data.",
             },
             {
@@ -431,12 +425,14 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             Output(
                 self.view("PlotView")
                 .view_element("Text")
-                .component_uuid("text")
+                .component_unique_id("text")
                 .to_string(),
                 "children",
             ),
             Input(
-                self.settings_group.component_unique_id("kindness-selector").to_string(),
+                self.settings_group.component_unique_id(
+                    "kindness-selector"
+                ).to_string(),
                 "value",
             ),
         )
@@ -447,12 +443,14 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             Output(
                 self.view("TableView")
                 .view_element("Text")
-                .component_uuid("text")
+                .component_unique_id("text")
                 .to_string(),
                 "children",
             ),
             Input(
-                self.settings_group.component_unique_id("kindness-selector").to_string(),
+                self.settings_group.component_unique_id(
+                    "kindness-selector"
+                ).to_string(),
                 "value",
             ),
         )
@@ -485,7 +483,6 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             ),
         )
         def change_selection(power: str) -> list:
-            time.sleep(8)
             if power == "2":
                 return [
                     {
@@ -509,13 +506,15 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             Output(
                 self.view("PlotView")
                 .view_elements()[1]
-                .component_uuid("my-graph")
+                .component_unique_id("my-graph")
                 .to_string(),
                 "figure",
             ),
             [
                 Input(
-                    self.settings_group.component_unique_id("power-selector").to_string(),
+                    self.settings_group.component_unique_id(
+                        "power-selector"
+                    ).to_string(),
                     "value",
                 ),
                 Input(
@@ -528,7 +527,6 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             ],
         )
         def change_power_and_coordinates(power: str, coordinates: str) -> dict:
-            time.sleep(5)
             layout = {
                 "title": "Example Graph Swapped",
                 "margin": {"t": 50, "r": 20, "b": 20, "l": 20},
