@@ -19,8 +19,8 @@ layout:
        - ExampleContentWrapperPlugin:
            title: Example Plugin
            contact_person:
-             email: ruben.thoms@ceetronsolutions.com
-             name: Ruben Thoms
+             email: kari.nordmann@equinor.com
+             name: Kari Nordmann
              phone: "000000000"
 
        - ExampleContentWrapperPlugin2:

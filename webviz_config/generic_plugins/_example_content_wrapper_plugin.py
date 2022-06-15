@@ -15,12 +15,15 @@ from ..webviz_plugin_subclasses import ViewABC, ViewElementABC, SettingsGroupABC
 
 
 class TextViewElement(ViewElementABC):
+    class Ids:
+        TEXT = "text"
+
     def __init__(self) -> None:
         super().__init__()
 
     def inner_layout(self) -> Union[str, Type[Component]]:
         return html.Div(
-            id=self.register_component_unique_id("text"),
+            id=self.register_component_unique_id(TextViewElement.Ids.TEXT),
             children=[
                 html.H1("Hello"),
                 "This is an example plugin. Please have a look how views and settings are working in this new environment =).",
@@ -29,28 +32,38 @@ class TextViewElement(ViewElementABC):
 
 
 class PlotViewElementSettings(SettingsGroupABC):
+    class Ids:
+        COORDINATES = "coordinates"
+
     def __init__(self) -> None:
         super().__init__("Plot coordinate system")
 
-    def layout(self) -> Component:
-        return wcc.Select(
-            id=self.register_component_unique_id("test"),
-            options=[
-                {
-                    "label": "x - y",
-                    "value": "xy",
-                },
-                {
-                    "label": "y - x",
-                    "value": "yx",
-                },
-            ],
-            value="xy",
-            persistence=True,
-        )
+    def layout(self) -> List[Component]:
+        return [
+            wcc.Select(
+                id=self.register_component_unique_id(
+                    PlotViewElementSettings.Ids.COORDINATES
+                ),
+                options=[
+                    {
+                        "label": "x - y",
+                        "value": "xy",
+                    },
+                    {
+                        "label": "y - x",
+                        "value": "yx",
+                    },
+                ],
+                value="xy",
+                persistence=True,
+            )
+        ]
 
 
 class PlotViewElement(ViewElementABC):
+    class Ids:
+        GRAPH = "graph"
+
     def __init__(self, data: List[Tuple[int, int]]) -> None:
         super().__init__(flex_grow=8)
         self.data = data
@@ -62,7 +75,7 @@ class PlotViewElement(ViewElementABC):
             style={"height": "20vh"},
             children=[
                 wcc.Graph(
-                    id=self.register_component_unique_id("my-graph"),
+                    id=self.register_component_unique_id(PlotViewElement.Ids.GRAPH),
                     figure={
                         "data": [
                             {
@@ -103,8 +116,10 @@ class PlotViewElement(ViewElementABC):
         @callback(
             self.view_element_data_output(),
             self.view_element_data_requested(),
-            State(self.component_unique_id("my-graph").to_string(), "figure"),
-            prevent_initial_call=True,
+            State(
+                self.component_unique_id(PlotViewElement.Ids.GRAPH).to_string(),
+                "figure",
+            ),
         )
         def _download_data(
             data_requested: Union[int, None], graph_figure: Dict[str, Any]
@@ -125,13 +140,16 @@ class PlotViewElement(ViewElementABC):
 
 
 class TableViewElement(ViewElementABC):
+    class Ids:
+        TABLE = "table"
+
     def __init__(self, data: List[Tuple[int, int]]) -> None:
         super().__init__()
         self.data = data
 
     def inner_layout(self) -> Union[str, Type[Component]]:
         return dash_table.DataTable(
-            id=self.register_component_unique_id("my-table"),
+            id=self.register_component_unique_id(TableViewElement.Ids.TABLE),
             columns=[{"id": "x", "name": "X"}, {"id": "y", "name": "Y"}],
             data=[{"x": d[0], "y": d[1]} for d in self.data],
         )
@@ -162,7 +180,6 @@ class TableViewElement(ViewElementABC):
             self.view_element_data_output(),
             self.view_element_data_requested(),
             State(self.component_unique_id("my-table").to_string(), "data"),
-            prevent_initial_call=True,
         )
         def _download_data(
             data_requested: Union[int, None], table_data: List[Dict[str, int]]
@@ -186,90 +203,119 @@ class TableViewElement(ViewElementABC):
 
 
 class PlotViewSettingsGroup(SettingsGroupABC):
+    class Ids:
+        COORDINATES_SELECTOR = "coordinates-selector"
+
     def __init__(self) -> None:
         super().__init__("Plot coordinate system")
 
-    def layout(self) -> Component:
-        return wcc.Dropdown(
-            id=self.register_component_unique_id("coordinates-selector"),
-            label="Coordinates",
-            options=[
-                {
-                    "label": "x - y",
-                    "value": "xy",
-                },
-                {
-                    "label": "y - x",
-                    "value": "yx",
-                },
-            ],
-            value="xy",
-        )
+    def layout(self) -> List[Component]:
+        return [
+            wcc.Dropdown(
+                id=self.register_component_unique_id(
+                    PlotViewSettingsGroup.Ids.COORDINATES_SELECTOR
+                ),
+                label="Coordinates",
+                options=[
+                    {
+                        "label": "x - y",
+                        "value": "xy",
+                    },
+                    {
+                        "label": "y - x",
+                        "value": "yx",
+                    },
+                ],
+                value="xy",
+            )
+        ]
 
 
 class TableViewSettingsGroup(SettingsGroupABC):
+    class Ids:
+        ORDER_SELECTOR = "order-selector"
+
     def __init__(self) -> None:
         super().__init__("Table orientation")
 
-    def layout(self) -> Component:
-        return wcc.RadioItems(
-            id=self.register_component_unique_id("order-selector"),
-            options=[
-                {
-                    "label": "ASC",
-                    "value": "asc",
-                },
-                {
-                    "label": "DESC",
-                    "value": "desc",
-                },
-            ],
-            value="asc",
-        )
+    def layout(self) -> List[Component]:
+        return [
+            wcc.RadioItems(
+                id=self.register_component_unique_id(
+                    TableViewSettingsGroup.Ids.ORDER_SELECTOR
+                ),
+                options=[
+                    {
+                        "label": "ASC",
+                        "value": "asc",
+                    },
+                    {
+                        "label": "DESC",
+                        "value": "desc",
+                    },
+                ],
+                value="asc",
+            )
+        ]
 
 
 class SharedSettingsGroup(SettingsGroupABC):
+    class Ids:
+        KINDNESS_SELECTOR = "kindness-selector"
+        POWER_SELECTOR = "power-selector"
+
     def __init__(self) -> None:
         super().__init__("Shared settings")
 
-    def layout(self) -> Component:
-        return html.Div(
-            children=[
-                wcc.Label("Kindness"),
-                wcc.RadioItems(
-                    id=self.register_component_unique_id("kindness-selector"),
-                    options=[
-                        {
-                            "label": "friendly",
-                            "value": "friendly",
-                        },
-                        {
-                            "label": "unfriendly",
-                            "value": "unfriendly",
-                        },
-                    ],
-                    value="friendly",
-                ),
-                wcc.Label("Power"),
-                wcc.RadioItems(
-                    id=self.register_component_unique_id("power-selector"),
-                    options=[
-                        {
-                            "label": "2",
-                            "value": "2",
-                        },
-                        {
-                            "label": "3",
-                            "value": "3",
-                        },
-                    ],
-                    value="2",
-                ),
-            ]
-        )
+    def layout(self) -> List[Component]:
+        return [
+            html.Div(
+                children=[
+                    wcc.Label("Kindness"),
+                    wcc.RadioItems(
+                        id=self.register_component_unique_id(
+                            SharedSettingsGroup.Ids.KINDNESS_SELECTOR
+                        ),
+                        options=[
+                            {
+                                "label": "friendly",
+                                "value": "friendly",
+                            },
+                            {
+                                "label": "unfriendly",
+                                "value": "unfriendly",
+                            },
+                        ],
+                        value="friendly",
+                    ),
+                    wcc.Label("Power"),
+                    wcc.RadioItems(
+                        id=self.register_component_unique_id(
+                            SharedSettingsGroup.Ids.POWER_SELECTOR
+                        ),
+                        options=[
+                            {
+                                "label": "2",
+                                "value": "2",
+                            },
+                            {
+                                "label": "3",
+                                "value": "3",
+                            },
+                        ],
+                        value="2",
+                    ),
+                ]
+            )
+        ]
 
 
 class PlotView(ViewABC):
+    class Ids:
+        TEXT = TextViewElement.Ids.TEXT
+        PLOT = "plot"
+        PLOT_SETTINGS = "plot-settings"
+
     def __init__(self, data: List[Tuple[int, int]]) -> None:
         super().__init__("Plot")
         self.data = data
@@ -277,19 +323,21 @@ class PlotView(ViewABC):
         self._plot_view = PlotViewElement(self.data)
 
         row = self.add_row()
-        row.add_view_element(TextViewElement(), "Text")
-        row.add_view_element(self._plot_view, "Plot")
+        row.add_view_element(TextViewElement(), PlotView.Ids.TEXT)
+        row.add_view_element(self._plot_view, PlotView.Ids.PLOT)
 
-        self.add_settings_group(PlotViewSettingsGroup(), "PlotSettings")
+        self.add_settings_group(PlotViewSettingsGroup(), PlotView.Ids.PLOT_SETTINGS)
 
     def _set_callbacks(self) -> None:
         @callback(
             self.view_data_output(),
             self.view_data_requested(),
             State(
-                self._plot_view.component_unique_id("my-graph").to_string(), "figure"
+                self._plot_view.component_unique_id(
+                    PlotViewElement.Ids.GRAPH
+                ).to_string(),
+                "figure",
             ),
-            prevent_initial_call=True,
         )
         def _download_data(
             data_requested: Union[int, None],
@@ -301,7 +349,7 @@ class PlotView(ViewABC):
             return WebvizPluginABC.plugin_data_compress(
                 [
                     {
-                        "filename": f"{self._plot_view.component_unique_id('my-graph').to_string()}.csv",
+                        "filename": f"{self._plot_view.component_unique_id(PlotViewElement.Ids.GRAPH).to_string()}.csv",
                         "content": PlotViewElement.download_data_df(
                             graph_figure
                         ).to_csv(index=False),
@@ -311,6 +359,11 @@ class PlotView(ViewABC):
 
 
 class TableView(ViewABC):
+    class Ids:
+        TEXT = TextViewElement.Ids.TEXT
+        TABLE = "table"
+        TABLE_SETTINGS = "table-settings"
+
     def __init__(
         self,
         data: List[Tuple[int, int]],
@@ -320,15 +373,27 @@ class TableView(ViewABC):
 
         self.table_view = TableViewElement(self.data)
 
-        self.add_view_element(TextViewElement(), "Text")
-        self.add_view_element(self.table_view, "Table")
+        self.add_view_element(TextViewElement(), TableView.Ids.TEXT)
+        self.add_view_element(self.table_view, TableView.Ids.TABLE)
 
-        self.add_settings_group(TableViewSettingsGroup(), settings_group_id="Settings")
+        self.add_settings_group(
+            TableViewSettingsGroup(), settings_group_id=TableView.Ids.TABLE_SETTINGS
+        )
 
     def _set_callbacks(self) -> None:
         @callback(
-            Output(self.table_view.component_unique_id("my-table").to_string(), "data"),
-            Input(self.settings_group_unique_id("Settings", "order-selector"), "value"),
+            Output(
+                self.table_view.component_unique_id(
+                    TableViewElement.Ids.TABLE
+                ).to_string(),
+                "data",
+            ),
+            Input(
+                self.settings_group_unique_id(
+                    "Settings", TableViewSettingsGroup.Ids.ORDER_SELECTOR
+                ),
+                "value",
+            ),
         )
         def swap_order(order: str) -> List[dict]:
             data = self.data.copy()
@@ -339,8 +404,12 @@ class TableView(ViewABC):
         @callback(
             self.view_data_output(),
             self.view_data_requested(),
-            State(self.table_view.component_unique_id("my-table").to_string(), "data"),
-            prevent_initial_call=True,
+            State(
+                self.table_view.component_unique_id(
+                    TableViewElement.Ids.TABLE
+                ).to_string(),
+                "data",
+            ),
         )
         def _download_data(
             data_requested: Union[int, None],
@@ -352,7 +421,7 @@ class TableView(ViewABC):
             return WebvizPluginABC.plugin_data_compress(
                 [
                     {
-                        "filename": f"{self.table_view.component_unique_id('my-table').to_string()}.csv",
+                        "filename": f"{self.table_view.component_unique_id(TableViewElement.Ids.TABLE).to_string()}.csv",
                         "content": TableViewElement.download_data_df(table_data).to_csv(
                             index=False
                         ),
@@ -362,28 +431,32 @@ class TableView(ViewABC):
 
 
 class ExampleContentWrapperPlugin(WebvizPluginABC):
-    def __init__(self, app: Dash, title: str):
-        super().__init__(app)
+    class Ids:
+        PLOT_VIEW = "plot-view"
+        TABLE_VIEW = "table-view"
+        SHARED_SETTINGS = "shared-settings"
+
+    def __init__(self, title: str):
+        super().__init__()
 
         self.data = [(x, x * x) for x in range(0, 10)]
-        self.app = app
         self.title = title
 
-        self.add_view(PlotView(self.data), "PlotView")
-        self.add_view(TableView(self.data), "TableView")
+        self.add_view(PlotView(self.data), ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+        self.add_view(TableView(self.data), ExampleContentWrapperPlugin.Ids.TABLE_VIEW)
 
         self.settings_group = SharedSettingsGroup()
-        self.add_shared_settings_group(self.settings_group, "SharedSettings")
-
-        self._set_callbacks()
+        self.add_shared_settings_group(
+            self.settings_group, ExampleContentWrapperPlugin.Ids.SHARED_SETTINGS
+        )
 
     @property
     def tour_steps(self) -> List[dict]:
         return [
             {
-                "id": self.view("PlotView")
-                .view_element("Text")
-                .component_unique_id("text"),
+                "id": self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                .view_element(PlotView.Ids.TEXT)
+                .component_unique_id(TextViewElement.Ids.TEXT),
                 "content": "Greetings from your example plugin.",
             },
             {
@@ -391,31 +464,33 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 "content": "You can change here if this shall be friendly or not.",
             },
             {
-                "id": self.view("PlotView")
-                .view_element("Plot")
-                .component_unique_id("my-graph"),
+                "id": self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                .view_element(PlotView.Ids.PLOT)
+                .component_unique_id(PlotViewElement.Ids.GRAPH),
                 "content": "Over here you see a plot that shows x² or x³.",
             },
             {
-                "id": self.settings_group.component_unique_id("power-selector"),
+                "id": self.settings_group.component_unique_id(
+                    ExampleContentWrapperPlugin.Ids.SHARED_SETTINGS
+                ),
                 "content": "You can change here which exponent you prefer.",
             },
             {
-                "id": self.view("PlotView")
-                .settings_group("PlotSettings")
-                .component_unique_id("coordinates-selector"),
+                "id": self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                .settings_group(PlotView.Ids.PLOT_SETTINGS)
+                .component_unique_id(PlotViewSettingsGroup.Ids.COORDINATES_SELECTOR),
                 "content": "...and here you can swap the axes.",
             },
             {
-                "id": self.view("TableView")
-                .view_element("Table")
-                .component_unique_id("my-table"),
+                "id": self.view(ExampleContentWrapperPlugin.Ids.TABLE_VIEW)
+                .view_element(TableView.Ids.TABLE)
+                .component_unique_id(TableViewElement.Ids.TABLE),
                 "content": "There is also a table visualizing the data.",
             },
             {
-                "id": self.view("TableView")
-                .settings_group("Settings")
-                .component_unique_id("order-selector"),
+                "id": self.view(ExampleContentWrapperPlugin.Ids.TABLE_VIEW)
+                .settings_group(TableView.Ids.TABLE_SETTINGS)
+                .component_unique_id(TableViewSettingsGroup.Ids.ORDER_SELECTOR),
                 "content": "You can change the order of the table here.",
             },
         ]
@@ -423,15 +498,15 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
     def _set_callbacks(self) -> None:
         @callback(
             Output(
-                self.view("PlotView")
-                .view_element("Text")
-                .component_unique_id("text")
+                self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                .view_element(PlotView.Ids.TEXT)
+                .component_unique_id(TextViewElement.Ids.TEXT)
                 .to_string(),
                 "children",
             ),
             Input(
                 self.settings_group.component_unique_id(
-                    "kindness-selector"
+                    SharedSettingsGroup.Ids.KINDNESS_SELECTOR
                 ).to_string(),
                 "value",
             ),
@@ -441,15 +516,15 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
         @callback(
             Output(
-                self.view("TableView")
-                .view_element("Text")
-                .component_unique_id("text")
+                self.view(ExampleContentWrapperPlugin.Ids.TABLE_VIEW)
+                .view_element(TableView.Ids.TEXT)
+                .component_unique_id(TextViewElement.Ids.TEXT)
                 .to_string(),
                 "children",
             ),
             Input(
                 self.settings_group.component_unique_id(
-                    "kindness-selector"
+                    SharedSettingsGroup.Ids.KINDNESS_SELECTOR
                 ).to_string(),
                 "value",
             ),
@@ -471,14 +546,16 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
         @callback(
             Output(
-                self.view("PlotView")
-                .settings_group("PlotSettings")
-                .component_unique_id("coordinates-selector")
+                self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                .settings_group(PlotView.Ids.PLOT_SETTINGS)
+                .component_unique_id(PlotViewSettingsGroup.Ids.COORDINATES_SELECTOR)
                 .to_string(),
                 "options",
             ),
             Input(
-                self.settings_group.component_unique_id("power-selector").to_string(),
+                self.settings_group.component_unique_id(
+                    SharedSettingsGroup.Ids.POWER_SELECTOR
+                ).to_string(),
                 "value",
             ),
         )
@@ -504,23 +581,23 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
         @callback(
             Output(
-                self.view("PlotView")
+                self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
                 .view_elements()[1]
-                .component_unique_id("my-graph")
+                .component_unique_id(PlotViewElement.Ids.GRAPH)
                 .to_string(),
                 "figure",
             ),
             [
                 Input(
                     self.settings_group.component_unique_id(
-                        "power-selector"
+                        SharedSettingsGroup.Ids.POWER_SELECTOR
                     ).to_string(),
                     "value",
                 ),
                 Input(
-                    self.view("PlotView")
-                    .settings_group("PlotSettings")
-                    .component_unique_id("coordinates-selector")
+                    self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                    .settings_group(PlotView.Ids.PLOT_SETTINGS)
+                    .component_unique_id(PlotViewSettingsGroup.Ids.COORDINATES_SELECTOR)
                     .to_string(),
                     "value",
                 ),
@@ -559,11 +636,13 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
 @deprecated_plugin("This is an example plugin that should be removed.")
 class ExampleContentWrapperPlugin2(WebvizPluginABC):
-    def __init__(self, app: Dash, title: str):
-        super().__init__(app)
+    class Ids:
+        PLOT_VIEW = "plot-view"
+
+    def __init__(self, title: str):
+        super().__init__()
 
         self.data = [(x, x * x) for x in range(0, 10)]
-        self.app = app
         self.title = title
 
-        self.add_view(PlotView(self.data), "PlotView")
+        self.add_view(PlotView(self.data), ExampleContentWrapperPlugin2.Ids.PLOT_VIEW)

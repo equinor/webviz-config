@@ -128,10 +128,10 @@ class ViewElementABC(LayoutBaseABC):
 
     def view_element_data_output(self) -> Output:
         self._add_download_button = True
-        return Output(str(self.get_unique_id()), "download")
+        return Output(str(self.get_unique_id().to_string()), "download")
 
     def view_element_data_requested(self) -> Input:
-        return Input(str(self.get_unique_id()), "data_requested")
+        return Input(str(self.get_unique_id().to_string()), "data_requested")
 
     def _wrapped_layout(self) -> Union[str, Type[Component]]:
         layout = self.inner_layout()
@@ -648,10 +648,10 @@ class ViewABC(LayoutBaseABC):
 
     def view_data_output(self) -> Output:
         self._add_download_button = True
-        return Output(str(self.get_unique_id()), "download")
+        return Output(str(self.get_unique_id().to_string()), "download")
 
     def view_data_requested(self) -> Input:
-        return Input(str(self.get_unique_id()), "data_requested")
+        return Input(str(self.get_unique_id().to_string()), "data_requested")
 
     def inner_layout(self) -> List[Type[Component]]:
         return [
