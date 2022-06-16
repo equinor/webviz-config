@@ -1,8 +1,8 @@
 from typing import Callable, List, Optional, Type, Union
 import abc
 
-from dash.development.base_component import Component  # type: ignore
-import webviz_core_components as wcc  # type: ignore
+from dash.development.base_component import Component
+import webviz_core_components as wcc
 
 from ._layout_base_abc import LayoutBaseABC
 from ._layout_unique_id import LayoutUniqueId

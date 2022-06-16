@@ -2,9 +2,9 @@ from typing import Callable, cast, Dict, List, Optional, Type, Union
 from enum import Enum
 from uuid import uuid4
 
-from dash import Input, Output  # type: ignore
-from dash.development.base_component import Component  # type: ignore
-import webviz_core_components as wcc  # type: ignore
+from dash import Input, Output
+from dash.development.base_component import Component
+import webviz_core_components as wcc
 
 from ._settings_group_abc import SettingsGroupABC
 from ._layout_base_abc import LayoutBaseABC
