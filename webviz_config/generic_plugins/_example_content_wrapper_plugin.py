@@ -16,6 +16,7 @@ from ..webviz_plugin_subclasses import ViewABC, ViewElementABC, SettingsGroupABC
 
 class TextViewElement(ViewElementABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         TEXT = "text"
 
     def __init__(self) -> None:
