@@ -10,7 +10,7 @@ import enum
 
 import bleach
 from dash.development.base_component import Component
-from dash import callback, Input, Output, html, dcc
+from dash import callback, callback_context, dcc, html, Input, Output
 import dash
 import jinja2
 import webviz_core_components as wcc
@@ -265,7 +265,11 @@ class WebvizPluginABC(abc.ABC):
             return view
 
         raise LookupError(
-            f"Invalid view id: '{view_id}. Available view ids: {[el[1].get_unique_id().get_view_id() for el in self._views]}"
+            f"""
+            Invalid view id: '{view_id}. Available view ids: {[
+                el[1].get_unique_id().get_view_id() for el in self._views
+            ]}
+            """
         )
 
     def unverified_view_uuid(self, view_id: str) -> str:
@@ -294,7 +298,10 @@ class WebvizPluginABC(abc.ABC):
         raise LookupError(
             f"""
             Invalid settings group id: '{settings_group_id}'.
-            Available settings group ids: {[el.get_unique_id().get_settings_group_id() for el in self._shared_settings_groups]}
+            Available settings group ids: {[
+                    el.get_unique_id().get_settings_group_id()
+                    for el in self._shared_settings_groups
+                ]}
             """
         )
 
@@ -515,21 +522,36 @@ class WebvizPluginABC(abc.ABC):
                 children=[
                     wcc.WebvizPluginLoadingIndicator()
                     if self.views()
-                    else html.Div(children=[self.layout], style={"width": "100%"})
+                    else html.Div(
+                        children=[self.layout], 
+                        style={"width": "100%", "margin-left": "16px"}
+                    )
                 ],
                 persistence_type="session",
                 persistence=True,
             )
         ]
 
-    def _set_wrapper_callbacks(self) -> None:
+    def _set_wrapper_callbacks(self) -> None:   
         @callback(
             Output(self._plugin_wrapper_id, "children"),
             Input("webviz-content-manager", "activeViewId"),
             Input("webviz-content-manager", "activePluginId"),
         )
         def change_view(view_id: str, plugin_id: str) -> Component:
-            if plugin_id == self._plugin_wrapper_id:
+            ctx = callback_context.triggered
+            initial_call = (
+                ctx[0]["prop_id"] == "."
+                if ctx is not None and
+                len(ctx) > 0 and
+                isinstance(ctx[0], dict) and
+                "prop_id" in ctx[0].keys()
+                else False
+            )
+            if initial_call:
+                view_id = self.active_view_id
+
+            if plugin_id == self._plugin_wrapper_id or initial_call:
                 view = next(
                     (
                         view[1]
