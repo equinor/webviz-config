@@ -79,13 +79,14 @@ setup(
         ],
     },
     install_requires=[
-        "bleach>=3.1",
+        "bleach>=3.1; python_version<'3.7'",
+        "bleach[css]>=5; python_version>='3.7'",
         "cryptography>=2.4",
         "dash>=2.0",
         "dash-pivottable>=0.0.2",
         "dataclasses>=0.8; python_version<'3.7'",
         "flask>=2.0",
-        "flask-caching>=1.4",
+        "flask-caching>=1.4,<1.11",  # https://github.com/equinor/webviz-config/issues/595
         "flask-talisman>=0.6",
         "importlib-metadata>=1.7; python_version<'3.8'",
         "jinja2>=2.10",
