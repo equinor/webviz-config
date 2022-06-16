@@ -28,7 +28,7 @@ TESTS_REQUIRES = [
     "dash[testing]",
     "jsonschema",
     "mypy",
-    "pylint",
+    "pylint<=2.13.9",  # Locked due to https://github.com/equinor/webviz-subsurface/issues/1052
     "pytest-xdist",
     "selenium",
     "types-bleach",
