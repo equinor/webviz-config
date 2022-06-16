@@ -60,6 +60,7 @@ class DuplicatePluginChildId(Exception):
 
 
 class WebvizPluginABC(abc.ABC):
+    # pylint: disable=too-many-public-methods
     """All webviz plugins need to subclass this abstract base class,
     e.g.
 

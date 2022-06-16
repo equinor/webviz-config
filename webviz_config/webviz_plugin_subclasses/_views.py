@@ -6,7 +6,6 @@ from dash import Input, Output  # type: ignore
 from dash.development.base_component import Component  # type: ignore
 import webviz_core_components as wcc  # type: ignore
 
-# pylint: disable=relative-beyond-top-level
 from ._settings_group_abc import SettingsGroupABC
 from ._layout_base_abc import LayoutBaseABC
 from ._layout_unique_id import LayoutUniqueId

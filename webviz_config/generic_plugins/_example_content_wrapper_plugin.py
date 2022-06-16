@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from dash.development.base_component import Component
-from dash import html, Dash, Input, Output, State, dash_table, callback
+from dash import html, Input, Output, State, dash_table, callback
 from dash.exceptions import PreventUpdate
 
 import pandas as pd
@@ -26,13 +26,17 @@ class TextViewElement(ViewElementABC):
             id=self.register_component_unique_id(TextViewElement.Ids.TEXT),
             children=[
                 html.H1("Hello"),
-                "This is an example plugin. Please have a look how views and settings are working in this new environment =).",
+                """
+                This is an example plugin.
+                Please have a look how views and settings are working in this new environment =).
+                """,
             ],
         )
 
 
 class PlotViewElementSettings(SettingsGroupABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         COORDINATES = "coordinates"
 
     def __init__(self) -> None:
@@ -62,6 +66,7 @@ class PlotViewElementSettings(SettingsGroupABC):
 
 class PlotViewElement(ViewElementABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         GRAPH = "graph"
 
     def __init__(self, data: List[Tuple[int, int]]) -> None:
@@ -100,16 +105,16 @@ class PlotViewElement(ViewElementABC):
         if not graph_data:
             return "No data present in graph figure"
 
-        x = graph_data[0].get("x", None)
-        y = graph_data[0].get("y", None)
-        if x is None or y is None:
-            return f"Missing x or y data: x = {x} and y = {y}"
+        x_values = graph_data[0].get("x", None)
+        y_values = graph_data[0].get("y", None)
+        if x_values is None or y_values is None:
+            return f"Missing x or y data: x = {x_values} and y = {y_values}"
 
         df = pd.DataFrame(
             columns=["x", "y"],
         )
-        df["x"] = x
-        df["y"] = y
+        df["x"] = x_values
+        df["y"] = y_values
         return df
 
     def _set_callbacks(self) -> None:
@@ -141,6 +146,7 @@ class PlotViewElement(ViewElementABC):
 
 class TableViewElement(ViewElementABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         TABLE = "table"
 
     def __init__(self, data: List[Tuple[int, int]]) -> None:
@@ -156,8 +162,8 @@ class TableViewElement(ViewElementABC):
 
     @staticmethod
     def download_data_df(table_data: List[Dict[str, int]]) -> pd.DataFrame:
-        x = []
-        y = []
+        x_values = []
+        y_values = []
         for index, elm in enumerate(table_data):
             _x = elm.get("x", None)
             _y = elm.get("y", None)
@@ -165,14 +171,14 @@ class TableViewElement(ViewElementABC):
                 raise ValueError(f'No "x" column data in table at index {index}')
             if _y is None:
                 raise ValueError(f'No "y" column data in table at index {index}')
-            x.append(_x)
-            y.append(_y)
+            x_values.append(_x)
+            y_values.append(_y)
 
         df = pd.DataFrame(
             columns=["x", "y"],
         )
-        df["x"] = x
-        df["y"] = y
+        df["x"] = x_values
+        df["y"] = y_values
         return df
 
     def _set_callbacks(self) -> None:
@@ -204,6 +210,7 @@ class TableViewElement(ViewElementABC):
 
 class PlotViewSettingsGroup(SettingsGroupABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         COORDINATES_SELECTOR = "coordinates-selector"
 
     def __init__(self) -> None:
@@ -233,6 +240,7 @@ class PlotViewSettingsGroup(SettingsGroupABC):
 
 class TableViewSettingsGroup(SettingsGroupABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         ORDER_SELECTOR = "order-selector"
 
     def __init__(self) -> None:
@@ -261,6 +269,7 @@ class TableViewSettingsGroup(SettingsGroupABC):
 
 class SharedSettingsGroup(SettingsGroupABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         KINDNESS_SELECTOR = "kindness-selector"
         POWER_SELECTOR = "power-selector"
 
@@ -312,6 +321,7 @@ class SharedSettingsGroup(SettingsGroupABC):
 
 class PlotView(ViewABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         TEXT = TextViewElement.Ids.TEXT
         PLOT = "plot"
         PLOT_SETTINGS = "plot-settings"
@@ -349,7 +359,10 @@ class PlotView(ViewABC):
             return WebvizPluginABC.plugin_data_compress(
                 [
                     {
-                        "filename": f"{self._plot_view.component_unique_id(PlotViewElement.Ids.GRAPH).to_string()}.csv",
+                        "filename": f"""{
+                            self._plot_view.component_unique_id(
+                                PlotViewElement.Ids.GRAPH
+                            ).to_string()}.csv""",
                         "content": PlotViewElement.download_data_df(
                             graph_figure
                         ).to_csv(index=False),
@@ -360,6 +373,7 @@ class PlotView(ViewABC):
 
 class TableView(ViewABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         TEXT = TextViewElement.Ids.TEXT
         TABLE = "table"
         TABLE_SETTINGS = "table-settings"
@@ -421,7 +435,10 @@ class TableView(ViewABC):
             return WebvizPluginABC.plugin_data_compress(
                 [
                     {
-                        "filename": f"{self.table_view.component_unique_id(TableViewElement.Ids.TABLE).to_string()}.csv",
+                        "filename": f"""{
+                            self.table_view.component_unique_id(
+                                TableViewElement.Ids.TABLE).to_string()
+                            }.csv""",
                         "content": TableViewElement.download_data_df(table_data).to_csv(
                             index=False
                         ),
@@ -432,6 +449,7 @@ class TableView(ViewABC):
 
 class ExampleContentWrapperPlugin(WebvizPluginABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         PLOT_VIEW = "plot-view"
         TABLE_VIEW = "table-view"
         SHARED_SETTINGS = "shared-settings"
@@ -536,7 +554,10 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             if kindness == "friendly":
                 return [
                     html.H1("Hello"),
-                    "I am an example plugin. Please have a look how views and settings are working in my environment =).",
+                    """
+                    I am an example plugin.
+                    Please have a look how views and settings are working in my environment =).
+                    """,
                 ]
 
             return [
@@ -637,6 +658,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 @deprecated_plugin("This is an example plugin that should be removed.")
 class ExampleContentWrapperPlugin2(WebvizPluginABC):
     class Ids:
+        # pylint: disable=too-few-public-methods
         PLOT_VIEW = "plot-view"
 
     def __init__(self, title: str):
