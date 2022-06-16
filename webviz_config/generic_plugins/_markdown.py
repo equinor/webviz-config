@@ -166,20 +166,40 @@ class Markdown(WebvizPluginABC):
 
         self.markdown_file = markdown_file
 
-        self.html = bleach.clean(
-            markdown.markdown(
-                get_path(self.markdown_file).read_text(),
-                extensions=[
-                    "fenced_code",
-                    "tables",
-                    "sane_lists",
-                    _WebvizMarkdownExtension(base_path=markdown_file.parent),
-                ],
-            ),
-            tags=Markdown.ALLOWED_TAGS,
-            attributes=Markdown.ALLOWED_ATTRIBUTES,
-            styles=Markdown.ALLOWED_STYLES,
+        html_from_markdown = markdown.markdown(
+            get_path(self.markdown_file).read_text(),
+            extensions=[
+                "fenced_code",
+                "tables",
+                "sane_lists",
+                _WebvizMarkdownExtension(base_path=markdown_file.parent),
+            ],
         )
+
+        try:
+            self.html = (
+                bleach.clean(  # type: ignore # pylint: disable=unexpected-keyword-arg
+                    html_from_markdown,
+                    tags=Markdown.ALLOWED_TAGS,
+                    attributes=Markdown.ALLOWED_ATTRIBUTES,
+                    styles=Markdown.ALLOWED_STYLES,
+                )
+            )
+        except TypeError:
+            # styles not present in bleach >= 5. We can remove
+            # this try/except when dropping Python 3.6 support.
+            from bleach.css_sanitizer import (  # pylint: disable=import-outside-toplevel
+                CSSSanitizer,
+            )
+
+            css_sanitizer = CSSSanitizer(allowed_css_properties=Markdown.ALLOWED_STYLES)
+
+            self.html = bleach.clean(
+                html_from_markdown,
+                tags=Markdown.ALLOWED_TAGS,
+                attributes=Markdown.ALLOWED_ATTRIBUTES,
+                css_sanitizer=css_sanitizer,
+            )
 
         # Workaround for upstream issue https://github.com/plotly/dash-core-components/issues/746,
         # where we convert void html tags from <tag> to <tag/>.
