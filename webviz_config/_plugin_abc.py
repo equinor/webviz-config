@@ -523,8 +523,8 @@ class WebvizPluginABC(abc.ABC):
                     wcc.WebvizPluginLoadingIndicator()
                     if self.views()
                     else html.Div(
-                        children=[self.layout], 
-                        style={"width": "100%", "margin-left": "16px"}
+                        children=[self.layout],
+                        style={"width": "100%", "margin-left": "16px"},
                     )
                 ],
                 persistence_type="session",
@@ -532,7 +532,7 @@ class WebvizPluginABC(abc.ABC):
             )
         ]
 
-    def _set_wrapper_callbacks(self) -> None:   
+    def _set_wrapper_callbacks(self) -> None:
         @callback(
             Output(self._plugin_wrapper_id, "children"),
             Input("webviz-content-manager", "activeViewId"),
@@ -542,10 +542,10 @@ class WebvizPluginABC(abc.ABC):
             ctx = callback_context.triggered
             initial_call = (
                 ctx[0]["prop_id"] == "."
-                if ctx is not None and
-                len(ctx) > 0 and
-                isinstance(ctx[0], dict) and
-                "prop_id" in ctx[0].keys()
+                if ctx is not None
+                and len(ctx) > 0
+                and isinstance(ctx[0], dict)
+                and "prop_id" in ctx[0].keys()
                 else False
             )
             if initial_call:
