@@ -1,0 +1,27 @@
+# This file demonstrates the most basic usage of webviz in a FMU setting
+# The configuration files uses YAML (https://en.wikipedia.org/wiki/YAML).
+
+title: Reek Webviz Demonstration
+
+options:
+  menu:
+    show_logo: True
+    bar_position: left
+    drawer_position: left
+    initially_pinned: True
+
+layout:
+ - section: Section
+   content:
+    - page: Front page
+      icon: home
+      content:
+       - ExampleContentWrapperPlugin:
+           title: Example Plugin
+           contact_person:
+             email: kari.nordmann@equinor.com
+             name: Kari Nordmann
+             phone: "000000000"
+
+       - ExampleContentWrapperPlugin2:
+           title: Example Plugin 2
