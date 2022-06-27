@@ -448,7 +448,7 @@ class TableView(ViewABC):
             )
 
 
-class ExampleContentWrapperPlugin(WebvizPluginABC):
+class ExampleWlfPlugin(WebvizPluginABC):
     class Ids:
         # pylint: disable=too-few-public-methods
         PLOT_VIEW = "plot-view"
@@ -461,19 +461,19 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
         self.data = [(x, x * x) for x in range(0, 10)]
         self.title = title
 
-        self.add_view(PlotView(self.data), ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
-        self.add_view(TableView(self.data), ExampleContentWrapperPlugin.Ids.TABLE_VIEW)
+        self.add_view(PlotView(self.data), ExampleWlfPlugin.Ids.PLOT_VIEW)
+        self.add_view(TableView(self.data), ExampleWlfPlugin.Ids.TABLE_VIEW)
 
         self.settings_group = SharedSettingsGroup()
         self.add_shared_settings_group(
-            self.settings_group, ExampleContentWrapperPlugin.Ids.SHARED_SETTINGS
+            self.settings_group, ExampleWlfPlugin.Ids.SHARED_SETTINGS
         )
 
     @property
     def tour_steps(self) -> List[dict]:
         return [
             {
-                "id": self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                "id": self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
                 .view_element(PlotView.Ids.TEXT)
                 .component_unique_id(TextViewElement.Ids.TEXT),
                 "content": "Greetings from your example plugin.",
@@ -483,31 +483,31 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                 "content": "You can change here if this shall be friendly or not.",
             },
             {
-                "id": self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                "id": self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
                 .view_element(PlotView.Ids.PLOT)
                 .component_unique_id(PlotViewElement.Ids.GRAPH),
                 "content": "Over here you see a plot that shows x² or x³.",
             },
             {
                 "id": self.settings_group.component_unique_id(
-                    ExampleContentWrapperPlugin.Ids.SHARED_SETTINGS
+                    ExampleWlfPlugin.Ids.SHARED_SETTINGS
                 ),
                 "content": "You can change here which exponent you prefer.",
             },
             {
-                "id": self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                "id": self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
                 .settings_group(PlotView.Ids.PLOT_SETTINGS)
                 .component_unique_id(PlotViewSettingsGroup.Ids.COORDINATES_SELECTOR),
                 "content": "...and here you can swap the axes.",
             },
             {
-                "id": self.view(ExampleContentWrapperPlugin.Ids.TABLE_VIEW)
+                "id": self.view(ExampleWlfPlugin.Ids.TABLE_VIEW)
                 .view_element(TableView.Ids.TABLE)
                 .component_unique_id(TableViewElement.Ids.TABLE),
                 "content": "There is also a table visualizing the data.",
             },
             {
-                "id": self.view(ExampleContentWrapperPlugin.Ids.TABLE_VIEW)
+                "id": self.view(ExampleWlfPlugin.Ids.TABLE_VIEW)
                 .settings_group(TableView.Ids.TABLE_SETTINGS)
                 .component_unique_id(TableViewSettingsGroup.Ids.ORDER_SELECTOR),
                 "content": "You can change the order of the table here.",
@@ -517,7 +517,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
     def _set_callbacks(self) -> None:
         @callback(
             Output(
-                self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
                 .view_element(PlotView.Ids.TEXT)
                 .component_unique_id(TextViewElement.Ids.TEXT)
                 .to_string(),
@@ -535,7 +535,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
         @callback(
             Output(
-                self.view(ExampleContentWrapperPlugin.Ids.TABLE_VIEW)
+                self.view(ExampleWlfPlugin.Ids.TABLE_VIEW)
                 .view_element(TableView.Ids.TEXT)
                 .component_unique_id(TextViewElement.Ids.TEXT)
                 .to_string(),
@@ -568,7 +568,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
         @callback(
             Output(
-                self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
                 .settings_group(PlotView.Ids.PLOT_SETTINGS)
                 .component_unique_id(PlotViewSettingsGroup.Ids.COORDINATES_SELECTOR)
                 .to_string(),
@@ -603,7 +603,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
         @callback(
             Output(
-                self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
                 .view_elements()[1]
                 .component_unique_id(PlotViewElement.Ids.GRAPH)
                 .to_string(),
@@ -617,7 +617,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
                     "value",
                 ),
                 Input(
-                    self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
+                    self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
                     .settings_group(PlotView.Ids.PLOT_SETTINGS)
                     .component_unique_id(PlotViewSettingsGroup.Ids.COORDINATES_SELECTOR)
                     .to_string(),
@@ -657,7 +657,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
 
 
 @deprecated_plugin("This is an example plugin that should be removed.")
-class ExampleContentWrapperPlugin2(WebvizPluginABC):
+class ExampleWlfPlugin2(WebvizPluginABC):
     class Ids:
         # pylint: disable=too-few-public-methods
         PLOT_VIEW = "plot-view"
@@ -668,4 +668,4 @@ class ExampleContentWrapperPlugin2(WebvizPluginABC):
         self.data = [(x, x * x) for x in range(0, 10)]
         self.title = title
 
-        self.add_view(PlotView(self.data), ExampleContentWrapperPlugin2.Ids.PLOT_VIEW)
+        self.add_view(PlotView(self.data), ExampleWlfPlugin2.Ids.PLOT_VIEW)
