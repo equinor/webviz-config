@@ -118,7 +118,7 @@ class PlotViewElement(ViewElementABC):
         df["y"] = y_values
         return df
 
-    def _set_callbacks(self) -> None:
+    def set_callbacks(self) -> None:
         @callback(
             self.view_element_data_output(),
             self.view_element_data_requested(),
@@ -182,7 +182,7 @@ class TableViewElement(ViewElementABC):
         df["y"] = y_values
         return df
 
-    def _set_callbacks(self) -> None:
+    def set_callbacks(self) -> None:
         @callback(
             self.view_element_data_output(),
             self.view_element_data_requested(),
@@ -339,7 +339,7 @@ class PlotView(ViewABC):
 
         self.add_settings_group(PlotViewSettingsGroup(), PlotView.Ids.PLOT_SETTINGS)
 
-    def _set_callbacks(self) -> None:
+    def set_callbacks(self) -> None:
         @callback(
             self.view_data_output(),
             self.view_data_requested(),
@@ -395,7 +395,7 @@ class TableView(ViewABC):
             TableViewSettingsGroup(), settings_group_id=TableView.Ids.TABLE_SETTINGS
         )
 
-    def _set_callbacks(self) -> None:
+    def set_callbacks(self) -> None:
         @callback(
             Output(
                 self.table_view.component_unique_id(
@@ -405,7 +405,7 @@ class TableView(ViewABC):
             ),
             Input(
                 self.settings_group_unique_id(
-                    "Settings", TableViewSettingsGroup.Ids.ORDER_SELECTOR
+                    TableView.Ids.TABLE_SETTINGS, TableViewSettingsGroup.Ids.ORDER_SELECTOR
                 ),
                 "value",
             ),
@@ -514,7 +514,7 @@ class ExampleContentWrapperPlugin(WebvizPluginABC):
             },
         ]
 
-    def _set_callbacks(self) -> None:
+    def set_callbacks(self) -> None:
         @callback(
             Output(
                 self.view(ExampleContentWrapperPlugin.Ids.PLOT_VIEW)
