@@ -405,7 +405,8 @@ class TableView(ViewABC):
             ),
             Input(
                 self.settings_group_unique_id(
-                    TableView.Ids.TABLE_SETTINGS, TableViewSettingsGroup.Ids.ORDER_SELECTOR
+                    TableView.Ids.TABLE_SETTINGS,
+                    TableViewSettingsGroup.Ids.ORDER_SELECTOR,
                 ),
                 "value",
             ),
