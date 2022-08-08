@@ -661,7 +661,6 @@ class ViewABC(LayoutBaseABC):
     def outer_layout(self) -> Type[Component]:
         return wcc.WebvizView(
             id=str(self.get_unique_id()),
-            showDownload=self._add_download_button,
             children=self.inner_layout(),
         )
 
