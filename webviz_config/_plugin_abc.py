@@ -326,7 +326,7 @@ class WebvizPluginABC(abc.ABC):
         return f"plugin-wrapper-{self._plugin_unique_id}"
 
     @property
-    def _legacy_plugin_view_id(self)->str:
+    def _legacy_plugin_view_id(self) -> str:
         return f"{self._plugin_unique_id.to_string()}-view"
 
     @property
