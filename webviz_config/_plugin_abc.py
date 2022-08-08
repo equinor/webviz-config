@@ -86,13 +86,6 @@ class WebvizPluginABC(abc.ABC):
     # E.g. download of zip archive will only appear if the plugin also
     # has defined the corresponding callback, and contact person will only
     # appear if the user configuration file has this information.
-    TOOLBAR_BUTTONS = [
-        "screenshot",
-        "expand",
-        "contact_person",
-        "guided_tour",
-        "feedback",
-    ]
 
     # List of plugin specific assets which should be copied
     # over to the ./assets folder in the generated webviz app.
@@ -333,13 +326,17 @@ class WebvizPluginABC(abc.ABC):
         return f"plugin-wrapper-{self._plugin_unique_id}"
 
     @property
+    def _legacy_plugin_view_id(self)->str:
+        return f"{self._plugin_unique_id.to_string()}-view"
+
+    @property
     def plugin_data_output(self) -> Output:
         self._add_download_button = True
-        return Output(self._plugin_wrapper_id, "download")
+        return Output(self._legacy_plugin_view_id, "download")
 
     @property
     def plugin_data_requested(self) -> Input:
-        return Input(self._plugin_wrapper_id, "data_requested")
+        return Input(self._legacy_plugin_view_id, "data_requested")
 
     @staticmethod
     def _reformat_tour_steps(steps: List[dict]) -> List[dict]:
@@ -477,15 +474,10 @@ class WebvizPluginABC(abc.ABC):
         if self.active_view_id == "" and len(self.views()) > 0:
             self._active_view_id = self.views()[0][1].get_unique_id().to_string()
 
-        buttons = self.__class__.TOOLBAR_BUTTONS.copy()
-
         if contact_person:
             # Sanitize the configuration user input
             for key in contact_person:
                 contact_person[key] = bleach.clean(str(contact_person[key]))
-
-        if self._add_download_button:
-            buttons.append("download")
 
         return [
             dcc.Store(
@@ -506,8 +498,20 @@ class WebvizPluginABC(abc.ABC):
                         "showDownload": view[1]._add_download_button,
                     }
                     for view in self.views()
+                ]
+                if self.views()
+                else [
+                    {
+                        "id": self._legacy_plugin_view_id,
+                        "group": "",
+                        "name": "",
+                        # pylint: disable=protected-access
+                        "showDownload": self._add_download_button,
+                    }
                 ],
-                initiallyActiveViewId=self.active_view_id,
+                initiallyActiveViewId=self.active_view_id
+                if self.views()
+                else self._legacy_plugin_view_id,
                 contactPerson=contact_person,
                 deprecationWarnings=self._make_extended_deprecation_warnings(
                     plugin_deprecation_warnings, argument_deprecation_warnings
@@ -519,13 +523,18 @@ class WebvizPluginABC(abc.ABC):
                 )
                 if hasattr(self, "tour_steps")
                 else None,
-                stretch=self._stretch,
+                stretch=self._stretch if self.views() else True,
                 children=[
                     wcc.WebvizPluginLoadingIndicator()
                     if self.views()
-                    else html.Div(
-                        children=[self.layout],
-                        style={"width": "100%", "margin-left": "16px"},
+                    else wcc.WebvizView(
+                        id=self._legacy_plugin_view_id,
+                        children=[
+                            html.Div(
+                                children=[self.layout],
+                                style={"width": "100%", "margin-left": "16px"},
+                            )
+                        ],
                     )
                 ],
                 persistence_type="session",
