@@ -21,7 +21,7 @@ jobs:
       PYTHONWARNINGS: default # We want to see e.g. DeprecationWarnings
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
 
     steps:
       - name: 📖 Checkout commit locally
@@ -49,7 +49,7 @@ jobs:
           pip install --pre --upgrade webviz-core-components  # Testing against our latest release (including pre-releases)
 
       - name: 📦 Install extra deployment dependencies
-        if: matrix.python-version != '3.6' # Check tests pass also without optional dependencies
+        if: matrix.python-version != '3.10' # Check tests pass also without optional dependencies
         run: |
           pip install .[deployment]
 
@@ -96,7 +96,7 @@ jobs:
           twine upload dist/*
 
       - name: 📚 Update GitHub pages
-        if: github.event_name == 'release' && matrix.python-version == '3.6'
+        if: github.event_name == 'release' && matrix.python-version == '3.8'
         run: |
           cp -R ./docs_build ../docs_build
 

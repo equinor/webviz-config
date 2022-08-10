@@ -22,13 +22,12 @@ def main() -> None:  # pylint: disable=too-many-statements
 
     subparsers = parser.add_subparsers(
         metavar="SUBCOMMAND",
+        required=True,
         help="Below are the available subcommands listed. "
         "Type e.g. 'webviz build --help' "
         "to get help on one particular "
         "subcommand.",
     )
-    # When dropping Python 3.6 support, 'required' can be given as an argument to add_subparsers.
-    subparsers.required = True
 
     # Add "build" argument parser:
 
@@ -111,14 +110,12 @@ def main() -> None:  # pylint: disable=too-many-statements
 
     deployment_subparsers = parser_deploy.add_subparsers(
         metavar="DEPLOYMENT_METHOD",
+        required=True,
         help="Below are the available deployment subcommands listed. "
         "Type e.g. 'webviz deploy radix --help' "
         "to get help on one particular "
         "subcommand.",
     )
-
-    # When dropping Python 3.6 support, 'required' can be given as an argument to add_subparsers.
-    deployment_subparsers.required = True
 
     parser_radix_deploy = deployment_subparsers.add_parser(
         "radix",

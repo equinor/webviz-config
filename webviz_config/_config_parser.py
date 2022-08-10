@@ -103,22 +103,18 @@ def _call_signature(
                     (config_folder / pathlib.Path(patharg)).resolve()
                     for patharg in kwargs[arg]
                 ]
-            try:
-                if not isinstance(kwargs[arg], expected_type):
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        f"The value provided for argument `{arg}` "
-                        f"given to `{plugin_name}` is "
-                        f"of type `{type(kwargs[arg]).__name__}`. "
-                        f"Expected type "
-                        f"`{argspec.annotations[arg].__name__}`. "
-                        "Run the command `webviz docs` if you want "
-                        "to see documentation of the plugin."
-                        f"{terminal_colors.END}"
-                    )
-            # Typechecking typing classes does not work in python 3.7
-            except TypeError:
-                pass
+            if not isinstance(kwargs[arg], expected_type):
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    f"The value provided for argument `{arg}` "
+                    f"given to `{plugin_name}` is "
+                    f"of type `{type(kwargs[arg]).__name__}`. "
+                    f"Expected type "
+                    f"`{argspec.annotations[arg].__name__}`. "
+                    "Run the command `webviz docs` if you want "
+                    "to see documentation of the plugin."
+                    f"{terminal_colors.END}"
+                )
 
     kwargs_including_defaults = kwargs
     plugin_deprecation_warnings = []

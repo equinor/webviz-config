@@ -16,15 +16,7 @@ import inspect
 import pathlib
 from importlib import import_module
 from collections import defaultdict
-from typing import Any, Dict, Optional, Tuple, List
-
-
-try:
-    # Python 3.8+
-    from typing import TypedDict
-except (ImportError, ModuleNotFoundError):
-    # Python < 3.8
-    from typing_extensions import TypedDict
+from typing import Any, Dict, Optional, Tuple, List, TypedDict
 
 import jinja2
 
