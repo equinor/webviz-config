@@ -16,12 +16,12 @@ layout:
     - page: Front page
       icon: home
       content:
-       - ExampleContentWrapperPlugin:
+       - ExampleWlfPlugin:
            title: Example Plugin
            contact_person:
              email: kari.nordmann@equinor.com
              name: Kari Nordmann
              phone: "000000000"
 
-       - ExampleContentWrapperPlugin2:
+       - ExampleWlfPlugin2:
            title: Example Plugin 2
