@@ -497,7 +497,6 @@ class WebvizPluginABC(abc.ABC):
                         "id": self._legacy_plugin_view_id,
                         "group": "",
                         "name": "",
-                        # pylint: disable=protected-access
                         "showDownload": self._add_download_button,
                     }
                 ],
