@@ -67,10 +67,10 @@ pages:
 ### Override plugin toolbar
 
 In the generated webviz application, your plugin will as default be given
-a button toolbar. The default buttons to appear is stored in the class constant
-`WebvizPluginABC.TOOLBAR_BUTTONS`. If you want to override which buttons should
-appear, redefine this class constant in your subclass. To remove all buttons,
-simply define it as an empty list. See [this section](#data-download-callback)
+a set of toolbar buttons in a settings drawer. The default buttons to appear are
+fullscreen and screenshot. Additional buttons appears based on provided
+information - as plugin author contact information, download data, guided tour
+information and issue feedback link. See [this section](#data-download-callback)
 for more information regarding downloading plugin data.
 
 ### Callbacks

@@ -86,13 +86,6 @@ class WebvizPluginABC(abc.ABC):
     # E.g. download of zip archive will only appear if the plugin also
     # has defined the corresponding callback, and contact person will only
     # appear if the user configuration file has this information.
-    TOOLBAR_BUTTONS = [
-        "screenshot",
-        "expand",
-        "contact_person",
-        "guided_tour",
-        "feedback",
-    ]
 
     # List of plugin specific assets which should be copied
     # over to the ./assets folder in the generated webviz app.
@@ -137,6 +130,8 @@ class WebvizPluginABC(abc.ABC):
         self._active_view_id = ""
         self._stretch = stretch
         self._all_callbacks_set = False
+
+        self._legacy_plugin_view_id = f"{self._plugin_unique_id.to_string()}-view"
 
         self._set_wrapper_callbacks()
 
@@ -331,11 +326,11 @@ class WebvizPluginABC(abc.ABC):
     @property
     def plugin_data_output(self) -> Output:
         self._add_download_button = True
-        return Output(self._plugin_unique_id.to_string(), "download")
+        return Output(self._legacy_plugin_view_id, "download")
 
     @property
     def plugin_data_requested(self) -> Input:
-        return Input(self._plugin_unique_id.to_string(), "data_requested")
+        return Input(self._legacy_plugin_view_id, "data_requested")
 
     @staticmethod
     def _reformat_tour_steps(steps: List[dict]) -> List[dict]:
@@ -456,16 +451,14 @@ class WebvizPluginABC(abc.ABC):
         plugin_deprecation_warnings: Optional[List[str]] = None,
         argument_deprecation_warnings: Optional[List[str]] = None,
     ) -> List[Component]:
-        """This function returns (if the class constant SHOW_TOOLBAR is True,
-        the plugin layout wrapped into a common webviz config plugin
-        component, which provides some useful buttons like download of data,
-        show data contact person and download plugin content to png.
+        """This function returns plugin layout placed within a WebvizPluginWrapper
+        component, which contains a settings drawer with useful buttons like fullscreen
+        and screenshot of plugin content. Additional buttons as plugin author contact
+        information, download of data, guided tour, issue feedback link, etc. will appear
+        based on provided information.
 
-        CSV download button will only appear if the plugin class has a property
-        `csv_string` which should return the appropriate csv data as a string.
-
-        If `TOOLBAR_BUTTONS` is empty, this functions returns the same
-        dash layout as the plugin class provides directly.
+        Button for download of data will only appear if corresponding
+        callback functionality is implemented for the respective plugin.
         """
 
         self._set_all_callbacks()
@@ -473,15 +466,10 @@ class WebvizPluginABC(abc.ABC):
         if self.active_view_id == "" and len(self.views()) > 0:
             self._active_view_id = self.views()[0][1].get_unique_id().to_string()
 
-        buttons = self.__class__.TOOLBAR_BUTTONS.copy()
-
         if contact_person:
             # Sanitize the configuration user input
             for key in contact_person:
                 contact_person[key] = bleach.clean(str(contact_person[key]))
-
-        if self._add_download_button:
-            buttons.append("download")
 
         return [
             dcc.Store(
@@ -502,8 +490,19 @@ class WebvizPluginABC(abc.ABC):
                         "showDownload": view[1]._add_download_button,
                     }
                     for view in self.views()
+                ]
+                if self.views()
+                else [
+                    {
+                        "id": self._legacy_plugin_view_id,
+                        "group": "",
+                        "name": "",
+                        "showDownload": self._add_download_button,
+                    }
                 ],
-                initiallyActiveViewId=self.active_view_id,
+                initiallyActiveViewId=self.active_view_id
+                if self.views()
+                else self._legacy_plugin_view_id,
                 contactPerson=contact_person,
                 deprecationWarnings=self._make_extended_deprecation_warnings(
                     plugin_deprecation_warnings, argument_deprecation_warnings
@@ -515,13 +514,18 @@ class WebvizPluginABC(abc.ABC):
                 )
                 if hasattr(self, "tour_steps")
                 else None,
-                stretch=self._stretch,
+                stretch=self._stretch if self.views() else True,
                 children=[
                     wcc.WebvizPluginLoadingIndicator()
                     if self.views()
-                    else html.Div(
-                        children=[self.layout],
-                        style={"width": "100%", "margin-left": "16px"},
+                    else wcc.WebvizView(
+                        id=self._legacy_plugin_view_id,
+                        children=[
+                            html.Div(
+                                children=[self.layout],
+                                style={"width": "100%", "margin-left": "16px"},
+                            )
+                        ],
                     )
                 ],
                 persistence_type="session",

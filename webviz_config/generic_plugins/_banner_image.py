@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 from dash import html
 
@@ -21,8 +21,6 @@ Useful on e.g. the front page for introducing a field or project.
 * **`height`:** Height of the banner image (in pixels).
 * **`title_position`:** Position of title (either `center`, `top` or `bottom`).
 """
-
-    TOOLBAR_BUTTONS: List[str] = []
 
     CSS_TITLE_POSITIONS: Dict[str, str] = {
         "top": "start",
