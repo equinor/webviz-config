@@ -22,7 +22,6 @@ Useful on e.g. the front page for introducing a field or project.
 * **`title_position`:** Position of title (either `center`, `top` or `bottom`).
 """
 
-    TOOLBAR_BUTTONS: List[str] = []
 
     CSS_TITLE_POSITIONS: Dict[str, str] = {
         "top": "start",

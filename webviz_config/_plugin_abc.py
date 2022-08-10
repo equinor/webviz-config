@@ -453,16 +453,14 @@ class WebvizPluginABC(abc.ABC):
         plugin_deprecation_warnings: Optional[List[str]] = None,
         argument_deprecation_warnings: Optional[List[str]] = None,
     ) -> List[Component]:
-        """This function returns (if the class constant SHOW_TOOLBAR is True,
-        the plugin layout wrapped into a common webviz config plugin
-        component, which provides some useful buttons like download of data,
-        show data contact person and download plugin content to png.
+        """This function returns plugin layour placed within a WebvizPluginWrapper
+        component, which contains a settings drawer with useful buttons like fullscreen
+        and screenshot of plugin content. Additional buttons as plugin author contact
+        information, download of data, guided tour, issue feedback link, etc. will appear
+        based on provided information.
 
-        CSV download button will only appear if the plugin class has a property
-        `csv_string` which should return the appropriate csv data as a string.
-
-        If `TOOLBAR_BUTTONS` is empty, this functions returns the same
-        dash layout as the plugin class provides directly.
+        Button for download of data will only appear if corresponding
+        callback functionality is implemented for the respective plugin.
         """
 
         self._set_all_callbacks()
