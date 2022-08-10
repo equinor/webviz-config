@@ -305,7 +305,7 @@ class WebvizPluginABC(abc.ABC):
         shared_settings = self.shared_settings_groups()
         if shared_settings is not None:
             settings = [
-                setting._wrapped_layout("", self._plugin_wrapper_id)
+                setting._wrapped_layout("", self._plugin_unique_id.to_string())
                 for setting in shared_settings
             ]
 
@@ -313,17 +313,13 @@ class WebvizPluginABC(abc.ABC):
             settings.extend(
                 [
                     setting._wrapped_layout(
-                        view[1].unique_id(), self._plugin_wrapper_id
+                        view[1].unique_id(), self._plugin_unique_id.to_string()
                     )
                     for setting in view[1].settings_groups()
                 ]
             )
 
         return settings
-
-    @property
-    def _plugin_wrapper_id(self) -> str:
-        return f"plugin-wrapper-{self._plugin_unique_id}"
 
     @property
     def _legacy_plugin_view_id(self) -> str:
@@ -487,7 +483,7 @@ class WebvizPluginABC(abc.ABC):
             for store in self._stores
         ] + [
             wcc.WebvizPluginWrapper(
-                id=self._plugin_wrapper_id,
+                id=self._plugin_unique_id.to_string(),
                 name=type(self).__name__,
                 views=[
                     {
@@ -544,7 +540,7 @@ class WebvizPluginABC(abc.ABC):
 
     def _set_wrapper_callbacks(self) -> None:
         @callback(
-            Output(self._plugin_wrapper_id, "children"),
+            Output(self._plugin_unique_id.to_string(), "children"),
             Input("webviz-content-manager", "activeViewId"),
             Input("webviz-content-manager", "activePluginId"),
         )
@@ -561,7 +557,7 @@ class WebvizPluginABC(abc.ABC):
             if initial_call:
                 view_id = self.active_view_id
 
-            if plugin_id == self._plugin_wrapper_id or initial_call:
+            if plugin_id == self._plugin_unique_id.to_string() or initial_call:
                 view = next(
                     (
                         view[1]

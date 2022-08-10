@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+### Changed
+- [#602](https://github.com/equinor/webviz-config/pull/602) - Changed the file and plugin names from `ExampleContentWrapper` to `ExampleWlfPlugin`.
+
 ### Added
 - [#594](https://github.com/equinor/webviz-config/pull/594) - Added early testing of graphical user interface (GUI) for editing and creating Webviz configuration files. Run `webviz editor` to start the GUI.
 
