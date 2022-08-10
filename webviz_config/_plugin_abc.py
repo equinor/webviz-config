@@ -131,6 +131,8 @@ class WebvizPluginABC(abc.ABC):
         self._stretch = stretch
         self._all_callbacks_set = False
 
+        self._legacy_plugin_view_id = f"{self._plugin_unique_id.to_string()}-view"
+
         self._set_wrapper_callbacks()
 
     def uuid(self, element: Optional[str] = None) -> str:
@@ -321,9 +323,7 @@ class WebvizPluginABC(abc.ABC):
 
         return settings
 
-    @property
-    def _legacy_plugin_view_id(self) -> str:
-        return f"{self._plugin_unique_id.to_string()}-view"
+    
 
     @property
     def plugin_data_output(self) -> Output:
