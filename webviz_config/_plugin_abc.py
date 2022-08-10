@@ -451,7 +451,7 @@ class WebvizPluginABC(abc.ABC):
         plugin_deprecation_warnings: Optional[List[str]] = None,
         argument_deprecation_warnings: Optional[List[str]] = None,
     ) -> List[Component]:
-        """This function returns plugin layour placed within a WebvizPluginWrapper
+        """This function returns plugin layout placed within a WebvizPluginWrapper
         component, which contains a settings drawer with useful buttons like fullscreen
         and screenshot of plugin content. Additional buttons as plugin author contact
         information, download of data, guided tour, issue feedback link, etc. will appear
