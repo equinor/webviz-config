@@ -22,7 +22,6 @@ Useful on e.g. the front page for introducing a field or project.
 * **`title_position`:** Position of title (either `center`, `top` or `bottom`).
 """
 
-
     CSS_TITLE_POSITIONS: Dict[str, str] = {
         "top": "start",
         "center": "center",

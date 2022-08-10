@@ -323,8 +323,6 @@ class WebvizPluginABC(abc.ABC):
 
         return settings
 
-    
-
     @property
     def plugin_data_output(self) -> Output:
         self._add_download_button = True
