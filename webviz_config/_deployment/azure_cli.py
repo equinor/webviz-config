@@ -30,8 +30,8 @@ PIMCOMMON_URL = (
 )
 
 
-@functools.lru_cache()  # paranthesis required on python < 3.8
-def _credential() -> "InteractiveBrowserCredential":  # Python 3.7+ can have forward reference
+@functools.lru_cache
+def _credential():  # type: ignore[no-untyped-def]
     if not AZURE_CLI_INSTALLED:
         raise RuntimeError(
             "In order to use webviz deploy features, you need to first install "

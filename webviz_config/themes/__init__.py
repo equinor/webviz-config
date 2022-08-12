@@ -1,9 +1,4 @@
-try:
-    # Python 3.8+
-    from importlib.metadata import entry_points
-except ModuleNotFoundError:
-    # Python < 3.8
-    from importlib_metadata import entry_points  # type: ignore
+from importlib.metadata import entry_points
 
 from .. import WebvizConfigTheme
 from ._default_theme import default_theme

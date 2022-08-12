@@ -64,11 +64,6 @@ WEBVIZ_INSTANCE_INFO.initialize(
 
 WEBVIZ_FACTORY_REGISTRY.initialize({{ internal_factory_settings if internal_factory_settings is defined else None }})
 
-
-# The lines below can be simplified when assignment
-# expressions become available in Python 3.8
-# (https://www.python.org/dev/peps/pep-0572)
-
 plugins = []
 
 {% for page in pageContents %}
