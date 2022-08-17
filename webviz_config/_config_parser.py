@@ -103,18 +103,23 @@ def _call_signature(
                     (config_folder / pathlib.Path(patharg)).resolve()
                     for patharg in kwargs[arg]
                 ]
-            if not isinstance(kwargs[arg], expected_type):
-                raise ParserError(
-                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                    f"The value provided for argument `{arg}` "
-                    f"given to `{plugin_name}` is "
-                    f"of type `{type(kwargs[arg]).__name__}`. "
-                    f"Expected type "
-                    f"`{argspec.annotations[arg].__name__}`. "
-                    "Run the command `webviz docs` if you want "
-                    "to see documentation of the plugin."
-                    f"{terminal_colors.END}"
-                )
+            try:
+                if not isinstance(kwargs[arg], expected_type):
+                    raise ParserError(
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                        f"The value provided for argument `{arg}` "
+                        f"given to `{plugin_name}` is "
+                        f"of type `{type(kwargs[arg]).__name__}`. "
+                        f"Expected type "
+                        f"`{argspec.annotations[arg].__name__}`. "
+                        "Run the command `webviz docs` if you want "
+                        "to see documentation of the plugin."
+                        f"{terminal_colors.END}"
+                    )
+            # We currently do not support subscriptable types, e.g. Optional[], List[], Dict[] etc.
+            # This will be supported after https://github.com/equinor/webviz-config/issues/199
+            except TypeError:
+                pass
 
     kwargs_including_defaults = kwargs
     plugin_deprecation_warnings = []
