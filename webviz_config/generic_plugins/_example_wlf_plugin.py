@@ -13,6 +13,8 @@ from .. import WebvizPluginABC, EncodedFile
 from ..deprecation_decorators import deprecated_plugin
 from ..webviz_plugin_subclasses import ViewABC, ViewElementABC, SettingsGroupABC
 
+from ..webviz_plugin_subclasses import webviz_callback, SlotInput
+
 
 class TextViewElement(ViewElementABC):
     class Ids:
@@ -396,7 +398,7 @@ class TableView(ViewABC):
         )
 
     def set_callbacks(self) -> None:
-        @callback(
+        @webviz_callback(
             Output(
                 self.table_view.component_unique_id(
                     TableViewElement.Ids.TABLE
@@ -410,11 +412,17 @@ class TableView(ViewABC):
                 ),
                 "value",
             ),
+            State(
+                self.settings_group_unique_id(
+                    TableView.Ids.TABLE_SETTINGS,
+                    TableViewSettingsGroup.Ids.ORDER_SELECTOR,
+                ),
+                "value",
+            ),
+            SlotInput("myslot"),
         )
-        def swap_order(order: str) -> List[dict]:
+        def test(value1, value2, value3) -> List[dict]:
             data = self.data.copy()
-            if order == "desc":
-                data.reverse()
             return [{"x": d[0], "y": d[1]} for d in data]
 
         @callback(
