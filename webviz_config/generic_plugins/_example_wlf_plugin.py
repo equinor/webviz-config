@@ -13,7 +13,7 @@ from .. import WebvizPluginABC, EncodedFile
 from ..deprecation_decorators import deprecated_plugin
 from ..webviz_plugin_subclasses import ViewABC, ViewElementABC, SettingsGroupABC
 
-from ..webviz_plugin_subclasses import webviz_callback, SlotInput
+from ..webviz_plugin_subclasses import webviz_callback, SlotInput, SlotType, EmptySlot
 
 
 class TextViewElement(ViewElementABC):
@@ -342,6 +342,40 @@ class PlotView(ViewABC):
         self.add_settings_group(PlotViewSettingsGroup(), PlotView.Ids.PLOT_SETTINGS)
 
     def set_callbacks(self) -> None:
+        """
+        if "slot1" in self.slots:
+
+            @callback(
+                Output(
+                    self.view_element(PlotView.Ids.TEXT)
+                    .component_unique_id(TextViewElement.Ids.TEXT)
+                    .to_string(),
+                    "children",
+                ),
+                self.slots["slot1"],
+                Input(),
+            )
+            def test(value1, value2) -> str:
+                return real_func(value1, value2)
+
+        else:
+
+            @callback(
+                Output(
+                    self.view_element(PlotView.Ids.TEXT)
+                    .component_unique_id(TextViewElement.Ids.TEXT)
+                    .to_string(),
+                    "children",
+                ),
+                Input(),
+            )
+            def test(value1) -> str:
+                return real_func(value1, "DEFAULT")
+
+        def real_func(value1, value2):
+            sdgsdg
+        """
+
         @callback(
             self.view_data_output(),
             self.view_data_requested(),
@@ -382,10 +416,9 @@ class TableView(ViewABC):
         TABLE_SETTINGS = "table-settings"
 
     def __init__(
-        self,
-        data: List[Tuple[int, int]],
+        self, data: List[Tuple[int, int]], slots: Dict[str, Union[Input, State]] = {}
     ) -> None:
-        super().__init__("Table")
+        super().__init__("Table", slots)
         self.data = data
 
         self.table_view = TableViewElement(self.data)
@@ -396,6 +429,10 @@ class TableView(ViewABC):
         self.add_settings_group(
             TableViewSettingsGroup(), settings_group_id=TableView.Ids.TABLE_SETTINGS
         )
+
+    @property
+    def my_slots(self) -> List[str]:
+        return ["slot1"]
 
     def set_callbacks(self) -> None:
         @webviz_callback(
@@ -419,9 +456,11 @@ class TableView(ViewABC):
                 ),
                 "value",
             ),
-            SlotInput("myslot"),
+            SlotInput("slot1"),
         )
-        def test(value1, value2, value3) -> List[dict]:
+        def test(value1: str, value2: str, value3: SlotType[str]) -> List[dict]:
+            if value3 == EmptySlot:
+                print("Empty slot")
             data = self.data.copy()
             return [{"x": d[0], "y": d[1]} for d in data]
 
@@ -471,7 +510,12 @@ class ExampleWlfPlugin(WebvizPluginABC):
         self.title = title
 
         self.add_view(PlotView(self.data), ExampleWlfPlugin.Ids.PLOT_VIEW)
-        self.add_view(TableView(self.data), ExampleWlfPlugin.Ids.TABLE_VIEW)
+        self.add_view(
+            TableView(
+                self.data, {"slot1": Input("webviz-content-manager", "activeViewId")}
+            ),
+            ExampleWlfPlugin.Ids.TABLE_VIEW,
+        )
 
         self.settings_group = SharedSettingsGroup()
         self.add_shared_settings_group(
@@ -524,24 +568,6 @@ class ExampleWlfPlugin(WebvizPluginABC):
         ]
 
     def set_callbacks(self) -> None:
-        @callback(
-            Output(
-                self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
-                .view_element(PlotView.Ids.TEXT)
-                .component_unique_id(TextViewElement.Ids.TEXT)
-                .to_string(),
-                "children",
-            ),
-            Input(
-                self.settings_group.component_unique_id(
-                    SharedSettingsGroup.Ids.KINDNESS_SELECTOR
-                ).to_string(),
-                "value",
-            ),
-        )
-        def pseudo1(kindness: str) -> Component:
-            return change_kindness(kindness)
-
         @callback(
             Output(
                 self.view(ExampleWlfPlugin.Ids.TABLE_VIEW)

@@ -2,7 +2,7 @@ from typing import Callable, cast, Dict, List, Optional, Type, Union
 from enum import Enum
 from uuid import uuid4
 
-from dash import Input, Output
+from dash import Input, Output, State
 from dash.development.base_component import Component
 import webviz_core_components as wcc
 
@@ -320,12 +320,19 @@ class ViewLayoutElement(LayoutBaseABC):
         )
 
 
+class UnknownSlotError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 # pylint: disable=too-many-public-methods
 class ViewABC(LayoutBaseABC):
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, slots: Dict[str, Union[Input, State]] = {}) -> None:
         super().__init__()
-
         self.name = name
+
+        self._check_slots(slots)
+        self.slots = slots
 
         self._add_download_button = False
         self._child_elements: List[Union[ViewElementABC, ViewLayoutElement]] = []
@@ -338,6 +345,17 @@ class ViewABC(LayoutBaseABC):
         self._get_plugin_shared_settings: Optional[
             Callable[[], List[SettingsGroupABC]]
         ] = None
+
+    @property
+    def my_slots(self) -> List[str]:
+        return []
+
+    def _check_slots(self, slots: Dict[str, Union[Input, State]]) -> None:
+        for slot in slots:
+            if not slot in self.my_slots:
+                raise UnknownSlotError(
+                    f"The given slot '{slot}' is not defined in view '{self.__class__.__name__}'."
+                )
 
     def shared_settings_group(self, settings_group_id: str) -> SettingsGroupABC:
         if not self._get_plugin_shared_settings:
