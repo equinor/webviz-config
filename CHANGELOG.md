@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [#594](https://github.com/equinor/webviz-config/pull/594) - Added early testing of graphical user interface (GUI) for editing and creating Webviz configuration files. Run `webviz editor` to start the GUI.
 
+### Deprecated
+- [#618](https://github.com/equinor/webviz-config/pull/618) - Initialized `common_cache.CACHE` directly with 3600 sec timeout and deprecated `CACHE.TIMEOUT`.
+
 ### Fixed
 - [#588](https://github.com/equinor/webviz-config/pull/588) - Added compatibility with upstream dependency `bleach >= 5`.
 

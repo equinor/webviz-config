@@ -275,7 +275,7 @@ given to the plugin as an absolute path, and of type `pathlib.Path`.
 The plugins get data input through ordinary Python functions.
 Since these functions can be costly to call, we utilize the
 [flask-caching](https://pythonhosted.org/Flask-Caching/) package.
-By decorating the costly functions with `@CACHE.memoize(timeout=CACHE.TIMEOUT)`
+By decorating the costly functions with `@CACHE.memoize()`
 the result is cached, such that if the same function is called more than once,
 within the timeout, the cached result will be used instead of starting
 a new calculation.
@@ -351,7 +351,7 @@ class ExamplePortable(WebvizPluginABC):
         return str(input_data_function(self.some_number))
 
 
-@CACHE.memoize(timeout=CACHE.TIMEOUT)
+@CACHE.memoize()
 @webvizstore
 def input_data_function(some_number) -> pd.DataFrame:
     print("This time I'm actually doing the calculation...")
