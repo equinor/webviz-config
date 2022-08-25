@@ -116,7 +116,8 @@ def _call_signature(
                         "to see documentation of the plugin."
                         f"{terminal_colors.END}"
                     )
-            # Typechecking typing classes does not work in python 3.7
+            # We currently do not support subscriptable types, e.g. Optional[], List[], Dict[] etc.
+            # This will be supported after https://github.com/equinor/webviz-config/issues/199
             except TypeError:
                 pass
 

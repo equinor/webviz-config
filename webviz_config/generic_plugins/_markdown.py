@@ -4,6 +4,7 @@ from typing import List
 from xml.etree import ElementTree  # nosec
 
 import bleach
+from bleach.css_sanitizer import CSSSanitizer
 import markdown
 from markdown.extensions import Extension
 from markdown.inlinepatterns import ImageInlineProcessor, IMAGE_LINK_RE
@@ -166,19 +167,23 @@ class Markdown(WebvizPluginABC):
 
         self.markdown_file = markdown_file
 
+        html_from_markdown = markdown.markdown(
+            get_path(self.markdown_file).read_text(),
+            extensions=[
+                "fenced_code",
+                "tables",
+                "sane_lists",
+                _WebvizMarkdownExtension(base_path=markdown_file.parent),
+            ],
+        )
+
+        css_sanitizer = CSSSanitizer(allowed_css_properties=Markdown.ALLOWED_STYLES)
+
         self.html = bleach.clean(
-            markdown.markdown(
-                get_path(self.markdown_file).read_text(),
-                extensions=[
-                    "fenced_code",
-                    "tables",
-                    "sane_lists",
-                    _WebvizMarkdownExtension(base_path=markdown_file.parent),
-                ],
-            ),
+            html_from_markdown,
             tags=Markdown.ALLOWED_TAGS,
             attributes=Markdown.ALLOWED_ATTRIBUTES,
-            styles=Markdown.ALLOWED_STYLES,
+            css_sanitizer=css_sanitizer,
         )
 
         # Workaround for upstream issue https://github.com/plotly/dash-core-components/issues/746,

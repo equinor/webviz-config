@@ -28,7 +28,7 @@ TESTS_REQUIRES = [
     "dash[testing]",
     "jsonschema",
     "mypy",
-    "pylint",
+    "pylint<=2.13.9",  # Locked due to https://github.com/equinor/webviz-subsurface/issues/1052
     "pytest-xdist",
     "selenium",
     "types-bleach",
@@ -63,6 +63,8 @@ setup(
         "console_scripts": ["webviz=webviz_config.command_line:main"],
         "webviz_config_plugins": [
             "ExampleAssets = webviz_config.generic_plugins._example_assets:ExampleAssets",
+            "ExampleWlfPlugin = webviz_config.generic_plugins._example_wlf_plugin:ExampleWlfPlugin",
+            "ExampleWlfPlugin2 = webviz_config.generic_plugins._example_wlf_plugin:ExampleWlfPlugin2",
             "ExampleDataDownload = webviz_config.generic_plugins._example_data_download:ExampleDataDownload",
             "ExamplePlugin = webviz_config.generic_plugins._example_plugin:ExamplePlugin",
             "ExamplePortable = webviz_config.generic_plugins._example_portable:ExamplePortable",
@@ -77,14 +79,13 @@ setup(
         ],
     },
     install_requires=[
-        "bleach>=3.1",
+        "bleach[css]>=5",
         "cryptography>=2.4",
         "dash>=2.0",
         "dash-pivottable>=0.0.2",
-        "dataclasses>=0.8; python_version<'3.7'",
-        "flask-caching>=1.4",
+        "flask>=2.0",
+        "flask-caching>=1.4,<1.11",  # https://github.com/equinor/webviz-config/issues/595
         "flask-talisman>=0.6",
-        "importlib-metadata>=1.7; python_version<'3.8'",
         "jinja2>=2.10",
         "markdown>=3.0",
         "msal>=1.5.0",
@@ -94,8 +95,8 @@ setup(
         "pyyaml>=5.1",
         "requests>=2.20",
         "tqdm>=4.8",
-        "typing-extensions>=3.7; python_version<'3.8'",
-        "webviz-core-components>=0.5.2",
+        "webviz-core-components>=0.5.4",
+        "werkzeug>=2.0",
     ],
     extras_require={
         "tests": TESTS_REQUIRES,
@@ -109,7 +110,7 @@ setup(
         ],
     },
     setup_requires=["setuptools_scm~=3.2"],
-    python_requires="~=3.6",
+    python_requires="~=3.8",
     use_scm_version=True,
     zip_safe=False,
     project_urls={

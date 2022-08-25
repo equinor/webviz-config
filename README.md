@@ -11,7 +11,7 @@
 <a href="https://github.com/equinor/webviz-config/actions?query=branch%3Amaster"><img src="https://github.com/equinor/webviz-config/workflows/webviz-config/badge.svg"></a>
 <a href="https://lgtm.com/projects/g/equinor/webviz-config/alerts/"><img alt="Total alerts" src="https://img.shields.io/lgtm/alerts/g/equinor/webviz-config.svg?logo=lgtm&logoWidth=18"/></a>
 <a href="https://lgtm.com/projects/g/equinor/webviz-config/context:python"><img alt="Language grade: Python" src="https://img.shields.io/lgtm/grade/python/g/equinor/webviz-config.svg?logo=lgtm&logoWidth=18"/></a>
-<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.6%20|%203.7%20|%203.8%20|%203.9-blue.svg"></a>
+<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10-blue.svg"></a>
 <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 <br/>
@@ -52,7 +52,10 @@ can do something along the lines of:
 ```bash
 git clone git@github.com:equinor/webviz-config.git
 cd ./webviz-config
-npm ci --ignore-scripts && npm run postinstall
+npm ci --ignore-scripts
+# NOTE: If you are on Windows, make sure to first set `npm`'s default `script-shell` to `powershell` by running
+# npm config set script-shell powershell
+npm run postinstall
 pip install -e .
 ```
 

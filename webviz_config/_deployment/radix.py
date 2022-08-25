@@ -1,4 +1,3 @@
-import sys
 import json
 import time
 import secrets
@@ -271,9 +270,6 @@ def radix_redeploy(github_slug: str, build_directory: pathlib.Path) -> None:
 
 
 def main_radix_deployment(args: argparse.Namespace) -> None:
-
-    if sys.version_info < (3, 8):
-        raise RuntimeError("Radix deployment workflow requires at least Python 3.8")
 
     if not args.portable_app.is_dir():
         raise ValueError(f"{args.portable_app} is not a directory.")

@@ -27,9 +27,7 @@ def _trigger_token_aquisition(update_only: bool = False) -> None:
             "dummy_context",
         ],
         timeout=15 if update_only else None,
-        stdout=subprocess.PIPE if update_only else None,
-        stderr=subprocess.PIPE if update_only else None,
-        # capture_output=update_only <-- Added in Python 3.7
+        capture_output=update_only,
     )
 
 
@@ -62,9 +60,7 @@ def application_exists(application_name: str, context: str) -> bool:
             "--context",
             context,
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        # capture_output=True,  <-- Added in Python 3.7
+        capture_output=True,
         check=True,
     )
     return not result.stderr
@@ -98,9 +94,7 @@ def create_application(
             "--context",
             context,
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        # capture_output=True,
+        capture_output=True,
         check=True,
     )
 
@@ -167,9 +161,7 @@ def set_radix_secret(
                     "--context",
                     context,
                 ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                # capture_output=True, <-- First vailable in Python 3.7
+                capture_output=True,
                 check=True,
             )
             return

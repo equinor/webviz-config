@@ -7,11 +7,14 @@
 
 import logging
 import logging.config
+import os
 import threading
 import datetime
 from pathlib import Path, PosixPath, WindowsPath
 
-from dash import html, dcc, Dash, Input, Output, callback_context
+from uuid import uuid4
+
+from dash import html, dcc, Dash, Input, Output, callback, callback_context
 import webviz_core_components as wcc
 from flask_talisman import Talisman
 import webviz_config
@@ -20,9 +23,11 @@ from webviz_config.themes import installed_themes
 from webviz_config.common_cache import CACHE
 from webviz_config.webviz_store import WEBVIZ_STORAGE
 from webviz_config.webviz_assets import WEBVIZ_ASSETS
-from webviz_config.webviz_instance_info import WebvizRunMode, WebvizInstanceInfo
+from webviz_config.webviz_instance_info import WebvizRunMode, WEBVIZ_INSTANCE_INFO
 from webviz_config.webviz_factory_registry import WEBVIZ_FACTORY_REGISTRY
 from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
+
+import webviz_core_components as wcc
 
 
 # Start out by setting a sensible configuration for the root logger and setting a global 
@@ -44,7 +49,8 @@ app = Dash(
 )
 
 # For signing session cookies
-app.server.secret_key = webviz_config.LocalhostToken.generate_token()
+# Use user provided environment variable if exists, otherwise generate fresh
+app.server.secret_key = os.environ.get("WEBVIZ_SESSION_SECRET_KEY") or webviz_config.LocalhostToken.generate_token()
 
 server = app.server
 
@@ -88,9 +94,6 @@ app._deprecated_webviz_settings = {
 
 CACHE.init_app(server)
 
-theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
-Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy, force_https=False, session_cookie_secure=False)
-
 storage_folder = Path(__file__).resolve().parent / "resources" / "webviz_storage"
 
 WEBVIZ_STORAGE.use_storage = {{portable}}
@@ -99,8 +102,14 @@ WEBVIZ_STORAGE.storage_folder = storage_folder
 WEBVIZ_ASSETS.portable = {{ portable }}
 
 run_mode = WebvizRunMode.PORTABLE if {{portable}} else WebvizRunMode.NON_PORTABLE
-app_instance_info = WebvizInstanceInfo(run_mode, storage_folder)
-WEBVIZ_FACTORY_REGISTRY.initialize(app_instance_info, {{ internal_factory_settings if internal_factory_settings is defined else None }})
+WEBVIZ_INSTANCE_INFO.initialize(
+    dash_app=app,
+    run_mode=run_mode,
+    theme=theme,
+    storage_folder=storage_folder
+)
+
+WEBVIZ_FACTORY_REGISTRY.initialize({{ internal_factory_settings if internal_factory_settings is defined else None }})
 
 use_oauth2 = False
 
@@ -111,27 +120,34 @@ if {{ not portable }} and not webviz_config.is_reload_process():
     # from the child/restart/reload process.
     app.layout = html.Div()
 else:
-    page_content = {}
+    count_text_plugins = 0
+    page_plugins = {}
+    page_settings = {}
     {% for page in pageContents %}
-    page_content["{{page.id}}"] = []
-    {% for content in page.content -%}
-    {% if content is string %}
-    page_content["{{page.id}}"].append(dcc.Markdown(r"""{{ content }}"""))
+    page_plugins["{{page.id}}"] = []
+    page_settings["{{page.id}}"] = []
+    {% for content_item in page.content -%}
+    {% if content_item is string %}
+    page_plugins["{{page.id}}"].append(wcc.WebvizPluginWrapper(id=f"text-{count_text_plugins}", views=[], initiallyActiveViewId="", name="Text", children=[dcc.Markdown(r"""{{ content_item }}""")]))
+    count_text_plugins += 1
     {% else %}
-    plugin_content = webviz_config.plugins.{{ content._call_signature[0] }}
+    plugin = webviz_config.plugins.{{ content_item._call_signature[0] }}
     if not use_oauth2:
-        use_oauth2 = plugin_content.oauth2 if hasattr(plugin_content, "oauth2") else use_oauth2
-    page_content["{{page.id}}"].append(plugin_content.{{ content._call_signature[1] }})
+        use_oauth2 = plugin.oauth2 if hasattr(plugin, "oauth2") else use_oauth2
+
+    page_plugins["{{page.id}}"].extend(plugin.{{ content_item._call_signature[1] }})
+    page_settings["{{page.id}}"].extend([settings for settings in plugin.get_all_settings()])
+
     {% endif %}
     {% endfor %}
     {% endfor %}
     app.layout = html.Div(
         className="layoutWrapper", 
         children=[
-            html.Div(
+            dcc.Location(id='location', refresh=True),
+            wcc.WebvizContentManager(
+                id="webviz-content-manager",
                 children=[
-                    dcc.Location(
-                        id='location', refresh=True),
                     wcc.Menu(
                         id="main-menu",
                         showLogo={{options.menu.show_logo}},
@@ -140,29 +156,46 @@ else:
                         initiallyPinned={{options.menu.initially_pinned}},
                         initiallyCollapsed={{options.menu.initially_collapsed}},
                         navigationItems={{navigation_items}},
+                    ),
+                    wcc.WebvizSettingsDrawer(
+                        id="settings-drawer",
+                        children=[],
+                    ),
+                    wcc.WebvizPluginsWrapper(
+                        id="plugins-wrapper",
+                        children=[],
                     )
                 ]
             ),
-            html.Div(className="pageContent", id="page-content")
         ]
     )
 
 WEBVIZ_FACTORY_REGISTRY.cleanup_resources_after_plugin_init()
 
+theme.adjust_csp({"script-src": app.csp_hashes()}, append=True)
+Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature_policy, force_https=False, session_cookie_secure=False)
+
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
-@app.callback(Output("page-content", "children"),
-              [Input("main-menu", "url"), Input("location", "pathname")])
+@callback(
+    Output("plugins-wrapper", "children"), 
+    Output("settings-drawer", "children"), 
+    Input("main-menu", "url"), 
+    Input("location", "pathname")
+)
 def update_page(url, pathname):
     ctx = callback_context
     if ctx.triggered:
         if ctx.triggered[0]["prop_id"].split('.')[0] == "main-menu":
-            pathname = url.replace("/", "")
+            pathname = url.replace("/", "") if url is not None else ""
         else:
-            pathname = pathname.replace("/", "")
+            if pathname is not None:
+                pathname = pathname.replace("/", "")
+            else:
+                pathname = ""
         if not pathname:
-            pathname = next(iter(page_content)) 
-    return page_content.get(pathname, "Oooppss... Page not found.")
+            pathname = next(iter(page_plugins)) 
+    return page_plugins.get(pathname, ["Oooppss... Page not found."]), page_settings.get(pathname, [])
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
 
@@ -186,16 +219,16 @@ if __name__ == "__main__":
         debug=False,
         use_reloader={{not portable}},
         dev_tools_prune_errors=False,
-      {% if not portable -%}
+        {% if not portable -%}
         dev_tools_hot_reload=True,
         dev_tools_hot_reload_interval=1.0,
         dev_tools_silence_routes_logging=False,
-      {% endif %}
-      {% if debug %}
+        {% endif %}
+        {% if debug %}
         dev_tools_ui=True,
         dev_tools_props_check=True,
         dev_tools_serve_dev_bundles=True,
-      {% endif %}        
+        {% endif %}        
     )
 else:
     # This will be applied if not running on localhost

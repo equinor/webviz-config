@@ -1,15 +1,8 @@
 import re
 import warnings
-from typing import Any, Dict, Iterable, Optional, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple, TypedDict
 
-try:
-    # Python 3.8+
-    from typing import TypedDict
-    from importlib.metadata import requires, version, PackageNotFoundError
-except ImportError:
-    # Python < 3.8
-    from typing_extensions import TypedDict
-    from importlib_metadata import requires, version, PackageNotFoundError  # type: ignore
+from importlib.metadata import requires, version, PackageNotFoundError
 
 
 class PluginProjectMetaData(TypedDict):

@@ -2,7 +2,6 @@
 
     display: flex;
     justify-content: center;
-    align-items: center;
     font-size: 300%;
 
     text-shadow: 0.05em 0.05em 0 rgba(0, 0, 0, 0.7);

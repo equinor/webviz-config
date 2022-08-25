@@ -1,13 +1,7 @@
 import warnings
 from unittest import mock
 import importlib
-
-try:
-    # Python 3.8+
-    import importlib.metadata as importlib_metadata
-except ImportError:
-    # Python < 3.8
-    import importlib_metadata
+import importlib.metadata
 
 import webviz_config.plugins._utils
 
@@ -36,7 +30,7 @@ dist_mock3 = DistMock([plugin_entrypoint_mock2], "dist_mock3")
 
 def test_no_warning(monkeypatch):
     # pylint: disable=protected-access
-    monkeypatch.setattr(importlib_metadata, "requires", lambda x: [])
+    monkeypatch.setattr(importlib.metadata, "requires", lambda x: [])
     importlib.reload(webviz_config.plugins._utils)
 
     globals_mock = {}
@@ -53,7 +47,7 @@ def test_no_warning(monkeypatch):
 
 def test_warning_multiple(monkeypatch):
     # pylint: disable=protected-access
-    monkeypatch.setattr(importlib_metadata, "requires", lambda x: [])
+    monkeypatch.setattr(importlib.metadata, "requires", lambda x: [])
     importlib.reload(webviz_config.plugins._utils)
 
     globals_mock = {}

@@ -16,9 +16,7 @@ def logged_in() -> bool:
     # pylint: disable=subprocess-run-check
     result = subprocess.run(
         ["gh", "auth", "status"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        # capture_output=True, <-- Added in Python 3.7
+        capture_output=True,
     )
     return b"Logged in to github.com" in result.stderr
 
@@ -34,9 +32,7 @@ def repo_exists(github_slug: str) -> bool:
     # pylint: disable=subprocess-run-check
     result = subprocess.run(
         ["gh", "repo", "view", github_slug],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        # capture_output=True <-- Added in Python 3.7
+        capture_output=True,
     )
 
     if not result.stderr:
@@ -55,9 +51,7 @@ def create_github_repository(github_slug: str, directory: Path) -> Path:
 
     subprocess.run(
         ["gh", "repo", "create", github_slug, "--private", "--confirm"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        # capture_output=True,  <-- Added in Python 3.7
+        capture_output=True,
         check=True,
         cwd=directory,
     )
@@ -82,27 +76,22 @@ def turn_on_github_vulnerability_alers(directory: Path) -> None:
 
 
 def _call_post_api(endpoint: str, data: dict, directory: Path) -> None:
-    _, temp_file = tempfile.mkstemp()
-
-    try:
-        Path(temp_file).write_text(json.dumps(data))
-
-        subprocess.run(
-            [
-                "gh",
-                "api",
-                endpoint,
-                "--method",
-                "POST",
-                "--input",
-                temp_file,
-                "--silent",
-            ],
-            check=True,
-            cwd=directory,
-        )
-    finally:
-        Path(temp_file).unlink()
+    subprocess.run(
+        [
+            "gh",
+            "api",
+            endpoint,
+            "--method",
+            "POST",
+            "--input",
+            "-",
+            "--silent",
+        ],
+        input=json.dumps(data),
+        check=True,
+        cwd=directory,
+        text=True,
+    )
 
 
 def add_webhook(directory: Path, receiver_url: str, secret: str) -> None:
@@ -133,9 +122,7 @@ def read_file_in_repository(github_slug: str, filename: str) -> str:
             ["git", "clone", f"git@github.com:{github_slug}"],
             check=True,
             cwd=temp_dir,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            # capture_output=True,  <-- Added in Python 3.7
+            capture_output=True,
         )
         clone_path = temp_dir / github_slug.split("/")[1]
 
@@ -155,8 +142,7 @@ def commit_portable_webviz(
             ["git", "clone", f"git@github.com:{github_slug}"],
             check=True,
             cwd=temp_dir,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            capture_output=True,
         )
 
         clone_path = temp_dir / github_slug.split("/")[1]
@@ -179,6 +165,5 @@ def commit_portable_webviz(
                 command,
                 check=True,
                 cwd=clone_path,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                capture_output=True,
             )
