@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from dash.development.base_component import Component
@@ -415,6 +416,10 @@ class TableView(ViewABC):
         TABLE = "table"
         TABLE_SETTINGS = "table-settings"
 
+    @dataclass
+    class Slots:
+        slot1: Input
+
     def __init__(
         self, data: List[Tuple[int, int]], slots: Dict[str, Union[Input, State]] = {}
     ) -> None:
@@ -435,6 +440,61 @@ class TableView(ViewABC):
         return ["slot1"]
 
     def set_callbacks(self) -> None:
+        if "slot1" in self.slots:
+            @callback(Output(
+                self.table_view.component_unique_id(
+                    TableViewElement.Ids.TABLE
+                ).to_string(),
+                "data",
+            ),
+            Input(
+                self.settings_group_unique_id(
+                    TableView.Ids.TABLE_SETTINGS,
+                    TableViewSettingsGroup.Ids.ORDER_SELECTOR,
+                ),
+                "value",
+            ),
+            State(
+                self.settings_group_unique_id(
+                    TableView.Ids.TABLE_SETTINGS,
+                    TableViewSettingsGroup.Ids.ORDER_SELECTOR,
+                ),
+                "value",
+            ),
+            self.slots["slot1"]
+            )
+            def with_slot(value1, value2, value3):
+                real_function(value1, value2, value3)
+
+        else:
+            @callback(Output(
+                self.table_view.component_unique_id(
+                    TableViewElement.Ids.TABLE
+                ).to_string(),
+                "data",
+            ),
+            Input(
+                self.settings_group_unique_id(
+                    TableView.Ids.TABLE_SETTINGS,
+                    TableViewSettingsGroup.Ids.ORDER_SELECTOR,
+                ),
+                "value",
+            ),
+            State(
+                self.settings_group_unique_id(
+                    TableView.Ids.TABLE_SETTINGS,
+                    TableViewSettingsGroup.Ids.ORDER_SELECTOR,
+                ),
+                "value",
+            ),)
+            def without_slot(value1, value2):
+                real_function(value1, value2, None)
+
+        def real_function(value1, value2, value3):
+            pass
+
+        
+
         @webviz_callback(
             Output(
                 self.table_view.component_unique_id(

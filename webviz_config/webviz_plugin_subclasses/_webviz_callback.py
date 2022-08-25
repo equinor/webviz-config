@@ -31,18 +31,7 @@ class PluginSlotConnection:
 
 
 def webviz_callback(*_args) -> Callable:
-
-    """
-    try:
-        exec_context = inspect.currentframe().f_locals["caller"].f_locals["self"]
-        slots = exec_context["slots"]
-    except:
-        raise WebvizCallbackException(
-            "Could not extract execution context. Make sure you only call this function inside a class inheriting from ViewABC."
-        )
-    """
-
-    def decorator(func: Callable) -> None:
+    def decorator(func: Callable) -> Callable:
         try:
             closure_vars = inspect.getclosurevars(func)
             slots = closure_vars[0]["self"].slots
