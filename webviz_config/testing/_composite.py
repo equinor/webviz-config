@@ -86,7 +86,7 @@ class WebvizComposite(Browser):
     def view_settings_group_unique_component_id(
         self, view_id: str, settings_group_id: str, component_unique_id: str
     ) -> str:
-    """Returns the element id of a component in a view settings group"""
+        """Returns the element id of a component in a view settings group"""
         unique_id = (
             self.plugin.view(view_id)
             .settings_group(settings_group_id)
