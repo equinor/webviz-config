@@ -72,9 +72,10 @@ class WebvizComposite(Browser):
         """Open the plugin settings drawer"""
         self.wait_for_element(WebvizIds.SETTINGS_DRAWER_TOGGLE_OPEN).click()
 
-    def shared_settings_group_unique_id(
+    def shared_settings_group_unique_component_id(
         self, settings_group_id: str, component_unique_id: str
     ) -> str:
+        """Returns the element id of a component in a shared settings group"""
         unique_id = (
             self.plugin.shared_settings_group(settings_group_id)
             .component_unique_id(component_unique_id)
@@ -82,9 +83,10 @@ class WebvizComposite(Browser):
         )
         return f"#{unique_id}"
 
-    def view_setting_group_unique_id(
+    def view_settings_group_unique_component_id(
         self, view_id: str, settings_group_id: str, component_unique_id: str
     ) -> str:
+    """Returns the element id of a component in a view settings group"""
         unique_id = (
             self.plugin.view(view_id)
             .settings_group(settings_group_id)

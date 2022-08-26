@@ -12,7 +12,7 @@ def test_example_wlf_plugin2(
 
     _webviz_duo.toggle_webviz_drawer()
 
-    component_id = _webviz_duo.view_setting_group_unique_id(
+    component_id = _webviz_duo.view_settings_group_unique_component_id(
         view_id="plot-view",
         settings_group_id="plot-settings",
         component_unique_id="coordinates-selector",
