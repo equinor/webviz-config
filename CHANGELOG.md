@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - [#602](https://github.com/equinor/webviz-config/pull/602) - Changed the file and plugin names from `ExampleContentWrapper` to `ExampleWlfPlugin`.
+- [#619](https://github.com/equinor/webviz-config/pull/619) - Adjusted the WLF example plugin to the best practice, added slots there and introduced new `callback_typecheck` decorator.
 
 ### Added
 - [#594](https://github.com/equinor/webviz-config/pull/594) - Added early testing of graphical user interface (GUI) for editing and creating Webviz configuration files. Run `webviz editor` to start the GUI.
