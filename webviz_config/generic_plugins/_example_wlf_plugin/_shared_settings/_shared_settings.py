@@ -1,18 +1,18 @@
 from typing import List
-from enum import Enum
 
 from dash.development.base_component import Component
 from dash import html
 
 import webviz_core_components as wcc
 
+from webviz_config.utils import StrEnum
 from webviz_config.webviz_plugin_subclasses import SettingsGroupABC
 
 from ..views._plot import Kindness
 
 
 class SharedSettingsGroup(SettingsGroupABC):
-    class Ids(str, Enum):
+    class Ids(StrEnum):
         KINDNESS_SELECTOR = "kindness-selector"
         POWER_SELECTOR = "power-selector"
 

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Type, Union
-from enum import Enum
 import sys
 
 from dash.development.base_component import Component
@@ -11,6 +10,7 @@ import pandas as pd
 
 import webviz_core_components as wcc
 
+from webviz_config.utils import StrEnum
 from webviz_config import WebvizPluginABC, EncodedFile
 
 from webviz_config.webviz_plugin_subclasses import (
@@ -30,21 +30,18 @@ else:
     from typing_extensions import Annotated
 
 
-class Kindness(str, Enum):
+class Kindness(StrEnum):
     FRIENDLY = "friendly"
     UNFRIENDLY = "unfriendly"
 
 
-[a.value for a in Kindness]
-
-
-class Order(str, Enum):
+class Order(StrEnum):
     ASC = "asc"
     DESC = "desc"
 
 
 class TableViewElement(ViewElementABC):
-    class Ids(str, Enum):
+    class Ids(StrEnum):
         TABLE = "table"
 
     def __init__(self, data: List[Tuple[int, int]]) -> None:
@@ -107,7 +104,7 @@ class TableViewElement(ViewElementABC):
 
 
 class TableViewSettingsGroup(SettingsGroupABC):
-    class Ids(str, Enum):
+    class Ids(StrEnum):
         ORDER_SELECTOR = "order-selector"
 
     def __init__(self) -> None:
@@ -135,7 +132,7 @@ class TableViewSettingsGroup(SettingsGroupABC):
 
 
 class TableView(ViewABC):
-    class Ids(str, Enum):
+    class Ids(StrEnum):
         TEXT = "text"
         TABLE = "table"
         TABLE_SETTINGS = "table-settings"

@@ -1,6 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union, Type
 from dataclasses import dataclass
-from enum import Enum
 import sys
 
 from dash.development.base_component import Component
@@ -20,6 +19,8 @@ from webviz_config.webviz_plugin_subclasses import (
     callback_typecheck,
 )
 
+from webviz_config.utils import StrEnum
+
 from webviz_config.generic_plugins._example_wlf_plugin._shared_view_elements import (
     TextViewElement,
 )
@@ -30,47 +31,18 @@ else:
     from typing_extensions import Annotated
 
 
-class Kindness(str, Enum):
+class Kindness(StrEnum):
     FRIENDLY = "friendly"
     UNFRIENDLY = "unfriendly"
 
 
-class Coordinates(str, Enum):
+class Coordinates(StrEnum):
     XY = "xy"
     YX = "yx"
 
 
-class PlotViewElementSettings(SettingsGroupABC):
-    class Ids(str, Enum):
-        COORDINATES = "coordinates"
-
-    def __init__(self) -> None:
-        super().__init__("Plot coordinate system")
-
-    def layout(self) -> List[Component]:
-        return [
-            wcc.Select(
-                id=self.register_component_unique_id(
-                    PlotViewElementSettings.Ids.COORDINATES
-                ),
-                options=[
-                    {
-                        "label": "x - y",
-                        "value": "xy",
-                    },
-                    {
-                        "label": "y - x",
-                        "value": "yx",
-                    },
-                ],
-                value="xy",
-                persistence=True,
-            )
-        ]
-
-
 class PlotViewSettingsGroup(SettingsGroupABC):
-    class Ids(str, Enum):
+    class Ids(StrEnum):
         COORDINATES_SELECTOR = "coordinates-selector"
 
     def __init__(self) -> None:
@@ -99,14 +71,12 @@ class PlotViewSettingsGroup(SettingsGroupABC):
 
 
 class PlotViewElement(ViewElementABC):
-    class Ids(str, Enum):
+    class Ids(StrEnum):
         GRAPH = "graph"
 
     def __init__(self, data: List[Tuple[int, int]]) -> None:
         super().__init__(flex_grow=8)
         self.data = data
-
-        self.add_settings_group(PlotViewSettingsGroup(), "PlotViewSettings")
 
     def inner_layout(self) -> Union[str, Type[Component]]:
         return html.Div(
@@ -178,7 +148,7 @@ class PlotViewElement(ViewElementABC):
 
 
 class PlotView(ViewABC):
-    class Ids(str, Enum):
+    class Ids(StrEnum):
         TEXT = "text"
         PLOT = "plot"
         PLOT_SETTINGS = "plot-settings"

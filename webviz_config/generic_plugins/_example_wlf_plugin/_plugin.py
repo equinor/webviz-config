@@ -1,9 +1,9 @@
 from typing import List
-from enum import Enum
 
 from dash import Input
 
 from webviz_config import WebvizPluginABC
+from webviz_config.utils import StrEnum
 from .views._plot import PlotView, PlotViewElement, PlotViewSettingsGroup
 from .views._table import TableView, TableViewElement, TableViewSettingsGroup
 from ._shared_view_elements import TextViewElement
@@ -11,7 +11,7 @@ from ._shared_settings import SharedSettingsGroup
 
 
 class ExampleWlfPlugin(WebvizPluginABC):
-    class Ids(str, Enum):
+    class Ids(StrEnum):
         PLOT_VIEW = "plot-view"
         TABLE_VIEW = "table-view"
         SHARED_SETTINGS = "shared-settings"
@@ -89,7 +89,7 @@ class ExampleWlfPlugin(WebvizPluginABC):
             },
             {
                 "id": self.settings_group.component_unique_id(
-                    ExampleWlfPlugin.Ids.SHARED_SETTINGS
+                    SharedSettingsGroup.Ids.POWER_SELECTOR
                 ),
                 "content": "You can change here which exponent you prefer.",
             },
