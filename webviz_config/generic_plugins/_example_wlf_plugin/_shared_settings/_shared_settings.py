@@ -1,4 +1,5 @@
 from typing import List
+from enum import Enum
 
 from dash.development.base_component import Component
 from dash import html
@@ -11,8 +12,7 @@ from ..views._plot import Kindness
 
 
 class SharedSettingsGroup(SettingsGroupABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
+    class Ids(Enum, str):
         KINDNESS_SELECTOR = "kindness-selector"
         POWER_SELECTOR = "power-selector"
 
