@@ -12,7 +12,7 @@ from ..views._plot import Kindness
 
 
 class SharedSettingsGroup(SettingsGroupABC):
-    class Ids(Enum, str):
+    class Ids(str, Enum):
         KINDNESS_SELECTOR = "kindness-selector"
         POWER_SELECTOR = "power-selector"
 
