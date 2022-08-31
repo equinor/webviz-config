@@ -1,4 +1,5 @@
 from typing import Type, Union
+from enum import Enum
 
 from dash.development.base_component import Component
 from dash import html
@@ -7,8 +8,7 @@ from webviz_config.webviz_plugin_subclasses import ViewElementABC
 
 
 class TextViewElement(ViewElementABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
+    class Ids(str, Enum):
         TEXT = "text"
 
     def __init__(self) -> None:

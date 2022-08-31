@@ -1,80 +1,17 @@
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from typing import List
+from enum import Enum
 
-from dash.development.base_component import Component
-from dash import html, Input, Output, State, dash_table, callback
-from dash.exceptions import PreventUpdate
+from dash import Input
 
-import pandas as pd
-
-import webviz_core_components as wcc
-
-from ... import WebvizPluginABC, EncodedFile
-
-from ...webviz_plugin_subclasses import ViewABC, ViewElementABC, SettingsGroupABC
-
-from ...webviz_plugin_subclasses import callback_typecheck
-
+from webviz_config import WebvizPluginABC
 from .views._plot import PlotView, PlotViewElement, PlotViewSettingsGroup
 from .views._table import TableView, TableViewElement, TableViewSettingsGroup
 from ._shared_view_elements import TextViewElement
-
-
-class SharedSettingsGroup(SettingsGroupABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
-        KINDNESS_SELECTOR = "kindness-selector"
-        POWER_SELECTOR = "power-selector"
-
-    def __init__(self) -> None:
-        super().__init__("Shared settings")
-
-    def layout(self) -> List[Component]:
-        return [
-            html.Div(
-                children=[
-                    wcc.Label("Kindness"),
-                    wcc.RadioItems(
-                        id=self.register_component_unique_id(
-                            SharedSettingsGroup.Ids.KINDNESS_SELECTOR
-                        ),
-                        options=[
-                            {
-                                "label": "friendly",
-                                "value": "friendly",
-                            },
-                            {
-                                "label": "unfriendly",
-                                "value": "unfriendly",
-                            },
-                        ],
-                        value="friendly",
-                    ),
-                    wcc.Label("Power"),
-                    wcc.RadioItems(
-                        id=self.register_component_unique_id(
-                            SharedSettingsGroup.Ids.POWER_SELECTOR
-                        ),
-                        options=[
-                            {
-                                "label": "2",
-                                "value": "2",
-                            },
-                            {
-                                "label": "3",
-                                "value": "3",
-                            },
-                        ],
-                        value="2",
-                    ),
-                ]
-            )
-        ]
+from ._shared_settings import SharedSettingsGroup
 
 
 class ExampleWlfPlugin(WebvizPluginABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
+    class Ids(str, Enum):
         PLOT_VIEW = "plot-view"
         TABLE_VIEW = "table-view"
         SHARED_SETTINGS = "shared-settings"
@@ -175,93 +112,3 @@ class ExampleWlfPlugin(WebvizPluginABC):
                 "content": "You can change the order of the table here.",
             },
         ]
-
-    def set_callbacks(self) -> None:
-        @callback(
-            Output(
-                self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
-                .settings_group(PlotView.Ids.PLOT_SETTINGS)
-                .component_unique_id(PlotViewSettingsGroup.Ids.COORDINATES_SELECTOR)
-                .to_string(),
-                "options",
-            ),
-            Input(
-                self.settings_group.component_unique_id(
-                    SharedSettingsGroup.Ids.POWER_SELECTOR
-                ).to_string(),
-                "value",
-            ),
-        )
-        def change_selection(power: str) -> list:
-            if power == "2":
-                return [
-                    {
-                        "label": "x - y",
-                        "value": "xy",
-                    },
-                    {
-                        "label": "y - x",
-                        "value": "yx",
-                    },
-                ]
-
-            return [
-                {
-                    "label": "x - y",
-                    "value": "xy",
-                },
-            ]
-
-        @callback(
-            Output(
-                self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
-                .view_elements()[1]
-                .component_unique_id(PlotViewElement.Ids.GRAPH)
-                .to_string(),
-                "figure",
-            ),
-            [
-                Input(
-                    self.settings_group.component_unique_id(
-                        SharedSettingsGroup.Ids.POWER_SELECTOR
-                    ).to_string(),
-                    "value",
-                ),
-                Input(
-                    self.view(ExampleWlfPlugin.Ids.PLOT_VIEW)
-                    .settings_group(PlotView.Ids.PLOT_SETTINGS)
-                    .component_unique_id(PlotViewSettingsGroup.Ids.COORDINATES_SELECTOR)
-                    .to_string(),
-                    "value",
-                ),
-            ],
-        )
-        def change_power_and_coordinates(power: str, coordinates: str) -> dict:
-            layout = {
-                "title": "Example Graph Swapped",
-                "margin": {"t": 50, "r": 20, "b": 20, "l": 20},
-            }
-            if power == "2":
-                self.data = [(x, x * x) for x in range(0, 10)]
-            else:
-                self.data = [(x, x * x * x) for x in range(0, 10)]
-
-            if coordinates == "yx":
-                return {
-                    "data": [
-                        {
-                            "x": [x[1] for x in self.data],
-                            "y": [x[0] for x in self.data],
-                        }
-                    ],
-                    "layout": layout,
-                }
-            return {
-                "data": [
-                    {
-                        "x": [x[0] for x in self.data],
-                        "y": [x[1] for x in self.data],
-                    }
-                ],
-                "layout": layout,
-            }

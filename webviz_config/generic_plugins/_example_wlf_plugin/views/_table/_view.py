@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Type, Union
 from enum import Enum
+import sys
 
 from dash.development.base_component import Component
 from dash import html, Input, Output, State, dash_table, callback
@@ -23,10 +24,18 @@ from webviz_config.generic_plugins._example_wlf_plugin._shared_view_elements imp
     TextViewElement,
 )
 
+if sys.version_info >= (3, 9):
+    from typing import Annotated
+else:
+    from typing_extensions import Annotated
+
 
 class Kindness(str, Enum):
     FRIENDLY = "friendly"
     UNFRIENDLY = "unfriendly"
+
+
+[a.value for a in Kindness]
 
 
 class Order(str, Enum):
@@ -35,8 +44,7 @@ class Order(str, Enum):
 
 
 class TableViewElement(ViewElementABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
+    class Ids(str, Enum):
         TABLE = "table"
 
     def __init__(self, data: List[Tuple[int, int]]) -> None:
@@ -99,8 +107,7 @@ class TableViewElement(ViewElementABC):
 
 
 class TableViewSettingsGroup(SettingsGroupABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
+    class Ids(str, Enum):
         ORDER_SELECTOR = "order-selector"
 
     def __init__(self) -> None:
@@ -115,29 +122,28 @@ class TableViewSettingsGroup(SettingsGroupABC):
                 options=[
                     {
                         "label": "ASC",
-                        "value": "asc",
+                        "value": Order.ASC,
                     },
                     {
                         "label": "DESC",
-                        "value": "desc",
+                        "value": Order.DESC,
                     },
                 ],
-                value="asc",
+                value=Order.ASC,
             )
         ]
 
 
 class TableView(ViewABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
-        TEXT = TextViewElement.Ids.TEXT
+    class Ids(str, Enum):
+        TEXT = "text"
         TABLE = "table"
         TABLE_SETTINGS = "table-settings"
 
     @dataclass
     class Slots:
-        kindness_selector: Input
-        power_selector: Input
+        kindness_selector: Annotated[Input, str]
+        power_selector: Annotated[Input, str]
 
     def __init__(self, data: List[Tuple[int, int]], slots: Slots) -> None:
         super().__init__("Table")

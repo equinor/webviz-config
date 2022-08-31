@@ -1,6 +1,7 @@
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union, Type
+from dataclasses import dataclass
 from enum import Enum
+import sys
 
 from dash.development.base_component import Component
 from dash import html, Input, Output, State, callback
@@ -23,6 +24,11 @@ from webviz_config.generic_plugins._example_wlf_plugin._shared_view_elements imp
     TextViewElement,
 )
 
+if sys.version_info >= (3, 9):
+    from typing import Annotated
+else:
+    from typing_extensions import Annotated
+
 
 class Kindness(str, Enum):
     FRIENDLY = "friendly"
@@ -35,8 +41,7 @@ class Coordinates(str, Enum):
 
 
 class PlotViewElementSettings(SettingsGroupABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
+    class Ids(str, Enum):
         COORDINATES = "coordinates"
 
     def __init__(self) -> None:
@@ -65,8 +70,7 @@ class PlotViewElementSettings(SettingsGroupABC):
 
 
 class PlotViewSettingsGroup(SettingsGroupABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
+    class Ids(str, Enum):
         COORDINATES_SELECTOR = "coordinates-selector"
 
     def __init__(self) -> None:
@@ -82,21 +86,20 @@ class PlotViewSettingsGroup(SettingsGroupABC):
                 options=[
                     {
                         "label": "x - y",
-                        "value": "xy",
+                        "value": Coordinates.XY,
                     },
                     {
                         "label": "y - x",
-                        "value": "yx",
+                        "value": Coordinates.YX,
                     },
                 ],
-                value="xy",
+                value=Coordinates.XY,
             )
         ]
 
 
 class PlotViewElement(ViewElementABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
+    class Ids(str, Enum):
         GRAPH = "graph"
 
     def __init__(self, data: List[Tuple[int, int]]) -> None:
@@ -175,16 +178,15 @@ class PlotViewElement(ViewElementABC):
 
 
 class PlotView(ViewABC):
-    class Ids:
-        # pylint: disable=too-few-public-methods
+    class Ids(str, Enum):
         TEXT = "text"
         PLOT = "plot"
         PLOT_SETTINGS = "plot-settings"
 
     @dataclass
     class Slots:
-        kindness_selector: Input
-        power_selector: Input
+        kindness_selector: Annotated[Input, str]
+        power_selector: Annotated[Input, str]
 
     def __init__(self, data: List[Tuple[int, int]], slots: Slots) -> None:
         super().__init__("Plot")
