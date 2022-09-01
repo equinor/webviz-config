@@ -8,7 +8,7 @@ import webviz_core_components as wcc
 from webviz_config.utils import StrEnum
 from webviz_config.webviz_plugin_subclasses import SettingsGroupABC
 
-from ..views._plot import Kindness
+from .._views._plot import Kindness
 
 
 class SharedSettingsGroup(SettingsGroupABC):
@@ -45,11 +45,11 @@ class SharedSettingsGroup(SettingsGroupABC):
                         options=[
                             {
                                 "label": "2",
-                                "value": "2",
+                                "value": 2,
                             },
                             {
                                 "label": "3",
-                                "value": "3",
+                                "value": 3,
                             },
                         ],
                         value="2",

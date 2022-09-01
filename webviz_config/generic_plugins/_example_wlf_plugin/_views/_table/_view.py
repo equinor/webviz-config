@@ -76,11 +76,25 @@ class TableViewElement(ViewElementABC):
         df["y"] = y_values
         return df
 
+    def compressed_plugin_data(
+        self, table_data: List[Dict[str, int]]
+    ) -> Union[EncodedFile, str]:
+        return WebvizPluginABC.plugin_data_compress(
+            [
+                {
+                    "filename": f"{self.component_unique_id(TableViewElement.Ids.TABLE).to_string()}.csv",
+                    "content": self.download_data_df(table_data).to_csv(index=False),
+                }
+            ]
+        )
+
     def set_callbacks(self) -> None:
         @callback(
             self.view_element_data_output(),
             self.view_element_data_requested(),
-            State(self.component_unique_id("my-table").to_string(), "data"),
+            State(
+                self.component_unique_id(TableViewElement.Ids.TABLE).to_string(), "data"
+            ),
         )
         def _download_data(
             data_requested: Union[int, None], table_data: List[Dict[str, int]]
@@ -91,16 +105,7 @@ class TableViewElement(ViewElementABC):
             if not table_data:
                 return "No data present in table"
 
-            return WebvizPluginABC.plugin_data_compress(
-                [
-                    {
-                        "filename": f"{self.component_unique_id('my-table').to_string()}.csv",
-                        "content": self.download_data_df(table_data).to_csv(
-                            index=False
-                        ),
-                    }
-                ]
-            )
+            return self.compressed_plugin_data(table_data)
 
 
 class TableViewSettingsGroup(SettingsGroupABC):
@@ -227,16 +232,4 @@ class TableView(ViewABC):
             if data_requested is None:
                 raise PreventUpdate
 
-            return WebvizPluginABC.plugin_data_compress(
-                [
-                    {
-                        "filename": f"""{
-                            self.table_view.component_unique_id(
-                                TableViewElement.Ids.TABLE).to_string()
-                            }.csv""",
-                        "content": TableViewElement.download_data_df(table_data).to_csv(
-                            index=False
-                        ),
-                    },
-                ]
-            )
+            return self.table_view.compressed_plugin_data(table_data)

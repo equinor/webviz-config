@@ -4,8 +4,8 @@ from dash import Input
 
 from webviz_config import WebvizPluginABC
 from webviz_config.utils import StrEnum
-from .views._plot import PlotView, PlotViewElement, PlotViewSettingsGroup
-from .views._table import TableView, TableViewElement, TableViewSettingsGroup
+from ._views._plot import PlotView, PlotViewElement, PlotViewSettingsGroup
+from ._views._table import TableView, TableViewElement, TableViewSettingsGroup
 from ._shared_view_elements import TextViewElement
 from ._shared_settings import SharedSettingsGroup
 

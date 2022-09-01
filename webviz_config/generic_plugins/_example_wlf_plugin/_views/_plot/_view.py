@@ -66,6 +66,7 @@ class PlotViewSettingsGroup(SettingsGroupABC):
                     },
                 ],
                 value=Coordinates.XY,
+                clearable=False,
             )
         ]
 
@@ -120,6 +121,18 @@ class PlotViewElement(ViewElementABC):
         df["y"] = y_values
         return df
 
+    def compressed_plugin_data(
+        self, graph_figure: Dict[str, Any]
+    ) -> Union[EncodedFile, str]:
+        return WebvizPluginABC.plugin_data_compress(
+            [
+                {
+                    "filename": f"{self.component_unique_id(PlotViewElement.Ids.GRAPH).to_string()}.csv",
+                    "content": self.download_data_df(graph_figure).to_csv(index=False),
+                }
+            ]
+        )
+
     def set_callbacks(self) -> None:
         @callback(
             self.view_element_data_output(),
@@ -135,16 +148,7 @@ class PlotViewElement(ViewElementABC):
             if data_requested is None:
                 raise PreventUpdate
 
-            return WebvizPluginABC.plugin_data_compress(
-                [
-                    {
-                        "filename": f"{self.component_unique_id('my-graph').to_string()}.csv",
-                        "content": self.download_data_df(graph_figure).to_csv(
-                            index=False
-                        ),
-                    }
-                ]
-            )
+            return self.compressed_plugin_data(graph_figure)
 
 
 class PlotView(ViewABC):
@@ -261,16 +265,4 @@ class PlotView(ViewABC):
             if data_requested is None:
                 raise PreventUpdate
 
-            return WebvizPluginABC.plugin_data_compress(
-                [
-                    {
-                        "filename": f"""{
-                            self._plot_view.component_unique_id(
-                                PlotViewElement.Ids.GRAPH
-                            ).to_string()}.csv""",
-                        "content": PlotViewElement.download_data_df(
-                            graph_figure
-                        ).to_csv(index=False),
-                    },
-                ]
-            )
+            return self._plot_view.compressed_plugin_data(graph_figure)
