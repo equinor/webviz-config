@@ -127,7 +127,9 @@ class PlotViewElement(ViewElementABC):
         return WebvizPluginABC.plugin_data_compress(
             [
                 {
-                    "filename": f"{self.component_unique_id(PlotViewElement.Ids.GRAPH).to_string()}.csv",
+                    "filename": f"""{
+                        self.component_unique_id(PlotViewElement.Ids.GRAPH).to_string()
+                    }.csv""",
                     "content": self.download_data_df(graph_figure).to_csv(index=False),
                 }
             ]

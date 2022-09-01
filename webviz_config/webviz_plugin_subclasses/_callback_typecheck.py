@@ -6,11 +6,11 @@ T = TypeVar("T")
 
 
 class ConversionError(Exception):
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
+    pass
 
 
 def convert(arg: Any, convert_to: T) -> T:
+    # pylint: disable=too-many-return-statements
     additional_error_message: str = ""
     try:
         if inspect.isclass(convert_to) and issubclass(convert_to, Enum):  # type: ignore[arg-type]
@@ -37,8 +37,9 @@ def convert(arg: Any, convert_to: T) -> T:
                     for key, value in arg.items()
                 }
 
-    except Exception as e:
-        additional_error_message = f"\n\n{e}"
+    # pylint: disable=broad-except
+    except Exception as exception:
+        additional_error_message = f"\n\n{exception}"
 
     raise ConversionError(
         f"Argument of type '{type(arg)}' cannot be converted to type '{convert_to}'.{additional_error_message}"
