@@ -2,7 +2,7 @@ from typing import Callable, cast, Dict, List, Optional, Type, Union
 from enum import Enum
 from uuid import uuid4
 
-from dash import Input, Output, State
+from dash import Input, Output
 from dash.development.base_component import Component
 import webviz_core_components as wcc
 
