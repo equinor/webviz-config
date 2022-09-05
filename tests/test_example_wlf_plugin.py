@@ -1,12 +1,12 @@
 import webviz_config
-from webviz_config.generic_plugins._example_wlf_plugin import ExampleWlfPlugin2
+from webviz_config.generic_plugins._example_wlf_plugin import ExampleWlfPlugin
 
 
 def test_example_wlf_plugin2(
     _webviz_duo: webviz_config.testing._composite.WebvizComposite,
 ) -> None:
 
-    plugin = ExampleWlfPlugin2(title="hello")
+    plugin = ExampleWlfPlugin(title="hello")
 
     _webviz_duo.start_server(plugin)
 
