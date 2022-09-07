@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long
 from typing import Any, Callable, get_origin, TypeVar
 import inspect
 from enum import Enum
@@ -10,11 +11,11 @@ class ConversionError(Exception):
 
 
 def convert(arg: Any, convert_to: T) -> T:
-    # pylint: disable=too-many-return-statements, line-too-long
+    # pylint: disable=too-many-return-statements
     additional_error_message: str = ""
     try:
-        if inspect.isclass(convert_to) and issubclass(convert_to, Enum):  # type: ignore[arg-type]
-            return convert_to(arg)  # type: ignore[operator]
+        if inspect.isclass(convert_to) and issubclass(convert_to, Enum):
+            return convert_to(arg)  # type: ignore[return-value]
         if convert_to is int:
             return int(arg)  # type: ignore[return-value]
         if convert_to is float:
