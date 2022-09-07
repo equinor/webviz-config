@@ -5,3 +5,4 @@ from ._dash_component_utils import calculate_slider_step
 from ._deprecate_webviz_settings_attribute_in_dash_app import (
     deprecate_webviz_settings_attribute_in_dash_app,
 )
+from ._str_enum import StrEnum

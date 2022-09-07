@@ -22,6 +22,3 @@ layout:
              email: kari.nordmann@equinor.com
              name: Kari Nordmann
              phone: "000000000"
-
-       - ExampleWlfPlugin2:
-           title: Example Plugin 2

@@ -64,7 +64,6 @@ setup(
         "webviz_config_plugins": [
             "ExampleAssets = webviz_config.generic_plugins._example_assets:ExampleAssets",
             "ExampleWlfPlugin = webviz_config.generic_plugins._example_wlf_plugin:ExampleWlfPlugin",
-            "ExampleWlfPlugin2 = webviz_config.generic_plugins._example_wlf_plugin:ExampleWlfPlugin2",
             "ExampleDataDownload = webviz_config.generic_plugins._example_data_download:ExampleDataDownload",
             "ExamplePlugin = webviz_config.generic_plugins._example_plugin:ExamplePlugin",
             "ExamplePortable = webviz_config.generic_plugins._example_portable:ExamplePortable",

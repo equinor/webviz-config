@@ -68,9 +68,15 @@ class WebvizComposite(Browser):
         # set the default server_url, it implicitly call wait_for_page
         self.server_url = self.server.url
 
-    def toggle_webviz_drawer(self) -> None:
+    def toggle_webviz_settings_drawer(self) -> None:
         """Open the plugin settings drawer"""
         self.wait_for_element(WebvizIds.SETTINGS_DRAWER_TOGGLE_OPEN).click()
+
+    def toggle_webviz_settings_group(self, settings_group_id: str) -> None:
+        """Open the respective settings group in the settings drawer"""
+        self.wait_for_element(
+            f"#{settings_group_id} > .WebvizSettingsGroup__Title"
+        ).click()
 
     def shared_settings_group_unique_component_id(
         self, settings_group_id: str, component_unique_id: str
