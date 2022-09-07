@@ -10,7 +10,7 @@ class ConversionError(Exception):
 
 
 def convert(arg: Any, convert_to: T) -> T:
-    # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-return-statements, line-too-long
     additional_error_message: str = ""
     try:
         if inspect.isclass(convert_to) and issubclass(convert_to, Enum):  # type: ignore[arg-type]
