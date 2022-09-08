@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [#602](https://github.com/equinor/webviz-config/pull/602) - Changed the file and plugin names from `ExampleContentWrapper` to `ExampleWlfPlugin`.
 - [#618](https://github.com/equinor/webviz-config/pull/618) - Initialized `common_cache.CACHE` directly with 3600 sec timeout and deprecated `CACHE.TIMEOUT`.
+- [#619](https://github.com/equinor/webviz-config/pull/619) - Adjusted the WLF example plugin to the best practice, added slots there and introduced new `callback_typecheck` decorator. Moreover, added a `StrEnum` class for IDs and settings.
 
 ### Added
 - [#594](https://github.com/equinor/webviz-config/pull/594) - Added early testing of graphical user interface (GUI) for editing and creating Webviz configuration files. Run `webviz editor` to start the GUI.
+- [#599](https://github.com/equinor/webviz-config/pull/599) - Implemented new Webviz Layout Framework (WLF).
 
 ### Fixed
 - [#588](https://github.com/equinor/webviz-config/pull/588) - Added compatibility with upstream dependency `bleach >= 5`.
