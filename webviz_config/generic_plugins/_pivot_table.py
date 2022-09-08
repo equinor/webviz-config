@@ -42,7 +42,7 @@ def generate_table(dframe: pd.DataFrame, **options: str) -> dash_pivottable.Pivo
     )
 
 
-@CACHE.memoize(timeout=CACHE.TIMEOUT)
+@CACHE.memoize()
 @webvizstore
 def get_data(csv_file: Path) -> pd.DataFrame:
     return pd.read_csv(csv_file)

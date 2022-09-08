@@ -84,7 +84,7 @@ setup(
         "dash>=2.0",
         "dash-pivottable>=0.0.2",
         "flask>=2.0",
-        "flask-caching>=1.4,<1.11",  # https://github.com/equinor/webviz-config/issues/595
+        "flask-caching>=1.4",
         "flask-talisman>=0.6",
         "jinja2>=2.10",
         "markdown>=3.0",

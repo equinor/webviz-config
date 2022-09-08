@@ -421,13 +421,13 @@ If feature is requested, the data could also come from a database.
             return (plotfunc(data, template=self.plotly_theme, **plotargs), *div_style)
 
 
-@CACHE.memoize(timeout=CACHE.TIMEOUT)
+@CACHE.memoize()
 @webvizstore
 def get_data(csv_file: Path) -> pd.DataFrame:
     return pd.read_csv(csv_file, index_col=None)
 
 
-@CACHE.memoize(timeout=CACHE.TIMEOUT)
+@CACHE.memoize()
 def filter_dataframe(
     dframe: pd.DataFrame, columns: list, column_values: List[list]
 ) -> pd.DataFrame:
