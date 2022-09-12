@@ -1,7 +1,12 @@
-from typing import TypedDict
-from typing import Dict, List, Optional, TypedDict, _TypedDictMeta, Union  # type: ignore[attr-defined]
-from webviz_config.utils import callback_typecheck, ConversionError
+from typing import (
+    Dict,
+    List,
+    Optional,
+    TypedDict,
+    Union,
+)
 from enum import Enum
+from webviz_config.utils import callback_typecheck, ConversionError
 
 
 def test_callback_typecheck() -> None:
@@ -18,7 +23,7 @@ def test_callback_typecheck() -> None:
     ############################################################
 
     def expect_none(arg: None) -> None:
-        assert arg == None
+        assert arg is None
 
     callback_typecheck(expect_none)(None)
 
@@ -34,9 +39,11 @@ def test_callback_typecheck() -> None:
     def expect_typed_dict(arg: MyTypedDict) -> None:
         types = [type(value) for value in arg.values()]
         assert (
-            type(arg) is dict
-            and set(arg.keys()) == set(MyTypedDict.__annotations__.keys())
-            and set(types) == set(MyTypedDict.__annotations__.values())
+            isinstance(arg, dict)
+            and set(arg.keys())
+            == set(MyTypedDict.__annotations__.keys())  # pylint: disable=no-member
+            and set(types)
+            == set(MyTypedDict.__annotations__.values())  # pylint: disable=no-member
         )
 
     callback_typecheck(expect_typed_dict)({"name": "Name", "year": 1990})
@@ -47,7 +54,7 @@ def test_callback_typecheck() -> None:
         assert False
     except ConversionError:
         pass
-    except Exception as e:
+    except Exception:  # pylint: disable=broad-except
         assert False
 
     ############################################################
@@ -55,11 +62,13 @@ def test_callback_typecheck() -> None:
     def expect_deep_typed_dict(arg: DeepTypedDict) -> None:
         types = [type(value) for value in arg.values()]
         assert (
-            type(arg) is dict
-            and set(arg.keys()) == set(DeepTypedDict.__annotations__.keys())
+            isinstance(arg, dict)
+            and set(arg.keys())
+            == set(DeepTypedDict.__annotations__.keys())  # pylint: disable=no-member
             # NOTE: A `TypedDict` is a `dict` at runtime
             and set(types) == set([dict])
-            and set(arg["value"].keys()) == set(MyTypedDict.__annotations__.keys())
+            and set(arg["value"].keys())
+            == set(MyTypedDict.__annotations__.keys())  # pylint: disable=no-member
         )
 
     callback_typecheck(expect_deep_typed_dict)(
@@ -106,7 +115,7 @@ def test_callback_typecheck() -> None:
     ############################################################
 
     def expect_optional(arg: Optional[str]) -> None:
-        assert arg == None or type(arg) == str
+        assert arg is None or isinstance(arg, str)
 
     callback_typecheck(expect_optional)(None)
     callback_typecheck(expect_optional)("string")
@@ -116,8 +125,8 @@ def test_callback_typecheck() -> None:
     def expect_union(arg: Union[str, int]) -> Union[str, int]:
         return arg
 
-    assert type(callback_typecheck(expect_union)("1")) == str
-    assert type(callback_typecheck(expect_union)(1)) == int
-    assert type(callback_typecheck(expect_union)(1.5)) == str
+    assert isinstance(callback_typecheck(expect_union)("1"), str)
+    assert isinstance(callback_typecheck(expect_union)(1), int)
+    assert isinstance(callback_typecheck(expect_union)(1.5), str)
 
     ############################################################

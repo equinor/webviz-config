@@ -10,15 +10,15 @@ class ConversionError(Exception):
 
 
 def convert(arg: Any, convert_to: T) -> T:
-    # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-return-statements, too-many-branches
     additional_error_message: str = ""
     try:
         if convert_to is None and arg is None:
             return None
-        if inspect.isclass(convert_to) and not type(convert_to) is _TypedDictMeta:
+        if inspect.isclass(convert_to) and not isinstance(convert_to, _TypedDictMeta):
             return convert_to(arg)
         if (
-            type(convert_to) is _TypedDictMeta
+            isinstance(convert_to, _TypedDictMeta)
             and "__annotations__" in dir(convert_to)
             and isinstance(arg, dict)
         ):
