@@ -100,6 +100,7 @@ def test_callback_typecheck() -> None:
 
     def expect_list(arg: List[str]) -> None:
         assert isinstance(arg, list)
+        assert isinstance(arg[0], str)
 
     callback_typecheck(expect_list)([1, 2, 3])
 
@@ -114,11 +115,11 @@ def test_callback_typecheck() -> None:
 
     ############################################################
 
-    def expect_optional(arg: Optional[str]) -> None:
-        assert arg is None or isinstance(arg, str)
+    def expect_optional(arg: Optional[str]) -> Optional[str]:
+        return arg
 
-    callback_typecheck(expect_optional)(None)
-    callback_typecheck(expect_optional)("string")
+    assert callback_typecheck(expect_optional)(None) is None
+    assert isinstance(callback_typecheck(expect_optional)("string"), str)
 
     ############################################################
 
