@@ -1,7 +1,6 @@
 # pylint: disable=line-too-long
-from typing import Any, Callable, get_origin, TypeVar
+from typing import Any, Callable, get_origin, _TypedDictMeta, TypeVar, Union  # type: ignore[attr-defined]
 import inspect
-from enum import Enum
 
 T = TypeVar("T")
 
@@ -11,17 +10,35 @@ class ConversionError(Exception):
 
 
 def convert(arg: Any, convert_to: T) -> T:
-    # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-return-statements, too-many-branches
     additional_error_message: str = ""
     try:
-        if inspect.isclass(convert_to) and issubclass(convert_to, Enum):
-            return convert_to(arg)  # type: ignore[return-value]
-        if convert_to is int:
-            return int(arg)  # type: ignore[return-value]
-        if convert_to is float:
-            return float(arg)  # type: ignore[return-value]
-        if convert_to is str:
-            return str(arg)  # type: ignore[return-value]
+        if convert_to is None and arg is None:
+            return None
+        if inspect.isclass(convert_to) and not isinstance(convert_to, _TypedDictMeta):
+            return convert_to(arg)
+        if (
+            isinstance(convert_to, _TypedDictMeta)
+            and "__annotations__" in dir(convert_to)
+            and isinstance(arg, dict)
+        ):
+            new_dict = convert_to()
+            for key, value in arg.items():
+                if key in list(convert_to.__annotations__.keys()):
+                    new_dict[key] = convert(value, convert_to.__annotations__[key])
+                else:
+                    raise Exception(
+                        f"""
+                        Key '{key}' not allowed in '{convert_to}'.\n
+                        Allowed keys are: {', '.join(list(convert_to.__annotations__.keys()))}
+                        """
+                    )
+
+            if not convert_to.__total__ or len(new_dict.keys()) == len(
+                convert_to.__annotations__.keys()
+            ):
+                return new_dict
+
         if convert_to is list and isinstance(arg, list):
             return arg  # type: ignore[return-value]
         if get_origin(convert_to) is list and isinstance(arg, list):
@@ -37,6 +54,16 @@ def convert(arg: Any, convert_to: T) -> T:
                     )
                     for key, value in arg.items()
                 }
+        if get_origin(convert_to) is Union:
+            if "__args__" in dir(convert_to):
+                for convert_type in convert_to.__args__:  # type: ignore[attr-defined]
+                    if isinstance(arg, convert_type):
+                        return arg
+                for convert_type in convert_to.__args__:  # type: ignore[attr-defined]
+                    try:
+                        return convert(arg, convert_type)
+                    except ConversionError:
+                        pass
 
     # pylint: disable=broad-except
     except Exception as exception:

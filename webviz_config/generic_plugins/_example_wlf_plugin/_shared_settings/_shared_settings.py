@@ -52,7 +52,7 @@ class SharedSettingsGroup(SettingsGroupABC):
                                 "value": 3,
                             },
                         ],
-                        value="2",
+                        value=2,
                     ),
                 ]
             )

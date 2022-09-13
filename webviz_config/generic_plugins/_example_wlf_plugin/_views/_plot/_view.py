@@ -16,10 +16,8 @@ from webviz_config.webviz_plugin_subclasses import (
     ViewABC,
     ViewElementABC,
     SettingsGroupABC,
-    callback_typecheck,
 )
-
-from webviz_config.utils import StrEnum
+from webviz_config.utils import callback_typecheck, StrEnum
 
 from webviz_config.generic_plugins._example_wlf_plugin._shared_view_elements import (
     TextViewElement,
