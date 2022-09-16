@@ -131,3 +131,12 @@ def test_callback_typecheck() -> None:
     assert isinstance(callback_typecheck(expect_union)(1.5), str)
 
     ############################################################
+
+    def expect_union_list(arg: Union[List[str], str]) -> Union[List[str], str]:
+        return arg
+
+    assert isinstance(callback_typecheck(expect_union_list)(["1", "2"]), list)
+    assert isinstance(callback_typecheck(expect_union_list)(["1", "2"])[0], str)
+    assert isinstance(callback_typecheck(expect_union_list)("1"), str)
+
+    ############################################################

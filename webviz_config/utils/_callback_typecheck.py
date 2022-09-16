@@ -10,7 +10,7 @@ class ConversionError(Exception):
 
 
 def convert(arg: Any, convert_to: T) -> T:
-    # pylint: disable=too-many-return-statements, too-many-branches
+    # pylint: disable=too-many-return-statements, too-many-branches, too-many-nested-blocks
     additional_error_message: str = ""
     try:
         if convert_to is None and arg is None:
