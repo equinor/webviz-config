@@ -60,8 +60,7 @@ def convert(arg: Any, convert_to: T) -> T:
                     try:
                         if isinstance(arg, convert_type):
                             return arg
-                    # pylint: disable=broad-except
-                    except Exception:
+                    except TypeError:
                         pass
                 for convert_type in convert_to.__args__:  # type: ignore[attr-defined]
                     try:
