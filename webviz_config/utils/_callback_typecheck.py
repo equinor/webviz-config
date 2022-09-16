@@ -60,6 +60,7 @@ def convert(arg: Any, convert_to: T) -> T:
                     try:
                         if isinstance(arg, convert_type):
                             return arg
+                    # pylint: disable=broad-except
                     except:
                         pass
                 for convert_type in convert_to.__args__:  # type: ignore[attr-defined]
