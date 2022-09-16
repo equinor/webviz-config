@@ -57,8 +57,11 @@ def convert(arg: Any, convert_to: T) -> T:
         if get_origin(convert_to) is Union:
             if "__args__" in dir(convert_to):
                 for convert_type in convert_to.__args__:  # type: ignore[attr-defined]
-                    if isinstance(arg, convert_type):
-                        return arg
+                    try:
+                        if isinstance(arg, convert_type):
+                            return arg
+                    except:
+                        pass
                 for convert_type in convert_to.__args__:  # type: ignore[attr-defined]
                     try:
                         return convert(arg, convert_type)
