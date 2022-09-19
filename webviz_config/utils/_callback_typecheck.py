@@ -90,7 +90,7 @@ def callback_typecheck(func: Callable) -> Callable:
             except ConversionError as exception:
                 raise ConversionError(
                     f"Error while converting input to argument '{parameters[index].name}' of function '{func.__name__}' in file '{func.__globals__['__file__']}': {exception}"
-                )
+                ) from exception
 
         return func(*adjusted_args)
 
