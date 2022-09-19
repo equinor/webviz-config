@@ -70,7 +70,7 @@ def convert(arg: Any, convert_to: T) -> T:
 
     # pylint: disable=broad-except
     except Exception as exception:
-        additional_error_message = f"\n\n{exception}"
+        additional_error_message = f"\n\nMore details:\n{exception}"
 
     raise ConversionError(
         f"Argument of type '{type(arg)}' cannot be converted to type '{convert_to}'.{additional_error_message}"
@@ -79,16 +79,18 @@ def convert(arg: Any, convert_to: T) -> T:
 
 def callback_typecheck(func: Callable) -> Callable:
     signature = inspect.signature(func)
-    argument_annotations: list = []
-
-    for param in signature.parameters.values():
-        argument_annotations.append(param.annotation)
+    parameters = list(signature.parameters.values())
 
     def wrapper(*_args) -> signature.return_annotation:  # type: ignore[no-untyped-def,name-defined]
         adjusted_args: list = []
 
         for index, arg in enumerate(_args):
-            adjusted_args.append(convert(arg, argument_annotations[index]))
+            try:
+                adjusted_args.append(convert(arg, parameters[index].annotation))
+            except ConversionError as exception:
+                raise ConversionError(
+                    f"Error while converting input to argument '{parameters[index].name}' of function '{func.__name__}' in file '{func.__globals__['__file__']}': {exception}"
+                )
 
         return func(*adjusted_args)
 
