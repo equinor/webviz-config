@@ -15,7 +15,11 @@ def convert(arg: Any, convert_to: T) -> T:
     try:
         if convert_to is None and arg is None:
             return None
-        if inspect.isclass(convert_to) and not isinstance(convert_to, _TypedDictMeta):
+        if (
+            inspect.isclass(convert_to)
+            and not isinstance(convert_to, _TypedDictMeta)
+            and arg is not None
+        ):
             return convert_to(arg)
         if (
             isinstance(convert_to, _TypedDictMeta)

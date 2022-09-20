@@ -147,3 +147,16 @@ def test_callback_typecheck() -> None:
 
     assert callback_typecheck(expect_optional_enum)(None) is None
     assert isinstance(callback_typecheck(expect_optional_enum)("value-1"), MyEnum)
+
+    ############################################################
+
+    def expect_optional_string(arg: str) -> str:
+        return arg
+
+    try:
+        callback_typecheck(expect_optional_string)(None)
+        assert False
+    except ConversionError:
+        pass
+    except Exception:  # pylint: disable=broad-except
+        assert False
