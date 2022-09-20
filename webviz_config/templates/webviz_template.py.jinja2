@@ -156,6 +156,9 @@ else:
                         initiallyPinned={{options.menu.initially_pinned}},
                         initiallyCollapsed={{options.menu.initially_collapsed}},
                         navigationItems={{navigation_items}},
+                        {% if options.menu.homepage %}
+                        homepageUrl={{options.menu.homepage}}
+                        {% endif %}
                     ),
                     wcc.WebvizSettingsDrawer(
                         id="settings-drawer",
@@ -180,21 +183,17 @@ oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 @callback(
     Output("plugins-wrapper", "children"), 
     Output("settings-drawer", "children"), 
-    Input("main-menu", "url"), 
     Input("location", "pathname")
 )
-def update_page(url, pathname):
+def update_page(pathname):
     ctx = callback_context
     if ctx.triggered:
-        if ctx.triggered[0]["prop_id"].split('.')[0] == "main-menu":
-            pathname = url.replace("/", "") if url is not None else ""
+        if pathname is not None:
+            pathname = pathname.replace("/", "")
         else:
-            if pathname is not None:
-                pathname = pathname.replace("/", "")
-            else:
-                pathname = ""
-        if not pathname:
-            pathname = next(iter(page_plugins)) 
+            pathname = ""
+    if not pathname:
+        pathname = next(iter(page_plugins)) 
     return page_plugins.get(pathname, ["Oooppss... Page not found."]), page_settings.get(pathname, [])
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
