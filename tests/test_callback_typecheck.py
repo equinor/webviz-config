@@ -10,7 +10,7 @@ from webviz_config.utils import callback_typecheck, ConversionError
 
 
 def test_callback_typecheck() -> None:
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals, too-many-statements
     class MyEnum(str, Enum):
         VALUE_1 = "value-1"
 
