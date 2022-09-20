@@ -1,5 +1,4 @@
 from typing import (
-    cast,
     Dict,
     List,
     Optional,
@@ -7,7 +6,6 @@ from typing import (
     Union,
 )
 from enum import Enum
-from datetime import datetime
 from webviz_config.utils import callback_typecheck, ConversionError
 
 
