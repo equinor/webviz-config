@@ -541,7 +541,7 @@ class ConfigParser:
                         f"{terminal_colors.RED}{terminal_colors.BOLD}"
                         "Invalid option for options > menu > homepage: "
                         f"{self.configuration['options']['menu']['homepage']}. "
-                        f"Please select from the existing pages:\n{', '.join(self._page_titles)}"
+                        f"Please check your config file and use the name of an existing page."
                         f"{terminal_colors.END}"
                     )
                 else:
