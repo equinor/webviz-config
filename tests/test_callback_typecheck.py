@@ -166,5 +166,5 @@ def test_callback_typecheck() -> None:
     assert callback_typecheck(expect_union_string_list)(["1", "2"]) == ["1", "2"]
     assert callback_typecheck(expect_union_string_list)("1") == "1"
     assert callback_typecheck(expect_union_string_list)({"1": "1"}) == {"1": "1"}
-    assert callback_typecheck(expect_union_string_list)(None) == None
+    assert callback_typecheck(expect_union_string_list)(None) is None
     assert callback_typecheck(expect_union_string_list)(1) == 1
