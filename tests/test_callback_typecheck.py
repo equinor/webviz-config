@@ -1,15 +1,10 @@
-from typing import (
-    Dict,
-    List,
-    Optional,
-    TypedDict,
-    Union,
-)
+from typing import Dict, List, Optional, TypedDict, Union
 from enum import Enum
 from webviz_config.utils import callback_typecheck, ConversionError
 
 
 def test_callback_typecheck() -> None:
+
     # pylint: disable=too-many-locals, too-many-statements
     class MyEnum(str, Enum):
         VALUE_1 = "value-1"
@@ -160,3 +155,16 @@ def test_callback_typecheck() -> None:
         pass
     except Exception:  # pylint: disable=broad-except
         assert False
+
+    ############################################################
+
+    def expect_union_string_list(
+        arg: Union[str, List[str], Dict[str, str], Optional[int]]
+    ) -> Union[str, List[str], Dict[str, str], Optional[int]]:
+        return arg
+
+    assert callback_typecheck(expect_union_string_list)(["1", "2"]) == ["1", "2"]
+    assert callback_typecheck(expect_union_string_list)("1") == "1"
+    assert callback_typecheck(expect_union_string_list)({"1": "1"}) == {"1": "1"}
+    assert callback_typecheck(expect_union_string_list)(None) == None
+    assert callback_typecheck(expect_union_string_list)(1) == 1

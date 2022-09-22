@@ -1,5 +1,5 @@
 # pylint: disable=line-too-long
-from typing import Any, Callable, get_origin, _TypedDictMeta, TypeVar, Union  # type: ignore[attr-defined]
+from typing import Any, Callable, get_args, get_origin, _TypedDictMeta, TypeVar, Union  # type: ignore[attr-defined]
 import inspect
 
 T = TypeVar("T")
@@ -9,12 +9,44 @@ class ConversionError(Exception):
     pass
 
 
+def _isinstance(arg: Any, annotation: Any) -> bool:
+    # pylint: disable=too-many-return-statements
+    if annotation is None:
+        return arg is None
+
+    if get_origin(annotation) is None:
+        try:
+            return isinstance(arg, annotation)
+        except TypeError:
+            return False
+
+    if get_origin(annotation) == Union:
+        for annotation_arg in get_args(annotation):
+            if _isinstance(arg, annotation_arg):
+                return True
+
+    if get_origin(annotation) is list and isinstance(arg, list):
+        result = True
+        for annotation_arg in arg:
+            result &= _isinstance(annotation_arg, get_args(annotation)[0])
+        return result
+
+    if get_origin(annotation) is dict and isinstance(arg, dict):
+        result = True
+        for key, value in arg.items():
+            result &= _isinstance(key, get_args(annotation)[0])
+            result &= _isinstance(value, get_args(annotation)[1])
+        return result
+
+    return False
+
+
 def convert(arg: Any, convert_to: T) -> T:
-    # pylint: disable=too-many-return-statements, too-many-branches, too-many-nested-blocks
+    # pylint: disable=too-many-return-statements, too-many-branches
     additional_error_message: str = ""
     try:
-        if convert_to is None and arg is None:
-            return None
+        if _isinstance(arg, convert_to):
+            return arg
         if (
             inspect.isclass(convert_to)
             and not isinstance(convert_to, _TypedDictMeta)
@@ -46,31 +78,23 @@ def convert(arg: Any, convert_to: T) -> T:
         if convert_to is list and isinstance(arg, list):
             return arg  # type: ignore[return-value]
         if get_origin(convert_to) is list and isinstance(arg, list):
-            if "__args__" in dir(convert_to):
-                return [convert(a, convert_to.__args__[0]) for a in arg]  # type: ignore[attr-defined,return-value]
+            return [convert(a, get_args(convert_to)[0]) for a in arg]  # type: ignore[return-value]
         if convert_to is dict and isinstance(arg, dict):
             return arg  # type: ignore[return-value]
         if get_origin(convert_to) is dict and isinstance(arg, dict):
-            if "__args__" in dir(convert_to) and len(convert_to.__args__) == 2:  # type: ignore[attr-defined]
+            if len(get_args(convert_to)) == 2:
                 return {  # type: ignore[return-value]
-                    convert(key, convert_to.__args__[0]): convert(  # type: ignore[attr-defined]
-                        value, convert_to.__args__[1]  # type: ignore[attr-defined]
+                    convert(key, get_args(convert_to)[0]): convert(
+                        value, get_args(convert_to)[1]
                     )
                     for key, value in arg.items()
                 }
-        if get_origin(convert_to) is Union:
-            if "__args__" in dir(convert_to):
-                for convert_type in convert_to.__args__:  # type: ignore[attr-defined]
-                    try:
-                        if isinstance(arg, convert_type):
-                            return arg
-                    except TypeError:
-                        pass
-                for convert_type in convert_to.__args__:  # type: ignore[attr-defined]
-                    try:
-                        return convert(arg, convert_type)
-                    except ConversionError:
-                        pass
+        if get_origin(convert_to) is Union and "__args__" in dir(convert_to):
+            for convert_type in get_args(convert_to):
+                try:
+                    return convert(arg, convert_type)
+                except ConversionError:
+                    pass
 
     # pylint: disable=broad-except
     except Exception as exception:
