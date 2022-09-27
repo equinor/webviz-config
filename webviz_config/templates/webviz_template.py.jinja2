@@ -157,7 +157,7 @@ else:
                         initiallyCollapsed={{options.menu.initially_collapsed}},
                         navigationItems={{navigation_items}},
                         {% if options.menu.homepage %}
-                        homepageUrl={{options.menu.homepage}}
+                        homepageUrl="{{options.menu.homepage}}"
                         {% endif %}
                     ),
                     wcc.WebvizSettingsDrawer(
