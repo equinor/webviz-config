@@ -45,7 +45,6 @@ layout:
         filter_cols:
           - Well
           - Segment
-          - Average permeability (D)
         plot_options:        
           type: bar
           facet_col: Well

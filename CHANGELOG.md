@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#619](https://github.com/equinor/webviz-config/pull/619) - Adjusted the WLF example plugin to the best practice, added slots there and introduced new `callback_typecheck` decorator. Moreover, added a `StrEnum` class for IDs and settings.
 
 ### Added
+- [#635](https://github.com/equinor/webviz-config/pull/635) - Added option to interactively set axis ranges in `TablePlotter`
 - [#594](https://github.com/equinor/webviz-config/pull/594) - Added early testing of graphical user interface (GUI) for editing and creating Webviz configuration files. Run `webviz editor` to start the GUI.
 - [#599](https://github.com/equinor/webviz-config/pull/599) - Implemented new Webviz Layout Framework (WLF).
 
