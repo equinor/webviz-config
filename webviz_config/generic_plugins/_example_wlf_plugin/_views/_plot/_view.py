@@ -39,6 +39,40 @@ class Coordinates(StrEnum):
     YX = "yx"
 
 
+class Color(StrEnum):
+    BLUE = "blue"
+    RED = "red"
+
+
+class PlotViewElementSettingsGroup(SettingsGroupABC):
+    class Ids(StrEnum):
+        COLOR_SELECTOR = "color-selector"
+
+    def __init__(self) -> None:
+        super().__init__("Color")
+
+    def layout(self) -> List[Component]:
+        return [
+            wcc.RadioItems(
+                id=self.register_component_unique_id(
+                    PlotViewElementSettingsGroup.Ids.COLOR_SELECTOR
+                ),
+                label="Color",
+                options=[
+                    {
+                        "label": "blue",
+                        "value": Color.BLUE,
+                    },
+                    {
+                        "label": "red",
+                        "value": Color.RED,
+                    },
+                ],
+                value=Color.BLUE,
+            )
+        ]
+
+
 class PlotViewSettingsGroup(SettingsGroupABC):
     class Ids(StrEnum):
         COORDINATES_SELECTOR = "coordinates-selector"
@@ -72,10 +106,14 @@ class PlotViewSettingsGroup(SettingsGroupABC):
 class PlotViewElement(ViewElementABC):
     class Ids(StrEnum):
         GRAPH = "graph"
+        PLOT_SETTINGS = "plot-settings"
 
     def __init__(self, data: List[Tuple[int, int]]) -> None:
         super().__init__(flex_grow=8)
         self.data = data
+        self.add_settings_group(
+            PlotViewElementSettingsGroup(), PlotViewElement.Ids.PLOT_SETTINGS
+        )
 
     def inner_layout(self) -> Union[str, Type[Component]]:
         return html.Div(
@@ -216,9 +254,18 @@ class PlotView(ViewABC):
                 .to_string(),
                 "value",
             ),
+            Input(
+                self.view_element(PlotView.Ids.PLOT)
+                .settings_group(PlotViewElement.Ids.PLOT_SETTINGS)
+                .component_unique_id(PlotViewElementSettingsGroup.Ids.COLOR_SELECTOR)
+                .to_string(),
+                "value",
+            ),
         )
         @callback_typecheck
-        def _change_power_and_coordinates(power: int, coordinates: Coordinates) -> dict:
+        def _change_power_and_coordinates_and_color(
+            power: int, coordinates: Coordinates, color: Color
+        ) -> dict:
             layout = {
                 "title": "Example Graph Swapped",
                 "margin": {"t": 50, "r": 20, "b": 20, "l": 20},
@@ -234,6 +281,9 @@ class PlotView(ViewABC):
                         {
                             "x": [x[1] for x in self.data],
                             "y": [x[0] for x in self.data],
+                            "line": {
+                                "color": Color.RED if color == Color.RED else Color.BLUE
+                            },
                         }
                     ],
                     "layout": layout,
@@ -243,6 +293,9 @@ class PlotView(ViewABC):
                     {
                         "x": [x[0] for x in self.data],
                         "y": [x[1] for x in self.data],
+                        "line": {
+                            "color": Color.RED if color == Color.RED else Color.BLUE
+                        },
                     }
                 ],
                 "layout": layout,

@@ -240,6 +240,7 @@ class ConfigParser:
             ).with_traceback(sys.exc_info()[2])
 
         self._config_folder = pathlib.Path(yaml_file).parent
+        self._page_titles: List[str] = []
         self._page_ids: List[str] = []
         self._assets: set = set()
         self._plugin_metadata: Dict[str, dict] = {}
@@ -394,8 +395,8 @@ class ConfigParser:
                     }
                 )
             elif "page" in item or "title" in item:
-
                 page_title = item["page"] if "page" in item else item["title"]
+                self._page_titles.append(page_title)
                 if "id" not in item:
                     item["id"] = self._generate_page_id(page_title)
                 elif item["id"] in self._page_ids:
@@ -519,6 +520,36 @@ class ConfigParser:
                         "Please select a boolean value: True, False"
                         f"{terminal_colors.END}"
                     )
+
+                if "homepage" not in self.configuration["options"]["menu"]:
+                    self.configuration["options"]["menu"]["homepage"] = None
+                elif not isinstance(
+                    self.configuration["options"]["menu"]["homepage"], str
+                ):
+                    raise ParserError(
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                        "Invalid option for options > menu > homepage: "
+                        f"{self.configuration['options']['menu']['homepage']}. "
+                        "Please select a valid string value"
+                        f"{terminal_colors.END}"
+                    )
+                elif (
+                    self.configuration["options"]["menu"]["homepage"]
+                    not in self._page_titles
+                ):
+                    raise ParserError(
+                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                        "Invalid option for options > menu > homepage: "
+                        f"{self.configuration['options']['menu']['homepage']}. "
+                        f"Please check your config file and use the name of an existing page."
+                        f"{terminal_colors.END}"
+                    )
+                else:
+                    self.configuration["options"]["menu"]["homepage"] = self._page_ids[
+                        self._page_titles.index(
+                            self.configuration["options"]["menu"]["homepage"]
+                        )
+                    ]
 
                 if "initially_collapsed" not in self.configuration["options"]["menu"]:
                     self.configuration["options"]["menu"]["initially_collapsed"] = False

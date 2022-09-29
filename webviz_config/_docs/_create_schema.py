@@ -41,6 +41,13 @@ JSON_SCHEMA = {
                         "description": "State if all groups in menu shall initially be collapsed",
                         "type": "boolean",
                     },
+                    "homepage": {
+                        "description": """
+                        Set a custom page as homepage to which the user returns when clicking on the logo. 
+                        Use the page's title.
+                        """,
+                        "type": "string",
+                    },
                 },
                 "additionalProperties": False,
             },
