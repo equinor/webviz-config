@@ -10,6 +10,7 @@ from webviz_config.utils import callback_typecheck, ConversionError
 
 
 def test_callback_typecheck() -> None:
+    # pylint: disable=too-many-locals, too-many-statements
     class MyEnum(str, Enum):
         VALUE_1 = "value-1"
 
@@ -140,3 +141,22 @@ def test_callback_typecheck() -> None:
     assert isinstance(callback_typecheck(expect_union_list)("1"), str)
 
     ############################################################
+
+    def expect_optional_enum(arg: Optional[MyEnum]) -> Optional[MyEnum]:
+        return arg
+
+    assert callback_typecheck(expect_optional_enum)(None) is None
+    assert isinstance(callback_typecheck(expect_optional_enum)("value-1"), MyEnum)
+
+    ############################################################
+
+    def expect_optional_string(arg: str) -> str:
+        return arg
+
+    try:
+        callback_typecheck(expect_optional_string)(None)
+        assert False
+    except ConversionError:
+        pass
+    except Exception:  # pylint: disable=broad-except
+        assert False

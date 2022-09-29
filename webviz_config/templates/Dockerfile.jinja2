@@ -70,7 +70,6 @@ CMD gunicorn \
         --access-logfile "-" \
         --bind 0.0.0.0:5000 \
         --keep-alive 120 \
-        --max-requests 40 \
         --preload \
         --workers 2 \
         --worker-class gthread \
