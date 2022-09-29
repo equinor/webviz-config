@@ -549,8 +549,6 @@ class WebvizPluginABC(abc.ABC):
                 and "prop_id" in ctx[0].keys()
                 else False
             )
-            if initial_call:
-                view_id = self.active_view_id
 
             if plugin_id == self._plugin_unique_id.to_string() or initial_call:
                 view = next(

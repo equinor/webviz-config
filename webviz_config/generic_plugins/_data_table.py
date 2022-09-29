@@ -55,7 +55,7 @@ If feature is requested, the data could also come from a database.
         )
 
 
-@CACHE.memoize(timeout=CACHE.TIMEOUT)
+@CACHE.memoize()
 @webvizstore
 def get_data(csv_file: Path) -> pd.DataFrame:
     return pd.read_csv(csv_file)

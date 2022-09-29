@@ -1,6 +1,6 @@
-# New Webviz Layout Framework (WLF)
+# Webviz Layout Framework (WLF)
 
-The new `Webviz Layout Framework (WLF)` aims to improve consistency, (re-)usability and structure of Webviz plugins. It provides
+The `Webviz Layout Framework (WLF)` aims to improve consistency, (re-)usability and structure of Webviz plugins. It provides
 new abstract Python classes that can be inherited from in order to build easily understandable plugins with better 
 separation of different views on a common data source.
 
@@ -107,7 +107,7 @@ Layout element wrapping a data visualization, description or documentation. A `V
 
 ![Implement a new plugin](/assets/implement-plugin.svg)
 
-Every new plugin starts with a new class inheriting from `WebvizPluginABC`.
+Every new plugin starts with a class inheriting from `WebvizPluginABC`.
 
 ```python
 from webviz_config import WebvizPluginABC

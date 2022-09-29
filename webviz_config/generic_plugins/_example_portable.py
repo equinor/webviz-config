@@ -27,7 +27,7 @@ class ExamplePortable(WebvizPluginABC):
         return str(input_data_function(self.some_string, some_number=self.some_number))
 
 
-@CACHE.memoize(timeout=CACHE.TIMEOUT)
+@CACHE.memoize()
 @webvizstore
 def input_data_function(
     some_string: str, some_number: int, some_bool: bool = True

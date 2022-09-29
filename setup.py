@@ -64,7 +64,6 @@ setup(
         "webviz_config_plugins": [
             "ExampleAssets = webviz_config.generic_plugins._example_assets:ExampleAssets",
             "ExampleWlfPlugin = webviz_config.generic_plugins._example_wlf_plugin:ExampleWlfPlugin",
-            "ExampleWlfPlugin2 = webviz_config.generic_plugins._example_wlf_plugin:ExampleWlfPlugin2",
             "ExampleDataDownload = webviz_config.generic_plugins._example_data_download:ExampleDataDownload",
             "ExamplePlugin = webviz_config.generic_plugins._example_plugin:ExamplePlugin",
             "ExamplePortable = webviz_config.generic_plugins._example_portable:ExamplePortable",
@@ -77,6 +76,7 @@ setup(
             "TablePlotter = webviz_config.generic_plugins._table_plotter:TablePlotter",
             "PivotTable = webviz_config.generic_plugins._pivot_table:PivotTable",
         ],
+        "pytest11": ["webviz = webviz_config.testing._plugin"],
     },
     install_requires=[
         "bleach[css]>=5",
@@ -84,7 +84,7 @@ setup(
         "dash>=2.0",
         "dash-pivottable>=0.0.2",
         "flask>=2.0",
-        "flask-caching>=1.4,<1.11",  # https://github.com/equinor/webviz-config/issues/595
+        "flask-caching>=1.4",
         "flask-talisman>=0.6",
         "jinja2>=2.10",
         "markdown>=3.0",

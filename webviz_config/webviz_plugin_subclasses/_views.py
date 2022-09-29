@@ -324,7 +324,6 @@ class ViewLayoutElement(LayoutBaseABC):
 class ViewABC(LayoutBaseABC):
     def __init__(self, name: str) -> None:
         super().__init__()
-
         self.name = name
 
         self._add_download_button = False
