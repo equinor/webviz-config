@@ -6,6 +6,7 @@ from typing import Optional, List, Dict, Any
 
 import numpy as np
 import pandas as pd
+from plotly.graph_objects import Figure
 import plotly.express as px
 from dash import html, dcc, Input, Output, Dash
 import webviz_core_components as wcc
@@ -208,97 +209,76 @@ If feature is requested, the data could also come from a database.
         if not self.use_filter:
             return None
         df = self.data
-        dropdowns = [html.H4("Set filters")]
+        dropdowns = []
         for col in self.filter_cols:
             if df[col].dtype in [np.float64, np.int64]:
                 min_val = df[col].min()
                 max_val = df[col].max()
                 mean_val = df[col].mean()
                 dropdowns.append(
-                    html.Div(
-                        children=[
-                            html.Details(
-                                open=True,
-                                children=[
-                                    html.Summary(col.lower().capitalize()),
-                                    dcc.RangeSlider(
-                                        id=self.uuid(f"filter-{col}"),
-                                        min=min_val,
-                                        max=max_val,
-                                        step=(max_val - min_val) / 10,
-                                        marks={
-                                            min_val: f"{min_val:.2f}",
-                                            mean_val: f"{mean_val:.2f}",
-                                            max_val: f"{max_val:.2f}",
-                                        },
-                                        value=[min_val, max_val],
-                                    ),
-                                ],
-                            )
-                        ]
+                    wcc.Selectors(
+                        label=col.lower().capitalize(),
+                        children=dcc.RangeSlider(
+                            id=self.uuid(f"filter-{col}"),
+                            min=min_val,
+                            max=max_val,
+                            step=(max_val - min_val) / 10,
+                            marks={
+                                min_val: f"{min_val:.2f}",
+                                mean_val: f"{mean_val:.2f}",
+                                max_val: f"{max_val:.2f}",
+                            },
+                            value=[min_val, max_val],
+                        ),
                     )
                 )
             else:
                 elements = list(self.data[col].unique())
                 dropdowns.append(
-                    html.Div(
-                        children=[
-                            html.Details(
-                                open=True,
-                                children=[
-                                    html.Summary(col.lower().capitalize()),
-                                    wcc.Select(
-                                        id=self.uuid(f"filter-{col}"),
-                                        options=[
-                                            {"label": i, "value": i} for i in elements
-                                        ],
-                                        value=elements
-                                        if self.filter_defaults is None
-                                        else [
-                                            element
-                                            for element in self.filter_defaults.get(
-                                                col, elements
-                                            )
-                                            if element in elements
-                                        ],
-                                        size=min(15, len(elements)),
-                                    ),
-                                ],
-                            )
-                        ]
+                    wcc.Selectors(
+                        label=col.lower().capitalize(),
+                        children=wcc.Select(
+                            id=self.uuid(f"filter-{col}"),
+                            options=[{"label": i, "value": i} for i in elements],
+                            value=elements
+                            if self.filter_defaults is None
+                            else [
+                                element
+                                for element in self.filter_defaults.get(col, elements)
+                                if element in elements
+                            ],
+                            size=min(15, len(elements)),
+                        ),
                     )
                 )
-        return dropdowns
+        return wcc.Selectors(
+            label="Filter options", open_details=False, children=dropdowns
+        )
 
     def plot_option_layout(self) -> List[html.Div]:
         """Renders a dropdown widget for each plot option"""
-        divs = []
+
         # The plot type dropdown is handled separate
-        divs.append(
-            html.Div(
-                style=self.style_options_div,
-                children=[
-                    html.H4("Set plot options"),
-                    html.P("Plot type"),
-                    dcc.Dropdown(
-                        id=self.uuid("plottype"),
-                        clearable=False,
-                        options=[{"label": i, "value": i} for i in self.plots],
-                        value=self.plot_options.get("type", "scatter"),
-                    ),
-                ],
-            )
-        )
+        children = [
+            wcc.Dropdown(
+                label="Plot type",
+                id=self.uuid("plottype"),
+                clearable=False,
+                options=[{"label": i, "value": i} for i in self.plots],
+                value=self.plot_options.get("type", "scatter"),
+            ),
+        ]
+
         # Looping through all available plot options
         # and renders a dropdown widget
         for key, arg in self.plot_args.items():
-            divs.append(
+            children.append(
                 html.Div(
                     style=self.style_options_div_hidden,
                     id=self.uuid(f"div-{key}"),
                     children=[
-                        html.P(key),
-                        dcc.Dropdown(
+                        wcc.Dropdown(
+                            label=key,
                             id=self.uuid(f"dropdown-{key}"),
                             clearable=arg["clearable"],
                             options=[{"label": i, "value": i} for i in arg["options"]],
@@ -308,7 +288,11 @@ If feature is requested, the data could also come from a database.
                     ],
                 )
             )
-        return divs
+        return wcc.Selectors(
+            label="Data and visualisation options",
+            style=self.style_options_div,
+            children=children,
+        )
 
     @property
     def style_options_div(self) -> Dict[str, str]:
@@ -319,6 +303,74 @@ If feature is requested, the data could also come from a database.
     def style_options_div_hidden(self) -> Dict[str, str]:
         """Style for hidden plot options"""
         return {"display": "none"}
+
+    def axis_layout(self) -> html.Div:
+        return wcc.Selectors(
+            label="Plot axis options",
+            open_details=False,
+            children=[
+                wcc.Label(
+                    style={"fontSize": "0.9rem", "display": "block"},
+                    children="Both min and max must be set to take effect",
+                ),
+                wcc.Label("X-axis", style={"fontWeight": "bold"}),
+                html.Div(
+                    style={"display": "flex"},
+                    children=[
+                        wcc.Label(style={"marginRight": "10px"}, children="Min: "),
+                        dcc.Input(
+                            style={"maxWidth": "80px"},
+                            id=self.uuid("xaxis-min"),
+                            type="number",
+                            minLength=1,
+                            placeholder="From data",
+                        ),
+                        wcc.Label(
+                            style={
+                                "marginLeft": "10px",
+                                "marginRight": "10px",
+                            },
+                            children="Max: ",
+                        ),
+                        dcc.Input(
+                            style={"maxWidth": "80px"},
+                            id=self.uuid("xaxis-max"),
+                            type="number",
+                            minLength=1,
+                            placeholder="From data",
+                        ),
+                    ],
+                ),
+                wcc.Label("Y-axis", style={"fontWeight": "bold"}),
+                html.Div(
+                    style={"display": "flex"},
+                    children=[
+                        wcc.Label(style={"marginRight": "10px"}, children="Min: "),
+                        dcc.Input(
+                            style={"maxWidth": "80px"},
+                            id=self.uuid("yaxis-min"),
+                            type="number",
+                            minLength=1,
+                            placeholder="From data",
+                        ),
+                        wcc.Label(
+                            style={
+                                "marginLeft": "10px",
+                                "marginRight": "10px",
+                            },
+                            children="Max: ",
+                        ),
+                        dcc.Input(
+                            style={"maxWidth": "80px"},
+                            id=self.uuid("yaxis-max"),
+                            type="number",
+                            minLength=1,
+                            placeholder="From data",
+                        ),
+                    ],
+                ),
+            ],
+        )
 
     @property
     def layout(self) -> html.Div:
@@ -331,13 +383,16 @@ If feature is requested, the data could also come from a database.
                             style={"display": "none"}
                             if self.lock
                             else {"width": "15%"},
-                            children=self.plot_option_layout(),
+                            children=[
+                                self.plot_option_layout(),
+                                self.filter_layout(),
+                                self.axis_layout(),
+                            ],
                         ),
                         wcc.Graph(
                             id=self.uuid("graph-id"),
-                            style={"height": "80vh", "width": "60%"},
+                            style={"height": "80vh", "width": "75%"},
                         ),
-                        html.Div(style={"width": "15%"}, children=self.filter_layout()),
                     ],
                 )
             ]
@@ -382,8 +437,21 @@ If feature is requested, the data could also come from a database.
                 else None
             )
 
-        @app.callback(self.plot_output_callbacks, self.plot_input_callbacks)
-        def _update_output(*args: Any) -> tuple:
+        @app.callback(
+            self.plot_output_callbacks,
+            Input(self.uuid("xaxis-min"), "value"),
+            Input(self.uuid("xaxis-max"), "value"),
+            Input(self.uuid("yaxis-min"), "value"),
+            Input(self.uuid("yaxis-max"), "value"),
+            self.plot_input_callbacks,
+        )
+        def _update_output(
+            xaxis_min: Optional[float],
+            xaxis_max: Optional[float],
+            yaxis_min: Optional[float],
+            yaxis_max: Optional[float],
+            *args: Any,
+        ) -> tuple:
             """Updates the graph and shows/hides plot options"""
             plot_type = args[0]
             # pylint: disable=protected-access
@@ -418,7 +486,11 @@ If feature is requested, the data could also come from a database.
                         ] = self.column_color_discrete_maps.get(plot_arg)
                 else:
                     div_style.append(self.style_options_div_hidden)
-            return (plotfunc(data, template=self.plotly_theme, **plotargs), *div_style)
+            figure: Figure = plotfunc(data, template=self.plotly_theme, **plotargs)
+            figure.update_layout(
+                xaxis_range=[xaxis_min, xaxis_max], yaxis_range=[yaxis_min, yaxis_max]
+            )
+            return (figure, *div_style)
 
 
 @CACHE.memoize()
