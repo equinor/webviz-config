@@ -446,7 +446,11 @@ If feature is requested, the data could also come from a database.
             self.plot_input_callbacks,
         )
         def _update_output(
-            xaxis_min, xaxis_max, yaxis_min, yaxis_max, *args: Any
+            xaxis_min: Optional[float],
+            xaxis_max: Optional[float],
+            yaxis_min: Optional[float],
+            yaxis_max: Optional[float],
+            *args: Any,
         ) -> tuple:
             """Updates the graph and shows/hides plot options"""
             plot_type = args[0]
