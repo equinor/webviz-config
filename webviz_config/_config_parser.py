@@ -587,4 +587,5 @@ class ConfigParser:
                 "initially_pinned": False,
                 "initially_collapsed": False,
                 "show_logo": True,
+                "homepage": None,
             }
