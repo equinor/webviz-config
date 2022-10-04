@@ -171,9 +171,7 @@ def test_callback_typecheck() -> None:
 
     ############################################################
 
-    def expect_optional_dict(
-        arg: Optional[Dict[str, str]]
-    ) -> Optional[Dict[str, str]]:
+    def expect_optional_dict(arg: Optional[Dict[str, str]]) -> Optional[Dict[str, str]]:
         return arg
 
     assert callback_typecheck(expect_optional_dict)({"1": "1"}) == {"1": "1"}
@@ -181,19 +179,17 @@ def test_callback_typecheck() -> None:
 
     ############################################################
 
-    def expect_optional_dict_without_types(
-        arg: Optional[Dict]
-    ) -> Optional[Dict]:
+    def expect_optional_dict_without_types(arg: Optional[Dict]) -> Optional[Dict]:
         return arg
 
-    assert callback_typecheck(expect_optional_dict_without_types)({"1": "1"}) == {"1": "1"}
+    assert callback_typecheck(expect_optional_dict_without_types)({"1": "1"}) == {
+        "1": "1"
+    }
     assert callback_typecheck(expect_optional_dict_without_types)(None) is None
 
     ############################################################
 
-    def expect_optional_dict_with_any(
-        arg: Optional[Dict[Any, Any]]
-    ) -> Optional[dict]:
+    def expect_optional_dict_with_any(arg: Optional[Dict[Any, Any]]) -> Optional[dict]:
         return arg
 
     assert callback_typecheck(expect_optional_dict_with_any)({"1": "1"}) == {"1": "1"}
