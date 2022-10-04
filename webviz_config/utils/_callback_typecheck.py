@@ -10,7 +10,7 @@ class ConversionError(Exception):
 
 
 def _isinstance(arg: Any, annotation: Any) -> bool:
-    # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-return-statements, too-many-branches
     if annotation is type(None) or annotation is None:
         return arg is None
 
