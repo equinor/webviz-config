@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, TypedDict, Union
+from typing import Any, Dict, List, Optional, TypedDict, Union
 from enum import Enum
 from webviz_config.utils import callback_typecheck, ConversionError
 
@@ -168,3 +168,33 @@ def test_callback_typecheck() -> None:
     assert callback_typecheck(expect_union_string_list)({"1": "1"}) == {"1": "1"}
     assert callback_typecheck(expect_union_string_list)(None) is None
     assert callback_typecheck(expect_union_string_list)(1) == 1
+
+    ############################################################
+
+    def expect_optional_dict(
+        arg: Optional[Dict[str, str]]
+    ) -> Optional[Dict[str, str]]:
+        return arg
+
+    assert callback_typecheck(expect_optional_dict)({"1": "1"}) == {"1": "1"}
+    assert callback_typecheck(expect_optional_dict)(None) is None
+
+    ############################################################
+
+    def expect_optional_dict_without_types(
+        arg: Optional[Dict]
+    ) -> Optional[Dict]:
+        return arg
+
+    assert callback_typecheck(expect_optional_dict_without_types)({"1": "1"}) == {"1": "1"}
+    assert callback_typecheck(expect_optional_dict_without_types)(None) is None
+
+    ############################################################
+
+    def expect_optional_dict_with_any(
+        arg: Optional[Dict[Any, Any]]
+    ) -> Optional[dict]:
+        return arg
+
+    assert callback_typecheck(expect_optional_dict_with_any)({"1": "1"}) == {"1": "1"}
+    assert callback_typecheck(expect_optional_dict_with_any)(None) is None
