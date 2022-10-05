@@ -10,9 +10,12 @@ class ConversionError(Exception):
 
 
 def _isinstance(arg: Any, annotation: Any) -> bool:
-    # pylint: disable=too-many-return-statements
-    if annotation is None:
+    # pylint: disable=too-many-return-statements, too-many-branches
+    if annotation is type(None) or annotation is None:
         return arg is None
+
+    if annotation is Any:
+        return True
 
     if get_origin(annotation) is None:
         try:
@@ -27,15 +30,19 @@ def _isinstance(arg: Any, annotation: Any) -> bool:
 
     if get_origin(annotation) is list and isinstance(arg, list):
         result = True
-        for annotation_arg in arg:
-            result &= _isinstance(annotation_arg, get_args(annotation)[0])
+        type_args = get_args(annotation)
+        if len(type_args) == 1:
+            for annotation_arg in arg:
+                result &= _isinstance(annotation_arg, type_args[0])
         return result
 
     if get_origin(annotation) is dict and isinstance(arg, dict):
         result = True
-        for key, value in arg.items():
-            result &= _isinstance(key, get_args(annotation)[0])
-            result &= _isinstance(value, get_args(annotation)[1])
+        type_args = get_args(annotation)
+        if len(type_args) == 2:
+            for key, value in arg.items():
+                result &= _isinstance(key, type_args[0])
+                result &= _isinstance(value, type_args[1])
         return result
 
     return False
