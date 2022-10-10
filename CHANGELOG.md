@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
+## [0.5.0] - 2022-10-10
+
 ### Changed
 - [#634](https://github.com/equinor/webviz-config/pull/634) - Disable automatic worker restart in `gunicorn` configuration.
 - [#602](https://github.com/equinor/webviz-config/pull/602) - Changed the file and plugin names from `ExampleContentWrapper` to `ExampleWlfPlugin`.
@@ -18,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#594](https://github.com/equinor/webviz-config/pull/594) - Added early testing of graphical user interface (GUI) for editing and creating Webviz configuration files. Run `webviz editor` to start the GUI.
 - [#599](https://github.com/equinor/webviz-config/pull/599) - Implemented new Webviz Layout Framework (WLF).
 - [#631](https://github.com/equinor/webviz-config/pull/631) - Added `homepage` option to `menu` options in config file to define which page should be shown first when opening a Webviz app.
+
+## [0.4.0] - 2022-06-22
 
 ### Fixed
 - [#588](https://github.com/equinor/webviz-config/pull/588) - Added compatibility with upstream dependency `bleach >= 5`.

@@ -95,7 +95,7 @@ setup(
         "pyyaml>=5.1",
         "requests>=2.20",
         "tqdm>=4.8",
-        "webviz-core-components>=0.5.4",
+        "webviz-core-components>=0.6",
         "werkzeug>=2.0",
     ],
     extras_require={
