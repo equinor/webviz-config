@@ -1,10 +1,11 @@
+import base64
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
-from dash import dash_table
+from dash import dash_table, Dash
 
-from .. import WebvizPluginABC
+from .. import WebvizPluginABC, EncodedFile
 from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
@@ -27,6 +28,7 @@ If feature is requested, the data could also come from a database.
 
     def __init__(
         self,
+        app: Dash,
         csv_file: Path,
         sorting: bool = True,
         filtering: bool = True,
@@ -41,6 +43,8 @@ If feature is requested, the data could also come from a database.
         self.filtering = filtering
         self.pagination = pagination
 
+        self.set_callbacks(app)
+
     def add_webvizstore(self) -> List[tuple]:
         return [(get_data, [{"csv_file": self.csv_file}])]
 
@@ -53,6 +57,21 @@ If feature is requested, the data could also come from a database.
             filter_action="native" if self.filtering else "none",
             page_action="native" if self.pagination else "none",
         )
+
+    def set_callbacks(self, app: Dash) -> None:
+        @app.callback(self.plugin_data_output, self.plugin_data_requested)
+        def _user_download_data(data_requested: Optional[int]) -> Optional[EncodedFile]:
+            return (
+                {
+                    "filename": "data-table.csv",
+                    "content": base64.b64encode(
+                        get_data(self.csv_file).to_csv(index=False).encode()
+                    ).decode("ascii"),
+                    "mime_type": "text/csv",
+                }
+                if data_requested
+                else None
+            )
 
 
 @CACHE.memoize()
