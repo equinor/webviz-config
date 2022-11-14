@@ -30,6 +30,7 @@ TESTS_REQUIRES = [
     "mypy",
     "pylint<=2.13.9",  # Locked due to https://github.com/equinor/webviz-subsurface/issues/1052
     "pytest-xdist",
+    "pytest-forked",
     "selenium",
     "types-bleach",
     "types-markdown",

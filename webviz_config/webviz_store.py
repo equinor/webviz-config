@@ -112,7 +112,7 @@ class WebvizStorage:
         """
 
         while hasattr(func, "__wrapped__"):
-            func = func.__wrapped__  # type: ignore[attr-defined]
+            func = func.__wrapped__
 
         return func
 

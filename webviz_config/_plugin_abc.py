@@ -509,9 +509,7 @@ class WebvizPluginABC(abc.ABC):
                 ),
                 screenshotFilename=self._screenshot_filename,
                 feedbackUrl=self._make_feedback_url(),
-                tourSteps=WebvizPluginABC._reformat_tour_steps(
-                    self.tour_steps  # type: ignore[attr-defined]
-                )
+                tourSteps=WebvizPluginABC._reformat_tour_steps(self.tour_steps)
                 if hasattr(self, "tour_steps")
                 else None,
                 stretch=self._stretch if self.views() else True,
