@@ -1,10 +1,12 @@
+import base64
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
+from dash import Dash
 import dash_pivottable
 
-from .. import WebvizPluginABC
+from .. import WebvizPluginABC, EncodedFile
 from ..webviz_store import webvizstore
 from ..common_cache import CACHE
 
@@ -21,12 +23,14 @@ class PivotTable(WebvizPluginABC):
     (https://github.com/plotly/dash-pivottable#references) for all possible options.
 """
 
-    def __init__(self, csv_file: Path, options: dict = None):
+    def __init__(self, app: Dash, csv_file: Path, options: dict = None):
 
         super().__init__()
 
         self.csv_file = csv_file
         self.options = options if options is not None else {}
+
+        self.set_callbacks(app)
 
     def add_webvizstore(self) -> List[tuple]:
         return [(get_data, [{"csv_file": self.csv_file}])]
@@ -34,6 +38,21 @@ class PivotTable(WebvizPluginABC):
     @property
     def layout(self) -> dash_pivottable.PivotTable:
         return generate_table(get_data(self.csv_file), **self.options)
+
+    def set_callbacks(self, app: Dash) -> None:
+        @app.callback(self.plugin_data_output, self.plugin_data_requested)
+        def _user_download_data(data_requested: Optional[int]) -> Optional[EncodedFile]:
+            return (
+                {
+                    "filename": "pivot-table.csv",
+                    "content": base64.b64encode(
+                        get_data(self.csv_file).to_csv(index=False).encode()
+                    ).decode("ascii"),
+                    "mime_type": "text/csv",
+                }
+                if data_requested
+                else None
+            )
 
 
 def generate_table(dframe: pd.DataFrame, **options: str) -> dash_pivottable.PivotTable:
