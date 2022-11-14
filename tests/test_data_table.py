@@ -18,7 +18,7 @@ def test_data_table(dash_duo):
     code_file = "./tests/data/example_data.csv"
     with mock.patch(GET_DATA) as mock_path:
         mock_path.return_value = pd.read_csv(code_file)
-        page = _data_table.DataTable(code_file)
+        page = _data_table.DataTable(app, code_file)
         app.layout = page.layout
         dash_duo.start_server(app)
         assert dash_duo.get_logs() == [], "browser console should contain no error"
@@ -35,7 +35,7 @@ def test_data_table_with_settings(dash_duo):
     with mock.patch(GET_DATA) as mock_path:
         mock_path.return_value = pd.read_csv(code_file)
         page = _data_table.DataTable(
-            csv_file=code_file, sorting=False, filtering=False, pagination=False
+            app, csv_file=code_file, sorting=False, filtering=False, pagination=False
         )
         app.layout = page.layout
         dash_duo.start_server(app)

@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 
-## [0.5.0] - 2022-10-10
 ### Added
 - [#644](https://github.com/equinor/webviz-config/pull/644) - Added option to download tables in `DataTable` and `PivotTable`.
+
+## [0.5.0] - 2022-10-10
 
 ### Changed
 - [#634](https://github.com/equinor/webviz-config/pull/634) - Disable automatic worker restart in `gunicorn` configuration.
