@@ -15,16 +15,13 @@ class WebvizConfigTheme:
             "connect-src": "'self'",
             "prefetch-src": "'self'",
             "style-src": ["'self'", "'unsafe-inline'"],  # [1]
-            "script-src": [
-                "'self'",
-                "'unsafe-eval'",  # [2]
-            ],
-            "img-src": ["'self'", "data:", "blob:"],  # [3]
+            "script-src": ["'self'", "blob:", "'unsafe-eval'"],  # [blob: 2] [eval: 3]
+            "img-src": ["'self'", "data:", "blob:"],  # [4]
             "navigate-to": "'self'",
             "base-uri": "'self'",
             "form-action": "'self'",
-            "frame-ancestors": "'self'",  # [4]
-            "frame-src": "'self'",  # [4]
+            "frame-ancestors": "'self'",  # [5]
+            "frame-src": "'self'",  # [5]
             "object-src": "'self'",
         }
 
@@ -32,12 +29,18 @@ class WebvizConfigTheme:
         These are the current exceptions to the most strict CSP setup:
             [1] unsafe-inline for style still needed by plotly
                 (https://github.com/plotly/plotly.js/issues/2355)
-            [2] unsafe-eval still needed for plotly.js bundle
+            [2] Computational heavy Dash components might want to use web workers.
+                Since it is not easy in Dash to host related worker scripts, these
+                worker scripts are typically created on demand and given as blob: URLs.
+                We do not allow data: script URLs since they do not have the same
+                security feature as blob: URLs which can only be created by the browser
+                itself and have scope limited to the window it was created in.
+            [3] unsafe-eval still needed for plotly.js bundle
                 (https://github.com/plotly/plotly.js/issues/897)
-            [3] html2canvas in webviz-core-components needs "data:" in img-src to create
+            [4] html2canvas in webviz-core-components needs "data:" in img-src to create
                 screenshots, while plotly.js "Download screenshot to png" requires
                 "blob:" in img-src.
-            [4] We use 'self' instead of 'none' due to what looks like a Chromium bug,
+            [5] We use 'self' instead of 'none' due to what looks like a Chromium bug,
                 where e.g. pdf's included using <embed> is not rendered. Might be
                 related to https://bugs.chromium.org/p/chromium/issues/detail?id=1002610
         """
