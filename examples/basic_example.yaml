@@ -16,6 +16,7 @@ layout:
         title: My banner image
     - Webviz created from configuration file.
     - Some other text, potentially with strange letters like Åre, Smørbukk Sør.
+    - And even math like $e^{\pi i} + 1 = 0$. 
 
  - page: Markdown example
    content:

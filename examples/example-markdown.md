@@ -7,6 +7,18 @@
 Hi from a Markdown text file containing Norwegian letters (æ ø å), some
 **bold** letters, _italic_ letters. _You can also **combine** them._
 
+You can also add (potential multi-line) equations as illustrated here with the Maxwell equations,
+$$
+\begin{aligned}
+\nabla \cdot \mathbf{E} &= \frac {\rho} {\varepsilon_0} \\\\
+\nabla \cdot \mathbf{B} &= 0 \\\\
+\nabla \times \mathbf{E} &= -\frac{\partial \mathbf{B}} {\partial t} \\\\
+\nabla \times \mathbf{B} &= \mu_0\left(\mathbf{J} + \varepsilon_0 \frac{\partial \mathbf{E}} {\partial t} \right)
+\end{aligned}
+$$
+You can also add inline math where you e.g. describe the different parameters that goes into
+the equations, like $\varepsilon_0$ being permittivity of free space.
+
 ---
 
 Horizontal line splitting two paragraphs.
