@@ -6,15 +6,11 @@ import argparse
 import pathlib
 import subprocess
 
-from ._build_webviz import build_webviz
-from ._deployment import main_radix_deployment
-from ._docs.open_docs import open_docs
-from ._docs._create_schema import create_schema
 from ._user_data_dir import user_data_dir
 from ._user_preferences import set_user_preferences, get_user_preference
 
 
-def main() -> None:  # pylint: disable=too-many-statements
+def main() -> None:  # pylint: disable=too-many-locals,too-many-statements
 
     parser = argparse.ArgumentParser(
         prog=("Creates a Webviz Dash app from a configuration setup")
@@ -76,7 +72,14 @@ def main() -> None:  # pylint: disable=too-many-statements
         help="Path to YAML file with logging configuration.",
     )
 
-    parser_build.set_defaults(func=build_webviz)
+    def parser_build_function(args: argparse.Namespace) -> None:
+        from ._build_webviz import (  # pylint: disable=import-outside-toplevel
+            build_webviz,
+        )
+
+        build_webviz(args)
+
+    parser_build.set_defaults(func=parser_build_function)
 
     # Add "certificate" parser:
 
@@ -141,7 +144,14 @@ def main() -> None:  # pylint: disable=too-many-statements
         "Do not include this if only overwriting an existing application.",
     )
 
-    parser_radix_deploy.set_defaults(func=main_radix_deployment)
+    def parser_radix_deploy_function(args: argparse.Namespace) -> None:
+        from ._deployment import (  # pylint: disable=import-outside-toplevel
+            main_radix_deployment,
+        )
+
+        main_radix_deployment(args)
+
+    parser_radix_deploy.set_defaults(func=parser_radix_deploy_function)
 
     # Add "documentation" parser:
 
@@ -172,7 +182,14 @@ def main() -> None:  # pylint: disable=too-many-statements
         help="Skip opening the documentation automatically in browser.",
     )
 
-    parser_docs.set_defaults(func=open_docs)
+    def parser_docs_function(args: argparse.Namespace) -> None:
+        from ._docs.open_docs import (  # pylint: disable=import-outside-toplevel
+            open_docs,
+        )
+
+        open_docs(args)
+
+    parser_docs.set_defaults(func=parser_docs_function)
 
     # Add "preferences" parser:
 
@@ -223,11 +240,15 @@ def main() -> None:  # pylint: disable=too-many-statements
         "it will be stored in your Webviz application settings folder.",
     )
 
-    def entrypoint_schema(args: argparse.Namespace) -> None:
+    def parser_schema_function(args: argparse.Namespace) -> None:
+        from ._docs._create_schema import (  # pylint: disable=import-outside-toplevel
+            create_schema,
+        )
+
         args.output.write_text(json.dumps(create_schema(), indent=4))
         print(f"Schema written to {args.output}")
 
-    parser_schema.set_defaults(func=entrypoint_schema)
+    parser_schema.set_defaults(func=parser_schema_function)
 
     # Add "editor" parser:
 
