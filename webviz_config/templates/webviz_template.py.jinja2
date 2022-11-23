@@ -128,7 +128,7 @@ else:
     page_settings["{{page.id}}"] = []
     {% for content_item in page.content -%}
     {% if content_item is string %}
-    page_plugins["{{page.id}}"].append(wcc.WebvizPluginWrapper(id=f"text-{count_text_plugins}", views=[], initiallyActiveViewId="", name="Text", children=[dcc.Markdown(r"""{{ content_item }}""")]))
+    page_plugins["{{page.id}}"].append(wcc.WebvizPluginWrapper(id=f"text-{count_text_plugins}", views=[], initiallyActiveViewId="", name="Text", children=[dcc.Markdown(r"""{{ content_item }}""", mathjax=True)]))
     count_text_plugins += 1
     {% else %}
     plugin = webviz_config.plugins.{{ content_item._call_signature[0] }}

@@ -197,7 +197,10 @@ class Markdown(WebvizPluginABC):
     @property
     def layout(self) -> dcc.Markdown:
         return dcc.Markdown(
-            self.html, dangerously_allow_html=True, className="webviz-config-markdown"
+            self.html,
+            dangerously_allow_html=True,
+            mathjax=True,
+            className="webviz-config-markdown",
         )
 
 
