@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED] - YYYY-MM-DD
+### Fixed
+- [#655](https://github.com/equinor/webviz-config/pull/655) - Regression fix: Show filters in `TablePlotter` when using `lock` argument.
 
 ### Changed
 - [#648](https://github.com/equinor/webviz-config/pull/648) - Allow `blob:` in `script-src` CSP in order to enable web worker usage in Dash components.

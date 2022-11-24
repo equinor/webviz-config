@@ -77,7 +77,8 @@ layout:
           x: Well
           y: Initial reservoir pressure (bar)
           size: Average permeability (D)
-          facet_col: Segment
+        filter_cols:
+         - Well
         contact_person:
           name: Kari Nordmann
           phone: 12345678
