@@ -71,12 +71,6 @@ def test_table_plotter_filter(dash_duo: DashComposite) -> None:
     plot_dd = dash_duo.find_element("#" + page.uuid("plottype"))
     assert plot_dd.text == "scatter"
 
-    # Checking that only the relevant options are shown
-    for plot_option in page.plot_args.keys():
-        plot_option_dd = dash_duo.find_element("#" + page.uuid(f"div-{plot_option}"))
-        if plot_option not in page.plots["scatter"]:
-            assert "display: none;" in plot_option_dd.get_attribute("style")
-
     # Checking that options are initialized correctly
     for option in ["x", "y"]:
         plot_option_dd = dash_duo.find_element("#" + page.uuid(f"dropdown-{option}"))
@@ -110,7 +104,3 @@ def test_initialized_table_plotter(dash_duo: DashComposite) -> None:
     # Checking that plot options are defined
     assert page.plot_options == plot_options
     assert page.lock
-
-    # Checking that the selectors are hidden
-    selector_row = dash_duo.find_element("#" + page.uuid("selector-row"))
-    assert "display: none;" in selector_row.get_attribute("style")
