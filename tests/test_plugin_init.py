@@ -33,16 +33,19 @@ def test_no_warning(monkeypatch):
     monkeypatch.setattr(importlib.metadata, "requires", lambda x: [])
     importlib.reload(webviz_config.plugins._utils)
 
-    globals_mock = {}
     with warnings.catch_warnings(record=True) as warn:
-        metadata, _ = webviz_config.plugins._utils.load_webviz_plugins_with_metadata(
-            [dist_mock1, dist_mock3], globals_mock
+        (
+            metadata,
+            _,
+            plugin_entrypoints,
+        ) = webviz_config.plugins._utils.load_webviz_plugins_with_metadata(
+            [dist_mock1, dist_mock3]
         )
         assert len(warn) == 0, "Too many warnings"
 
     assert len(metadata) == 2, "Wrong number of items in metadata"
-    assert "SomePlugin1" in globals_mock
-    assert "SomePlugin2" in globals_mock
+    assert "SomePlugin1" in plugin_entrypoints
+    assert "SomePlugin2" in plugin_entrypoints
 
 
 def test_warning_multiple(monkeypatch):
@@ -50,10 +53,13 @@ def test_warning_multiple(monkeypatch):
     monkeypatch.setattr(importlib.metadata, "requires", lambda x: [])
     importlib.reload(webviz_config.plugins._utils)
 
-    globals_mock = {}
     with warnings.catch_warnings(record=True) as warn:
-        metadata, _ = webviz_config.plugins._utils.load_webviz_plugins_with_metadata(
-            [dist_mock1, dist_mock2], globals_mock
+        (
+            metadata,
+            _,
+            plugin_entrypoints,
+        ) = webviz_config.plugins._utils.load_webviz_plugins_with_metadata(
+            [dist_mock1, dist_mock2]
         )
 
         assert len(warn) == 1
@@ -67,4 +73,4 @@ def test_warning_multiple(monkeypatch):
 
     assert len(metadata) == 1, "Wrong number of items in metadata"
     assert metadata["SomePlugin1"]["dist_name"] == "dist_mock2", "Wrong dist name"
-    assert "SomePlugin1" in globals_mock
+    assert "SomePlugin1" in plugin_entrypoints
