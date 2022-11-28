@@ -374,19 +374,23 @@ If feature is requested, the data could also come from a database.
 
     @property
     def layout(self) -> html.Div:
+        plot_options_style: dict = {"display": "none"} if self.lock else {}
         return html.Div(
             children=[
                 wcc.FlexBox(
                     children=[
                         html.Div(
                             id=self.uuid("selector-row"),
-                            style={"display": "none"}
-                            if self.lock
-                            else {"width": "15%"},
                             children=[
-                                self.plot_option_layout(),
+                                html.Div(
+                                    style=plot_options_style,
+                                    children=self.plot_option_layout(),
+                                ),
                                 self.filter_layout(),
-                                self.axis_layout(),
+                                html.Div(
+                                    style=plot_options_style,
+                                    children=self.axis_layout(),
+                                ),
                             ],
                         ),
                         wcc.Graph(
