@@ -43,13 +43,24 @@ JSON_SCHEMA = {
                     },
                     "homepage": {
                         "description": """
-                        Set a custom page as homepage to which the user returns when clicking on the logo. 
+                        Set a custom page as homepage to which the user returns when clicking on the logo.
                         Use the page's title.
                         """,
                         "type": "string",
                     },
                 },
                 "additionalProperties": False,
+            },
+            "plotly_theme": {
+                "type": "object",
+                "description": """
+                Option to define modifications to the theme's Plotly figure layout.
+                Examples are e.g. axis formatting and color palettes. Will be merged
+                with existing theme layout, with options defined here prioritized if
+                conflicting with the existing theme. The layout is defined as a
+                dictionary, for details see:
+                https://plotly.com/python/reference/layout/
+                """,
             },
         },
         "layout": {

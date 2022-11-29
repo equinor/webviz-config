@@ -125,6 +125,10 @@ class WebvizConfigTheme:
         """Layout object of Plotly graph objects."""
         self._plotly_theme = plotly_theme
 
+    def plotly_theme_layout_update(self, plotly_theme_layout: dict) -> None:
+        """Updates layout object of Plotly graph objects based on input dict"""
+        self._plotly_theme["layout"] = self.create_themed_layout(plotly_theme_layout)
+
     @property
     def external_stylesheets(self) -> list:
         return self._external_stylesheets

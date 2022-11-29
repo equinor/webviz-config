@@ -6,6 +6,10 @@ title: Reek Webviz Demonstration
 options:
   menu:
     initially_pinned: True
+  plotly_theme:
+    yaxis:
+      showgrid: True
+      gridcolor: lightgrey
 
 layout:
 
