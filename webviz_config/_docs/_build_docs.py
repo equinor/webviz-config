@@ -23,7 +23,6 @@ import jinja2
 import webviz_config.plugins
 from webviz_config.plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
 from .._config_parser import SPECIAL_ARGS
-from ..utils._get_webviz_plugins import _get_webviz_plugins
 from .. import _deprecation_store as _ds
 
 
@@ -119,17 +118,17 @@ def _extract_init_arguments_and_check_for_deprecation(
     return (bool(deprecated_arguments), result, deprecation_check_code)
 
 
-def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
-    """Takes in a tuple (from e.g. inspect.getmembers), and returns
+def _document_plugin(plugin_name: str) -> PluginInfo:
+    """Takes in plugin name as string and returns
     a dictionary according to the type definition PluginInfo.
     """
 
-    name, reference = plugin
+    reference = webviz_config.plugins.__getattr__(plugin_name)
     docstring = reference.__doc__ if reference.__doc__ is not None else ""
     docstring_parts = _split_docstring(docstring)
     module = inspect.getmodule(reference)
     subpackage = inspect.getmodule(module).__package__  # type: ignore
-    dist_name = PLUGIN_METADATA[name]["dist_name"]
+    dist_name = PLUGIN_METADATA[plugin_name]["dist_name"]
     (
         has_deprecated_arguments,
         arguments,
@@ -144,7 +143,7 @@ def _document_plugin(plugin: Tuple[str, Any]) -> PluginInfo:
         else None,
         "data_input": docstring_parts[2] if len(docstring_parts) > 2 else None,
         "description": docstring_parts[0] if docstring != "" else None,
-        "name": name,
+        "name": plugin_name,
         "package_doc": import_module(subpackage).__doc__,  # type: ignore
         "dist_name": dist_name,
         "dist_version": PLUGIN_PROJECT_METADATA[dist_name]["dist_version"],
@@ -165,8 +164,8 @@ def get_plugin_documentation() -> defaultdict:
 
     plugin_doc = [
         _document_plugin(plugin)
-        for plugin in _get_webviz_plugins(webviz_config.plugins)
-        if not plugin[0].startswith("Example")
+        for plugin in webviz_config.plugins.__all__
+        if not plugin.startswith("Example")
     ]
 
     # Sort the plugins by package:

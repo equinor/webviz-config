@@ -9,7 +9,6 @@ import yaml
 
 import webviz_config.plugins
 from .utils import terminal_colors
-from .utils._get_webviz_plugins import _get_webviz_plugins
 from . import _deprecation_store as _ds
 
 SPECIAL_ARGS = ["self", "app", "webviz_settings", "_call_signature"]
@@ -211,9 +210,7 @@ class ParserError(Exception):
 
 class ConfigParser:
 
-    STANDARD_PLUGINS = [
-        name for (name, _) in _get_webviz_plugins(webviz_config.plugins)
-    ]
+    INSTALLED_PLUGINS = webviz_config.plugins.__all__
 
     def __init__(self, yaml_file: pathlib.Path):
 
@@ -436,13 +433,13 @@ class ConfigParser:
                     plugin_variables = next(iter(plugin.values()))
                     kwargs = {} if plugin_variables is None else {**plugin_variables}
 
-                    if plugin_name not in ConfigParser.STANDARD_PLUGINS:
+                    if plugin_name not in ConfigParser.INSTALLED_PLUGINS:
                         raise ParserError(
                             f"{terminal_colors.RED}{terminal_colors.BOLD}"
                             "You have included a plugin with "
                             f"name `{plugin_name}` in your "
-                            "configuration file. This is not a "
-                            "standard plugin."
+                            "configuration file. This is not an "
+                            "installed plugin."
                             f"{terminal_colors.END}"
                         )
 

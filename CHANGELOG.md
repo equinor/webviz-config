@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#648](https://github.com/equinor/webviz-config/pull/648) - Allow `blob:` in `script-src` CSP in order to enable web worker usage in Dash components.
 - [#652](https://github.com/equinor/webviz-config/pull/652) - Enabled support for LaTeX math/equations in markdown.
 - [#653](https://github.com/equinor/webviz-config/pull/653) - Reduce time for running `webviz --help` by lazy importing top level entrypoints.
+- [#656](https://github.com/equinor/webviz-config/pull/656) - Further reduce startup time by only loading plugin entrypoints used in the application.
 
 ### Added
 - [#644](https://github.com/equinor/webviz-config/pull/644) - Added option to download tables in `DataTable` and `PivotTable`.

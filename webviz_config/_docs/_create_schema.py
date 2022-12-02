@@ -186,7 +186,8 @@ def create_schema() -> dict:
                     "type": "object",
                     "properties": {
                         plugin_doc["name"]: {
-                            "description": plugin_doc["description"],
+                            "description": plugin_doc["description"]
+                            or " PLUGIN MISSING DESCRIPTION ",
                             "type": "object",
                             "properties": {
                                 **{
