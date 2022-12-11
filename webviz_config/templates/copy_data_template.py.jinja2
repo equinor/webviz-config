@@ -26,6 +26,16 @@ theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_t
 app = dash.Dash()
 app.config.suppress_callback_exceptions = True
 
+# Trigger import of plugins used, such that SHARED_SETTINGS_SUBSCRIPTIONS
+# is populated before setting webviz_settings
+{% for page in pageContents %}
+{% for content in page.content %}
+{% if content is not string %}
+webviz_config.plugins.{{ content._call_signature[0].split('(')[0]}}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
 # Create the common webviz_setting object that will get passed as an
 # argument to all plugins that request it.
 webviz_settings: webviz_config.WebvizSettings = webviz_config.WebvizSettings(
