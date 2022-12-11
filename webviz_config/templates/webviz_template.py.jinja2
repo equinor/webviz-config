@@ -74,6 +74,17 @@ print("Configuring logging from dictionary:", logging_config_dict)
 logging.config.dictConfig(logging_config_dict)
 {% endif %}
 
+
+# Trigger import of plugins used, such that SHARED_SETTINGS_SUBSCRIPTIONS
+# is populated before setting webviz_settings
+{% for page in pageContents %}
+{% for content in page.content %}
+{% if content is not string %}
+webviz_config.plugins.{{ content._call_signature[0].split('(')[0]}}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
 # Create the common webviz_setting object that will get passed as an
 # argument to all plugins that request it.
 webviz_settings: webviz_config.WebvizSettings = webviz_config.WebvizSettings(
