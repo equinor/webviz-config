@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - [#644](https://github.com/equinor/webviz-config/pull/644) - Added option to download tables in `DataTable` and `PivotTable`.
+- [#658](https://github.com/equinor/webviz-config/pull/658) - Added `plotly_theme` to `options` in configuration file, allowing user to modify theming of plotly plots without creating a completely new theme. Examples are formatting of axes like gridlines, ticks, color palettes and number formatting. 
 
 ## [0.5.0] - 2022-10-10
 

@@ -470,114 +470,106 @@ class ConfigParser:
                 "navigation_items"
             ] = self._recursively_parse_navigation_item(self.configuration["pages"], 0)
 
-        options_found = False
-        if "options" in self.configuration:
-            if "menu" in self.configuration["options"]:
-                options_found = True
+        self.configuration["options"] = self.configuration.get("options", {})
+        if "menu" in self.configuration["options"]:
 
-                if "bar_position" not in self.configuration["options"]["menu"]:
-                    self.configuration["options"]["menu"]["bar_position"] = "left"
-                elif self.configuration["options"]["menu"]["bar_position"] not in [
-                    "left",
-                    "top",
-                    "right",
-                    "bottom",
-                ]:
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "Invalid option for options > menu > bar_position: "
-                        f"{self.configuration['options']['menu']['bar_position']}. "
-                        "Please select one of the following options: left, top, right, bottom."
-                        f"{terminal_colors.END}"
+            if "bar_position" not in self.configuration["options"]["menu"]:
+                self.configuration["options"]["menu"]["bar_position"] = "left"
+            elif self.configuration["options"]["menu"]["bar_position"] not in [
+                "left",
+                "top",
+                "right",
+                "bottom",
+            ]:
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    "Invalid option for options > menu > bar_position: "
+                    f"{self.configuration['options']['menu']['bar_position']}. "
+                    "Please select one of the following options: left, top, right, bottom."
+                    f"{terminal_colors.END}"
+                )
+
+            if "drawer_position" not in self.configuration["options"]["menu"]:
+                self.configuration["options"]["menu"]["drawer_position"] = "left"
+            elif self.configuration["options"]["menu"]["drawer_position"] not in [
+                "left",
+                "right",
+            ]:
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    "Invalid option for options > menu > drawer_position: "
+                    f"{self.configuration['options']['menu']['drawer_position']}. "
+                    "Please select one of the following options: left, right."
+                    f"{terminal_colors.END}"
+                )
+
+            if "initially_pinned" not in self.configuration["options"]["menu"]:
+                self.configuration["options"]["menu"]["initially_pinned"] = False
+            elif not isinstance(
+                self.configuration["options"]["menu"]["initially_pinned"], bool
+            ):
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    "Invalid option for options > menu > initially_pinned: "
+                    f"{self.configuration['options']['menu']['initially_pinned']}. "
+                    "Please select a boolean value: True, False"
+                    f"{terminal_colors.END}"
+                )
+
+            if "homepage" not in self.configuration["options"]["menu"]:
+                self.configuration["options"]["menu"]["homepage"] = None
+            elif not isinstance(self.configuration["options"]["menu"]["homepage"], str):
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    "Invalid option for options > menu > homepage: "
+                    f"{self.configuration['options']['menu']['homepage']}. "
+                    "Please select a valid string value"
+                    f"{terminal_colors.END}"
+                )
+            elif (
+                self.configuration["options"]["menu"]["homepage"]
+                not in self._page_titles
+            ):
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    "Invalid option for options > menu > homepage: "
+                    f"{self.configuration['options']['menu']['homepage']}. "
+                    f"Please check your config file and use the name of an existing page."
+                    f"{terminal_colors.END}"
+                )
+            else:
+                self.configuration["options"]["menu"]["homepage"] = self._page_ids[
+                    self._page_titles.index(
+                        self.configuration["options"]["menu"]["homepage"]
                     )
+                ]
 
-                if "drawer_position" not in self.configuration["options"]["menu"]:
-                    self.configuration["options"]["menu"]["drawer_position"] = "left"
-                elif self.configuration["options"]["menu"]["drawer_position"] not in [
-                    "left",
-                    "right",
-                ]:
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "Invalid option for options > menu > drawer_position: "
-                        f"{self.configuration['options']['menu']['drawer_position']}. "
-                        "Please select one of the following options: left, right."
-                        f"{terminal_colors.END}"
-                    )
+            if "initially_collapsed" not in self.configuration["options"]["menu"]:
+                self.configuration["options"]["menu"]["initially_collapsed"] = False
+            elif not isinstance(
+                self.configuration["options"]["menu"]["initially_collapsed"], bool
+            ):
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    "Invalid option for options > menu > initially_collapsed: "
+                    f"{self.configuration['options']['menu']['initially_collapsed']}. "
+                    "Please select a boolean value: True, False"
+                    f"{terminal_colors.END}"
+                )
 
-                if "initially_pinned" not in self.configuration["options"]["menu"]:
-                    self.configuration["options"]["menu"]["initially_pinned"] = False
-                elif not isinstance(
-                    self.configuration["options"]["menu"]["initially_pinned"], bool
-                ):
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "Invalid option for options > menu > initially_pinned: "
-                        f"{self.configuration['options']['menu']['initially_pinned']}. "
-                        "Please select a boolean value: True, False"
-                        f"{terminal_colors.END}"
-                    )
-
-                if "homepage" not in self.configuration["options"]["menu"]:
-                    self.configuration["options"]["menu"]["homepage"] = None
-                elif not isinstance(
-                    self.configuration["options"]["menu"]["homepage"], str
-                ):
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "Invalid option for options > menu > homepage: "
-                        f"{self.configuration['options']['menu']['homepage']}. "
-                        "Please select a valid string value"
-                        f"{terminal_colors.END}"
-                    )
-                elif (
-                    self.configuration["options"]["menu"]["homepage"]
-                    not in self._page_titles
-                ):
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "Invalid option for options > menu > homepage: "
-                        f"{self.configuration['options']['menu']['homepage']}. "
-                        f"Please check your config file and use the name of an existing page."
-                        f"{terminal_colors.END}"
-                    )
-                else:
-                    self.configuration["options"]["menu"]["homepage"] = self._page_ids[
-                        self._page_titles.index(
-                            self.configuration["options"]["menu"]["homepage"]
-                        )
-                    ]
-
-                if "initially_collapsed" not in self.configuration["options"]["menu"]:
-                    self.configuration["options"]["menu"]["initially_collapsed"] = False
-                elif not isinstance(
-                    self.configuration["options"]["menu"]["initially_collapsed"], bool
-                ):
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "Invalid option for options > menu > initially_collapsed: "
-                        f"{self.configuration['options']['menu']['initially_collapsed']}. "
-                        "Please select a boolean value: True, False"
-                        f"{terminal_colors.END}"
-                    )
-
-                if "show_logo" not in self.configuration["options"]["menu"]:
-                    self.configuration["options"]["menu"]["show_logo"] = True
-                elif not isinstance(
-                    self.configuration["options"]["menu"]["show_logo"], bool
-                ):
-                    raise ParserError(
-                        f"{terminal_colors.RED}{terminal_colors.BOLD}"
-                        "Invalid option for options > menu > show_logo: "
-                        f"{self.configuration['options']['menu']['show_logo']}. "
-                        "Please select a boolean value: True, False"
-                        f"{terminal_colors.END}"
-                    )
-
-        if not options_found:
-            if "options" not in self.configuration:
-                self.configuration["options"] = {}
-
+            if "show_logo" not in self.configuration["options"]["menu"]:
+                self.configuration["options"]["menu"]["show_logo"] = True
+            elif not isinstance(
+                self.configuration["options"]["menu"]["show_logo"], bool
+            ):
+                raise ParserError(
+                    f"{terminal_colors.RED}{terminal_colors.BOLD}"
+                    "Invalid option for options > menu > show_logo: "
+                    f"{self.configuration['options']['menu']['show_logo']}. "
+                    "Please select a boolean value: True, False"
+                    f"{terminal_colors.END}"
+                )
+        else:
             self.configuration["options"]["menu"] = {
                 "bar_position": "left",
                 "drawer_position": "left",
@@ -586,3 +578,7 @@ class ConfigParser:
                 "show_logo": True,
                 "homepage": None,
             }
+
+        self.configuration["options"]["plotly_theme"] = self.configuration[
+            "options"
+        ].get("plotly_theme", {})

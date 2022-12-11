@@ -22,6 +22,7 @@ logging.basicConfig(level=logging.{{ loglevel }})
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
+theme.plotly_theme_layout_update({{ options.plotly_theme }})
 
 app = dash.Dash()
 app.config.suppress_callback_exceptions = True
@@ -40,7 +41,7 @@ webviz_config.plugins.{{ content._call_signature[0].split('(')[0]}}
 # argument to all plugins that request it.
 webviz_settings: webviz_config.WebvizSettings = webviz_config.WebvizSettings(
     shared_settings=webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
-        {{ shared_settings }}, {{ config_folder }}, {{ False }} 
+        {{ shared_settings }}, {{ config_folder }}, {{ False }}
     ),
     theme=theme,
 )
@@ -55,7 +56,7 @@ app._deprecated_webviz_settings = {
 }
 
 {% if logging_config_dict is defined %}
-# Apply a logging config dict as specified via the --logconfig command line argument. 
+# Apply a logging config dict as specified via the --logconfig command line argument.
 logging.config.dictConfig({{ logging_config_dict }})
 {% endif %}
 

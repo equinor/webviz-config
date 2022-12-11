@@ -30,14 +30,15 @@ from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
 import webviz_core_components as wcc
 
 
-# Start out by setting a sensible configuration for the root logger and setting a global 
-# loglevel. The (global) loglevel defaults to WARNING, but can be set by the user via 
-# the --loglevel argument. The call to basicConfig() should happen before any other logging 
+# Start out by setting a sensible configuration for the root logger and setting a global
+# loglevel. The (global) loglevel defaults to WARNING, but can be set by the user via
+# the --loglevel argument. The call to basicConfig() should happen before any other logging
 # related calls, see https://docs.python.org/3/library/logging.html#logging.basicConfig
 logging.basicConfig(level=logging.{{ loglevel }})
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
+theme.plotly_theme_layout_update({{ options.plotly_theme }})
 
 app = Dash(
     name=__name__,
@@ -88,7 +89,7 @@ webviz_config.plugins.{{ content._call_signature[0].split('(')[0]}}
 # argument to all plugins that request it.
 webviz_settings: webviz_config.WebvizSettings = webviz_config.WebvizSettings(
     shared_settings=webviz_config.SHARED_SETTINGS_SUBSCRIPTIONS.transformed_settings(
-        {{ shared_settings }}, {{ config_folder }}, {{ portable }} 
+        {{ shared_settings }}, {{ config_folder }}, {{ portable }}
     ),
     theme=theme,
 )
@@ -153,7 +154,7 @@ else:
     {% endfor %}
     {% endfor %}
     app.layout = html.Div(
-        className="layoutWrapper", 
+        className="layoutWrapper",
         children=[
             dcc.Location(id='location', refresh=True),
             wcc.WebvizContentManager(
@@ -192,8 +193,8 @@ Talisman(server, content_security_policy=theme.csp, feature_policy=theme.feature
 oauth2 = webviz_config.Oauth2(app.server) if use_oauth2 else None
 
 @callback(
-    Output("plugins-wrapper", "children"), 
-    Output("settings-drawer", "children"), 
+    Output("plugins-wrapper", "children"),
+    Output("settings-drawer", "children"),
     Input("location", "pathname")
 )
 def update_page(pathname):
@@ -204,7 +205,7 @@ def update_page(pathname):
         else:
             pathname = ""
     if not pathname:
-        pathname = next(iter(page_plugins)) 
+        pathname = next(iter(page_plugins))
     return page_plugins.get(pathname, ["Oooppss... Page not found."]), page_settings.get(pathname, [])
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
@@ -238,7 +239,7 @@ if __name__ == "__main__":
         dev_tools_ui=True,
         dev_tools_props_check=True,
         dev_tools_serve_dev_bundles=True,
-        {% endif %}        
+        {% endif %}
     )
 else:
     # This will be applied if not running on localhost
