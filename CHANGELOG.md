@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] - YYYY-MM-DD
 ### Fixed
+- [#548](https://github.com/equinor/webviz-config/pull/548) - Regression fix: Allow deploying portable builds made in Windows to run on posix systems and vice versa
 - [#655](https://github.com/equinor/webviz-config/pull/655) - Regression fix: Show filters in `TablePlotter` when using `lock` argument.
 
 ### Changed
