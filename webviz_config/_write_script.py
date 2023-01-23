@@ -27,9 +27,7 @@ def write_script(
     configuration.update(
         {
             "author": getpass.getuser(),
-            "config_folder": repr(
-                pathlib.PurePath(args.yaml_file.resolve().parent.as_posix())
-            ),
+            "config_folder": repr(args.yaml_file.resolve().parent),
             "current_date": datetime.date.today().strftime("%Y-%m-%d"),
             "debug": args.debug,
             "loglevel": args.loglevel,
