@@ -195,7 +195,9 @@ def _call_signature(
         special_args += "webviz_settings=webviz_settings, "
 
     return (
-        f"{plugin_name}({special_args}**{kwargs})",
+        f"{plugin_name}({special_args}**{kwargs})".replace(
+            "WindowsPath", "Path"
+        ).replace("PosixPath", "Path"),
         (
             f"plugin_layout(contact_person={contact_person}"
             f", plugin_deprecation_warnings={plugin_deprecation_warnings}"
