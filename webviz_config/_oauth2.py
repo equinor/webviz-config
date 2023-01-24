@@ -151,6 +151,10 @@ class Oauth2:
                 # Access token has expired
                 print("Access token has expired, trying to refresh.")
                 try:
+                    raise Exception(
+                        "Disable refreshing, it is broken and a security risk"
+                    )
+                    # pylint: disable=W0101
                     access_token, expiration_date = self.refresh_token_if_possible()
                     flask.session["access_token"] = access_token
                     flask.session["expiration_date"] = expiration_date
