@@ -24,7 +24,7 @@ def get_long_description() -> str:
 
 TESTS_REQUIRES = [
     "bandit",
-    "black>=22.12",
+    "black>=22.12,<23",
     "dash[testing]",
     "jsonschema",
     "mypy",

@@ -68,10 +68,8 @@ def application_exists(application_name: str, context: str) -> bool:
 
 def create_application(
     application_name: str,
-    owner_email: str,
     repository_url: str,
     shared_secret: str,
-    wbs: str,
     context: str,
 ) -> str:
     result = subprocess.run(
@@ -81,16 +79,14 @@ def create_application(
             "application",
             "--application",
             application_name,
-            "--owner",
-            owner_email,
             "--config-branch",
             "main",
+            "--configuration-item",
+            "insert-value-here",
             "--repository",
             repository_url,
             "--shared-secret",
             shared_secret,
-            "--wbs",
-            wbs,
             "--context",
             context,
         ],

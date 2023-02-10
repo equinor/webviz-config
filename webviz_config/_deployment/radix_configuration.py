@@ -23,23 +23,9 @@ def radix_configuration() -> Dict[str, str]:
         reuse_allowed=False,
     )
 
-    interactive_terminal.terminal_title("Radix owner e-mail")
-    radix_owner_email = interactive_terminal.user_input_from_stdin(
-        "WEBVIZ_RADIX_EMAIL", "e-mail", regex=r"[^@]+@[^@]+\.[^@]+"
-    )
-
-    interactive_terminal.terminal_title(
-        "WBS to use for Radix application cost allocation"
-    )
-    radix_wbs = interactive_terminal.user_input_from_stdin(
-        "WEBVIZ_RADIX_WBS", "WBS", regex=r"[a-zA-Z0-9]+\.+[a-zA-Z0-9.]*[a-zA-Z0-9]"
-    )
-
     return {
         "context": radix_context,
         "application_name": radix_application_name,
-        "owner_email": radix_owner_email,
-        "wbs": radix_wbs,
         "app_url": f"https://{radix_application_name}.app.{radix_subdomain}",
         "webhook_receiver_url": f"https://webhook.{radix_subdomain}/events/github",
     }
