@@ -491,9 +491,11 @@ If feature is requested, the data could also come from a database.
                 else:
                     div_style.append(self.style_options_div_hidden)
             figure: Figure = plotfunc(data, template=self.plotly_theme, **plotargs)
-            figure.update_layout(
-                xaxis_range=[xaxis_min, xaxis_max], yaxis_range=[yaxis_min, yaxis_max]
-            )
+            if xaxis_min is not None and xaxis_max is not None:
+                figure.update_layout(xaxis_range=[xaxis_min, xaxis_max])
+            if yaxis_min is not None and yaxis_max is not None:
+                figure.update_layout(yaxis_range=[yaxis_min, yaxis_max])
+
             return (figure, *div_style)
 
 
