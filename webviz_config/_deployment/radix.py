@@ -156,15 +156,14 @@ def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) ->
 
         progress_bar.write(
             f"✓ Creating Radix application '{radix_config['application_name']}' "
-            f"in {radix_config['context']}."
+            f"in {radix_config['context']}. Remember to manually add correct "
+            "ServiceNow configuration item."
         )
         webhook_secret = secrets.token_urlsafe()
         public_key = radix_cli.create_application(
             application_name=radix_config["application_name"],
-            owner_email=radix_config["owner_email"],
             repository_url=repository_url,
             shared_secret=webhook_secret,
-            wbs=radix_config["wbs"],
             context=radix_config["context"],
         )
         progress_bar.update()
