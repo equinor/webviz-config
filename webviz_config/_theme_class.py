@@ -13,7 +13,6 @@ class WebvizConfigTheme:
         self._csp = {
             "default-src": "'none'",
             "connect-src": "'self'",
-            "prefetch-src": "'self'",
             "style-src": ["'self'", "'unsafe-inline'"],  # [1]
             "script-src": ["'self'", "blob:", "'unsafe-eval'"],  # [blob: 2] [eval: 3]
             "img-src": ["'self'", "data:", "blob:"],  # [4]
