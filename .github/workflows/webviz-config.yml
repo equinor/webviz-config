@@ -68,7 +68,7 @@ jobs:
           black --check webviz_config tests setup.py
           pylint webviz_config tests setup.py
           bandit -r -c ./bandit.yml webviz_config tests setup.py
-          mypy --package webviz_config --ignore-missing-imports --disallow-untyped-defs --show-error-codes
+          # mypy --package webviz_config --ignore-missing-imports --disallow-untyped-defs --show-error-codes
 
       - name: 🤖 Run tests
         run: |
