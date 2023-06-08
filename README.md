@@ -1,3 +1,12 @@
+<h4>This package will be deprecated - we move instead all collaboration focus to the reusable React and Dash components in:
+<ul>
+  <li>https://github.com/equinor/webviz-subsurface-components</li>
+  <li>https://github.com/equinor/webviz-core-components</li>
+</ul>
+</h2>
+
+<hr/>
+
 <p align="center">
   <img height="150" src="https://github.com/equinor/webviz-config/raw/master/webviz_config/_docs/static/webviz-logo.svg?sanitize=true">
 </p>
