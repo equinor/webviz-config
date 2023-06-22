@@ -71,6 +71,7 @@ def create_application(
     repository_url: str,
     shared_secret: str,
     context: str,
+    ad_group: str,
 ) -> str:
     result = subprocess.run(
         [
@@ -89,6 +90,8 @@ def create_application(
             shared_secret,
             "--context",
             context,
+            "--ad-groups",
+            ad_group,
         ],
         capture_output=True,
         check=True,
