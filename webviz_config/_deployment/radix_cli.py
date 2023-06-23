@@ -71,6 +71,7 @@ def create_application(
     repository_url: str,
     shared_secret: str,
     context: str,
+    ad_group: str,
 ) -> str:
     result = subprocess.run(
         [
@@ -89,6 +90,8 @@ def create_application(
             shared_secret,
             "--context",
             context,
+            "--ad-groups",
+            ad_group,
         ],
         capture_output=True,
         check=True,
@@ -96,12 +99,13 @@ def create_application(
 
     stderr = result.stderr.decode()
     if not stderr.startswith("ssh-rsa"):
-        error_message = stderr
-        if "registerApplicationBadRequest" in stderr:
-            error_message += (
-                f"Is {repository_url} being used by another Radix application?"
-            )
-        raise RuntimeError(error_message)
+        pass  # https://github.com/equinor/radix-cli/issues/48
+        # error_message = stderr
+        # if "registerApplicationBadRequest" in stderr:
+        #     error_message += (
+        #         f"Is {repository_url} being used by another Radix application?"
+        #     )
+        # raise RuntimeError(error_message)
 
     return stderr
 

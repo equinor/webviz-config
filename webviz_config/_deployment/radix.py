@@ -165,6 +165,7 @@ def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) ->
             repository_url=repository_url,
             shared_secret=webhook_secret,
             context=radix_config["context"],
+            ad_group=radix_config["ad_group"],
         )
         progress_bar.update()
 
@@ -182,9 +183,13 @@ def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) ->
         progress_bar.update()
 
         progress_bar.write("✓ Adding Radix deploy key to GitHub repository.")
-        github_cli.add_deploy_key(
-            directory=cloned_path, title="Radix deploy key", key=public_key
-        )
+
+        # gh api currently fails - add manually:
+        # https://github.com/equinor/radix-cli/issues/48
+        progress_bar.write(f"Add following deploy key: {public_key}")
+        # github_cli.add_deploy_key(
+        #     directory=cloned_path, title="Radix deploy key", key=public_key
+        # )
         progress_bar.update()
 
     # Wait for application to be reconciled

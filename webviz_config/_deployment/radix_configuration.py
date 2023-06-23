@@ -15,6 +15,12 @@ def radix_configuration() -> Dict[str, str]:
     if radix_context == "playground":
         radix_subdomain = "playground." + radix_subdomain
 
+    interactive_terminal.terminal_title("Radix AD group")
+    radix_ad_group = interactive_terminal.user_input_from_stdin(
+        "WEBVIZ_RADIX_AD_GROUP",
+        "AD group object ID",
+    )
+
     interactive_terminal.terminal_title("Radix application name")
     radix_application_name = interactive_terminal.user_input_optional_reuse(
         "WEBVIZ_RADIX_APPLICATION",
@@ -28,4 +34,5 @@ def radix_configuration() -> Dict[str, str]:
         "application_name": radix_application_name,
         "app_url": f"https://{radix_application_name}.app.{radix_subdomain}",
         "webhook_receiver_url": f"https://webhook.{radix_subdomain}/events/github",
+        "ad_group": radix_ad_group,
     }
