@@ -165,7 +165,7 @@ def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) ->
             repository_url=repository_url,
             shared_secret=webhook_secret,
             context=radix_config["context"],
-            ad_group=radix_config["ad_group"]
+            ad_group=radix_config["ad_group"],
         )
         progress_bar.update()
 
