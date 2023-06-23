@@ -56,6 +56,13 @@ def create_github_repository(github_slug: str, directory: Path) -> Path:
         cwd=directory,
     )
 
+    subprocess.run(
+        ["gh", "repo", "clone", github_slug],
+        capture_output=True,
+        check=True,
+        cwd=directory,
+    )
+
     return directory / github_slug.split("/")[1]
 
 

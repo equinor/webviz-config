@@ -99,12 +99,13 @@ def create_application(
 
     stderr = result.stderr.decode()
     if not stderr.startswith("ssh-rsa"):
-        error_message = stderr
-        if "registerApplicationBadRequest" in stderr:
-            error_message += (
-                f"Is {repository_url} being used by another Radix application?"
-            )
-        raise RuntimeError(error_message)
+        pass  # https://github.com/equinor/radix-cli/issues/48
+        # error_message = stderr
+        # if "registerApplicationBadRequest" in stderr:
+        #     error_message += (
+        #         f"Is {repository_url} being used by another Radix application?"
+        #     )
+        # raise RuntimeError(error_message)
 
     return stderr
 
