@@ -11,7 +11,7 @@ from ..plugins import PLUGIN_PROJECT_METADATA
 from ._pip_git_url import pip_git_url
 
 
-PYPI_URL_ROOT = "https://pypi.org/"
+PYPI_URL_ROOT = "https://pypi.org"
 
 
 def create_docker_setup(
