@@ -23,4 +23,4 @@ def test_example_wlf_plugin(
     )
 
     _webviz_duo.wait_for_contains_text(component_id, "x - y")
-    assert _webviz_duo.get_logs() == []
+    assert _webviz_duo.get_logs() is None
