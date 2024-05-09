@@ -21,7 +21,7 @@ def test_data_table(dash_duo):
         page = _data_table.DataTable(app, code_file)
         app.layout = page.layout
         dash_duo.start_server(app)
-        assert dash_duo.get_logs() is None, "browser console should contain no error"
+        assert not dash_duo.get_logs(), "browser console should contain no error"
 
 
 def test_data_table_with_settings(dash_duo):
@@ -39,4 +39,4 @@ def test_data_table_with_settings(dash_duo):
         )
         app.layout = page.layout
         dash_duo.start_server(app)
-        assert dash_duo.get_logs() is None, "browser console should contain no error"
+        assert not dash_duo.get_logs(), "browser console should contain no error"

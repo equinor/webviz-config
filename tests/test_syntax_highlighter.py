@@ -20,4 +20,4 @@ def test_syntax_highlighter(dash_duo):
         page = _syntax_highlighter.SyntaxHighlighter(app, code_file)
         app.layout = page.layout
         dash_duo.start_server(app)
-        assert dash_duo.get_logs() is None, "browser console should contain no error"
+        assert not dash_duo.get_logs(), "browser console should contain no error"
