@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 
 from webviz_config._dockerize._create_docker_setup import get_python_requirements
@@ -39,7 +41,8 @@ from webviz_config._dockerize._create_docker_setup import get_python_requirement
     ],
 )
 def test_derived_requirements(distributions, requirements):
-    with pytest.warns(None) as record:
+    with warnings.catch_warnings(record=True) as record:
+        warnings.simplefilter("always")
         assert set(requirements).issubset(get_python_requirements(distributions))
         assert len(record) == len(
             [
