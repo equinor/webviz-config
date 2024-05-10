@@ -147,4 +147,4 @@ def test_create_themed_layout_on_app(dash_duo):
         # test some values
         assert new_layout["colorway"] == specified_layout["colorway"]
         assert new_layout["xaxis"]["title"]["text"] == "Title"
-        assert dash_duo.get_logs() is None, "browser console should contain no error"
+        assert not dash_duo.get_logs(), "browser console should contain no error"

@@ -11,7 +11,6 @@ GET_DATA = "webviz_config.generic_plugins._data_table.get_data"
 
 
 def test_data_table(dash_duo):
-
     app = dash.Dash(__name__)
     app.config.suppress_callback_exceptions = True
     CACHE.init_app(app.server)
@@ -21,11 +20,10 @@ def test_data_table(dash_duo):
         page = _data_table.DataTable(app, code_file)
         app.layout = page.layout
         dash_duo.start_server(app)
-        assert dash_duo.get_logs() is None, "browser console should contain no error"
+        assert not dash_duo.get_logs(), "browser console should contain no error"
 
 
 def test_data_table_with_settings(dash_duo):
-
     app = dash.Dash(__name__)
     app.css.config.serve_locally = True
     app.scripts.config.serve_locally = True
@@ -39,4 +37,4 @@ def test_data_table_with_settings(dash_duo):
         )
         app.layout = page.layout
         dash_duo.start_server(app)
-        assert dash_duo.get_logs() is None, "browser console should contain no error"
+        assert not dash_duo.get_logs(), "browser console should contain no error"
