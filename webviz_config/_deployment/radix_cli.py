@@ -38,6 +38,7 @@ def logged_in() -> bool:
     config = pathlib.Path.home() / ".radix" / "config"
     return config.is_file()
 
+
 def log_in() -> None:
     _trigger_token_aquisition()
 
