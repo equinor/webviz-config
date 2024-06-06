@@ -54,7 +54,7 @@ def application_exists(application_name: str, context: str) -> bool:
             context,
         ],
         capture_output=True,
-        check=True,
+        check=False,
     )
     return not result.stderr
 
