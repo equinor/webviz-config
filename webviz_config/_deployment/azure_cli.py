@@ -11,18 +11,16 @@ from typing import List, Dict, Optional, Tuple
 import requests
 from tqdm.asyncio import tqdm
 
-try:
-    from azure.identity import InteractiveBrowserCredential
-    from azure.core.exceptions import HttpResponseError
-    from azure.mgmt.resource.subscriptions import SubscriptionClient
-    from azure.mgmt.resource import ResourceManagementClient
-    from azure.mgmt.storage import StorageManagementClient
-    from azure.storage.blob import BlobServiceClient
-    from azure.storage.blob.aio import ContainerClient
 
-    AZURE_CLI_INSTALLED = True
-except ModuleNotFoundError:
-    AZURE_CLI_INSTALLED = False
+from azure.identity import InteractiveBrowserCredential
+from azure.core.exceptions import HttpResponseError
+from azure.mgmt.resource.subscriptions import SubscriptionClient
+from azure.mgmt.resource import ResourceManagementClient
+from azure.mgmt.storage import StorageManagementClient
+from azure.storage.blob import BlobServiceClient
+from azure.storage.blob.aio import ContainerClient
+
+AZURE_CLI_INSTALLED=True
 
 GRAPH_BASE_URL = "https://graph.microsoft.com"
 PIMCOMMON_URL = (

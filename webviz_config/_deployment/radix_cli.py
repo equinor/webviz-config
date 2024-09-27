@@ -61,6 +61,7 @@ def application_exists(application_name: str, context: str) -> bool:
 
 def create_application(
     application_name: str,
+    configuration_item: str,
     repository_url: str,
     shared_secret: str,
     context: str,
@@ -76,7 +77,7 @@ def create_application(
             "--config-branch",
             "main",
             "--configuration-item",
-            "insert-value-here",
+            configuration_item,
             "--repository",
             repository_url,
             "--shared-secret",
