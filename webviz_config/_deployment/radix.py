@@ -162,6 +162,7 @@ def radix_initial_deployment(github_slug: str, build_directory: pathlib.Path) ->
         webhook_secret = secrets.token_urlsafe()
         public_key = radix_cli.create_application(
             application_name=radix_config["application_name"],
+            configuration_item=radix_config["configuration_item"],
             repository_url=repository_url,
             shared_secret=webhook_secret,
             context=radix_config["context"],

@@ -38,7 +38,7 @@ def radix_configuration() -> Dict[str, str]:
     return {
         "context": radix_context,
         "application_name": radix_application_name,
-        "configuratino_item": radix_configuration_item,
+        "configuration_item": radix_configuration_item,
         "app_url": f"https://{radix_application_name}.app.{radix_subdomain}",
         "webhook_receiver_url": f"https://webhook.{radix_subdomain}/events/github",
         "ad_group": radix_ad_group,
