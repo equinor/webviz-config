@@ -14,7 +14,7 @@ from pathlib import Path
 
 from uuid import uuid4
 
-from dash import html, dcc, Dash, Input, Output, callback, callback_context
+from dash import html, dcc, Dash, Input, Output, callback, callback_context, _dash_renderer
 import webviz_core_components as wcc
 from flask_talisman import Talisman
 import webviz_config
@@ -39,6 +39,8 @@ logging.basicConfig(level=logging.{{ loglevel }})
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
 theme.plotly_theme_layout_update({{ options.plotly_theme }})
+
+_dash_renderer._set_react_version("18.3.1")
 
 app = Dash(
     name=__name__,
