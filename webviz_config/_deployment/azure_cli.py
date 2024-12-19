@@ -11,6 +11,7 @@ from typing import List, Dict, Optional, Tuple
 import requests
 from tqdm.asyncio import tqdm
 
+
 try:
     from azure.identity import InteractiveBrowserCredential
     from azure.core.exceptions import HttpResponseError

@@ -1,4 +1,3 @@
-import json
 import time
 import shutil
 import pathlib
@@ -36,13 +35,7 @@ def logged_in() -> bool:
     _trigger_token_aquisition(update_only=True)
 
     config = pathlib.Path.home() / ".radix" / "config"
-
-    if config.is_file():
-        token_expiry_time = json.loads(config.read_text())["sessionConfig"]["expiresOn"]
-        if token_expiry_time > time.time():
-            return True
-
-    return False
+    return config.is_file()
 
 
 def log_in() -> None:
@@ -61,13 +54,14 @@ def application_exists(application_name: str, context: str) -> bool:
             context,
         ],
         capture_output=True,
-        check=True,
+        check=False,
     )
     return not result.stderr
 
 
 def create_application(
     application_name: str,
+    configuration_item: str,
     repository_url: str,
     shared_secret: str,
     context: str,
@@ -83,7 +77,7 @@ def create_application(
             "--config-branch",
             "main",
             "--configuration-item",
-            "insert-value-here",
+            configuration_item,
             "--repository",
             repository_url,
             "--shared-secret",

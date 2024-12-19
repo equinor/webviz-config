@@ -20,7 +20,7 @@
 <a href="https://github.com/equinor/webviz-config/actions?query=branch%3Amaster"><img src="https://github.com/equinor/webviz-config/workflows/webviz-config/badge.svg"></a>
 <a href="https://lgtm.com/projects/g/equinor/webviz-config/alerts/"><img alt="Total alerts" src="https://img.shields.io/lgtm/alerts/g/equinor/webviz-config.svg?logo=lgtm&logoWidth=18"/></a>
 <a href="https://lgtm.com/projects/g/equinor/webviz-config/context:python"><img alt="Language grade: Python" src="https://img.shields.io/lgtm/grade/python/g/equinor/webviz-config.svg?logo=lgtm&logoWidth=18"/></a>
-<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10-blue.svg"></a>
+<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11%20|%203.12-blue.svg"></a>
 <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 <br/>
@@ -30,7 +30,7 @@ Writing a [Dash web application](https://github.com/plotly/dash) gives a lot of 
 *Webviz™* is a MIT-licensed configuration layer on top of Dash, which encourages making reusable components and dashboards, which can then be added/removed when creating an application using a short [`yaml`](https://en.wikipedia.org/wiki/YAML) configuration file.
 
 This Python package, `webviz-config`, is the core plugin framework. For a real example repository using this plugin system, see e.g. [`webviz-subsurface`](https://github.com/equinor/webviz-subsurface).
- 
+
 **These are the main user groups targeted by *Webviz™*:**
 - **You do not know Python**, and only want to add different predefined dashboards or visualizations/components in a certain order and/or on different pages in the application. Optionally with some text and mathematical equations (that you provide) inbetween the  dashboards, explaining what the user is looking at.
 - **You know [Python](https://www.python.org/)**, and want to create generic or specialized dashboards you or other users can reuse by simply asking for it in the Webviz™ configuration file. This can be done without knowing JavaScript (see also [Dash](https://plot.ly/dash/) for more information).
@@ -104,4 +104,3 @@ To quickly get started, we recommend using the corresponding
 `webviz-config` is, with a few exceptions listed below, [MIT](./LICENSE) licensed.
 
 - The [`webviz-config` logo](./webviz_config/_docs/static/webviz-logo.svg) is [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)
-

@@ -29,9 +29,16 @@ def radix_configuration() -> Dict[str, str]:
         reuse_allowed=False,
     )
 
+    interactive_terminal.terminal_title("Configuration item")
+    radix_configuration_item = interactive_terminal.user_input_from_stdin(
+        "WEBVIZ_RADIX_CONFIGURATION_ITEM",
+        "Configuration item",
+    )
+
     return {
         "context": radix_context,
         "application_name": radix_application_name,
+        "configuration_item": radix_configuration_item,
         "app_url": f"https://{radix_application_name}.app.{radix_subdomain}",
         "webhook_receiver_url": f"https://webhook.{radix_subdomain}/events/github",
         "ad_group": radix_ad_group,

@@ -24,4 +24,4 @@ def test_portable(dash_duo, tmp_path):
         "pivot-table",
     ]:
         dash_duo.wait_for_element(f".Menu__Page[href='/{page}']").click()
-    assert dash_duo.get_logs() == [], "browser console should contain no error"
+    assert not dash_duo.get_logs(), "browser console should contain no error"
