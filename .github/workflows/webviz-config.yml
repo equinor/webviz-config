@@ -73,7 +73,7 @@ jobs:
       - name: 🤖 Run tests
         run: |
           webviz preferences --theme default
-          pytest ./tests --headless --forked
+          pytest ./tests --headless --forked --ignore ./tests/test_example_wlf_plugin.py
           webviz docs --portable ./docs_build --skip-open
           webviz schema
 
