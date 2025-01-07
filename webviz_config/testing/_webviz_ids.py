@@ -6,4 +6,4 @@ class WebvizIds(str, Enum):
     CONTENT_MANAGER = "webviz-content-manager"
     SETTINGS_DRAWER = "settings-drawer"
     PLUGINS_WRAPPER = "plugins-wrapper"
-    SETTINGS_DRAWER_TOGGLE_OPEN = ".WebvizSettingsDrawer__ToggleOpen"
+    SETTINGS_DRAWER_TOGGLE = ".WebvizSettingsDrawer__Toggle"
