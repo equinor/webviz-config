@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#655](https://github.com/equinor/webviz-config/pull/655) - Regression fix: Show filters in `TablePlotter` when using `lock` argument.
 
 ### Changed
+- [#687](https://github.com/equinor/webviz-config/pull/687) - Enforce React 18 in Dash.
+- [#687](https://github.com/equinor/webviz-config/pull/687) - Allow `data:` in `connect-src` CSP in order to enable loading of images from data strings.
 - [#648](https://github.com/equinor/webviz-config/pull/648) - Allow `blob:` in `script-src` CSP in order to enable web worker usage in Dash components.
 - [#652](https://github.com/equinor/webviz-config/pull/652) - Enabled support for LaTeX math/equations in markdown.
 - [#653](https://github.com/equinor/webviz-config/pull/653) - Reduce time for running `webviz --help` by lazy importing top level entrypoints.
