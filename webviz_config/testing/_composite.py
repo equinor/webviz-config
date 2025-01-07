@@ -70,7 +70,7 @@ class WebvizComposite(Browser):
 
     def toggle_webviz_settings_drawer(self) -> None:
         """Open the plugin settings drawer"""
-        self.wait_for_element(WebvizIds.SETTINGS_DRAWER_TOGGLE_OPEN).click()
+        self.wait_for_element(WebvizIds.SETTINGS_DRAWER_TOGGLE).click()
 
     def toggle_webviz_settings_group(self, settings_group_id: str) -> None:
         """Open the respective settings group in the settings drawer"""
