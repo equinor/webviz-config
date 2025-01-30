@@ -24,7 +24,7 @@ theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
 theme.plotly_theme_layout_update({{ options.plotly_theme }})
 
-dash._dash_renderer._set_react_version("18.3.1")
+dash._dash_renderer._set_react_version("18.2.0")
 
 app = dash.Dash()
 app.config.suppress_callback_exceptions = True
