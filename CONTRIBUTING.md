@@ -493,7 +493,7 @@ The values can be found in the Azure AD configuration page. Short explanation of
 - `WEBVIZ_TENANT_ID`: The organization's Azure tenant ID (Equinor has exactly one tenant ID).
 - `WEBVIZ_CLIENT_ID`: ID of the Webviz Azure AD app.
 - `WEBVIZ_CLIENT_SECRET`: Webviz Azure AD app's client secret.
-- `WEBVIZ_SCOPE`: The API permission for this Webviz Azure AD app.
+- `WEBVIZ_SCOPE`: The API permission for this Webviz Azure AD app. If there are more than one scopes, use comma (`,`) to separate them. Note that only multiple scopes from one resource/API is currently supported.
 
 If you are serving behind a proxy, you might need to configure trust for X-FORWARD headers.
 Internally, this is done by using a ProxyFix class, as described in the Flask [docs](https://flask.palletsprojects.com/en/2.0.x/deploying/wsgi-standalone/#proxy-setups). To enable the use of the ProxyFix class, set one or all of the following variables to an integer describing the number of trusted forwards:
