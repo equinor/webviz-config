@@ -7,12 +7,12 @@
   "author": "Equinor",
   "license": "MIT",
   "dependencies": {
-    "docsify": "^4.12.0",
+    "docsify": "^4.12.2",
     "docsify-copy-code": "^2.1.1",
-    "docsify-katex": "^1.4.3",
+    "docsify-katex": "^2.0.2",
     "docsify-tabs": "^1.4.4",
-    "katex": "^0.12.0",
-    "prismjs": "^1.27.0"
+    "katex": "^0.16.28",
+    "prismjs": "^1.30.0"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1"
