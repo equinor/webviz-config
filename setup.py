@@ -107,6 +107,7 @@ setup(
             "azure-identity",
             "azure-mgmt-resource",
             "azure-mgmt-storage",
+            "azure-mgmt-subscription",
             "azure-storage-blob",
         ],
     },
