@@ -17,6 +17,16 @@ from uuid import uuid4
 from dash import html, dcc, Dash, Input, Output, callback, callback_context, _dash_renderer
 import webviz_core_components as wcc
 from flask_talisman import Talisman
+
+
+from azure.monitor.opentelemetry import configure_azure_monitor
+from opentelemetry.sdk.resources import Resource
+from importlib.metadata import version
+import platform
+import os
+import pwd
+
+
 import webviz_config
 import webviz_config.plugins
 from webviz_config.themes import installed_themes
@@ -35,6 +45,34 @@ import webviz_core_components as wcc
 # the --loglevel argument. The call to basicConfig() should happen before any other logging
 # related calls, see https://docs.python.org/3/library/logging.html#logging.basicConfig
 logging.basicConfig(level=logging.{{ loglevel }})
+
+
+telemetry_logger = None
+
+# !!!!!!!!!!!!!
+# !!!!!!!!!!!!!
+app_insights_connection_string = None
+is_on_radix_platform = bool(os.getenv("RADIX_APP") and os.getenv("RADIX_ENVIRONMENT"))
+
+if not is_on_radix_platform and app_insights_connection_string is not None:
+    print("Configuring telemetry for Application Insights...")
+
+    telemetry_logger = logging.getLogger("my_tel_logger")
+    telemetry_logger.setLevel(logging.DEBUG)
+
+    hostname = platform.node()
+    pkg_version = version("webviz-config")
+
+    configure_azure_monitor(
+        connection_string=app_insights_connection_string,
+        logger_name="my_tel_logger",
+        sampling_ratio=1.0,
+        resource=Resource.create(attributes={"service.name": "WebvizDash", "service.namespace": hostname, "service.version": pkg_version}),
+        # For now, drop flask instrumentation as it doesn't add much value
+        instrumentation_options={"flask": {"enabled": False} }
+    )
+
+
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
@@ -137,9 +175,11 @@ else:
     count_text_plugins = 0
     page_plugins = {}
     page_settings = {}
+    page_plugin_class_names= {}
     {% for page in pageContents %}
     page_plugins["{{page.id}}"] = []
     page_settings["{{page.id}}"] = []
+    page_plugin_class_names["{{page.id}}"] = set()
     {% for content_item in page.content -%}
     {% if content_item is string %}
     page_plugins["{{page.id}}"].append(wcc.WebvizPluginWrapper(id=f"text-{count_text_plugins}", views=[], initiallyActiveViewId="", name="Text", children=[dcc.Markdown(r"""{{ content_item }}""", mathjax=True)]))
@@ -151,6 +191,7 @@ else:
 
     page_plugins["{{page.id}}"].extend(plugin.{{ content_item._call_signature[1] }})
     page_settings["{{page.id}}"].extend([settings for settings in plugin.get_all_settings()])
+    page_plugin_class_names["{{page.id}}"].add(type(plugin).__name__)
 
     {% endif %}
     {% endfor %}
@@ -208,6 +249,19 @@ def update_page(pathname):
             pathname = ""
     if not pathname:
         pathname = next(iter(page_plugins))
+
+    if telemetry_logger:
+        uid = os.getuid()
+        username = pwd.getpwuid(uid).pw_name
+        
+        print(f"{uid=}, {username=}", f"{is_on_radix_platform=}")
+
+        class_names = page_plugin_class_names.get(pathname, set())
+        print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Updating page: {pathname=} {username=} {len(class_names)=} {class_names=}")
+        for class_name in class_names:
+            telemetry_logger.info("LOGGING PAGECHANGE", extra={"sig_plugin_name": class_name, "sig_page_path": pathname, "sig_user_id": username})
+
+
     return page_plugins.get(pathname, ["Oooppss... Page not found."]), page_settings.get(pathname, [])
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
