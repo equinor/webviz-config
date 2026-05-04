@@ -70,7 +70,7 @@ def setup_usage_analytics() -> UsageAnalytics | None:
 
     # Don't propagate telemetry logs to the root logger, since that would cause them to be
     # printed to console by the default logging configuration.
-    #telemetry_logger.propagate = False
+    telemetry_logger.propagate = False
 
     return UsageAnalytics(telemetry_logger=telemetry_logger, user_name=username)
 
