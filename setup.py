@@ -98,7 +98,7 @@ setup(
         "tqdm>=4.8",
         "webviz-core-components>=0.6",
         "werkzeug>=2.0",
-        "azure-monitor-opentelemetry>=1.8.6",
+        "azure-monitor-opentelemetry>=1.8.7",
     ],
     extras_require={
         "tests": TESTS_REQUIRES,
