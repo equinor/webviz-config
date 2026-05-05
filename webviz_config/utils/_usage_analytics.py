@@ -35,18 +35,24 @@ def setup_usage_analytics() -> UsageAnalytics | None:
         return None
 
     if _get_bool_env("WEBVIZ_DISABLE_USAGE_ANALYTICS"):
-        print("Usage analytics is disabled via environment variable, skipping setup of telemetry for usage analytics.")
+        print(
+            "Usage analytics is disabled via environment variable, skipping setup of telemetry for usage analytics."
+        )
         return None
 
     print("")
     print("Setting up telemetry for usage analytics...")
     print("")
-    print("We encourage you to implement the new version of Webviz (https://webviz.fmu.equinor.com) that uses Sumo (https://sumo.fmu.equinor.com) as its data source.")
-    print("Please let us know if you are blocked from transitioning to this new cloud-only setup.")
+    print(
+        "We encourage you to implement the new version of Webviz (https://webviz.fmu.equinor.com) that uses Sumo (https://sumo.fmu.equinor.com) as its data source."
+        "Please let us know if you are blocked from transitioning to this new cloud-only setup."
+    )
     print("")
-    print("To support the transition, usage of on-prem Webviz will now be logged by default in all FMU workflows, i.e. where KOMODO_RELEASE is defined.")
-    print("This allows us to monitor remaining on-prem activity and proactively support users in transitioning. No underlying project data will be collected.")
-    print("To opt out of this logging, set the environment variable WEBVIZ_DISABLE_USAGE_ANALYTICS=1.")
+    print(
+        "To support the transition, usage of on-prem Webviz will now be logged by default in all FMU workflows, i.e. where KOMODO_RELEASE is defined."
+        "This allows us to monitor remaining on-prem activity and proactively support users in transitioning. No underlying project data will be collected."
+        "To opt out of this logging, set the environment variable WEBVIZ_DISABLE_USAGE_ANALYTICS=1."
+    )
     print("")
 
     wv_config_pkg_version = version("webviz-config")
@@ -71,7 +77,9 @@ def setup_usage_analytics() -> UsageAnalytics | None:
             instrumentation_options={"flask": {"enabled": False}},
         )
     except Exception as e:
-        print(f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {e}")
+        print(
+            f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {e}"
+        )
         return None
 
     telemetry_logger = logging.getLogger("wv_telemetry_logger")
@@ -85,7 +93,7 @@ def setup_usage_analytics() -> UsageAnalytics | None:
 
 
 def _get_hostname() -> str:
-    hostname =  platform.node()
+    hostname = platform.node()
     if hostname is None or hostname == "":
         print("Failed to get hostname, defaulting to 'unknown_host'.")
         return "unknown_host"
@@ -100,8 +108,6 @@ def _get_username() -> str:
     except Exception as e:
         print(f"Failed to get username, defaulting to 'unknown_user'. Error: {e}")
         return "unknown_user"
-
-import os
 
 
 def _get_bool_env(name: str) -> bool:
