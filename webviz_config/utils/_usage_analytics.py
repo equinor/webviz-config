@@ -34,11 +34,17 @@ def setup_usage_analytics() -> UsageAnalytics | None:
     if is_on_radix_platform:
         return None
 
+    if _get_bool_env("WEBVIZ_DISABLE_USAGE_ANALYTICS"):
+        print("Usage analytics is disabled via environment variable, skipping setup of telemetry for usage analytics.")
+        return None
+
     if _APP_INSIGHTS_CONN_STRING is None:
         print("Skipping setup of telemetry for usage analytics, no connection string provided.")
         return None
 
     print("Setting up telemetry for usage analytics...")
+
+    print("Telemetry for usage analytics can be disabled via the WEBVIZ_DISABLE_USAGE_ANALYTICS environment variable.")
 
     wv_config_pkg_version = version("webviz-config")
     username = _get_username()
@@ -91,3 +97,13 @@ def _get_username() -> str:
     except Exception as e:
         print(f"Failed to get username, defaulting to 'unknown_user'. Error: {e}")
         return "unknown_user"
+
+import os
+
+
+def _get_bool_env(name: str) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return False
+
+    return value.strip().lower() in {"1", "true", "yes", "on"}
