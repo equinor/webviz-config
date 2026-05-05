@@ -3,15 +3,18 @@ import os
 import platform
 import pwd
 from importlib.metadata import version
+from typing import Optional
 
 from azure.monitor.opentelemetry import configure_azure_monitor
 from opentelemetry.sdk.resources import Resource
+
+# pylint: disable=line-too-long
 
 _APP_INSIGHTS_CONN_STRING = "InstrumentationKey=c3c73643-624c-40e5-9fd0-64cf0fcfb004;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/;ApplicationId=fa7bdafc-620b-4182-8b8c-9c1a11c738ba"
 
 
 class UsageAnalytics:
-    def __init__(self, telemetry_logger: logging.Logger, user_name: str | None) -> None:
+    def __init__(self, telemetry_logger: logging.Logger, user_name: str) -> None:
         self._telemetry_logger = telemetry_logger
         self._user_name = user_name
 
@@ -28,7 +31,7 @@ class UsageAnalytics:
         self._telemetry_logger.info(log_msg, extra=extra)
 
 
-def setup_usage_analytics() -> UsageAnalytics | None:
+def setup_usage_analytics() -> Optional[UsageAnalytics]:
     # We only want these analytics when running on-prem inside Equinor, so rely on KOMODO_RELEASE env var to enable analytics.
     is_komodo_definedon = bool(os.getenv("KOMODO_RELEASE"))
     if not is_komodo_definedon:
@@ -76,9 +79,9 @@ def setup_usage_analytics() -> UsageAnalytics | None:
             # For now, drop the actual flask instrumentation as it doesn't add much value
             instrumentation_options={"flask": {"enabled": False}},
         )
-    except Exception as e:
+    except Exception as ex: # pylint: disable=broad-except
         print(
-            f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {e}"
+            f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {ex}"
         )
         return None
 
@@ -105,8 +108,8 @@ def _get_username() -> str:
     try:
         uid = os.getuid()
         return pwd.getpwuid(uid).pw_name
-    except Exception as e:
-        print(f"Failed to get username, defaulting to 'unknown_user'. Error: {e}")
+    except Exception as ex: # pylint: disable=broad-except
+        print(f"Failed to get username, defaulting to 'unknown_user'. Error: {ex}")
         return "unknown_user"
 
 
