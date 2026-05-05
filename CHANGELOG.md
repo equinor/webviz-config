@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#652](https://github.com/equinor/webviz-config/pull/652) - Enabled support for LaTeX math/equations in markdown.
 - [#653](https://github.com/equinor/webviz-config/pull/653) - Reduce time for running `webviz --help` by lazy importing top level entrypoints.
 - [#656](https://github.com/equinor/webviz-config/pull/656) - Further reduce startup time by only loading plugin entrypoints used in the application.
+- [#694](https://github.com/equinor/webviz-config/pull/694) Dropped support for Python 3.8 (minimum supported version is now Python 3.9).
 
 ### Added
 - [#644](https://github.com/equinor/webviz-config/pull/644) - Added option to download tables in `DataTable` and `PivotTable`.
