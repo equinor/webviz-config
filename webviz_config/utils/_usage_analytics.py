@@ -2,7 +2,7 @@ import logging
 import os
 import platform
 import pwd
-from importlib.metadata import version
+from importlib.metadata import entry_points, version
 from typing import Optional
 
 from azure.monitor.opentelemetry import configure_azure_monitor
@@ -10,7 +10,8 @@ from opentelemetry.sdk.resources import Resource
 
 # pylint: disable=line-too-long
 
-_APP_INSIGHTS_CONN_STRING = "InstrumentationKey=c3c73643-624c-40e5-9fd0-64cf0fcfb004;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/;ApplicationId=fa7bdafc-620b-4182-8b8c-9c1a11c738ba"
+_LOGGING_CONN_STRING_ENTRYPOINT_GROUP = "webviz"
+_LOGGING_CONN_STRING_ENTRYPOINT_NAME = "webviz-azure-logging-connection-string"
 
 
 class UsageAnalytics:
@@ -32,15 +33,8 @@ class UsageAnalytics:
 
 
 def setup_usage_analytics() -> Optional[UsageAnalytics]:
-    # We only want these analytics when running on-prem inside Equinor, so rely on KOMODO_RELEASE env var to enable analytics.
-    is_komodo_definedon = bool(os.getenv("KOMODO_RELEASE"))
-    if not is_komodo_definedon:
-        return None
-
-    if _get_bool_env("WEBVIZ_DISABLE_USAGE_ANALYTICS"):
-        print(
-            "Usage analytics is disabled via environment variable, skipping setup of telemetry for usage analytics."
-        )
+    app_insights_connection_string = _get_connection_string_from_entrypoint()
+    if app_insights_connection_string is None:
         return None
 
     print("")
@@ -52,9 +46,8 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
     )
     print("")
     print(
-        "To support the transition, usage of on-prem Webviz will now be logged by default in all FMU workflows, i.e. where KOMODO_RELEASE is defined."
+        "To support the transition, usage of on-prem Webviz will now be logged by default in environments where usage analytics is configured."
         "This allows us to monitor remaining on-prem activity and proactively support users in transitioning. No underlying project data will be collected."
-        "To opt out of this logging, set the environment variable WEBVIZ_DISABLE_USAGE_ANALYTICS=1."
     )
     print("")
 
@@ -64,7 +57,7 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
 
     try:
         configure_azure_monitor(
-            connection_string=_APP_INSIGHTS_CONN_STRING,
+            connection_string=app_insights_connection_string,
             logger_name="wv_telemetry_logger",
             sampling_ratio=1.0,
             resource=Resource.create(
@@ -95,6 +88,41 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
     return UsageAnalytics(telemetry_logger=telemetry_logger, user_name=username)
 
 
+def _get_connection_string_from_entrypoint() -> Optional[str]:
+    try:
+        matching_entry_points = entry_points(
+            group=_LOGGING_CONN_STRING_ENTRYPOINT_GROUP,
+            name=_LOGGING_CONN_STRING_ENTRYPOINT_NAME,
+        )
+    except Exception as exc:  # pylint: disable=broad-except
+        print(
+            "Failed to inspect entry points for usage analytics connection string, "
+            f"proceeding without telemetry. Error: {exc}"
+        )
+        return None
+
+    if not matching_entry_points:
+        return None
+
+    try:
+        connection_string = next(iter(matching_entry_points)).load()
+    except Exception as exc:  # pylint: disable=broad-except
+        print(
+            "Failed to load usage analytics connection string from entry point, "
+            f"proceeding without telemetry. Error: {exc}"
+        )
+        return None
+
+    if not isinstance(connection_string, str) or connection_string.strip() == "":
+        print(
+            "Usage analytics connection string entry point was found, but did not "
+            "resolve to a non-empty string. Proceeding without telemetry."
+        )
+        return None
+
+    return connection_string
+
+
 def _get_hostname() -> str:
     hostname = platform.node()
     if hostname is None or hostname == "":
@@ -111,11 +139,3 @@ def _get_username() -> str:
     except Exception as exc:  # pylint: disable=broad-except
         print(f"Failed to get username, defaulting to 'unknown_user'. Error: {exc}")
         return "unknown_user"
-
-
-def _get_bool_env(name: str) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return False
-
-    return value.strip().lower() in {"1", "true", "yes", "on"}
