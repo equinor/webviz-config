@@ -33,7 +33,21 @@ class UsageAnalytics:
 
 
 def setup_usage_analytics() -> Optional[UsageAnalytics]:
-    app_insights_connection_string = _get_connection_string_from_entrypoint()
+    # Env var can be set to opt out of all telemetry
+    if _get_bool_env("WEBVIZ_DISABLE_USAGE_ANALYTICS"):
+        print(
+            "Usage analytics is disabled via environment variable, skipping setup of telemetry for usage analytics."
+        )
+        return None
+
+    # Allow specification of AppInsights connection string through env var for troubleshooting and local development purposes
+    if os.getenv("WEBVIZ_APP_INSIGHTS_CONN_STRING") is not None:
+        app_insights_connection_string = os.getenv("WEBVIZ_APP_INSIGHTS_CONN_STRING")
+        print("Usage analytics connection string set via environment variable.")
+    else:
+        # This is the mainstream and intended way to specify the AppInsights connection string
+        app_insights_connection_string = _get_connection_string_from_entrypoint()
+
     if app_insights_connection_string is None:
         return None
 
@@ -41,13 +55,14 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
     print("Setting up telemetry for usage analytics...")
     print("")
     print(
-        "We encourage you to implement the new version of Webviz (https://webviz.fmu.equinor.com) that uses Sumo (https://sumo.fmu.equinor.com) as its data source. "
+        "We encourage you to implement the new version of Webviz (https://webviz.fmu.equinor.com) that uses Sumo (https://sumo.fmu.equinor.com) as its data source.\n"
         "Please let us know if you are blocked from transitioning to this new cloud-only setup."
     )
     print("")
     print(
-        "To support the transition, usage of on-prem Webviz is logged centrally. "
-        "This allows us to monitor remaining on-prem activity and proactively support users in transitioning. No underlying project data will be collected."
+        "To support the transition, usage of on-prem Webviz is logged centrally.\n"
+        "This allows us to monitor remaining on-prem activity and proactively support users in transitioning.\n"
+        "No underlying project data will be collected."
     )
     print("")
 
@@ -139,3 +154,11 @@ def _get_username() -> str:
     except Exception as exc:  # pylint: disable=broad-except
         print(f"Failed to get username, defaulting to 'unknown_user'. Error: {exc}")
         return "unknown_user"
+
+
+def _get_bool_env(name: str) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return False
+
+    return value.strip().lower() in {"1", "true", "yes", "on"}
