@@ -201,13 +201,10 @@ def _annotation_to_string(annotation: Any) -> str:
 
 
 def build_docs(build_directory: pathlib.Path) -> None:
-
-    # From Python 3.8, copytree gets an argument dirs_exist_ok.
-    # Then the rmtree command can be removed.
-    shutil.rmtree(build_directory)
     shutil.copytree(
         pathlib.Path(__file__).resolve().parent / "static",
         build_directory,
+        dirs_exist_ok=True,
     )
 
     template_environment = jinja2.Environment(  # nosec

@@ -267,9 +267,6 @@ def main() -> None:  # pylint: disable=too-many-locals,too-many-statements
         args: argparse.Namespace,
     ) -> None:
 
-        if sys.version_info < (3, 8):
-            raise RuntimeError("Webviz editor requires at least Python 3.8")
-
         path_wce_executable = shutil.which("webviz-config-editor")
         if path_wce_executable is None:
             raise RuntimeError(
