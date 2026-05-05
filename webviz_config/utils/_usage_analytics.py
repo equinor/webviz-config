@@ -29,22 +29,25 @@ class UsageAnalytics:
 
 
 def setup_usage_analytics() -> UsageAnalytics | None:
-    # We only want these analytics when running on-prem, so silently skip the setup if we detect that we are running on the Radix platform.
-    is_on_radix_platform = bool(os.getenv("RADIX_APP") and os.getenv("RADIX_ENVIRONMENT"))
-    if is_on_radix_platform:
+    # We only want these analytics when running on-prem inside Equinor, so rely on KOMODO_RELEASE env var to enable analytics.
+    is_komodo_definedon = bool(os.getenv("KOMODO_RELEASE"))
+    if not is_komodo_definedon:
         return None
 
     if _get_bool_env("WEBVIZ_DISABLE_USAGE_ANALYTICS"):
         print("Usage analytics is disabled via environment variable, skipping setup of telemetry for usage analytics.")
         return None
 
-    if _APP_INSIGHTS_CONN_STRING is None:
-        print("Skipping setup of telemetry for usage analytics, no connection string provided.")
-        return None
-
+    print("")
     print("Setting up telemetry for usage analytics...")
-
-    print("Telemetry for usage analytics can be disabled via the WEBVIZ_DISABLE_USAGE_ANALYTICS environment variable.")
+    print("")
+    print("We encourage you to implement the new version of Webviz (https://webviz.fmu.equinor.com) that uses Sumo (https://sumo.fmu.equinor.com) as its data source.")
+    print("Please let us know if you are blocked from transitioning to this new cloud-only setup.")
+    print("")
+    print("To support the transition, usage of on-prem Webviz will now be logged by default in all FMU workflows, i.e. where KOMODO_RELEASE is defined.")
+    print("This allows us to monitor remaining on-prem activity and proactively support users in transitioning. No underlying project data will be collected.")
+    print("To opt out of this logging, set the environment variable WEBVIZ_DISABLE_USAGE_ANALYTICS=1.")
+    print("")
 
     wv_config_pkg_version = version("webviz-config")
     username = _get_username()
