@@ -7,7 +7,7 @@ from importlib.metadata import version
 from azure.monitor.opentelemetry import configure_azure_monitor
 from opentelemetry.sdk.resources import Resource
 
-_APP_INSIGHTS_CONN_STRING = None
+_APP_INSIGHTS_CONN_STRING = "InstrumentationKey=c3c73643-624c-40e5-9fd0-64cf0fcfb004;IngestionEndpoint=https://norwayeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://norwayeast.livediagnostics.monitor.azure.com/;ApplicationId=fa7bdafc-620b-4182-8b8c-9c1a11c738ba"
 
 
 class UsageAnalytics:
