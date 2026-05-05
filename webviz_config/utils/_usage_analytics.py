@@ -79,7 +79,7 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
             # For now, drop the actual flask instrumentation as it doesn't add much value
             instrumentation_options={"flask": {"enabled": False}},
         )
-    except Exception as ex: # pylint: disable=broad-except
+    except Exception as ex:  # pylint: disable=broad-except
         print(
             f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {ex}"
         )
@@ -108,7 +108,7 @@ def _get_username() -> str:
     try:
         uid = os.getuid()
         return pwd.getpwuid(uid).pw_name
-    except Exception as ex: # pylint: disable=broad-except
+    except Exception as ex:  # pylint: disable=broad-except
         print(f"Failed to get username, defaulting to 'unknown_user'. Error: {ex}")
         return "unknown_user"
 
