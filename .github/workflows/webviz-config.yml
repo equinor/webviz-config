@@ -21,7 +21,7 @@ jobs:
       PYTHONWARNINGS: default # We want to see e.g. DeprecationWarnings
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - name: 📖 Checkout commit locally
@@ -63,7 +63,7 @@ jobs:
         run: pip freeze
 
       - name: 🕵️ Check code style & linting
-        if: matrix.python-version == '3.8'
+        if: matrix.python-version == '3.9'
         run: |
           black --check webviz_config tests setup.py
           pylint webviz_config tests setup.py
@@ -86,7 +86,7 @@ jobs:
           rm -rf ./some_portable_app
 
       - name: 🚢 Build and deploy Python package
-        if: github.event_name == 'release' && matrix.python-version == '3.8'
+        if: github.event_name == 'release' && matrix.python-version == '3.9'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.pypi_webviz_token }}
@@ -96,7 +96,7 @@ jobs:
           twine upload dist/*
 
       - name: 📚 Update GitHub pages
-        if: github.event_name == 'release' && matrix.python-version == '3.8'
+        if: github.event_name == 'release' && matrix.python-version == '3.9'
         run: |
           cp -R ./docs_build ../docs_build
 

@@ -113,7 +113,7 @@ setup(
         ],
     },
     setup_requires=["setuptools_scm>=7"],
-    python_requires="~=3.8",
+    python_requires="~=3.9",
     use_scm_version=True,
     zip_safe=False,
     project_urls={
