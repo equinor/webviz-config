@@ -41,12 +41,12 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
     print("Setting up telemetry for usage analytics...")
     print("")
     print(
-        "We encourage you to implement the new version of Webviz (https://webviz.fmu.equinor.com) that uses Sumo (https://sumo.fmu.equinor.com) as its data source."
+        "We encourage you to implement the new version of Webviz (https://webviz.fmu.equinor.com) that uses Sumo (https://sumo.fmu.equinor.com) as its data source. "
         "Please let us know if you are blocked from transitioning to this new cloud-only setup."
     )
     print("")
     print(
-        "To support the transition, usage of on-prem Webviz will now be logged by default in environments where usage analytics is configured."
+        "To support the transition, usage of on-prem Webviz is logged centrally. "
         "This allows us to monitor remaining on-prem activity and proactively support users in transitioning. No underlying project data will be collected."
     )
     print("")
