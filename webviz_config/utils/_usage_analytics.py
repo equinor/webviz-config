@@ -20,7 +20,7 @@ class UsageAnalytics:
 
     def log_plugin_usage(self, path_name: str, plugin_name: str) -> None:
         log_msg = f"PLUGIN_USAGE - plugin_name={plugin_name}, user_name={self._user_name}, path_name={path_name}"
-        print(f"log_plugin_usage(): {log_msg}")
+        # print(f"log_plugin_usage(): {log_msg}")
 
         extra = {
             "wv_plugin_name": plugin_name,
@@ -79,9 +79,9 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
             # For now, drop the actual flask instrumentation as it doesn't add much value
             instrumentation_options={"flask": {"enabled": False}},
         )
-    except Exception as ex:  # pylint: disable=broad-except
+    except Exception as exc:  # pylint: disable=broad-except
         print(
-            f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {ex}"
+            f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {exc}"
         )
         return None
 
@@ -108,8 +108,8 @@ def _get_username() -> str:
     try:
         uid = os.getuid()
         return pwd.getpwuid(uid).pw_name
-    except Exception as ex:  # pylint: disable=broad-except
-        print(f"Failed to get username, defaulting to 'unknown_user'. Error: {ex}")
+    except Exception as exc:  # pylint: disable=broad-except
+        print(f"Failed to get username, defaulting to 'unknown_user'. Error: {exc}")
         return "unknown_user"
 
 
