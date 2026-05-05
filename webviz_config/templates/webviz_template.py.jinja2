@@ -37,7 +37,7 @@ import webviz_core_components as wcc
 # related calls, see https://docs.python.org/3/library/logging.html#logging.basicConfig
 logging.basicConfig(level=logging.{{ loglevel }})
 
-usage_analytics: UsageAnalytics | None = setup_usage_analytics()
+usage_analytics = setup_usage_analytics()
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
