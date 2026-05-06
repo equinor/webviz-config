@@ -1,10 +1,9 @@
-from typing import Dict, List, Optional, Tuple, Type, Union
+from typing import TypedDict
 import io
 import abc
 import base64
 import zipfile
 import warnings
-import sys
 import urllib
 import enum
 
@@ -16,11 +15,6 @@ import jinja2
 import webviz_core_components as wcc
 
 from .webviz_plugin_subclasses import SettingsGroupABC, ViewABC, LayoutUniqueId
-
-if sys.version_info >= (3, 8):
-    from typing import TypedDict
-else:
-    from typing_extensions import TypedDict
 
 
 class ZipFileMember(TypedDict):
@@ -37,7 +31,7 @@ class EncodedFile(ZipFileMember):
 
 
 def _create_feedback_text(
-    plugin_name: str, dist_name: str, dist_version: str, dependencies: Dict[str, str]
+    plugin_name: str, dist_name: str, dist_version: str, dependencies: dict[str, str]
 ) -> str:
     template_environment = jinja2.Environment(  # nosec
         loader=jinja2.PackageLoader("webviz_config", "templates"),
@@ -122,10 +116,10 @@ class WebvizPluginABC(abc.ABC):
         self._screenshot_filename = screenshot_filename
         self._add_download_button = False
 
-        self._views: List[Tuple[str, ViewABC]] = []
-        self._stores: List[Tuple[str, WebvizPluginABC.StorageType]] = []
-        self._shared_settings_groups: List[SettingsGroupABC] = []
-        self._registered_ids: List[str] = []
+        self._views: list[tuple[str, ViewABC]] = []
+        self._stores: list[tuple[str, WebvizPluginABC.StorageType]] = []
+        self._shared_settings_groups: list[SettingsGroupABC] = []
+        self._registered_ids: list[str] = []
 
         self._active_view_id = ""
         self._stretch = stretch
@@ -135,7 +129,7 @@ class WebvizPluginABC(abc.ABC):
 
         self._set_wrapper_callbacks()
 
-    def uuid(self, element: Optional[str] = None) -> str:
+    def uuid(self, element: str | None = None) -> str:
         """Typically used to get a unique ID for some given element/component in
         a plugins layout. If the element string is unique within the plugin, this
         function returns a string which is guaranteed to be unique also across the
@@ -159,14 +153,14 @@ class WebvizPluginABC(abc.ABC):
         self._stretch = stretch
 
     @property
-    def layout(self) -> Union[str, Type[Component]]:
+    def layout(self) -> str | type[Component]:
         """This is the only required function of a Webviz plugin.
         It returns a Dash layout which by webviz-config is added to
         the main Webviz application.
         """
         raise NotImplementedError
 
-    def _check_and_register_id(self, id_or_list_of_ids: Union[str, List[str]]) -> None:
+    def _check_and_register_id(self, id_or_list_of_ids: str | list[str]) -> None:
         for i in list(
             id_or_list_of_ids
             if isinstance(id_or_list_of_ids, list)
@@ -191,8 +185,8 @@ class WebvizPluginABC(abc.ABC):
         self,
         settings_group: SettingsGroupABC,
         settings_group_id: str,
-        visible_in_views: Optional[List[str]] = None,
-        not_visible_in_views: Optional[List[str]] = None,
+        visible_in_views: list[str] | None = None,
+        not_visible_in_views: list[str] | None = None,
     ) -> None:
         settings_group.get_unique_id().set_settings_group_id(settings_group_id)
         # pylint: disable=protected-access
@@ -243,7 +237,7 @@ class WebvizPluginABC(abc.ABC):
         if view:
             self._active_view_id = view.get_unique_id().to_string()
 
-    def views(self, view_group: str = "") -> List[Tuple[str, ViewABC]]:
+    def views(self, view_group: str = "") -> list[tuple[str, ViewABC]]:
         if view_group != "":
             return list(filter(lambda x: x[0] == view_group, self._views))
         return self._views
@@ -276,7 +270,7 @@ class WebvizPluginABC(abc.ABC):
         group_uuid = LayoutUniqueId(self._plugin_unique_id.get_plugin_uuid(), group_id)
         return group_uuid.to_string()
 
-    def shared_settings_groups(self) -> List[SettingsGroupABC]:
+    def shared_settings_groups(self) -> list[SettingsGroupABC]:
         return self._shared_settings_groups
 
     def shared_settings_group(self, settings_group_id: str) -> SettingsGroupABC:
@@ -301,7 +295,7 @@ class WebvizPluginABC(abc.ABC):
             """
         )
 
-    def get_all_settings(self) -> List[html.Div]:
+    def get_all_settings(self) -> list[html.Div]:
         # pylint: disable=protected-access
         settings = []
         shared_settings = self.shared_settings_groups()
@@ -333,7 +327,7 @@ class WebvizPluginABC(abc.ABC):
         return Input(self._legacy_plugin_view_id, "data_requested")
 
     @staticmethod
-    def _reformat_tour_steps(steps: List[dict]) -> List[dict]:
+    def _reformat_tour_steps(steps: list[dict]) -> list[dict]:
         return [
             {
                 "elementId": str(step["id"]),
@@ -359,7 +353,7 @@ class WebvizPluginABC(abc.ABC):
 
     @staticmethod
     def plugin_compressed_data(
-        filename: str, content: List[ZipFileMember]
+        filename: str, content: list[ZipFileMember]
     ) -> EncodedFile:
         with io.BytesIO() as bytes_io:
             with zipfile.ZipFile(bytes_io, "w") as zipped_data:
@@ -372,7 +366,7 @@ class WebvizPluginABC(abc.ABC):
             }
 
     @staticmethod
-    def plugin_data_compress(content: List[ZipFileMember]) -> EncodedFile:
+    def plugin_data_compress(content: list[ZipFileMember]) -> EncodedFile:
         warnings.warn(
             "Use 'plugin_compressed_data' instead of 'plugin_data_compress'",
             DeprecationWarning,
@@ -381,13 +375,13 @@ class WebvizPluginABC(abc.ABC):
 
     def _make_extended_deprecation_warnings(
         self,
-        plugin_deprecation_warnings: Optional[List[str]] = None,
-        argument_deprecation_warnings: Optional[List[str]] = None,
-    ) -> List[Dict[str, str]]:
+        plugin_deprecation_warnings: list[str] | None = None,
+        argument_deprecation_warnings: list[str] | None = None,
+    ) -> list[dict[str, str]]:
         # pylint: disable=import-outside-toplevel
         from .plugins import PLUGIN_METADATA, PLUGIN_PROJECT_METADATA
 
-        extended_deprecation_warnings: List[Dict[str, str]] = []
+        extended_deprecation_warnings: list[dict[str, str]] = []
 
         plugin_name = self.__class__.__name__
         dist_name = PLUGIN_METADATA[plugin_name]["dist_name"]
@@ -447,10 +441,10 @@ class WebvizPluginABC(abc.ABC):
 
     def plugin_layout(
         self,
-        contact_person: Optional[dict] = None,
-        plugin_deprecation_warnings: Optional[List[str]] = None,
-        argument_deprecation_warnings: Optional[List[str]] = None,
-    ) -> List[Component]:
+        contact_person: dict | None = None,
+        plugin_deprecation_warnings: list[str] | None = None,
+        argument_deprecation_warnings: list[str] | None = None,
+    ) -> list[Component]:
         """This function returns plugin layout placed within a WebvizPluginWrapper
         component, which contains a settings drawer with useful buttons like fullscreen
         and screenshot of plugin content. Additional buttons as plugin author contact
