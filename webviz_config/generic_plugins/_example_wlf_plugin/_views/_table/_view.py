@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Type, Union
-import sys
+from typing import Annotated
 
 from dash.development.base_component import Component
 from dash import html, Input, Output, State, dash_table, callback
@@ -23,11 +22,6 @@ from webviz_config.generic_plugins._example_wlf_plugin._shared_view_elements imp
     TextViewElement,
 )
 
-if sys.version_info >= (3, 9):
-    from typing import Annotated
-else:
-    from typing_extensions import Annotated
-
 
 class Kindness(StrEnum):
     FRIENDLY = "friendly"
@@ -43,11 +37,11 @@ class TableViewElement(ViewElementABC):
     class Ids(StrEnum):
         TABLE = "table"
 
-    def __init__(self, data: List[Tuple[int, int]]) -> None:
+    def __init__(self, data: list[tuple[int, int]]) -> None:
         super().__init__()
         self.data = data
 
-    def inner_layout(self) -> Union[str, Type[Component]]:
+    def inner_layout(self) -> str | type[Component]:
         return dash_table.DataTable(
             id=self.register_component_unique_id(TableViewElement.Ids.TABLE),
             columns=[{"id": "x", "name": "X"}, {"id": "y", "name": "Y"}],
@@ -55,7 +49,7 @@ class TableViewElement(ViewElementABC):
         )
 
     @staticmethod
-    def download_data_df(table_data: List[Dict[str, int]]) -> pd.DataFrame:
+    def download_data_df(table_data: list[dict[str, int]]) -> pd.DataFrame:
         x_values = []
         y_values = []
         for index, elm in enumerate(table_data):
@@ -76,8 +70,8 @@ class TableViewElement(ViewElementABC):
         return df
 
     def compressed_plugin_data(
-        self, table_data: List[Dict[str, int]]
-    ) -> Union[EncodedFile, str]:
+        self, table_data: list[dict[str, int]]
+    ) -> EncodedFile | str:
         return WebvizPluginABC.plugin_data_compress(
             [
                 {
@@ -98,8 +92,8 @@ class TableViewElement(ViewElementABC):
             ),
         )
         def _download_data(
-            data_requested: Union[int, None], table_data: List[Dict[str, int]]
-        ) -> Union[EncodedFile, str]:
+            data_requested: int | None, table_data: list[dict[str, int]]
+        ) -> EncodedFile | str:
             if data_requested is None:
                 raise PreventUpdate
 
@@ -116,7 +110,7 @@ class TableViewSettingsGroup(SettingsGroupABC):
     def __init__(self) -> None:
         super().__init__("Table orientation")
 
-    def layout(self) -> List[Component]:
+    def layout(self) -> list[Component]:
         return [
             wcc.RadioItems(
                 id=self.register_component_unique_id(
@@ -148,7 +142,7 @@ class TableView(ViewABC):
         kindness_selector: Annotated[Input, str]
         power_selector: Annotated[Input, str]
 
-    def __init__(self, data: List[Tuple[int, int]], slots: Slots) -> None:
+    def __init__(self, data: list[tuple[int, int]], slots: Slots) -> None:
         super().__init__("Table")
         self.data = data
 
@@ -181,7 +175,7 @@ class TableView(ViewABC):
             ),
         )
         @callback_typecheck
-        def _swap_order_and_power(power: int, order: Order) -> List[dict]:
+        def _swap_order_and_power(power: int, order: Order) -> list[dict]:
             if power == 2:
                 self.data = [(x, x * x) for x in range(0, 10)]
             else:
@@ -227,9 +221,9 @@ class TableView(ViewABC):
             ),
         )
         def _download_data(
-            data_requested: Union[int, None],
-            table_data: List[Dict[str, int]],
-        ) -> Union[EncodedFile, str]:
+            data_requested: int | None,
+            table_data: list[dict[str, int]],
+        ) -> EncodedFile | str:
             if data_requested is None:
                 raise PreventUpdate
 

@@ -1,6 +1,5 @@
-from typing import Any, Dict, List, Optional, Tuple, Union, Type
+from typing import Annotated, Any
 from dataclasses import dataclass
-import sys
 
 from dash.development.base_component import Component
 from dash import html, Input, Output, State, callback
@@ -22,11 +21,6 @@ from webviz_config.utils import callback_typecheck, StrEnum
 from webviz_config.generic_plugins._example_wlf_plugin._shared_view_elements import (
     TextViewElement,
 )
-
-if sys.version_info >= (3, 9):
-    from typing import Annotated
-else:
-    from typing_extensions import Annotated
 
 
 class Kindness(StrEnum):
@@ -51,7 +45,7 @@ class PlotViewElementSettingsGroup(SettingsGroupABC):
     def __init__(self) -> None:
         super().__init__("Color")
 
-    def layout(self) -> List[Component]:
+    def layout(self) -> list[Component]:
         return [
             wcc.RadioItems(
                 id=self.register_component_unique_id(
@@ -80,7 +74,7 @@ class PlotViewSettingsGroup(SettingsGroupABC):
     def __init__(self) -> None:
         super().__init__("Plot coordinate system")
 
-    def layout(self) -> List[Component]:
+    def layout(self) -> list[Component]:
         return [
             wcc.Dropdown(
                 id=self.register_component_unique_id(
@@ -108,14 +102,14 @@ class PlotViewElement(ViewElementABC):
         GRAPH = "graph"
         PLOT_SETTINGS = "plot-settings"
 
-    def __init__(self, data: List[Tuple[int, int]]) -> None:
+    def __init__(self, data: list[tuple[int, int]]) -> None:
         super().__init__(flex_grow=8)
         self.data = data
         self.add_settings_group(
             PlotViewElementSettingsGroup(), PlotViewElement.Ids.PLOT_SETTINGS
         )
 
-    def inner_layout(self) -> Union[str, Type[Component]]:
+    def inner_layout(self) -> str | type[Component]:
         return html.Div(
             style={"height": "20vh"},
             children=[
@@ -140,8 +134,8 @@ class PlotViewElement(ViewElementABC):
         )
 
     @staticmethod
-    def download_data_df(graph_figure: Dict[str, Any]) -> pd.DataFrame:
-        graph_data: Optional[List[Dict[str, Any]]] = graph_figure.get("data", None)
+    def download_data_df(graph_figure: dict[str, Any]) -> pd.DataFrame:
+        graph_data: list[dict[str, Any]] | None = graph_figure.get("data", None)
         if not graph_data:
             return "No data present in graph figure"
 
@@ -158,8 +152,8 @@ class PlotViewElement(ViewElementABC):
         return df
 
     def compressed_plugin_data(
-        self, graph_figure: Dict[str, Any]
-    ) -> Union[EncodedFile, str]:
+        self, graph_figure: dict[str, Any]
+    ) -> EncodedFile | str:
         return WebvizPluginABC.plugin_data_compress(
             [
                 {
@@ -181,8 +175,8 @@ class PlotViewElement(ViewElementABC):
             ),
         )
         def _download_data(
-            data_requested: Union[int, None], graph_figure: Dict[str, Any]
-        ) -> Union[EncodedFile, str]:
+            data_requested: int | None, graph_figure: dict[str, Any]
+        ) -> EncodedFile | str:
             if data_requested is None:
                 raise PreventUpdate
 
@@ -200,7 +194,7 @@ class PlotView(ViewABC):
         kindness_selector: Annotated[Input, str]
         power_selector: Annotated[Input, str]
 
-    def __init__(self, data: List[Tuple[int, int]], slots: Slots) -> None:
+    def __init__(self, data: list[tuple[int, int]], slots: Slots) -> None:
         super().__init__("Plot")
         self.data = data
 
@@ -312,9 +306,9 @@ class PlotView(ViewABC):
             ),
         )
         def _download_data(
-            data_requested: Union[int, None],
-            graph_figure: Dict[str, Any],
-        ) -> Union[EncodedFile, str]:
+            data_requested: int | None,
+            graph_figure: dict[str, Any],
+        ) -> EncodedFile | str:
             if data_requested is None:
                 raise PreventUpdate
 

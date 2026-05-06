@@ -1,4 +1,3 @@
-import sys
 from importlib.metadata import EntryPoint, entry_points
 
 from .. import WebvizConfigTheme
@@ -19,10 +18,7 @@ def process_entry_point(entry_point: EntryPoint):
         installed_themes[theme.theme_name] = theme
 
 
-if sys.version_info < (3, 10, 0):
-    eps = entry_points().get("webviz_config_themes", [])
-else:
-    eps = entry_points().select(group="webviz_config_themes")
+eps = entry_points().select(group="webviz_config_themes")
 
 for ep in eps:
     process_entry_point(ep)
