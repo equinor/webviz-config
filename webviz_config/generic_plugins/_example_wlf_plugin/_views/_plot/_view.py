@@ -151,9 +151,7 @@ class PlotViewElement(ViewElementABC):
         df["y"] = y_values
         return df
 
-    def compressed_plugin_data(
-        self, graph_figure: dict[str, Any]
-    ) -> EncodedFile | str:
+    def compressed_plugin_data(self, graph_figure: dict[str, Any]) -> EncodedFile | str:
         return WebvizPluginABC.plugin_data_compress(
             [
                 {
