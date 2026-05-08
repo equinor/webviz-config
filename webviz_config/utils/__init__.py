@@ -7,3 +7,4 @@ from ._deprecate_webviz_settings_attribute_in_dash_app import (
 )
 from ._str_enum import StrEnum
 from ._callback_typecheck import callback_typecheck, ConversionError
+from ._usage_analytics import setup_usage_analytics, UsageAnalytics

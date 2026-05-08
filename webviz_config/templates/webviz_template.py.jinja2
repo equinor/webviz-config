@@ -26,6 +26,7 @@ from webviz_config.webviz_assets import WEBVIZ_ASSETS
 from webviz_config.webviz_instance_info import WebvizRunMode, WEBVIZ_INSTANCE_INFO
 from webviz_config.webviz_factory_registry import WEBVIZ_FACTORY_REGISTRY
 from webviz_config.utils import deprecate_webviz_settings_attribute_in_dash_app
+from webviz_config.utils import setup_usage_analytics, UsageAnalytics
 
 import webviz_core_components as wcc
 
@@ -35,6 +36,8 @@ import webviz_core_components as wcc
 # the --loglevel argument. The call to basicConfig() should happen before any other logging
 # related calls, see https://docs.python.org/3/library/logging.html#logging.basicConfig
 logging.basicConfig(level=logging.{{ loglevel }})
+
+usage_analytics = setup_usage_analytics()
 
 theme = webviz_config.WebvizConfigTheme("{{ theme_name }}")
 theme.from_json((Path(__file__).resolve().parent / "theme_settings.json").read_text())
@@ -137,9 +140,11 @@ else:
     count_text_plugins = 0
     page_plugins = {}
     page_settings = {}
+    page_plugin_class_names = {}
     {% for page in pageContents %}
     page_plugins["{{page.id}}"] = []
     page_settings["{{page.id}}"] = []
+    page_plugin_class_names["{{page.id}}"] = set()
     {% for content_item in page.content -%}
     {% if content_item is string %}
     page_plugins["{{page.id}}"].append(wcc.WebvizPluginWrapper(id=f"text-{count_text_plugins}", views=[], initiallyActiveViewId="", name="Text", children=[dcc.Markdown(r"""{{ content_item }}""", mathjax=True)]))
@@ -151,6 +156,7 @@ else:
 
     page_plugins["{{page.id}}"].extend(plugin.{{ content_item._call_signature[1] }})
     page_settings["{{page.id}}"].extend([settings for settings in plugin.get_all_settings()])
+    page_plugin_class_names["{{page.id}}"].add(type(plugin).__name__)
 
     {% endif %}
     {% endfor %}
@@ -208,6 +214,12 @@ def update_page(pathname):
             pathname = ""
     if not pathname:
         pathname = next(iter(page_plugins))
+
+    if usage_analytics:
+        class_names = page_plugin_class_names.get(pathname, set())
+        for class_name in class_names:
+            usage_analytics.log_plugin_usage(path_name=pathname, plugin_name=class_name)
+
     return page_plugins.get(pathname, ["Oooppss... Page not found."]), page_settings.get(pathname, [])
 
 {{ "WEBVIZ_ASSETS.directly_host_assets(app)" if not portable else ""}}
