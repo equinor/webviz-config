@@ -112,7 +112,7 @@ setup(
             "azure-storage-blob",
         ],
     },
-    setup_requires=["setuptools_scm>=7"],
+    setup_requires=["setuptools_scm>=7,<10"],
     python_requires=">=3.10",
     use_scm_version=True,
     zip_safe=False,
