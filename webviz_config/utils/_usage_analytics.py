@@ -88,7 +88,9 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
         )
 
         logger_provider = LoggerProvider(resource=resource, shutdown_on_exit=True)
-        log_exporter = AzureMonitorLogExporter(connection_string=app_insights_connection_string)
+        log_exporter = AzureMonitorLogExporter(
+            connection_string=app_insights_connection_string
+        )
         logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
         set_logger_provider(logger_provider)
 
