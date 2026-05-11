@@ -99,6 +99,7 @@ setup(
         "webviz-core-components>=0.6",
         "werkzeug>=2.0",
         "azure-monitor-opentelemetry-exporter>=1.0.0b41",
+        "azure-monitor-events-extension>=0.1.0",
         "opentelemetry-sdk>=1.27",
     ],
     extras_require={

@@ -5,11 +5,16 @@ import pwd
 from importlib.metadata import entry_points, version
 from typing import Optional
 
-from azure.monitor.opentelemetry.exporter import AzureMonitorTraceExporter
-from opentelemetry import trace
+from azure.monitor.events.extension import track_event
+from azure.monitor.opentelemetry.exporter import AzureMonitorLogExporter
+from opentelemetry._logs import set_logger_provider
 from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+# opentelemetry.sdk._logs is experimental, but official Microsoft package
+# azure-monitor-opentelemetry depends on them as well (a package we don't want
+# to use due to larger unncessary dependency tree in Komodo)
+from opentelemetry.sdk._logs import LoggerProvider
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 
 
 # pylint: disable=line-too-long
@@ -19,20 +24,18 @@ _LOGGING_CONN_STRING_ENTRYPOINT_NAME = "webviz-azure-logging-connection-string"
 
 
 class UsageAnalytics:
-    def __init__(self, tracer: trace.Tracer, user_name: str) -> None:
-        self._tracer = tracer
+    def __init__(self, user_name: str) -> None:
         self._user_name = user_name
 
     def log_plugin_usage(self, path_name: str, plugin_name: str) -> None:
-        with self._tracer.start_as_current_span(
+        track_event(
             "PLUGIN_USAGE",
-            attributes={
+            {
                 "wv_plugin_name": plugin_name,
                 "wv_user_name": self._user_name,
                 "wv_path_name": path_name,
             },
-        ):
-            pass
+        )
 
 
 def setup_usage_analytics() -> Optional[UsageAnalytics]:
@@ -82,26 +85,25 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
             }
         )
 
-        tracer_provider = TracerProvider(resource=resource)
-        tracer_provider.add_span_processor(
-            BatchSpanProcessor(
-                AzureMonitorTraceExporter(
+        logger_provider = LoggerProvider(resource=resource)
+        logger_provider.add_log_record_processor(
+            BatchLogRecordProcessor(
+                AzureMonitorLogExporter(
                     connection_string=app_insights_connection_string
                 )
             )
         )
-        trace.set_tracer_provider(tracer_provider)
+        set_logger_provider(logger_provider)
 
-        atexit.register(tracer_provider.shutdown)
-
-        tracer = trace.get_tracer("wv_telemetry")
+        # Ensure buffered log records are flushed before interpreter exit.
+        atexit.register(logger_provider.shutdown)
     except Exception as exc:  # pylint: disable=broad-except
         print(
             f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {exc}"
         )
         return None
 
-    return UsageAnalytics(tracer=tracer, user_name=username)
+    return UsageAnalytics(user_name=username)
 
 
 def _get_connection_string_from_entrypoint() -> Optional[str]:
