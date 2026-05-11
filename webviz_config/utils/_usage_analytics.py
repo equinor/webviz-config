@@ -1,11 +1,10 @@
-import atexit
+import logging
 import os
 import platform
 import pwd
 from importlib.metadata import entry_points, version
 from typing import Optional
 
-from azure.monitor.events.extension import track_event
 from azure.monitor.opentelemetry.exporter import AzureMonitorLogExporter
 from opentelemetry._logs import set_logger_provider
 from opentelemetry.sdk.resources import Resource
@@ -13,7 +12,7 @@ from opentelemetry.sdk.resources import Resource
 # opentelemetry.sdk._logs is experimental, but official Microsoft package
 # azure-monitor-opentelemetry depends on them as well (a package we don't want
 # to use due to larger unncessary dependency tree in Komodo)
-from opentelemetry.sdk._logs import LoggerProvider
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 
 
@@ -24,18 +23,21 @@ _LOGGING_CONN_STRING_ENTRYPOINT_NAME = "webviz-azure-logging-connection-string"
 
 
 class UsageAnalytics:
-    def __init__(self, user_name: str) -> None:
+    def __init__(self, telemetry_logger: logging.Logger, user_name: str) -> None:
+        self._telemetry_logger = telemetry_logger
         self._user_name = user_name
 
     def log_plugin_usage(self, path_name: str, plugin_name: str) -> None:
-        track_event(
-            "PLUGIN_USAGE",
-            {
-                "wv_plugin_name": plugin_name,
-                "wv_user_name": self._user_name,
-                "wv_path_name": path_name,
-            },
-        )
+        log_msg = f"PLUGIN_USAGE - plugin_name={plugin_name}, user_name={self._user_name}, path_name={path_name}"
+        # print(f"log_plugin_usage(): {log_msg}")
+
+        extra = {
+            "wv_plugin_name": plugin_name,
+            "wv_user_name": self._user_name,
+            "wv_path_name": path_name,
+        }
+
+        self._telemetry_logger.info(log_msg, extra=extra)
 
 
 def setup_usage_analytics() -> Optional[UsageAnalytics]:
@@ -85,25 +87,25 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
             }
         )
 
-        logger_provider = LoggerProvider(resource=resource)
-        logger_provider.add_log_record_processor(
-            BatchLogRecordProcessor(
-                AzureMonitorLogExporter(
-                    connection_string=app_insights_connection_string
-                )
-            )
-        )
+        logger_provider = LoggerProvider(resource=resource, shutdown_on_exit=True)
+        log_exporter = AzureMonitorLogExporter(connection_string=app_insights_connection_string)
+        logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
         set_logger_provider(logger_provider)
 
-        # Ensure buffered log records are flushed before interpreter exit.
-        atexit.register(logger_provider.shutdown)
+        telemetry_py_logger = logging.getLogger("wv_telemetry_logger")
+        telemetry_py_logger.setLevel(logging.INFO)
+        telemetry_py_logger.propagate = False
+
+        handler = LoggingHandler(level=logging.INFO, logger_provider=logger_provider)
+        telemetry_py_logger.addHandler(handler)
+
     except Exception as exc:  # pylint: disable=broad-except
         print(
             f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {exc}"
         )
         return None
 
-    return UsageAnalytics(user_name=username)
+    return UsageAnalytics(telemetry_logger=telemetry_py_logger, user_name=username)
 
 
 def _get_connection_string_from_entrypoint() -> Optional[str]:
