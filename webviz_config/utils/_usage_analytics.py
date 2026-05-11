@@ -5,8 +5,16 @@ import pwd
 from importlib.metadata import entry_points, version
 from typing import Optional
 
-from azure.monitor.opentelemetry import configure_azure_monitor
+from azure.monitor.opentelemetry.exporter import AzureMonitorLogExporter
+from opentelemetry._logs import set_logger_provider
 from opentelemetry.sdk.resources import Resource
+
+# opentelemetry.sdk._logs is experimental, but official Microsoft package
+# azure-monitor-opentelemetry depends on them as well (a package we don't want
+# to use due to larger unncessary dependency tree in Komodo)
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
+
 
 # pylint: disable=line-too-long
 
@@ -71,36 +79,35 @@ def setup_usage_analytics() -> Optional[UsageAnalytics]:
     hostname = _get_hostname()
 
     try:
-        configure_azure_monitor(
-            connection_string=app_insights_connection_string,
-            logger_name="wv_telemetry_logger",
-            sampling_ratio=1.0,
-            resource=Resource.create(
-                attributes={
-                    "service.name": "WebvizDash",
-                    "service.namespace": hostname,
-                    "service.version": wv_config_pkg_version,
-                }
-            ),
-            enable_live_metrics=False,
-            enable_performance_counters=False,
-            # For now, drop the actual flask instrumentation as it doesn't add much value
-            instrumentation_options={"flask": {"enabled": False}},
+        resource = Resource.create(
+            attributes={
+                "service.name": "WebvizDash",
+                "service.namespace": hostname,
+                "service.version": wv_config_pkg_version,
+            }
         )
+
+        logger_provider = LoggerProvider(resource=resource, shutdown_on_exit=True)
+        log_exporter = AzureMonitorLogExporter(
+            connection_string=app_insights_connection_string
+        )
+        logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
+        set_logger_provider(logger_provider)
+
+        telemetry_py_logger = logging.getLogger("wv_telemetry_logger")
+        telemetry_py_logger.setLevel(logging.INFO)
+        telemetry_py_logger.propagate = False
+
+        handler = LoggingHandler(level=logging.INFO, logger_provider=logger_provider)
+        telemetry_py_logger.addHandler(handler)
+
     except Exception as exc:  # pylint: disable=broad-except
         print(
             f"Failed to set up telemetry for usage analytics, proceeding without telemetry. Error: {exc}"
         )
         return None
 
-    telemetry_logger = logging.getLogger("wv_telemetry_logger")
-    telemetry_logger.setLevel(logging.INFO)
-
-    # Don't propagate telemetry logs to the root logger, since that would cause them to be
-    # printed to console by the default logging configuration.
-    telemetry_logger.propagate = False
-
-    return UsageAnalytics(telemetry_logger=telemetry_logger, user_name=username)
+    return UsageAnalytics(telemetry_logger=telemetry_py_logger, user_name=username)
 
 
 def _get_connection_string_from_entrypoint() -> Optional[str]:
