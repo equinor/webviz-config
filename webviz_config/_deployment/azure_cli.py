@@ -16,7 +16,10 @@ try:
     from azure.identity import InteractiveBrowserCredential
     from azure.core.exceptions import HttpResponseError
     from azure.mgmt.subscription import SubscriptionClient
-    from azure.mgmt.resource import ResourceManagementClient
+    try:
+        from azure.mgmt.resource.resources import ResourceManagementClient
+    except ImportError:
+        from azure.mgmt.resource import ResourceManagementClient
     from azure.mgmt.storage import StorageManagementClient
     from azure.storage.blob import BlobServiceClient
     from azure.storage.blob.aio import ContainerClient
