@@ -16,6 +16,7 @@ try:
     from azure.identity import InteractiveBrowserCredential
     from azure.core.exceptions import HttpResponseError
     from azure.mgmt.subscription import SubscriptionClient
+
     try:
         from azure.mgmt.resource.resources import ResourceManagementClient
     except ImportError:
